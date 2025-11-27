@@ -20,18 +20,18 @@ namespace Portal.Areas.Orders.Controllers
 {
     [DynamicRoleAuthorize]
     [RouteArea("credit-control")]
-    [RoutePrefix("statements")]
+    [RoutePrefix("")]
     [Route("{action=index}")]
-    public class StatementsController : BaseController
+    public class CreditControlGeneralController : BaseController
     {
-        public StatementsController(ApplicationUserManager userManager, PortalDbContext portalDbContext) : base (userManager, portalDbContext)
+        public CreditControlGeneralController(ApplicationUserManager userManager, PortalDbContext portalDbContext) : base (userManager, portalDbContext)
         {
 
         }
 
         public async Task<ActionResult> Index()
         {
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "statements" && p.AreaName == "credit-control" && p.ActionName == "index").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "" && p.AreaName == "credit-control" && p.ActionName == "index").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
@@ -40,7 +40,7 @@ namespace Portal.Areas.Orders.Controllers
                 application.Heading, 
                 application.SubHeading);
 
-            return View("Statements", model);
+            return View("General", model);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿var tradeAccountContactViewModel = function (options) {
+﻿var oldTradeAccountContactViewModel = function (options) {
     var self = this;
 
     options = options || {};

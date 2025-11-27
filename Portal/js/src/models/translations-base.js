@@ -115,17 +115,26 @@
             filterable: language != null
         }, {
             field: 'MemberID',
-            title: 'Approved',
-            width: 104,
+            title: ' ',
+            width: 50,
             editor: self.checkboxEditor,
             template: '#= ModifiedBy ? `<i class="approval-check material-icons">check_box</i>` : `<i class="material-icons approval-check pending">check_box_outline_blank</i>` #',
+            headerAttributes: {
+                'class': 'approved-filter'
+            },
             attributes: {
                 'class': 'text-center valign-middle',
                 'title': '#= ModifiedBy ? ModifiedBy.FullName + ": " + moment(ModifiedDT).format("DD/MM/YYYY HH:mm") : "AI Translated" + (ModifiedDT ? ": " + moment(ModifiedDT).format("DD/MM/YYYY HH:mm") : "") #'
             },
             editable: () => language == null ? false : true,
             sortable: true,
-            filterable: language != null
+            filterable: language == null ? false : {
+                extra: false,
+                messages: {
+                    isTrue: '✔',
+                    isFalse: '✖'
+                }
+            }
         }]
     };
 
@@ -139,27 +148,6 @@
         toolbar: window.getToolbarOptions(), // "create"
         edit: function (e) {
             console.log('edit', e);
-            //if (e.model.isNew()) {
-            //    if (e.sender.options.editable != 'inline') {
-            //        var currentOptions = e.sender.getOptions();
-            //        currentOptions.editable = 'inline';
-            //        currentOptions.dataSource.schema.model.fields.Translation.editable = false;
-            //        e.sender.setOptions(currentOptions);
-            //        e.sender.one('dataBound', function (x) {
-            //            window.setTimeout(function () {
-            //                e.sender.addRow();
-            //                e.sender.one('dataBound', function (y) {
-            //                    window.setTimeout(function () {
-            //                        var currentOptions = e.sender.getOptions();
-            //                        currentOptions.editable = 'incell';
-            //                        currentOptions.dataSource.schema.model.fields.Translation.editable = true;
-            //                        e.sender.setOptions(currentOptions);
-            //                    }, 0);
-            //                });
-            //            }, 0);
-            //        });
-            //    }
-            //}
         },
         page: (e) => {
             if (self.unsavedChanges()) {
@@ -236,7 +224,6 @@
                     //    result.$filter = result.$filter.replace('datetime', 'datetimeoffset');
                     //}
 
-
                     return result;
                 }
             },
@@ -285,6 +272,11 @@
                         LanguageID: {
                             type: 'number',
                             editable: false
+                        },
+                        MemberID: {
+                            type: 'boolean',
+                            editable: null,
+                            defaultValue: null
                         },
                         Translation: {
                             from: 'Value',
@@ -391,8 +383,12 @@
             pageSize: 20,
             pageSizes: [10, 20, 50, 100, 200]
         },
-        dataBound: (e) => {
-            console.log('dataBound', e);
+        filterMenuInit: (e) => {
+            if (e.field === "MemberID") {
+                // Find and replace specific elements in the filter menu
+                e.container[0].setAttribute('title', 'Filter for Approval Status');
+                e.container.find(".k-filter-help-text").text("Approval Status:");
+            }
         }
     };
 

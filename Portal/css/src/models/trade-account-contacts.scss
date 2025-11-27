@@ -1,46 +1,5 @@
 ﻿@import "../models/common.scss";
 
-.navbar.navbar-default.navbar-expand {
-	min-width: 1170px;
-	position: sticky;
-	top: 0;
-	z-index: 100;
-
-	.container {
-		max-width: 1980px !important;
-		width: 100% !important;
-		padding-left: 1em;
-		padding-right: 1em;
-
-		.nav.navbar-nav.me-auto.mb-0 {
-			flex: 1;
-			align-items: center;
-
-			#alerting-display {
-				padding: 8px 15px;
-			}
-
-			.app-title {
-				margin: 0 auto;
-
-				h1, h2, h3, h4, h5, h6 {
-					margin: 0;
-				}
-			}
-		}
-	}
-}
-
-.container {
-	&.body-content {
-		min-width: unset;
-		max-width: 1980px;
-		width: 100%;
-		padding: $l-gutter;
-		padding-top: 20px;
-	}
-}
-
 #trade-account-contacts-tabs-content {
 	background-color: $white;
 	border: 1px solid $gray-300;
@@ -347,6 +306,7 @@
 	.modal-dialog {
 		max-width: unset;
 		border-radius: 0;
+		margin-top: 0;
 
 		.modal-content {
 			border-radius: 0;
@@ -354,75 +314,110 @@
 			.modal-header {
 				border-radius: 0;
 			}
+		}
+	}
+}
+.trade-account-contacts-table {
+	border-top: 1px solid $white;
 
-			.table-bordered {
-				border-top: 1px solid $white;
+	colgroup {
+		.mw-l {
+			min-width: 200px;
+		}
 
-				td {
-					vertical-align: middle;
+		.mw-m {
+			min-width: 64px;
+		}
 
-					> div {
-						display: flex;
-						justify-content: center;
-					}
-				}
+		col {
+			width: 40px;
+		}
+	}
 
-				tr {
-					th {
-						text-align: center;
-					}
-				}
+	td {
+		vertical-align: middle;
 
-				td, th {
-					&.no-borders {
-						background: none !important;
-						background-color: $white !important;
-						border: 0 !important;
-						border-top: 0 !important;
-						border-right: 0 !important;
-						border-bottom: 0 !important;
-						border-left: 0 !important;
-					}
+		> div {
+			display: flex;
+			justify-content: center;
+		}
 
-					&.errata-subheader {
-						background-color: $gray-400;
-						text-align: left;
-					}
+		.form-control {
+			padding: $input-padding-y $input-padding-x;
+		}
 
-					&.b2b-permissions-header,
-					&.communication-preferences-header,
-					&.other-trade-account-associations-header {
-						border-top: 1px solid $gray-300 !important;
-						text-align: center;
-						vertical-align: middle;
-					}
-
-					&.b2b-permissions-header {
-						background-color: $blue-800;
-						color: $white;
-					}
-
-					&.b2b-permissions-subheader {
-						background-color: $blue-100;
-					}
-
-					&.communication-preferences-header {
-						background-color: $green-500;
-						color: $white;
-					}
-
-					&.communication-preferences-subheader {
-						background-color: $green-100;
-					}
-
-					&.other-trade-account-associations-header {
-						background-color: $gray-400;
-					}
-
-					&.other-trade-account-associations-subheader {
-					}
+		.bi-pencil {
+			&:hover,
+			&:focus,
+			&:focus-within {
+				&::before {
+					content: '\f4c9';
 				}
 			}
+		}
+
+		&.bg-trade-permissions {
+			background-color: $gray-100;
+			cursor: not-allowed;
+			* {
+				cursor: not-allowed;
+			}
+		}
+	}
+
+	tr {
+		th {
+			text-align: center;
+		}
+	}
+
+	td, th {
+		&.no-borders {
+			background: none !important;
+			background-color: $white !important;
+			border: 0 !important;
+			border-top: 0 !important;
+			border-right: 0 !important;
+			border-bottom: 0 !important;
+			border-left: 0 !important;
+		}
+
+		&.errata-subheader {
+			background-color: $gray-400;
+			text-align: left;
+		}
+
+		&.b2b-permissions-header,
+		&.communication-preferences-header,
+		&.other-trade-account-associations-header {
+			border-top: 1px solid $gray-300 !important;
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		&.b2b-permissions-header {
+			background-color: $blue-800;
+			color: $white;
+		}
+
+		&.b2b-permissions-subheader {
+			background-color: $blue-100;
+		}
+
+		&.communication-preferences-header {
+			background-color: $green-500;
+			color: $white;
+		}
+
+		&.communication-preferences-subheader {
+			background-color: $green-100;
+		}
+
+		&.other-trade-account-associations-header {
+			background-color: $gray-400;
+		}
+
+		&.other-trade-account-associations-subheader {
 		}
 	}
 }

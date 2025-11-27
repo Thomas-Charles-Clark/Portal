@@ -799,7 +799,12 @@
 		<div class="mdc-form-field">
 			<div class="mdc-checkbox" data-bind="mdcCheckboxComponent: $data, validationOptions: { insertMessages: false }">
 				<form action="" onsubmit="return false;" autocomplete="off">
-					<input type="checkbox" class="mdc-checkbox__native-control" data-bind="checked: $data.observable, checkedValue: typeof checkedValue === 'undefined' ? true : checkedValue, attr: { id: checkboxId, 'disabled': typeof disabled === 'undefined' ? false : disabled }" />
+					<input type="checkbox" class="mdc-checkbox__native-control" data-bind="checked: $data.observable,
+						   checkedValue: typeof checkedValue === 'undefined' ? true : checkedValue,
+						   attr: {
+								id: typeof checkboxId === 'undefined' ? undefined : checkboxId,
+								'disabled': typeof disabled === 'undefined' ? false : disabled
+						   }" />
 					<div class="mdc-checkbox__background">
 						<svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
 							<path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
@@ -809,7 +814,11 @@
 					<div class="mdc-checkbox__ripple"></div>
 				</form>
 			</div>
-			<label data-bind="html: label, attr: { for: checkboxId }, css: { 'checkbox-label-disabled': (typeof disabled === 'undefined' ? false : disabled) }"></label>
+			<!-- ko if: typeof label !== 'undefined' && label -->
+			<label data-bind="html: label,
+				   attr: { for: typeof checkboxId === 'undefined' ? undefined: checkboxId },
+				   css: { 'checkbox-label-disabled': (typeof disabled === 'undefined' ? false : disabled) }"></label>
+			<!-- /ko -->
 		</div>
 	</script>
 

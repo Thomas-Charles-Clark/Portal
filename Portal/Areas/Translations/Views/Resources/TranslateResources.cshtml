@@ -51,13 +51,13 @@
 			errorMessageClass: 'validation-message text-danger'
 		});
 
-		$(document).ready(function () {
+		window.addEventListener('load', function () {
 			ko.applyBindings(viewModel, document.body);
 			window.setTimeout(() => {
 				if (window.getLanguageId()) {
 					viewModel.resourceGridSettings.widget().dataSource.page(1);
 				}
-			}, 0)
+			}, 0);
 		});
 
 		window.onBeforeUnloadPreventDefault = (e) => {

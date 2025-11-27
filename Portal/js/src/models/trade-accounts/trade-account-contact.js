@@ -13,7 +13,16 @@
 
 	self.busy = ko.observable(false);
 
-	self.Phone = '555 123 4567'
+	self.phone = ko.observable(self.Phone);
+	self.editingPhone = ko.observable(false);
+
+	self.fullName = ko.observable(self.FullName);
+	self.editingFullName = ko.observable(false);
+
+	self.email = ko.observable(self.Email);
+	self.editingEmail = ko.observable(false);
+
+	self.otherTradeAccountAssociations = ko.observable(self.OtherTradeAccountAssociations);
 
 	self.tradeAccountRegistrationComplete = ko.observable(self.TradeAccountRegistrationComplete);
 	self.tradePermissionAccountAdmin = ko.observable(self.TradePermissionAccountAdmin);
@@ -54,43 +63,43 @@
 
 	self.tradePermissionAccountAdminParams = {
 		observable: self.tradePermissionAccountAdmin,
-		enable: ko.observable(true),
-		disable: ko.observable(false),
+		enable: ko.observable(false),
+		disable: ko.observable(true),
 		busy: self.busy
 	};
 
 	self.tradePermissionPlaceOrderParams = {
 		observable: self.tradePermissionPlaceOrder,
-		enable: ko.observable(true),
-		disable: ko.observable(false),
+		enable: ko.observable(false),
+		disable: ko.observable(true),
 		busy: self.busy
 	};
 
 	self.tradePermissionRequestSampleParams = {
 		observable: self.tradePermissionRequestSample,
-		enable: ko.observable(true),
-		disable: ko.observable(false),
+		enable: ko.observable(false),
+		disable: ko.observable(true),
 		busy: self.busy
 	};
 
 	self.tradePermissionViewAccountsParams = {
 		observable: self.tradePermissionViewAccounts,
-		enable: ko.observable(true),
-		disable: ko.observable(false),
+		enable: ko.observable(false),
+		disable: ko.observable(true),
 		busy: self.busy
 	};
 
 	self.tradePermissionDownloadPricelistsBrochuresParams = {
 		observable: self.tradePermissionDownloadPricelistsBrochures,
-		enable: ko.observable(true),
-		disable: ko.observable(false),
+		enable: ko.observable(false),
+		disable: ko.observable(true),
 		busy: self.busy
 	};
 
 	self.tradePermissionDownloadProductFeedsParams = {
 		observable: self.tradePermissionDownloadProductFeeds,
-		enable: ko.observable(true),
-		disable: ko.observable(false),
+		enable: ko.observable(false),
+		disable: ko.observable(true),
 		busy: self.busy
 	};
 
@@ -201,9 +210,44 @@
 
 	//#region Methods
 
+	self.toggleEditingFullName = () => {
+		self.editingFullName(!self.editingFullName());
+
+		window.setTimeout(() => {
+			if (self.editingFullName()) {
+				self.fullName.DOMElement.focus();
+			}
+		}, 0);
+	}
+
+	self.toggleEditingEmail = () => {
+		self.editingEmail(!self.editingEmail());
+
+		window.setTimeout(() => {
+			if (self.editingEmail()) {
+				self.email.DOMElement.focus();
+			}
+		}, 0);
+	}
+
+	self.toggleEditingPhone = () => {
+		self.editingPhone(!self.editingPhone());
+
+		window.setTimeout(() => {
+			if (self.editingPhone()) {
+				self.phone.DOMElement.focus();
+			}
+		}, 0);
+	}
+
 	self.toJS = () => {
 		return {
 			tradeAccountMemberId: self.TradeAccountMemberID,
+			tradeAccountId: self.TradeAccountID,
+			memberId: self.MemberID,
+			email: self.email(),
+			fullName: self.fullName(),
+			phone: self.phone(),
 			tradeAccountRegistrationComplete: self.tradeAccountRegistrationComplete(),
 			tradePermissionAccountAdmin: self.tradePermissionAccountAdmin(),
 			tradePermissionPlaceOrder: self.tradePermissionPlaceOrder(),

@@ -170,14 +170,14 @@
 .mdc-validating-field .mdc-bootstrap-multiselect li + li {
   border-top: 1px solid #ced4da;
 }
-.mdc-validating-field .mdc-select .mdc-notched-outline__notch,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled) .mdc-notched-outline__notch,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect) .mdc-notched-outline__notch {
   opacity: 1;
   will-change: opacity, display;
   transition: opacity 150ms ease-in-out;
   transition-behavior: allow-discrete;
 }
-.mdc-validating-field .mdc-select.date-select--selected .k-dropdown-wrap.k-state-default, .mdc-validating-field .mdc-select.mdc-select--selected .k-dropdown-wrap.k-state-default,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .k-dropdown-wrap.k-state-default, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .k-dropdown-wrap.k-state-default,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .k-dropdown-wrap.k-state-default,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .k-dropdown-wrap.k-state-default {
   position: relative;
@@ -186,34 +186,34 @@
   color: #fff;
   border-radius: 0.375rem;
 }
-.mdc-validating-field .mdc-select.date-select--selected .k-dropdown-wrap.k-state-default .k-input, .mdc-validating-field .mdc-select.mdc-select--selected .k-dropdown-wrap.k-state-default .k-input,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .k-dropdown-wrap.k-state-default .k-input, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .k-dropdown-wrap.k-state-default .k-input,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .k-dropdown-wrap.k-state-default .k-input,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .k-dropdown-wrap.k-state-default .k-input {
   color: #fff;
 }
-.mdc-validating-field .mdc-select.date-select--selected .controls > div, .mdc-validating-field .mdc-select.mdc-select--selected .controls > div,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls > div,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls > div,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls > div {
   color: #fff;
   text-shadow: 0 1px 0 #000;
 }
-.mdc-validating-field .mdc-select.date-select--selected .mdc-notched-outline__notch, .mdc-validating-field .mdc-select.mdc-select--selected .mdc-notched-outline__notch,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .mdc-notched-outline__notch, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .mdc-notched-outline__notch,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .mdc-notched-outline__notch,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .mdc-notched-outline__notch {
   opacity: 0;
   display: none;
 }
-.mdc-validating-field .mdc-select.mdc-select--disabled .k-dropdown-wrap.k-state-default, .mdc-validating-field .mdc-select.mdc-text-field--disabled .k-dropdown-wrap.k-state-default,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--disabled .k-dropdown-wrap.k-state-default, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--disabled .k-dropdown-wrap.k-state-default,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--disabled .k-dropdown-wrap.k-state-default,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--disabled .k-dropdown-wrap.k-state-default {
   color: #6c757d;
 }
-.mdc-validating-field .mdc-select.mdc-select--disabled .k-dropdown-wrap.k-state-default .k-input, .mdc-validating-field .mdc-select.mdc-text-field--disabled .k-dropdown-wrap.k-state-default .k-input,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--disabled .k-dropdown-wrap.k-state-default .k-input, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--disabled .k-dropdown-wrap.k-state-default .k-input,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--disabled .k-dropdown-wrap.k-state-default .k-input,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--disabled .k-dropdown-wrap.k-state-default .k-input {
   color: #6c757d;
 }
-.mdc-validating-field .mdc-select.mdc-select--disabled .controls > div, .mdc-validating-field .mdc-select.mdc-text-field--disabled .controls > div,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--disabled .controls > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--disabled .controls > div,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--disabled .controls > div,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--disabled .controls > div {
   color: #000;
@@ -429,6 +429,9 @@ body {
   background-color: #fff;
 }
 
+.department-prefilter .mdc-validating-field .mdc-bootstrap-multiselect li:nth-of-type(2) {
+  border-top: 1px solid #ced4da;
+}
 .department-prefilter .k-animation-container {
   width: auto;
 }
@@ -446,6 +449,9 @@ body {
 .department-prefilter .mdc-bootstrap-multiselect:not(.mdc-select--disabled) .dropdown .dropdown-menu .form-check {
   display: flex;
   padding-left: 0;
+}
+.department-prefilter .mdc-bootstrap-multiselect:not(.mdc-select--disabled) .dropdown .dropdown-menu .form-check .form-check-label {
+  padding-left: 0.75rem;
 }
 .department-prefilter .mdc-bootstrap-multiselect:not(.mdc-select--disabled) .dropdown .dropdown-menu .form-check .form-check-input {
   margin-left: 0;
@@ -486,35 +492,10 @@ body {
 .date-type-prefilter {
   flex: 1;
 }
-.date-type-prefilter .k-animation-container .k-dropdown-wrap span.k-input {
-  padding: 0;
-  display: flex;
-}
-.date-type-prefilter .k-animation-container .k-dropdown-wrap span.k-input span.date-range.date-danger {
-  background-color: #f4bec4;
-  color: #b02a37;
-  /*padding: 4px 32px 4px 0;*/
-}
-.date-type-prefilter .k-animation-container .k-list .k-item {
-  padding: 0;
-}
-.date-type-prefilter .k-animation-container .k-list .k-item:hover > span.date-danger, .date-type-prefilter .k-animation-container .k-list .k-item.k-state-focused > span.date-danger, .date-type-prefilter .k-animation-container .k-list .k-item.k-state-selected > span.date-danger, .date-type-prefilter .k-animation-container .k-list .k-item:focus > span.date-danger, .date-type-prefilter .k-animation-container .k-list .k-item:focus-within > span.date-danger {
-  background-color: #f4bec4;
-  color: #b02a37;
-}
-.date-type-prefilter .k-animation-container .k-list .k-item:hover:has(> span.date-danger), .date-type-prefilter .k-animation-container .k-list .k-item.k-state-focused:has(> span.date-danger), .date-type-prefilter .k-animation-container .k-list .k-item.k-state-selected:has(> span.date-danger), .date-type-prefilter .k-animation-container .k-list .k-item:focus:has(> span.date-danger), .date-type-prefilter .k-animation-container .k-list .k-item:focus-within:has(> span.date-danger) {
-  color: #b02a37;
-}
-.date-type-prefilter .k-animation-container .k-list .k-item > span {
-  border-radius: 4px;
-  padding: 0 4px;
-  display: block;
-  width: 100%;
-  flex: 1;
-}
-.date-type-prefilter .k-animation-container .k-list .k-item > span.date-danger {
-  background-color: #f9dbde;
-  color: #e35d6a;
+.date-type-prefilter .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .k-dropdown-wrap.k-state-default:has(.date-danger) {
+  align-self: stretch;
+  background-color: #f4bec4 !important;
+  color: #b02a37 !important;
 }
 
 .date-picker {
@@ -592,16 +573,19 @@ body {
   flex: 1;
 }
 .grid-prefilters .prefilter .mdc-validating-field > .mdc-select--selected .k-dropdown-wrap > span.k-input {
-  background-color: #cfe2ff;
+  /*background-color: $blue-100;*/
 }
 .grid-prefilters .prefilter .mdc-validating-field .dropdown.selected .btn {
-  background-color: #cfe2ff;
+  /*background-color: $blue-100;*/
 }
 .grid-prefilters .prefilter .bi-lock-fill {
   flex: 0;
 }
 .grid-prefilters .prefilter .k-list .k-item {
   white-space: nowrap;
+}
+.grid-prefilters .prefilter .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .k-dropdown-wrap.k-state-default .k-input:has(.date-danger) {
+  color: #b02a37;
 }
 .grid-prefilters .date-prefilter {
   display: block;

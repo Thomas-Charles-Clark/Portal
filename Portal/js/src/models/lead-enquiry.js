@@ -7619,10 +7619,20 @@ var customerView = function () {
     self.tradeAccountContactsPricelists = ko.observableArray([]);
     self.tradeAccountContactsOther = ko.observableArray([]);
 
-    self.contactFactory = new tradeAccountContactViewModel({
+    self.contactFactory = new oldTradeAccountContactViewModel({
         tradeAccount: self.tradeAccount,
         parent: self
     });
+
+    self.selectedTradeAccountContacts = ko.observableArray([]);
+
+
+
+    //self.contactsiFrameSrc = ko.computed(() => {
+    //    if (self.tradeAccount()) {
+    //        return `/trade-accounts/contacts/partial?tradeAccountCode=${self.tradeAccount().Code}`; 
+    //    }
+    //});
 
     self.addNewContact = function () {
         self.contactFactory.reset();
@@ -8168,6 +8178,10 @@ var customerView = function () {
                     $('#customer-modal').off('hide.bs.modal', self.reset);
                     $('#customer-modal').on('hide.bs.modal', self.reset);
                 }, 0);
+
+                self.selectedTradeAccountContacts(data.contacts.map(c => tradeAccountContactViewModel({
+                    rec: c
+                })));
 
                 self.busy(false);
             },

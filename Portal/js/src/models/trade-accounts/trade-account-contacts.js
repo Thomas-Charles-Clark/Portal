@@ -74,7 +74,11 @@
             title: 'Credit Stopped',
             width: 140,
             filterable: {
-                extra: false
+                extra: false,
+                messages: {
+                    isTrue: '✔',
+                    isFalse: '✖'
+                }
             }
         }, {
             field: 'Advisory',
@@ -143,8 +147,12 @@
 
             self.selectedTradeAccount(dataItem);
         },
-        dataBound: function (e) {
-
+        filterMenuInit: (e) => {
+            if (e.field === "CreditStop") {
+                // Find and replace specific elements in the filter menu
+                e.container[0].setAttribute('title', 'Filter for Credit Stop Status')
+                e.container.find(".k-filter-help-text").text("Credit Stopped?");
+            }
         }
     };
 
@@ -240,19 +248,30 @@
 
     self.cancelTradeAccountContactsModal = () => {
         if (self.unsavedChanges().length) {
-            if (typeof window.showConfirm === 'function') {
-                window.showConfirm('Are you sure?', 'You have unsaved changes. If you click yes, those changes will be lost.', () => {
-                    self.tradeAccountContactsModal.hide();
-                }, null);
-            } else {
-                let conf = window.confirm('You have unsaved changes. If you click yes, those changes will be lost.');
-
-                if (conf) {
-                    self.tradeAccountContactsModal.hide();
-                }
-            }
+            window.showConfirm('Are you sure?', 'You have unsaved changes. If you click yes, those changes will be lost.', () => {
+                self.tradeAccountContactsModal.hide();
+            }, null);
         } else {
             self.tradeAccountContactsModal.hide();
+        }
+    }
+
+    self.addNewTradeAccountContact = () => {
+        self.selectedTradeAccountContacts.push(tradeAccountContactViewModel({
+            rec: {}
+        }))
+    }
+
+    self.removeTradeAccountContact = (rec) => {
+        let mustConfirm = rec.MemberID || rec.unsavedChanges();
+
+        if (mustConfirm) {
+            let confirmMessage = rec.unsavedChanges() ? 'You have unsaved changes. If you click yes, those changes will be lost.' : 'If you\'re absolutely sure that you want to remove this Trade Account Contact, click the Yes button below.';
+            window.showConfirm('Are you sure?', confirmMessage, () => {
+                self.selectedTradeAccountContacts.remove(rec);
+            }, null);
+        } else {
+            self.selectedTradeAccountContacts.remove(rec);
         }
     }
 
@@ -268,7 +287,7 @@
                 if (nv) {
                     self.unsavedChanges.push(tac)
                 } else {
-                    self.unsavedChanges(self.unsavedChanges.filter(cc => cc != tac));
+                    self.unsavedChanges(self.unsavedChanges().filter(cc => cc != tac));
                 }
             });
         });

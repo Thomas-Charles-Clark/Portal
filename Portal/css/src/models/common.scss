@@ -290,7 +290,7 @@ $readonly-background: repeating-linear-gradient(-45deg, rgb(0 0 0 / 5%), transpa
         }
     }
     /* Why... not disabled - aha, because colouring...? */
-    .mdc-select, /* :not(.mdc-select--disabled) */
+    .mdc-select:not(.mdc-select--disabled),
     .mdc-text-field:not(.mdc-bootstrap-multiselect) {
 
         .mdc-notched-outline__notch {

@@ -428,12 +428,16 @@ namespace Portal
                     $"{cssPrefix}/models/documents-sent-report{cssSuffix}"
             ));
 
-            bundles.Add(new StyleBundle("~/bundles/css/statements").Include(
-                    $"{cssPrefix}/models/statements{cssSuffix}"
+            bundles.Add(new StyleBundle("~/bundles/css/credit-control").Include(
+                    $"{cssPrefix}/models/credit-control{cssSuffix}"
             ));
 
 			bundles.Add(new StyleBundle("~/bundles/css/trade-account-contacts").Include(
 					$"{cssPrefix}/models/trade-account-contacts{cssSuffix}"
+			));
+
+			bundles.Add(new StyleBundle("~/bundles/css/trade-account-contacts-widener").Include(
+					$"{cssPrefix}/models/trade-account-contacts-widener{cssSuffix}"
 			));
 
 			//  
@@ -663,8 +667,10 @@ namespace Portal
                     $"{jsPrefix}/models/visit-booker{jsSuffix}",
                     $"{jsPrefix}/models/member-search{jsSuffix}",
                     $"{jsPrefix}/models/care-search{jsSuffix}",
-                    $"{jsPrefix}/models/trade-account-creation-email-maintenance{jsSuffix}"
-                ));
+                    $"{jsPrefix}/models/trade-account-creation-email-maintenance{jsSuffix}",
+					$"{jsPrefix}/models/trade-accounts/trade-account-contact{jsSuffix}"
+
+				));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-products-base").Include(
                         $"{jsPrefix}/models/order-products-base{jsSuffix}",
@@ -990,7 +996,7 @@ namespace Portal
                         $"{jsPrefix}/models/documents/sent-report/documents-sent-report{jsSuffix}"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/statements").Include(
+            bundles.Add(new ScriptBundle("~/bundles/js/credit-control").Include(
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/credit-control/statements-filters{jsSuffix}",
                         $"{jsPrefix}/models/credit-control/statements{jsSuffix}"

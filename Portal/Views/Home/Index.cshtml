@@ -178,6 +178,10 @@
                     {
                         url = Url.Action(a.ActionName, a.ControllerName?.Replace("-", ""), new { Area = a.AreaName });
                     }
+                    if (String.IsNullOrEmpty(url))
+                    {
+                        url = $"{a.AreaName}";
+                    }
                 }
 
                 <div class="application">

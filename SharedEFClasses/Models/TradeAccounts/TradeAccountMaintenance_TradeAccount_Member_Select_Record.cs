@@ -10,6 +10,7 @@ namespace SharedEFClasses.Models.TradeAccounts
 	{
 		public string FullName { get; set; }
 		public string Email { get; set; }
+		public string Phone { get; set; }
 		public long TradeAccountMemberID { get; set; }
 		public int TradeAccountID { get; set; }
 		public int MemberID { get; set; }

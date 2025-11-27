@@ -46,15 +46,6 @@
 		<!-- /ko -->
 	</div>
 </script>
-<script type="text/javascript">
-	window.onload = (event) => {
-		if (!ko.components.isRegistered('mdc-checkbox-component')) {
-			ko.components.register('mdc-checkbox-component', {
-				template: { element: document.getElementById('mdc-checkbox-component') }
-			});
-		}
-	}
-</script>
 <script type="text/html" id="trade-account-contact-row-template">
 	<tr>
 		<td>
@@ -77,197 +68,88 @@
 		</td>
 	</tr>
 </script>
-<div class="modal fade" id="trade-account-contacts-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-	<div class="modal-dialog">
+<div class="modal fade" id="trade-account-contacts-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" data-bind="stopBinding">
+	<div class="modal-dialog" id="trade-account-contacts-modal-dialog">
 		<div class="modal-content">
+			<div class="blocker" data-bind="flexFadeVisible: busy">
+				<div class="loading-spinner"></div>
+				<h4>
+					Please Wait...
+				</h4>
+			</div>
 			<div class="modal-header grey-blue" data-bind="with: selectedTradeAccount">
 				<h5 class="modal-title" data-bind="text: label">
 				</h5>
 				<button type="button" class="btn-close btn-close-white" aria-label="Close" data-bind="click: $parent.cancelTradeAccountContactsModal"></button>
 			</div>
 			<div class="modal-body">
-				<table class="table table-bordered table-condensed">
-					<colgroup>
-						<col />
-					</colgroup>
-					<thead>
-						<tr>
-							<th colspan="3" class="no-borders"></th>
-							<th class="no-borders"></th>
-							<th colspan="7" class="b2b-permissions-header">
-								B2B Permissions
-							</th>
-							<th class="no-borders"></th>
-							<th colspan="8" class="communication-preferences-header">
-								Communication Preferences
-							</th>
-							<th class="no-borders"></th>
-							<th class="no-borders"></th>
-						</tr>
-						<tr>
-							<th class="errata-subheader">
-								Name
-							</th>
-							<th class="errata-subheader">
-								Email
-							</th>
-							<th class="errata-subheader">
-								Phone
-							</th>
-							<th class="no-borders"></th>
-							<th class="b2b-permissions-subheader">
-								Setup Complete
-							</th>
-							<th class="b2b-permissions-subheader">
-								Account Admin
-							</th>
-							<th class="b2b-permissions-subheader">
-								Place Order
-							</th>
-							<th class="b2b-permissions-subheader">
-								Request Sample
-							</th>
-							<th class="b2b-permissions-subheader">
-								View Accounts
-							</th>
-							<th class="b2b-permissions-subheader">
-								Download Pricelists &amp; Brochures
-							</th>
-							<th class="b2b-permissions-subheader">
-								Download Product Feeds
-							</th>
-							<th class="no-borders"></th>
-							<th class="communication-preferences-subheader">
-								Order Notifications
-							</th>
-							<th class="communication-preferences-subheader">
-								Delivery Notifications
-							</th>
-							<th class="communication-preferences-subheader">
-								Invoices
-							</th>
-							<th class="communication-preferences-subheader">
-								Credit Notes
-							</th>
-							<th class="communication-preferences-subheader">
-								Statements of Account &amp; Payment requests
-							</th>
-							<th class="communication-preferences-subheader">
-								Proof of Delivery
-							</th>
-							<th class="communication-preferences-subheader">
-								Pricelists
-							</th>
-							<th class="communication-preferences-subheader">
-								Sales, Marketing &amp; Promotions
-							</th>
-							<th class="no-borders"></th>
-							<th class="errata-subheader">
-								Other Trade Account Associations
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<!-- ko foreach: selectedTradeAccountContacts -->
-						<tr>
-							<td>
-								<span class="contact-name" data-bind="text: FullName"></span>
-							</td>
-							<td>
-								<a class="contact-email" data-bind="text: Email, attr: { href: `mailto:${Email}` }"></a>
-							</td>
-							<td>
-								<a class="contact-phone" data-bind="text: Phone, attr: { href: `tel:${Phone}` }"></a>
-							</td>
-							<td class="no-borders"></td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountRegistrationCompleteParams }"></div>
-							</td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionAccountAdminParams }"></div>
-							</td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionPlaceOrderParams }"></div>
-							</td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionRequestSampleParams }"></div>
-							</td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionViewAccountsParams }"></div>
-							</td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionDownloadPricelistsBrochuresParams }"></div>
-							</td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionDownloadProductFeedsParams }"></div>
-							</td>
-							<td class="no-borders"></td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_OrderNotificationsParams }"></div>
-							</td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_DeliveryNotificationsParams }"></div>
-							</td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_InvoicesParams }"></div>
-							</td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_CreditNotesParams }"></div>
-							</td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_StatementsOfAccountAndPaymentRequestsParams }"></div>
-							</td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_ProofOfDeliveryParams }"></div>
-							</td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_PriceListsParams }"></div>
-							</td>
-							<td>
-								<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_SalesMarketingAndPromotionalInformationParams }"></div>
-							</td>
-							<td class="no-borders"></td>
-							<td>
-								<span data-bind="text: OtherTradeAccountAssociations"></span>
-							</td>
-						</tr>
-						<!-- /ko -->
-					</tbody>
-				</table>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bind="click: cancelTradeAccountContactsModal">
-					Cancel
-				</button>
-				<button type="button" class="btn btn-primary" data-bind="click: saveTradeAccountContacts">
-					Save
-				</button>
+				@Html.Partial("_TradeAccountContactsTablePartial", Model)
 			</div>
 		</div>
 	</div>
 </div>
-<div class="tab-content" id="trade-account-contacts-tabs-content">
-	<div class="tab-pane active" id="trade-account-contacts-filters-tab" role="tabpanel" aria-labelledby="browse-tab-btn">
-		<form id="trade-account-contacts-prefilters" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
-			<div id="sales-markets-prefilter" class="prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: salesMarketsParams }"></div>
-			<div id="sales-representative-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesRepresentativeParams }"></div>
-			<div id="sales-agent-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAgentParams }"></div>
-			<div id="sales-area-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAreaParams }"></div>
-			<div id="country-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: countryParams }"></div>
-			<div id="trade-account-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeParams }"></div>
-			<div id="trade-account-group-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountGroupParams }"></div>
-			<div id="payment-terms-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
-			<div id="payment-terms-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsTypeParams }"></div>
-			<div id="credit-stopped-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: creditStoppedParams }"></div>
-		</form>
-		<div class="dashboard" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
-			<div class="dashboard-pod card">
-				<div class="card-body" data-bind="class: Classes">
-					<h4 data-bind="html: Heading"></h4>
-					<div data-bind="html: Stats"></div>
+<div data-bind="stopBinding">
+	<div class="tab-content" id="trade-account-contacts-tabs-content">
+		<div class="blocker" data-bind="flexFadeVisible: busy">
+			<div class="loading-spinner"></div>
+			<h4 class="mt-3" data-bind="text: busyMessage"></h4>
+		</div>
+		<div class="tab-pane active" id="trade-account-contacts-filters-tab" role="tabpanel" aria-labelledby="browse-tab-btn">
+			<form id="trade-account-contacts-prefilters" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
+				<div id="sales-markets-prefilter" class="prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: salesMarketsParams }"></div>
+				<div id="sales-representative-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesRepresentativeParams }"></div>
+				<div id="sales-agent-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAgentParams }"></div>
+				<div id="sales-area-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAreaParams }"></div>
+				<div id="country-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: countryParams }"></div>
+				<div id="trade-account-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeParams }"></div>
+				<div id="trade-account-group-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountGroupParams }"></div>
+				<div id="payment-terms-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
+				<div id="payment-terms-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsTypeParams }"></div>
+				<div id="credit-stopped-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: creditStoppedParams }"></div>
+			</form>
+			<div class="dashboard" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
+				<div class="dashboard-pod card">
+					<div class="card-body" data-bind="class: Classes">
+						<h4 data-bind="html: Heading"></h4>
+						<div data-bind="html: Stats"></div>
+					</div>
 				</div>
 			</div>
+			<div class="trade-account-contacts-grid-container" data-bind="css: { 'd-block': tradeAccounts().length > 0, 'd-none': tradeAccounts().length == 0 }, kendoGrid: gridParams"></div>
 		</div>
-		<div class="trade-account-contacts-grid-container" data-bind="css: { 'd-block': tradeAccounts().length > 0, 'd-none': tradeAccounts().length == 0 }, kendoGrid: gridParams"></div>
 	</div>
 </div>
+<script type="text/javascript">
+
+	window.initialiseTradeAccountContacts = () => {
+		if (!ko.components.isRegistered('mdc-checkbox-component')) {
+			ko.components.register('mdc-checkbox-component', {
+				template: { element: document.getElementById('mdc-checkbox-component') }
+			});
+		}
+
+		var tac = tradeAccountContactsViewModel();
+
+		ko.options.deferUpdates = true;
+
+		ko.validation.init({
+			decorateInputElement: true,
+			errorElementClass: 'alert-danger',
+			errorMessageClass: 'validation-message text-danger'
+		});
+
+		ko.applyBindings(tac, document.getElementById('trade-account-contacts-tabs-content'));
+		ko.applyBindings(tac, document.getElementById('trade-account-contacts-modal-dialog'));
+
+		window.tac = tac;
+	}
+
+	if (document.readyState == 'loading') {
+		window.addEventListener('load', event => {
+			window.initialiseTradeAccountContacts();
+		});
+	} else {
+		window.initialiseTradeAccountContacts();
+	}
+
+</script>

@@ -1,4 +1,4 @@
-﻿@import "./common.scss";
+﻿@import "common.scss";
 
 body {
     min-width: 1170px;
@@ -321,6 +321,9 @@ $light-blue-highlight: tint-color($blue-100, 75%);
 
 .department-prefilter {
 
+    .mdc-validating-field .mdc-bootstrap-multiselect li:nth-of-type(2) {
+        border-top: 1px solid $gray-400;
+    }
 
     .k-animation-container {
         width: auto;
@@ -351,6 +354,10 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                 .form-check {
                     display: flex;
                     padding-left: 0;
+
+                    .form-check-label {
+                        padding-left: $m-gutter;
+                    }
 
                     .form-check-input {
                         margin-left: 0;
@@ -409,56 +416,15 @@ $light-blue-highlight: tint-color($blue-100, 75%);
 .date-type-prefilter {
     flex: 1;
 
-    .k-animation-container {
+    .mdc-validating-field {
 
-        .k-dropdown-wrap {
-
-            span.k-input {
-                padding: 0;
-                display: flex;
-
-                span.date-range {
-
-                    &.date-danger {
-                        background-color: tint-color($red-200, 20%);
-                        color: $red-600;
-                        /*padding: 4px 32px 4px 0;*/
-                    }
-                }
-            }
-        }
-
-        .k-list {
-            .k-item {
-                padding: 0;
-
-                &:hover,
-                &.k-state-focused,
-                &.k-state-selected,
-                &:focus,
-                &:focus-within {
-                    > span {
-                        &.date-danger {
-                            background-color: tint-color($red-200, 20%);
-                            color: $red-600;
-                        }
-                    }
-
-                    &:has( > span.date-danger) {
-                        color: $red-600;
-                    }
-                }
-
-                > span {
-                    border-radius: 4px;
-                    padding: 0 4px;
-                    display: block;
-                    width: 100%;
-                    flex: 1;
-
-                    &.date-danger {
-                        background-color: tint-color($red-200, 55%);
-                        color: $red-400;
+        .mdc-select:not(.mdc-select--disabled).mdc-select--selected {
+            .k-dropdown-wrap {
+                &.k-state-default {
+                    &:has(.date-danger) {
+                        align-self: stretch;
+                        background-color: tint-color($red-200, 20%) !important;
+                        color: $red-600 !important;
                     }
                 }
             }
@@ -551,7 +517,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
             > .mdc-select--selected {
                 .k-dropdown-wrap {
                     > span.k-input {
-                        background-color: $blue-100;
+                        /*background-color: $blue-100;*/
                     }
                 }
             }
@@ -559,7 +525,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
             .dropdown {
                 &.selected {
                     .btn {
-                        background-color: $blue-100;
+                        /*background-color: $blue-100;*/
                     }
                 }
             }
@@ -574,7 +540,6 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                 white-space: nowrap;
             }
         }
-
         /*.k-dropdown-wrap {
             > span.k-input {
                 padding: 0;
@@ -587,6 +552,23 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                 }
             }
         }*/
+
+
+        .mdc-validating-field {
+            .mdc-select:not(.mdc-select--disabled) {
+                &.mdc-select--selected {
+                    .k-dropdown-wrap {
+                        &.k-state-default {
+                            .k-input {
+                                &:has(.date-danger) {
+                                    color: $red-600;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     .date-prefilter {

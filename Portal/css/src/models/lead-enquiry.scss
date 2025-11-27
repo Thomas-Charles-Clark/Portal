@@ -1,63 +1,83 @@
 ﻿@import "common.scss";
 
-.dash-panel > .panel-heading {
-    height: 75px;
+.dash-panel {
+    > .panel-heading {
+        height: 75px;
+    }
 }
 
-#edit-lead-modal .modal-body {
-    padding-bottom: 0;
+#edit-lead-modal {
+    .modal-body {
+        padding-bottom: 0;
+
+        .panel-heading {
+            cursor: pointer;
+        }
+
+        .panel-body {
+            position: relative;
+
+            #extant-trade-accounts {
+                margin-bottom: 0;
+            }
+        }
+
+        .panel-info {
+            .panel-heading {
+                h4 {
+                    color: #333;
+                }
+            }
+        }
+
+        .lead-contact {
+            .panel-body {
+                h4 {
+                    margin-top: 0;
+                    margin-bottom: 15px;
+                }
+            }
+        }
+
+        .table {
+            th {
+                border-bottom: 1px solid #ddd;
+            }
+        }
+
+        textarea {
+            resize: vertical;
+            padding: 4px 12px;
+        }
+
+        .alert:not(.form-group) {
+            margin-bottom: 0
+        }
+    }
 }
 
-#edit-lead-modal .panel-body #extant-trade-accounts {
-    margin-bottom: 0;
+
+#edit-lead-modal,
+#view-lead-modal {
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table-responsive {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.075);
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 0;
+    }
 }
 
-#edit-lead-modal .panel-body {
-    position: relative;
-}
-
-.lead-contact .panel-body h4 {
-    margin-top: 0;
-    margin-bottom: 15px;
-}
-
-#edit-lead-modal .panel-heading {
-    cursor: pointer;
-}
-
-.panel-info .panel-heading h4 {
-    color: #333;
-}
-
-#edit-lead-modal .table th {
-    border-bottom: 1px solid #ddd;
-}
-
-#edit-lead-modal .table-responsive,
-#view-lead-modal .table-responsive {
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.075);
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-bottom: 0;
-}
-
-#edit-lead-modal .table,
-#view-lead-modal .table {
-    margin-bottom: 0;
-}
-
-#new-lead-contact-modal textarea,
-#trade-account-contact-modal textarea {
-    resize: none;
-    padding: 4px 12px;
-    height: 113px;
-}
-#edit-lead-modal textarea {
-    resize: vertical;
-    padding: 4px 12px;
-}
-#edit-lead-modal .alert:not(.form-group) {
-    margin-bottom: 0
+#new-lead-contact-modal,
+#trade-account-contact-modal {
+    textarea {
+        resize: none;
+        padding: 4px 12px;
+        height: 113px;
+    }
 }
 
 .star {
@@ -546,17 +566,24 @@ p.description {
     min-height: 295px;
 }
 
-#customer-modal .nav.nav-pills {
-    padding-bottom: 10px;
-}
+#customer-modal {
+    .modal-dialog {
+        max-width: unset;
+        border-radius: 0;
+        width: auto !important;
+    }
 
-#customer-modal .tab-content {
-    padding: 15px 0 0 0;
-    border: none;
-}
+    .nav {
+        &.nav-pills {
+            padding-bottom: 10px;
+            border-bottom: 0;
+        }
+    }
 
-#customer-care .nav.nav-pills {
-    border-bottom: 0;
+    .tab-content {
+        padding: 15px 0 0 0;
+        border: none;
+    }
 }
 
 #base-tabs .tab-content {

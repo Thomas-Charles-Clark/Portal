@@ -855,7 +855,7 @@ namespace Portal.Areas.Sales.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult LoadCustomerView([FromBody]PassTradeAccountID objTradeAccount)
+        public async Task<IHttpActionResult> LoadCustomerView([FromBody]PassTradeAccountID objTradeAccount)
         {
             var summary = portalDb.CustomerCareEnquiry(objTradeAccount);
                 
@@ -935,7 +935,13 @@ namespace Portal.Areas.Sales.Controllers
             //                          select p);
 
             var launchId = portalDb.Launches.Where(p => p.TradeLaunchDate != null).Select(p => p.LaunchID).OrderByDescending(p => p).First();
-            
+
+            var contacts = await portalDb.TradeAccountMaintenance_TradeAccount_Member_Select(
+                new TradeAccountMaintenance_TradeAccount_Member_Select_DTO()
+                {
+                    TradeAccountID = objTradeAccount.tradeAccountId
+                });
+
             return Ok(new
             {
                 summary = summary,
@@ -946,7 +952,8 @@ namespace Portal.Areas.Sales.Controllers
                 salesStats = stats,
                 recentLaunchId = launchId,
                 patternBooksHeld = patternBooksHeld,
-                patternBooksNotHeld = patternBooksNotHeld
+                patternBooksNotHeld = patternBooksNotHeld,
+                contacts = contacts.Records
             });
         }
 

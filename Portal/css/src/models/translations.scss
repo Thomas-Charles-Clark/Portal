@@ -125,8 +125,34 @@
 
 .k-grid-header {
     th.k-header {
+        align-items: center;
+        justify-content: flex-start;
+        vertical-align: middle;
+
         .k-link {
             margin: 0;
+        }
+
+        &.approved-filter {
+            padding: 0;
+
+            .k-link {
+                display: none;
+            }
+
+            .k-grid-filter {
+                float: none;
+                text-align: center;
+                width: 100%;
+                padding-left: 0;
+                padding-right: 0;
+            }
+        }
+
+        .k-grid-filter {
+            display: block;
+            min-height: unset;
+            line-height: unset;
         }
     }
 }

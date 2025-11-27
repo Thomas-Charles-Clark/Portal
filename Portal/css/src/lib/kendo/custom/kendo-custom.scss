@@ -1,6 +1,7 @@
 ﻿@import "../../bootstrap-5.3.1/scss/mixins/breakpoints";
 @import "../../bootstrap-5.3.1/scss/functions";
 @import "../../bootstrap-5.3.1/scss/variables";
+@import "../../../models/common";
 
 @font-face {
     font-family: 'WebComponentsIcons';
@@ -1598,6 +1599,19 @@ kendo-sortable {
 
     .k-filter-menu {
         padding: 0.5em;
+
+        label {
+            &:has(input[type=radio]) {
+                display: flex;
+                gap: $m-gutter;
+                justify-content: flex-start;
+                align-items: center;
+            }
+            
+            &:hover {
+                cursor: pointer;
+            }
+        }
     }
 }
 
