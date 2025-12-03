@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace SharedEFClasses.Models.TradeAccounts
 {
@@ -25,9 +26,13 @@ namespace SharedEFClasses.Models.TradeAccounts
 
 		public short? TradeAccountTypeID { get; set; }
 
+		public byte? TradeAccountTypeGroupID { get; set; }
+
 		public byte? PaymentTermsID { get; set; }
 
 		public byte? PaymentTermsTypeID { get; set; }
+
+		public string CreditControllerCode { get; set; }
 
 		public bool? CreditStopped { get; set; }
 

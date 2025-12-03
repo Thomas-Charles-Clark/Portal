@@ -1,5 +1,8 @@
-﻿using SharedEFClasses.Models.General;
+﻿
+using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
+using SharedEFClasses.Models.Mertex;
+using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.TradeAccounts;
 
@@ -34,11 +37,15 @@ namespace SharedEFClasses.Models
 
         public short? TradeAccountTypeID { get; set; }
 
-        public byte? PaymentTermsID { get; set; }
+        public byte? TradeAccountTypeGroupID { get; set; }
+
+		public byte? PaymentTermsID { get; set; }
 
         public bool? CreditStopped { get; set; }
 
         public byte? PaymentTermsTypeID { get; set; }
+
+        public string CreditControllerCode { get; set; }
 
         [ForeignKey("SalesMarketID")]
         public virtual SalesMarket SalesMarket { get; set; }
@@ -61,10 +68,16 @@ namespace SharedEFClasses.Models
         [ForeignKey("TradeAccountTypeID")]
         public virtual TradeAccountType TradeAccountType { get; set; }
 
-        [ForeignKey("PaymentTermsID")]
+		[ForeignKey("TradeAccountTypeGroupID")]
+		public virtual TradeAccountTypeGroup TradeAccountTypeGroup { get; set; }
+
+		[ForeignKey("PaymentTermsID")]
         public virtual PaymentTerms PaymentTerms { get; set; }
 
         [ForeignKey("PaymentTermsTypeID")]
         public virtual PaymentTermsType PaymentTermsType { get; set; }
+
+        [ForeignKey("CreditControllerCode")]
+        public virtual CreditControllerLive CreditController { get; set; }
     }
 }

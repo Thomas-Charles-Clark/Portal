@@ -614,7 +614,10 @@ namespace SharedEFClasses.Models.TradeAccounts
         public short TradeAccountTypeID { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public byte TradeAccountTypeGroupID { get; set; }
 
+        [ForeignKey("TradeAccountTypeGroupID")]
+        public virtual TradeAccountTypeGroup TradeAccountTypeGroup { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<TradeAccount> TradeAccounts { get; set; }
@@ -624,7 +627,23 @@ namespace SharedEFClasses.Models.TradeAccounts
         public virtual ICollection<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSetRecords { get; set; }
     }
 
-    public class TradeArea
+    [Table("TradeAccountTypeGroup")]
+	public class TradeAccountTypeGroup
+	{
+		[Key]
+		public byte TradeAccountTypeGroupID { get; set; }
+		public string Name { get; set; }
+
+
+		[JsonIgnore]
+		public virtual ICollection<TradeAccountType> TradeAccountTypes { get; set; }
+
+		[JsonIgnore]
+		[InverseProperty("TradeAccountTypeGroup")]
+		public virtual ICollection<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSetRecords { get; set; }
+	}
+
+	public class TradeArea
     {
         [Key]
         public short TradeAreaID { get; set; }

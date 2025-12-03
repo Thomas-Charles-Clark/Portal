@@ -324,9 +324,10 @@
                                     </div>
                                 </div>
                                 <div id="summary-contacts" class="tab-pane">
-                                    @Html.Action("TradeAccountContactsTablePartial", "TradeAccountContacts", new { Area = "trade-accounts" })
-                                    @*<iframe id="contacts-iframe" data-bind="attr: { src: contactsiFrameSrc }"></iframe>*@
-                                    <!--<div class="form-group row">
+
+                                    @*@Html.Action("TradeAccountContactsTablePartial", "TradeAccountContacts", new { Area = "trade-accounts" })*@
+
+                                    <div class="form-group row">
                                         <div class="col-xs-12">
                                             <button class="btn btn-blue pull-right" data-bind="click: addNewContact">
                                                 Add Contact
@@ -349,31 +350,31 @@
                                         <label class="contacts-group-header">
                                             Other
                                         </label>
-                                        <div class="contacts-group">-->
-                                            <!-- ko foreach: tradeAccountContactsOrderConfirmations -->
-                                            <!--<div class="trade-account-contact" data-bind="template: { name: 'trade-account-contact-template', data: $data }"></div>-->
-                                            <!-- /ko -->
-                                        <!--</div>
-                                        <div class="contacts-group">-->
-                                            <!-- ko foreach: tradeAccountContactsMarketing -->
-                                            <!--<div class="trade-account-contact" data-bind="template: { name: 'trade-account-contact-template', data: $data }"></div>-->
-                                            <!-- /ko -->
-                                        <!--</div>
-                                        <div class="contacts-group">-->
-                                            <!-- ko foreach: tradeAccountContactsFinancial -->
-                                            <!--<div class="trade-account-contact" data-bind="template: { name: 'trade-account-contact-template', data: $data }"></div>-->
-                                            <!-- /ko -->
-                                        <!--</div>
-                                        <div class="contacts-group">-->
-                                            <!-- ko foreach: tradeAccountContactsPricelists -->
-                                            <!--<div class="trade-account-contact" data-bind="template: { name: 'trade-account-contact-template', data: $data }"></div>-->
-                                            <!-- /ko -->
-                                        <!--</div>
-                                        <div class="contacts-group">-->
-                                            <!-- ko foreach: tradeAccountContactsOther -->
-                                            <!--<div class="trade-account-contact" data-bind="template: { name: 'trade-account-contact-template', data: $data }"></div>-->
-                                            <!-- /ko -->
-                                        <!--</div>
+										<div class="contacts-group">
+											<!-- ko foreach: tradeAccountContactsOrderConfirmations -->
+											<div class="trade-account-contact" data-bind="template: { name: 'trade-account-contact-template', data: $data }"></div>
+											<!-- /ko -->
+										</div>
+										<div class="contacts-group">
+											<!-- ko foreach: tradeAccountContactsMarketing -->
+											<div class="trade-account-contact" data-bind="template: { name: 'trade-account-contact-template', data: $data }"></div>
+											<!-- /ko -->
+										</div>
+										<div class="contacts-group">
+											<!-- ko foreach: tradeAccountContactsFinancial -->
+											<div class="trade-account-contact" data-bind="template: { name: 'trade-account-contact-template', data: $data }"></div>
+											<!-- /ko -->
+										</div>
+										<div class="contacts-group">
+											<!-- ko foreach: tradeAccountContactsPricelists -->
+											<div class="trade-account-contact" data-bind="template: { name: 'trade-account-contact-template', data: $data }"></div>
+											<!-- /ko -->
+										</div>
+										<div class="contacts-group">
+											<!-- ko foreach: tradeAccountContactsOther -->
+											<div class="trade-account-contact" data-bind="template: { name: 'trade-account-contact-template', data: $data }"></div>
+											<!-- /ko -->
+										</div>
                                     </div>
                                     <div class="row">
                                         <div class="col-xs-12">
@@ -381,7 +382,7 @@
                                                 Add Contact
                                             </button>
                                         </div>
-                                    </div>-->
+                                    </div>
                                 </div>
                                 <div id="summary-credit-control" class="tab-pane">
 

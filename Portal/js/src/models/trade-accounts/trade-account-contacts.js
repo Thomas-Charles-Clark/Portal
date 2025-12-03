@@ -176,7 +176,7 @@
         })
             .then(window.handleFetchResponse)
             .then(data => {
-                console.log('tradeAccountSearch calling with', data);
+                console.log('tradeAccountSearch returned', data);
                 self.busy(false);
                 self.dashboardPods(data.DashboardPods.map(p => tradeAccountContactsDashboardPodViewModel({
                     rec: p

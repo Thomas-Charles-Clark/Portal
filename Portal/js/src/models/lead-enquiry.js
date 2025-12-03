@@ -5135,28 +5135,28 @@ This customer wishes their deliveries to be consolidated. Please double check th
         }
     }
 
-  self.resetLeadToCreditControl = () => {
-    $.ajax({
-      url: '/api/leadsapi/ResetLeadToCreditControl',
-      type: 'post',
-      dataType: 'json',
-      cache: false,
-      data: {
-        leadId: self.leadId()
-      },
-      success: () => {
-        //self.loadLeadForEdit(self.leadId(), null, false);
-        window.setTimeout(() => {
-          self.parent.leadSearch.dashboardSelect();
-          self.leadSaveBusy(false);
-        }, 0);
-      },
-      error: (xhr, s, a) => {
-        self.leadSaveBusy(false);
-        $.showError(xhr, s, a);
-      }
-    });
-  }
+    self.resetLeadToCreditControl = () => {
+        $.ajax({
+            url: '/api/leadsapi/ResetLeadToCreditControl',
+            type: 'post',
+            dataType: 'json',
+            cache: false,
+            data: {
+            leadId: self.leadId()
+            },
+            success: () => {
+            //self.loadLeadForEdit(self.leadId(), null, false);
+            window.setTimeout(() => {
+                self.parent.leadSearch.dashboardSelect();
+                self.leadSaveBusy(false);
+            }, 0);
+            },
+            error: (xhr, s, a) => {
+            self.leadSaveBusy(false);
+            $.showError(xhr, s, a);
+            }
+        });
+    }
 
     self.reset = function (stayOpen) {
 
@@ -6332,14 +6332,14 @@ var miscCustomerSearch = function (parent) {
             data[propertyName] = params[propertyName];
         }
 
-        console.log('MiscCustomerSearch calling with', data);
+        console.log('miscCustomerSearch calling with', data);
 
         $.ajax({
             url: '/api/leadsAPI/MiscCustomerSearch',
             type: "GET",
             data: data,
             success: function (data) {
-                console.log('MiscCustomerSearch returned', data);
+                console.log('miscCustomerSearch returned', data);
 
                 options.success(data);
             },
@@ -7626,7 +7626,13 @@ var customerView = function () {
 
     self.selectedTradeAccountContacts = ko.observableArray([]);
 
+    self.addNewTradeAccountContact = () => {
+        console.log('not yet implemented');
+    }
 
+    self.removeTradeAccountContact = () => {
+        console.log('not yet implemented');
+    }
 
     //self.contactsiFrameSrc = ko.computed(() => {
     //    if (self.tradeAccount()) {
@@ -8179,7 +8185,7 @@ var customerView = function () {
                     $('#customer-modal').on('hide.bs.modal', self.reset);
                 }, 0);
 
-                self.selectedTradeAccountContacts(data.contacts.map(c => tradeAccountContactViewModel({
+                self.selectedTradeAccountContacts(data.contacts.map(c => oldTradeAccountContactViewModel({
                     rec: c
                 })));
 
@@ -9548,6 +9554,14 @@ var customerView = function () {
         columnHide: function (e) {
             self.totalsGridBusy(false);
         }
+    }
+
+    self.cancelTradeAccountContactsModal = () => {
+        console.log('not yet implemented');
+    }
+
+    self.saveTradeAccountContacts = () => {
+        console.log('not yet implemented');
     }
 
     // #endregion

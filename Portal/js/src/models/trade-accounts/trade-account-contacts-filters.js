@@ -42,6 +42,10 @@
     self.tradeAccountType = ko.observable();
     self.tradeAccountTypeAwaitingBinding = ko.observable(params.tradeAccountTypeId != null && params.tradeAccountTypeId != '');
 
+    self.tradeAccountTypeGroupId = ko.observable(params.tradeAccountTypeGroupId ?? '');
+    self.tradeAccountTypeGroup = ko.observable();
+    self.tradeAccountTypeGroupAwaitingBinding = ko.observable(params.tradeAccountTypeGroupId != null && params.tradeAccountTypeGroupId != '');
+
     self.tradeAccountGroupId = ko.observable(params.tradeAccountGroupId ?? '');
     self.tradeAccountGroup = ko.observable();
     self.tradeAccountGroupAwaitingBinding = ko.observable(params.tradeAccountGroupId != null && params.tradeAccountGroupId != '');
@@ -54,6 +58,10 @@
     self.paymentTermsType = ko.observable();
     self.paymentTermsTypeAwaitingBinding = ko.observable(params.paymentTermsTypeId != null && params.paymentTermsTypeId != '');
 
+    self.creditControllerId = ko.observable(params.creditController ?? '');
+    self.creditController = ko.observable();
+    self.creditControllerAwaitingBinding = ko.observable(params.creditControllerId != null && params.creditControllerId != '');
+
     self.creditStoppedId = ko.observable(params.creditStopped ?? '');
     self.creditStopped = ko.observable();
     self.creditStoppedAwaitingBinding = ko.observable(params.creditStoppedId != null && params.creditStoppedId != '');
@@ -64,6 +72,59 @@
 
 
     //#region Methods
+
+    self.genericUnsavedChangesClear = (e) => {
+        self.checkUnsavedChangesThenClear(e);
+    }
+
+    self.checkUnsavedChangesThenClear = async (options) => {
+        await self.unsavedChanges().then(() => {
+            var self = options; // self is now the params of the control the user just interacted with
+
+            if (ko.isObservableArray(self.observable)) {
+                self.observable([]);
+            } else {
+                self.observable('');
+            }
+            if (self.dropDownListSettings.widget()) {
+                if (ko.isObservableArray(self.observable)) {
+                    self.dropDownListSettings.widget().value([]);
+                } else {
+                    self.dropDownListSettings.widget().value('');
+                }
+                self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.getDefaultFoundation().adapter_.closeOutline();
+                if (self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.label_ != null)
+                    self.dropDownListSettings.widget()._widgetOptions.value.mdcSelect.label_.float(false);
+            }
+            if (typeof self.afterClear === 'function') {
+                self.afterClear();
+            }
+        }).catch((e) => {
+            console.error(e);
+        });
+    }
+
+    self.unsavedChanges = () => {
+        return new Promise((resolve, reject) => {
+
+            //let array = [{
+            //    unsavedChanges: () => false
+            //}];
+
+            let unsaved = false;// array.find(p => p.unsavedChanges());
+
+            if (unsaved) {
+                window.showConfirm('Unsaved changes', 'You have unsaved changes. If you proceed your changes will be lost. Proceed?', () => {
+                    resolve();
+                }, () => {
+                    reject();
+                });
+            } else {
+                resolve();
+            }
+        });
+    }
+
 
     self.generateTradeAccountSuperSetParameterMap = (defaultODataOperation) => {
         return (data) => {
@@ -91,6 +152,8 @@
             let paymentTermsTypeId = null;
             let creditStoppedId = null;
             let tradeAccountTypeId = null;
+            let tradeAccountTypeGroupId = null;
+            let creditControllerId = null;
 
             if (defaultOp.indexOf("SalesMarketID") == -1) {
                 salesMarketIds = self.salesMarketIds();
@@ -146,10 +209,22 @@
                 creditStoppedId = self.creditStoppedId.peek();
             }
 
+            if (defaultOp.indexOf("CreditController") == -1) {
+                creditControllerId = self.creditControllerId();
+            } else {
+                creditControllerId = self.creditControllerId.peek();
+            }
+
             if (defaultOp.indexOf("TradeAccountTypeID") == -1) {
                 tradeAccountTypeId = self.tradeAccountTypeId();
             } else {
                 tradeAccountTypeId = self.tradeAccountTypeId.peek();
+            }
+
+            if (defaultOp.indexOf("TradeAccountTypeGroupID") == -1) {
+                tradeAccountTypeGroupId = self.tradeAccountTypeGroupId();
+            } else {
+                tradeAccountTypeGroupId = self.tradeAccountTypeGroupId.peek();
             }
 
             // product table map LatestCollectionID...
@@ -214,15 +289,19 @@
             }
 
             if (defaultOp.indexOf('CreditStopped') == -1 && creditStoppedId != '') {
-                //if (defaultOp != 'TRADEACCOUNT') {
                 filters.push(`CreditStopped eq ${creditStoppedId}`);
-                //} else {
-                //    filters.push(`CreditStopped eq ${creditStoppedId}`);
-                //}
+            }
+
+            if (defaultOp.indexOf('CreditController') == -1 && creditControllerId != '') {
+                filters.push(`CreditController eq ${creditControllerId}`);
             }
 
             if (defaultOp.indexOf('TradeAccountTypeID') == -1 && tradeAccountTypeId != '') {
                 filters.push(`TradeAccountTypeID eq ${tradeAccountTypeId}`);
+            }
+
+            if (defaultOp.indexOf('TradeAccountTypeGroupID') == -1 && tradeAccountTypeGroupId != '') {
+                filters.push(`TradeAccountTypeGroupID eq ${tradeAccountTypeGroupId}`);
             }
 
             if (defaultOp == 'TRADEACCOUNT') {
@@ -341,13 +420,15 @@
                 },
                 requestEnd: (data) => {
                     //console.log("salesMarketsParams.multiSelectSettings.dataSource.requestEnd", data);
-                    self.availableSalesMarkets(data.response.value.map(d => {
-                        return {
-                            disabled: false,
-                            value: d.SalesMarket.SalesMarketID,
-                            label: d.SalesMarket.Name
-                        }
-                    }));
+                    if (Object.hasOwn(data, 'response') && Object.hasOwn(data.response, 'value')) {
+                        self.availableSalesMarkets(data.response.value.map(d => {
+                            return {
+                                disabled: false,
+                                value: d.SalesMarket.SalesMarketID,
+                                label: d.SalesMarket.Name
+                            }
+                        }));
+                    }
                 }
             }),
             options: self.availableSalesMarkets
@@ -405,7 +486,6 @@
         },
         select: function (e) {
             console.log('salesRepresentativeParams select', e);
-            self.tradeAccountComputer.valueHasMutated();
         },
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => self.salesRepresentativeAwaitingBinding(false),
@@ -459,7 +539,6 @@
         },
         select: function (e) {
             console.log('salesAgentParams select', e);
-            self.tradeAccountComputer.valueHasMutated();
         },
         requestStart: function (e) {
             if (!self.cascadeEnabled)
@@ -518,7 +597,6 @@
         },
         select: function (e) {
             console.log('salesAreaParams select', e);
-            self.tradeAccountComputer.valueHasMutated();
         },
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => self.salesAreaAwaitingBinding(false),
@@ -573,7 +651,6 @@
         },
         select: function (e) {
             console.log('countryParams select', e);
-            self.tradeAccountComputer.valueHasMutated();
         },
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => self.countryAwaitingBinding(false),
@@ -627,13 +704,65 @@
         },
         select: function (e) {
             console.log('tradeAccountType select', e);
-            self.tradeAccountComputer.valueHasMutated();
         },
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => self.tradeAccountTypeAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.tradeAccountTypeGroupBy),
         popupSettings: {
             appendTo: document.getElementById('trade-account-type-prefilter')
+        }
+    });
+
+    self.tradeAccountTypeGroupGroupBy = `groupby((TradeAccountTypeGroup/TradeAccountTypeGroupID,TradeAccountTypeGroup/Name))/filter((TradeAccountTypeGroup/TradeAccountTypeGroupID ne null))`;
+
+    self.tradeAccountTypeGroupTemplate = (e) => {
+        if (e.TradeAccountTypeGroup && e.TradeAccountTypeGroup.TradeAccountTypeGroupID && e.TradeAccountTypeGroup.Name) {
+            return `<span title="${e.TradeAccountTypeGroup.Name}">${e.TradeAccountTypeGroup.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.tradeAccountTypeGroupValueTemplate = (e) => {
+        if (e.TradeAccountTypeGroup && e.TradeAccountTypeGroup.TradeAccountTypeGroupID && e.TradeAccountTypeGroup.Name) {
+            return `<span title="${e.TradeAccountTypeGroup.Name}">Trade Account Type Group: ${e.TradeAccountTypeGroup.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.tradeAccountTypeGroupParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Trade Account Type Group',
+        odata: true,
+        endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        textField: 'TradeAccountTypeGroup.Name',
+        valueField: 'TradeAccountTypeGroup.TradeAccountTypeGroupID',
+        template: self.tradeAccountTypeGroupTemplate,
+        valueTemplate: self.tradeAccountTypeValueGroupTemplate,
+        idObservable: self.tradeAccountTypeGroupId,
+        objObservable: self.tradeAccountTypeGroup,
+        locked: ko.observable(self.tradeAccountTypeGroupId() != ''),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'TradeAccountTypeGroup.Name'
+        },
+        select: function (e) {
+            console.log('tradeAccountTypeGroup select', e);
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => self.tradeAccountTypeGroupAwaitingBinding(false),
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.tradeAccountTypeGroupGroupBy),
+        popupSettings: {
+            appendTo: document.getElementById('trade-account-type-group-prefilter')
         }
     });
 
@@ -681,7 +810,6 @@
         },
         select: function (e) {
             console.log('tradeAccountGroup select', e);
-            self.tradeAccountComputer.valueHasMutated();
         },
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => self.tradeAccountGroupAwaitingBinding(false),
@@ -735,7 +863,6 @@
         },
         select: function (e) {
             console.log('paymentTerms select', e);
-            self.tradeAccountComputer.valueHasMutated();
         },
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => self.paymentTermsAwaitingBinding(false),
@@ -789,13 +916,65 @@
         },
         select: function (e) {
             console.log('paymentTermsType select', e);
-            self.tradeAccountComputer.valueHasMutated();
         },
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => self.paymentTermsTypeAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.paymentTermsTypeGroupBy),
         popupSettings: {
             appendTo: document.getElementById('payment-terms-type-prefilter')
+        }
+    });
+
+    self.creditControllerGroupBy = `groupby((CreditController/Code,CreditController/Name))/filter((CreditController/Code ne null))`;
+
+    self.creditControllerTemplate = (e) => {
+        if (e.CreditController && e.CreditController.Code && e.CreditController.Name) {
+            return `<span title="${e.CreditController.Name}">${e.CreditController.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.creditControllerValueTemplate = (e) => {
+        if (e.CreditController && e.CreditController.Code && e.CreditController.Name) {
+            return `<span title="${e.CreditController.Name}">Credit Controller: ${e.CreditController.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.creditControllerParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Credit Controller',
+        odata: true,
+        endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        textField: 'CreditController.Name',
+        valueField: 'CreditController.Code',
+        template: self.creditControllerTemplate,
+        valueTemplate: self.creditControllerValueTemplate,
+        idObservable: self.creditControllerId,
+        objObservable: self.creditController,
+        locked: ko.observable(self.creditControllerId() != ''),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'CreditController.Name'
+        },
+        select: function (e) {
+            console.log('creditController select', e);
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => self.creditControllerAwaitingBinding(false),
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.creditControllerGroupBy),
+        popupSettings: {
+            appendTo: document.getElementById('credit-controller-prefilter')
         }
     });
 
@@ -825,7 +1004,6 @@
         autoBind: true,
         select: function (e) {
             console.log('creditStopped select', e);
-            self.tradeAccountComputer.valueHasMutated();
         },
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => self.creditStoppedAwaitingBinding(false),
@@ -867,6 +1045,8 @@
             paymentTermsId: self.paymentTermsId(),
             paymentTermsTypeId: self.paymentTermsTypeId(),
             creditStopped: self.creditStopped(),
+            creditControllerCode: self.creditControllerId(),
+            tradeAccountTypeGroupId: self.tradeAccountTypeGroupId(),
             open: true,
             searchTerm: null
         };

@@ -166,9 +166,11 @@ namespace SharedEFClasses.Models
                 dto.CountryID,
                 dto.TradeAccountGroupID,
                 dto.TradeAccountTypeID,
+                dto.TradeAccountTypeGroupID,
                 dto.PaymentTermsID,
                 dto.PaymentTermsTypeID,
                 dto.CreditStopped,
+                dto.CreditControllerCode,
                 dto.Open,
                 dto.SearchTerm
             }, null, 30, CommandType.StoredProcedure);

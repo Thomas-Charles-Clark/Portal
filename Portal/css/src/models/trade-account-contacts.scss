@@ -11,7 +11,8 @@
 	}
 
 	#trade-account-contacts-prefilters {
-		display: flex;
+		display: grid;
+		grid-template-columns: repeat(6, 1fr);
 		gap: $l-gutter;
 		margin: 0;
 		padding: 0;
@@ -19,23 +20,10 @@
 		flex-wrap: wrap;
 
 		.prefilter {
-			flex: 1 0 calc(20% - calc(4 * $l-gutter));
 			position: relative;
 
 			.mdc-validating-field {
 				flex: 1;
-
-				> .mdc-select--selected {
-					.k-dropdown-wrap {
-						> span.k-input {
-							background-color: $blue-100;
-						}
-					}
-				}
-
-				.date-select--selected {
-					background-color: $blue-100;
-				}
 			}
 
 			.bi-lock-fill {
@@ -248,6 +236,11 @@
 
 			.card-body {
 
+				&.alert {
+					margin-bottom: 0;
+					border: 0;
+					border-radius: $border-radius;
+				}
 
 				h4 {
 					font-weight: bold;
