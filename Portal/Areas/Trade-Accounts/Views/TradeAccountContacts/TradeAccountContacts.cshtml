@@ -16,6 +16,25 @@
 	@Scripts.Render("~/bundles/js/generic-forms")
 	@Scripts.Render("~/bundles/js/tempus-dominus")
 	@Scripts.Render("~/bundles/js/trade-account-contacts")
+
+	@if (Model.MustInitialiseClientModelInPartial == false)
+	{
+		<script type="text/javascript">
+
+			var viewModel = tradeAccountContactsViewModel();
+
+			ko.options.deferUpdates = true;
+
+			ko.validation.init({
+				decorateInputElement: true,
+				errorElementClass: 'alert-danger',
+				errorMessageClass: 'validation-message text-danger'
+			});
+
+			ko.applyBindings(viewModel, document.body);
+
+		</script>
+	}
 }
 @section modals {
 

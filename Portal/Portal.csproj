@@ -3074,7 +3074,7 @@
     <Content Include="css\src\models\advertiser-maintenance.scss" />
     <Content Include="css\src\models\documents-sent-report.scss" />
     <Content Include="css\src\lib\prettify\sunburst.scss" />
-    <Content Include="css\src\models\statements.scss" />
+    <Content Include="css\src\models\credit-control.scss" />
     <Content Include="css\src\models\trade-account-contacts.scss" />
     <Content Include="css\src\models\trade-account-contacts-widener.scss" />
     <None Include="Libraries\MertexerV2.dll">

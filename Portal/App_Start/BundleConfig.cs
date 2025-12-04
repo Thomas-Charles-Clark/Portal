@@ -429,8 +429,9 @@ namespace Portal
             ));
 
             bundles.Add(new StyleBundle("~/bundles/css/credit-control").Include(
-                    $"{cssPrefix}/models/credit-control{cssSuffix}"
-            ));
+                    $"{cssPrefix}/models/credit-control{cssSuffix}",
+					$"{cssPrefix}/models/trade-account-contacts-widener{cssSuffix}"
+			));
 
 			bundles.Add(new StyleBundle("~/bundles/css/trade-account-contacts").Include(
 					$"{cssPrefix}/models/trade-account-contacts{cssSuffix}"

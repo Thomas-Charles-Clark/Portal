@@ -312,6 +312,7 @@
 }
 .trade-account-contacts-table {
 	border-top: 1px solid $white;
+	margin-bottom: 0;
 
 	colgroup {
 		.mw-l {
@@ -412,5 +413,28 @@
 
 		&.other-trade-account-associations-subheader {
 		}
+	}
+}
+
+.contacts-table-wrapper {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: $l-gutter;
+
+	.contact-details-table-wrapper {
+		width: 640px;
+		display: flex;
+		align-items: flex-end;
+		padding-bottom: 15px;
+		table {
+			td {
+				height: 58px;
+			}
+		}
+	}
+
+	.contact-b2b-preferences-table-wrapper {
+		width: auto;
+		overflow-x: scroll;
 	}
 }

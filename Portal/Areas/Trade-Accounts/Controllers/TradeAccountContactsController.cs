@@ -47,7 +47,8 @@ namespace Portal.Areas.Customers.Controllers
 			var model = new TradeAccountContactsViewModel(
 				user.GetActiveRoleProperties(),
 				application.Heading,
-				application.SubHeading);
+				application.SubHeading,
+				true);
 
 			return PartialView(viewName: "_TradeAccountContactsPartial", model);
 		}

@@ -12,22 +12,26 @@ namespace Portal.Areas.TradeAccounts.ViewModels
 {
 	public class TradeAccountContactsViewModel : BaseViewModel
 	{
-		public TradeAccountContactsViewModel(RoleProperties properties, string applicationHeading, string applicationSubHeading)
+		public bool MustInitialiseClientModelInPartial { get; set; }
+
+		public TradeAccountContactsViewModel(RoleProperties properties, string applicationHeading, string applicationSubHeading,
+			bool mustInitialiseClientModelInPartial = false)
 			: base(properties,
 				   applicationHeading,
 				   applicationSubHeading)
 		{
-
+			MustInitialiseClientModelInPartial = mustInitialiseClientModelInPartial;
 		}
 
 		public static async Task<TradeAccountContactsViewModel> CreateAsync(
 			RoleProperties properties,
 			string applicationHeading,
-			string applicationSubHeading)
+			string applicationSubHeading,
+			bool mustInitialiseClientModelInPartial = false)
 		{
 			var portalDb = new PortalDbContext();
 
-			var result = new TradeAccountContactsViewModel(properties, applicationHeading, applicationSubHeading);
+			var result = new TradeAccountContactsViewModel(properties, applicationHeading, applicationSubHeading, mustInitialiseClientModelInPartial);
 
 			return result;
 		}

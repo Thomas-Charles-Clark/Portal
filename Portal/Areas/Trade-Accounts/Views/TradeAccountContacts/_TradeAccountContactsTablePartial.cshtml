@@ -1,202 +1,220 @@
 @model Portal.Areas.TradeAccounts.ViewModels.TradeAccountContactsViewModel
 @Styles.Render("~/bundles/css/trade-account-contacts")
-<table class="table table-bordered table-condensed trade-account-contacts-table">
-	<colgroup>
-		<col class="mw-l" />
-		<col class="mw-l" />
-		<col class="mw-l" />
-		<col class="" />
-		<col class="" />
-		<col class="" />
-		<col class="" />
-		<col class="" />
-		<col class="mw-m" />
-		<col class="" />
-		<col class="" />
-		<col class="" />
-		<col class="" />
-		<col class="" />
-		<col class="" />
-		<col class="" />
-		<col class="" />
-		<col class="" />
-		<col class="" />
-		<col class="" />
-		<col class="" />
-		<col class="" />
-	</colgroup>
-	<thead>
-		<tr>
-			<th colspan="3" class="no-borders"></th>
-			<th class="no-borders"></th>
-			<th colspan="7" class="b2b-permissions-header">
-				B2B Permissions
-			</th>
-			<th class="no-borders"></th>
-			<th colspan="8" class="communication-preferences-header">
-				Communication Preferences
-			</th>
-			<th class="no-borders"></th>
-			<th class="no-borders"></th>
-		</tr>
-		<tr>
-			<th class="errata-subheader">
-				Name
-			</th>
-			<th class="errata-subheader">
-				Email
-			</th>
-			<th class="errata-subheader">
-				Phone
-			</th>
-			<th class="no-borders"></th>
-			<th class="b2b-permissions-subheader">
-				Setup Complete
-			</th>
-			<th class="b2b-permissions-subheader">
-				Account Admin
-			</th>
-			<th class="b2b-permissions-subheader">
-				Place Order
-			</th>
-			<th class="b2b-permissions-subheader">
-				Request Sample
-			</th>
-			<th class="b2b-permissions-subheader">
-				View Accounts
-			</th>
-			<th class="b2b-permissions-subheader">
-				Download Pricelists &amp; Brochures
-			</th>
-			<th class="b2b-permissions-subheader">
-				Download Product Feeds
-			</th>
-			<th class="no-borders"></th>
-			<th class="communication-preferences-subheader">
-				Order Notifications
-			</th>
-			<th class="communication-preferences-subheader">
-				Delivery Notifications
-			</th>
-			<th class="communication-preferences-subheader">
-				Invoices
-			</th>
-			<th class="communication-preferences-subheader">
-				Credit Notes
-			</th>
-			<th class="communication-preferences-subheader">
-				Statements of Account &amp; Payment Requests
-			</th>
-			<th class="communication-preferences-subheader">
-				Proof of Delivery
-			</th>
-			<th class="communication-preferences-subheader">
-				Pricelists
-			</th>
-			<th class="communication-preferences-subheader">
-				Sales, Marketing &amp; Promotions
-			</th>
-			<th class="no-borders"></th>
-			<th class="errata-subheader">
-				Other Trade Account Associations
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-		<!-- ko foreach: selectedTradeAccountContacts -->
-		<tr>
-			<td tabindex="0">
-				<div class="d-flex justify-content-between align-items-center">
-					<!-- ko if: editingFullName -->
-					<input class="form-control" type="text" data-bind="keepElement: fullName, textInput: fullName, event: { blur: toggleEditingFullName }" />
-					<!-- /ko -->
-					<!-- ko ifnot: editingFullName -->
-					<span data-bind="text: fullName"></span>
-					<i class="bi bi-pencil pointer" data-bind="click: toggleEditingFullName"></i>
-					<!-- /ko -->
-				</div>
-			</td>
-			<td tabindex="0">
-				<div class="d-flex justify-content-between align-items-center">
-					<!-- ko if: editingEmail -->
-					<input class="form-control" type="email" data-bind="keepElement: email, textInput: email, event: { blur: toggleEditingEmail }" />
-					<!-- /ko -->
-					<!-- ko ifnot: editingEmail -->
-					<a class="contact-email" data-bind="text: email, attr: { href: `mailto:${ko.unwrap(email)}` }"></a>
-					<i class="bi bi-pencil pointer" data-bind="click: toggleEditingEmail"></i>
-					<!-- /ko -->
-				</div>
-			</td>
-			<td tabindex="0">
-				<div class="d-flex justify-content-between align-items-center">
-					<!-- ko if: editingPhone -->
-					<input class="form-control" type="text" data-bind="keepElement: phone, textInput: phone, event: { blur: toggleEditingPhone }" />
-					<!-- /ko -->
-					<!-- ko ifnot: editingPhone -->
-					<a class="contact-phone" data-bind="text: phone, attr: { href: `tel:${ko.unwrap(phone)}` }"></a>
-					<i class="bi bi-pencil pointer" data-bind="click: toggleEditingPhone"></i>
-					<!-- /ko -->
-				</div>
-			</td>
-			<td class="no-borders"></td>
-			<td class="bg-trade-permissions">
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountRegistrationCompleteParams }"></div>
-			</td>
-			<td class="bg-trade-permissions">
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionAccountAdminParams }"></div>
-			</td>
-			<td class="bg-trade-permissions">
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionPlaceOrderParams }"></div>
-			</td>
-			<td class="bg-trade-permissions">
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionRequestSampleParams }"></div>
-			</td>
-			<td class="bg-trade-permissions">
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionViewAccountsParams }"></div>
-			</td>
-			<td class="bg-trade-permissions">
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionDownloadPricelistsBrochuresParams }"></div>
-			</td>
-			<td class="bg-trade-permissions">
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionDownloadProductFeedsParams }"></div>
-			</td>
-			<td class="no-borders"></td>
-			<td>
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_OrderNotificationsParams }"></div>
-			</td>
-			<td>
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_DeliveryNotificationsParams }"></div>
-			</td>
-			<td>
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_InvoicesParams }"></div>
-			</td>
-			<td>
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_CreditNotesParams }"></div>
-			</td>
-			<td>
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_StatementsOfAccountAndPaymentRequestsParams }"></div>
-			</td>
-			<td>
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_ProofOfDeliveryParams }"></div>
-			</td>
-			<td>
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_PriceListsParams }"></div>
-			</td>
-			<td>
-				<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_SalesMarketingAndPromotionalInformationParams }"></div>
-			</td>
-			<td class="no-borders text-center">
-				<button type="button" class="btn" data-bind="click: $parent.removeTradeAccountContact" title="Remove">
-					<i class="bi bi-trash3 fs-4"></i>
-				</button>
-			</td>
-			<td>
-				<span data-bind="text: otherTradeAccountAssociations"></span>
-			</td>
-		</tr>
-		<!-- /ko -->
-	</tbody>
-</table>
+<div class="contacts-table-wrapper">
+	<div class="contact-details-table-wrapper">
+		<table class="table table-bordered table-condensed trade-account-contacts-table">
+			<colgroup>
+				<col class="mw-l" />
+				<col class="mw-l" />
+				<col class="mw-l" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th colspan="3" class="no-borders"></th>
+				</tr>
+				<tr>
+					<th class="errata-subheader">
+						Name
+					</th>
+					<th class="errata-subheader">
+						Email
+					</th>
+					<th class="errata-subheader">
+						Phone
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- ko foreach: selectedTradeAccountContacts -->
+				<tr>
+					<td tabindex="0">
+						<div class="d-flex justify-content-between align-items-center">
+							<!-- ko if: editingFullName -->
+							<input class="form-control" type="text" data-bind="keepElement: fullName, textInput: fullName, event: { blur: toggleEditingFullName }" />
+							<!-- /ko -->
+							<!-- ko ifnot: editingFullName -->
+							<span data-bind="text: fullName"></span>
+							<i class="bi bi-pencil pointer" data-bind="click: toggleEditingFullName"></i>
+							<!-- /ko -->
+						</div>
+					</td>
+					<td tabindex="0">
+						<div class="d-flex justify-content-between align-items-center">
+							<!-- ko if: editingEmail -->
+							<input class="form-control" type="email" data-bind="keepElement: email, textInput: email, event: { blur: toggleEditingEmail }" />
+							<!-- /ko -->
+							<!-- ko ifnot: editingEmail -->
+							<a class="contact-email" data-bind="text: email, attr: { href: `mailto:${ko.unwrap(email)}` }"></a>
+							<i class="bi bi-pencil pointer" data-bind="click: toggleEditingEmail"></i>
+							<!-- /ko -->
+						</div>
+					</td>
+					<td tabindex="0">
+						<div class="d-flex justify-content-between align-items-center">
+							<!-- ko if: editingPhone -->
+							<input class="form-control" type="text" data-bind="keepElement: phone, textInput: phone, event: { blur: toggleEditingPhone }" />
+							<!-- /ko -->
+							<!-- ko ifnot: editingPhone -->
+							<a class="contact-phone" data-bind="text: phone, attr: { href: `tel:${ko.unwrap(phone)}` }"></a>
+							<i class="bi bi-pencil pointer" data-bind="click: toggleEditingPhone"></i>
+							<!-- /ko -->
+						</div>
+					</td>
+				</tr>
+				<!-- /ko -->
+			</tbody>
+		</table>
+	</div>
+	<div class="contact-b2b-preferences-table-wrapper">
+		<table class="table table-bordered table-condensed trade-account-contacts-table">
+			<colgroup>
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="mw-m" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th colspan="8" class="communication-preferences-header">
+						Communication Preferences
+					</th>
+					<th class="no-borders"></th>
+					<th colspan="7" class="b2b-permissions-header">
+						B2B Permissions
+					</th>
+					<th class="no-borders"></th>
+					<th class="no-borders"></th>
+				</tr>
+				<tr>
+					<th class="communication-preferences-subheader">
+						Order Notifications
+					</th>
+					<th class="communication-preferences-subheader">
+						Delivery Notifications
+					</th>
+					<th class="communication-preferences-subheader">
+						Invoices
+					</th>
+					<th class="communication-preferences-subheader">
+						Credit Notes
+					</th>
+					<th class="communication-preferences-subheader">
+						Statements of Account &amp; Payment Requests
+					</th>
+					<th class="communication-preferences-subheader">
+						Proof of Delivery
+					</th>
+					<th class="communication-preferences-subheader">
+						Pricelists
+					</th>
+					<th class="communication-preferences-subheader">
+						Sales, Marketing &amp; Promotions
+					</th>
+					<th class="no-borders"></th>
+					<th class="b2b-permissions-subheader">
+						Setup Complete
+					</th>
+					<th class="b2b-permissions-subheader">
+						Account Admin
+					</th>
+					<th class="b2b-permissions-subheader">
+						Place Order
+					</th>
+					<th class="b2b-permissions-subheader">
+						Request Sample
+					</th>
+					<th class="b2b-permissions-subheader">
+						View Accounts
+					</th>
+					<th class="b2b-permissions-subheader">
+						Download Pricelists &amp; Brochures
+					</th>
+					<th class="b2b-permissions-subheader">
+						Download Product Feeds
+					</th>
+					<th class="no-borders"></th>
+					<th class="errata-subheader">
+						Other Trade Account Associations
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- ko foreach: selectedTradeAccountContacts -->
+				<tr>
+					<td>
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_OrderNotificationsParams }"></div>
+					</td>
+					<td>
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_DeliveryNotificationsParams }"></div>
+					</td>
+					<td>
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_InvoicesParams }"></div>
+					</td>
+					<td>
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_CreditNotesParams }"></div>
+					</td>
+					<td>
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_StatementsOfAccountAndPaymentRequestsParams }"></div>
+					</td>
+					<td>
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_ProofOfDeliveryParams }"></div>
+					</td>
+					<td>
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_PriceListsParams }"></div>
+					</td>
+					<td>
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_SalesMarketingAndPromotionalInformationParams }"></div>
+					</td>
+					<td class="no-borders"></td>
+					<td class="bg-trade-permissions">
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountRegistrationCompleteParams }"></div>
+					</td>
+					<td class="bg-trade-permissions">
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionAccountAdminParams }"></div>
+					</td>
+					<td class="bg-trade-permissions">
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionPlaceOrderParams }"></div>
+					</td>
+					<td class="bg-trade-permissions">
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionRequestSampleParams }"></div>
+					</td>
+					<td class="bg-trade-permissions">
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionViewAccountsParams }"></div>
+					</td>
+					<td class="bg-trade-permissions">
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionDownloadPricelistsBrochuresParams }"></div>
+					</td>
+					<td class="bg-trade-permissions">
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionDownloadProductFeedsParams }"></div>
+					</td>
+					<td class="no-borders text-center">
+						<button type="button" class="btn" data-bind="click: $parent.removeTradeAccountContact" title="Remove">
+							<i class="bi bi-trash3 fs-4"></i>
+						</button>
+					</td>
+					<td>
+						<span data-bind="text: otherTradeAccountAssociations"></span>
+					</td>
+				</tr>
+				<!-- /ko -->
+			</tbody>
+		</table>
+	</div>
+</div>
 <div class="d-flex gap-3">
 	<button type="button" class="btn btn-success me-auto" data-bind="click: addNewTradeAccountContact">
 		Add Contact

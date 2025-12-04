@@ -68,7 +68,7 @@
 		</td>
 	</tr>
 </script>
-<div class="modal fade" id="trade-account-contacts-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" data-bind="stopBinding">
+<div class="modal fade" id="trade-account-contacts-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" @(Model.MustInitialiseClientModelInPartial == false ? "" : "data-bind=\"stopBinding\"")>
 	<div class="modal-dialog" id="trade-account-contacts-modal-dialog">
 		<div class="modal-content">
 			<div class="blocker" data-bind="flexFadeVisible: busy">
@@ -88,7 +88,7 @@
 		</div>
 	</div>
 </div>
-<div data-bind="stopBinding">
+<div @(Model.MustInitialiseClientModelInPartial == false ? "" : "data-bind=\"stopBinding\"")>
 	<div class="tab-content" id="trade-account-contacts-tabs-content">
 		<div class="blocker" data-bind="flexFadeVisible: busy">
 			<div class="loading-spinner"></div>
@@ -121,37 +121,41 @@
 		</div>
 	</div>
 </div>
-<script type="text/javascript">
 
-	window.initialiseTradeAccountContacts = () => {
-		if (!ko.components.isRegistered('mdc-checkbox-component')) {
-			ko.components.register('mdc-checkbox-component', {
-				template: { element: document.getElementById('mdc-checkbox-component') }
+@if (Model.MustInitialiseClientModelInPartial == true)
+{
+	<script type="text/javascript">
+
+		window.initialiseTradeAccountContacts = () => {
+			if (!ko.components.isRegistered('mdc-checkbox-component')) {
+				ko.components.register('mdc-checkbox-component', {
+					template: { element: document.getElementById('mdc-checkbox-component') }
+				});
+			}
+
+			var tac = tradeAccountContactsViewModel();
+
+			ko.options.deferUpdates = true;
+
+			ko.validation.init({
+				decorateInputElement: true,
+				errorElementClass: 'alert-danger',
+				errorMessageClass: 'validation-message text-danger'
 			});
+
+			ko.applyBindings(tac, document.getElementById('trade-account-contacts-tabs-content'));
+			ko.applyBindings(tac, document.getElementById('trade-account-contacts-modal-dialog'));
+
+			window.tac = tac;
 		}
 
-		var tac = tradeAccountContactsViewModel();
-
-		ko.options.deferUpdates = true;
-
-		ko.validation.init({
-			decorateInputElement: true,
-			errorElementClass: 'alert-danger',
-			errorMessageClass: 'validation-message text-danger'
-		});
-
-		ko.applyBindings(tac, document.getElementById('trade-account-contacts-tabs-content'));
-		ko.applyBindings(tac, document.getElementById('trade-account-contacts-modal-dialog'));
-
-		window.tac = tac;
-	}
-
-	if (document.readyState == 'loading') {
-		window.addEventListener('load', event => {
+		if (document.readyState == 'loading') {
+			window.addEventListener('load', event => {
+				window.initialiseTradeAccountContacts();
+			});
+		} else {
 			window.initialiseTradeAccountContacts();
-		});
-	} else {
-		window.initialiseTradeAccountContacts();
-	}
+		}
 
-</script>
+	</script>
+}

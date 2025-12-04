@@ -454,6 +454,7 @@
 
 .trade-account-contacts-table {
   border-top: 1px solid #fff;
+  margin-bottom: 0;
 }
 .trade-account-contacts-table colgroup .mw-l {
   min-width: 200px;
@@ -521,5 +522,23 @@
 }
 .trade-account-contacts-table td.other-trade-account-associations-header, .trade-account-contacts-table th.other-trade-account-associations-header {
   background-color: #ced4da;
+}
+.contacts-table-wrapper {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+}
+.contacts-table-wrapper .contact-details-table-wrapper {
+  width: 640px;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 15px;
+}
+.contacts-table-wrapper .contact-details-table-wrapper table td {
+  height: 58px;
+}
+.contacts-table-wrapper .contact-b2b-preferences-table-wrapper {
+  width: auto;
+  overflow-x: scroll;
 }
 /*# sourceMappingURL=trade-account-contacts.css.map */

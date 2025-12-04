@@ -540,10 +540,6 @@
         select: function (e) {
             console.log('salesAgentParams select', e);
         },
-        requestStart: function (e) {
-            if (!self.cascadeEnabled)
-                e.preventDefault();
-        },
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => self.salesAgentAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.salesAgentGroupBy),
@@ -1045,7 +1041,7 @@
             paymentTermsId: self.paymentTermsId(),
             paymentTermsTypeId: self.paymentTermsTypeId(),
             creditStopped: self.creditStopped(),
-            creditControllerCode: self.creditControllerId(),
+            creditControllerCode: self.creditControllerId() == "" ? null : self.creditControllerId(), // contol holds empty string if nothing selected; can't pass CreditControllerCode = N'' to the procedure; demands an empty test here
             tradeAccountTypeGroupId: self.tradeAccountTypeGroupId(),
             open: true,
             searchTerm: null
