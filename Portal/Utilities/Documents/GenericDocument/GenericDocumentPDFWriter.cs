@@ -95,7 +95,7 @@ namespace Portal.Utilities.Document
 
             var footerBoldFont = FontFactory.GetFont("Arial", standardSize - 2, Font.BOLD, BaseColor.BLACK);
 
-            System.Drawing.Image dgImage = System.Drawing.Image.FromFile(AppDomain.CurrentDomain.BaseDirectory + "/Content/Images/Logos/designers-guild.jpg");
+            System.Drawing.Image dgImage = System.Drawing.Image.FromFile(AppDomain.CurrentDomain.BaseDirectory + $"/Content/Images/Logos/{inputWrapper?.Document?.DocumentPreHeader?.LogoFileName ?? "designers-guild.jpg"}");
 
             Image dgLogo = Image.GetInstance(dgImage, System.Drawing.Imaging.ImageFormat.Jpeg);
 

@@ -1,47 +1,51 @@
 ﻿<!DOCTYPE html>
 <html lang="en-gb">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Designers Guild</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>@ViewBag.Title - Designers Guild</title>
 
-    @Styles.Render("~/bundles/css/master-5.3.1")
+	@Styles.Render("~/bundles/css/master-5.3.1")
 
-    @Styles.Render("~/bundles/css/mdc-custom")
+	@Styles.Render("~/bundles/css/mdc-custom")
 
-    @Scripts.Render("~/bundles/js/kendo-modernizr")
+	@Scripts.Render("~/bundles/js/kendo-modernizr")
 
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Material+Icons|Material+Icons+Sharp|Material+Icons+Outlined|Maven+Pro:400,500,700" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&icon_names=forward,outgoing_mail&display=inline-block" rel="stylesheet" />
-    <script src="https://kit.fontawesome.com/f14d33a7ec.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js?skin=desert"></script>
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Material+Icons|Material+Icons+Sharp|Material+Icons+Outlined|Maven+Pro:400,500,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&icon_names=forward,outgoing_mail&display=inline-block" rel="stylesheet" />
+	<script src="https://kit.fontawesome.com/f14d33a7ec.js" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js?skin=desert"></script>
 
-    @Scripts.Render("~/bundles/js/jquery")
-    @Scripts.Render("~/bundles/js/popper")
-    @Scripts.Render("~/bundles/js/global-new")
-    @Scripts.Render("~/signalr/hubs")
+	@Scripts.Render("~/bundles/js/jquery")
+	@Scripts.Render("~/bundles/js/popper")
+	@Scripts.Render("~/bundles/js/global-new")
+	@Scripts.Render("~/signalr/hubs")
 
-    <link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.common-bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.mobile.all.min.css" rel="stylesheet" type="text/css" />
-    <link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://kendo.cdn.telerik.com/2018.3.1017/js/jszip.min.js"></script>
+	<link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.common-bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.mobile.all.min.css" rel="stylesheet" type="text/css" />
+	<link href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<script src="https://kendo.cdn.telerik.com/2018.3.1017/js/jszip.min.js"></script>
 
-    @Scripts.Render("~/bundles/js/kendo")
+	@Scripts.Render("~/bundles/js/kendo")
 
-    <script src="https://kendo.cdn.telerik.com/2018.3.1017/js/kendo.aspnetmvc.min.js"></script>
-    <script src="https://kendo.cdn.telerik.com/2018.3.1017/js/cultures/kendo.culture.en-GB.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/material-components-web/3.2.0/material-components-web.min.js"></script>
+	<script src="https://kendo.cdn.telerik.com/2018.3.1017/js/kendo.aspnetmvc.min.js"></script>
+	<script src="https://kendo.cdn.telerik.com/2018.3.1017/js/cultures/kendo.culture.en-GB.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/material-components-web/3.2.0/material-components-web.min.js"></script>
 
-    <script type="text/javascript">
-        kendo.culture("en-GB");
-    </script>
+	<script type="text/javascript">
+		kendo.culture("en-GB");
+	</script>
 
-    @Styles.Render("~/bundles/css/generic-forms")
-    @Scripts.Render("~/bundles/js/kendo-modernizr")
-    @RenderSection("styles", required: false)
-    @RenderSection("earlyScripts", required: false)
+	<script type="text/javascript">
+		const EMPTY_STRING = '';
+	</script>
 
-    <script type="text/javascript">
+	@Styles.Render("~/bundles/css/generic-forms")
+	@Scripts.Render("~/bundles/js/kendo-modernizr")
+	@RenderSection("styles", required: false)
+	@RenderSection("earlyScripts", required: false)
+
+	<script type="text/javascript">
         function getUserId() {
             return @(User.Identity.GetUserId<int>());
         }
@@ -146,7 +150,7 @@
                 }
             });
         }
-    </script>
+	</script>
 </head>
 <body style="padding-top: 0; @(ViewBag.Partial == true ? "padding-bottom: 0" : "")">
 	@Html.Partial("~/Views/Shared/_Common.cshtml")

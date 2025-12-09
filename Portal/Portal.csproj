@@ -551,8 +551,9 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\Credit-Control\Controllers\CreditControlGeneralApiController.cs" />
     <Compile Include="Areas\Credit-Control\Controllers\StatementsApiController.cs" />
-    <Compile Include="Areas\Credit-Control\Controllers\CreditControlGeneralController.cs" />
+    <Compile Include="Areas\Credit-Control\Controllers\CreditControlController.cs" />
     <Compile Include="Areas\Credit-Control\CreditControlAreaRegistration.cs" />
     <Compile Include="Areas\Credit-Control\ViewModels\StatementsViewModel.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceAPIController.cs" />
@@ -673,6 +674,7 @@
     <Compile Include="Controllers\ODataControllers\DocumentOutputModesController.cs" />
     <Compile Include="Controllers\ODataControllers\GeneralLedgerAnalysisGroupDsController.cs" />
     <Compile Include="Controllers\ODataControllers\AdvertiserClassesController.cs" />
+    <Compile Include="Controllers\ODataControllers\SaleHistoryAnalysisPeriodsController.cs" />
     <Compile Include="Controllers\ODataControllers\SupplierPaymentTermsController.cs" />
     <Compile Include="Controllers\ODataControllers\SupplierTypesController.cs" />
     <Compile Include="Controllers\ODataControllers\TradeAccountTypeGroupsController.cs" />
@@ -1758,7 +1760,9 @@
     <Content Include="js\src\models\common-modals-old.js" />
     <Content Include="js\src\models\common-modals.js" />
     <Content Include="js\src\models\contract-pricing.js" />
-    <Content Include="js\src\models\credit-control\statements-filters.js" />
+    <Content Include="js\src\models\credit-control\credit-control-dashboard-pod.js" />
+    <Content Include="js\src\models\credit-control\credit-control-filters.js" />
+    <Content Include="js\src\models\credit-control\credit-control-trade-account-search-result.js" />
     <Content Include="js\src\models\customer-care.js" />
     <Content Include="js\src\models\customer-enquiry.js" />
     <Content Include="js\src\models\customer-invite.js" />
@@ -1816,7 +1820,7 @@
     <Content Include="js\src\models\order-book\order-book-back-orders-without-purchase-orders.js" />
     <Content Include="js\src\models\order-book\order-book-orders-filters.js" />
     <Content Include="js\src\models\pager.js" />
-    <Content Include="js\src\models\credit-control\statements.js" />
+    <Content Include="js\src\models\credit-control\credit-control.js" />
     <Content Include="js\src\models\stock-check-request.js" />
     <Content Include="js\src\models\trade-accounts\trade-account-contacts-dashboard-pod.js" />
     <Content Include="js\src\models\trade-accounts\trade-account-contact.js" />
@@ -2650,7 +2654,7 @@
     <Content Include="Areas\Customers\Views\AdvertiserMaintenance\AdvertiserMaintenance.cshtml" />
     <Content Include="Areas\Documents\Views\SentReport\DocumentsSentReport.cshtml" />
     <Content Include="Areas\Credit-Control\Views\web.config" />
-    <Content Include="Areas\Credit-Control\Views\CreditControlGeneral\General.cshtml" />
+    <Content Include="Areas\Credit-Control\Views\CreditControl\CreditControl.cshtml" />
     <Content Include="Areas\Credit-Control\Views\_ViewStart.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />

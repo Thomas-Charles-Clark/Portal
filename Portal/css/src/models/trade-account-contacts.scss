@@ -10,7 +10,7 @@
 		padding: $l-gutter;
 	}
 
-	#trade-account-contacts-prefilters {
+	.trade-account-contacts-prefilters {
 		display: grid;
 		grid-template-columns: repeat(6, 1fr);
 		gap: $l-gutter;

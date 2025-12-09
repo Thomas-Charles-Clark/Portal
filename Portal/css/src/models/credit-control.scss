@@ -8,28 +8,28 @@
     }
 }
 
-#statements-tabs-content {
+#credit-control-content {
     background-color: $white;
     border: 1px solid $gray-300;
-    border-radius: 0 $border-radius $border-radius $border-radius;
-    margin-bottom: $l-gutter;
+    /*border-radius: 0 $border-radius $border-radius $border-radius;*/
+    border-radius: 0;
+    margin-bottom: 0;
 
     .tab-pane {
         padding: $l-gutter;
     }
 
-    #prefilters {
-        display: flex;
+    #credit-control-prefilters {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
         gap: $l-gutter;
         margin: 0;
-        padding: 0 0 $l-gutter 0;
-        justify-content: space-between;
-        flex-wrap: wrap;
+        padding: 0;
 
         .prefilter {
             flex: 1;
             position: relative;
-
+            /*
             .mdc-validating-field {
                 flex: 1;
 
@@ -52,7 +52,7 @@
                         }
                     }
                 }
-            }
+            }*/
 
             .bi-lock-fill {
                 flex: 0;
@@ -77,6 +77,16 @@
         }*/
         }
 
+        #credit-control-trade-account-prefilter {
+            grid-column-start: 1;
+            grid-column-end: 3;
+        }
+
+        #credit-control-date-prefilter {
+            grid-column-start: 3;
+            grid-column-end: 4;
+        }
+
         .date-prefilter {
             display: block;
             width: 100%;
@@ -86,6 +96,97 @@
             flex: 1;
         }
     }
+
+    .k-filter-row th,
+    .k-grid-header th.k-header {
+        overflow: visible;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .statement-column {
+        i {
+            font-size: $xl-gutter;
+        }
+    }
+
+    .k-grid-norecords {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 240px;
+    }
+
+    .k-grid {
+        .k-alt:not(.k-state-selected) {
+            &:hover {
+                background-color: $gray-200;
+            }
+        }
+
+        tr:hover {
+            background-color: $gray-200;
+        }
+
+        .html-cell {
+            .alert {
+                margin-bottom: 0;
+            }
+        }
+
+        .grid-btn {
+            padding: 0 $btn-padding-x;
+
+            .bi {
+                font-size: 2.5rem;
+
+                &:hover,
+                &:focus,
+                &:focus-within {
+                    cursor: pointer;
+                    text-shadow: 0 0 6px $gray-600;
+                }
+            }
+        }
+
+        .credit-limit-heading,
+        .totals-heading,
+        .orders-heading,
+        .debt-breakdown-heading,
+        .other-heading,
+        .sales-heading {
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            background-color: $blue-700;
+            color: $white;
+        }
+
+        .credit-limit-subheading,
+        .totals-subheading,
+        .orders-subheading,
+        .debt-breakdown-subheading,
+        .other-subheading,
+        .sales-subheading {
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            background-color: tint-color($blue-100, 50%);
+            color: $black;
+        }
+    }
+
+    .k-grid-header {
+        .k-with-icon {
+            .k-link {
+                margin: 0;
+            }
+        }
+    }
+
+    .k-grid-content-locked {
+        height: 100% !important;
+    }
 }
 
 #response-container {
@@ -94,8 +195,6 @@
         margin-bottom: 0;
     }
 }
-
-
 
 #contacts-tab-pane {
 
@@ -108,7 +207,7 @@
         margin-bottom: 0;
         border: 0;
 
-        #trade-account-contacts-prefilters {
+        .trade-account-contacts-prefilters {
             .prefilter {
                 flex: 1 0 calc(20% - 3rem);
             }
@@ -117,5 +216,90 @@
 
     #trade-account-contacts-modal-dialog {
         margin-top: 0;
+    }
+}
+
+.dashboard {
+    margin: $l-gutter 0 0 0;
+    display: flex;
+    gap: $l-gutter;
+    justify-content: space-between;
+    align-items: center;
+
+    .dashboard-pod {
+        flex: 1;
+        text-align: center;
+        align-self: stretch;
+        cursor: pointer;
+        will-change: background-color;
+        background-color: $white;
+        color: $body-color;
+        border-color: $gray-500;
+        transition: background-color 150ms ease-in-out, color 150ms ease-in-out, border-color 150ms ease-in-out;
+
+        &:hover,
+        &:focus,
+        &:focus-within {
+            .card-body {
+                h4, h5 {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        &.warning {
+            background-color: $red-600;
+            color: $white;
+            border-color: tint-color($red-600, 5%);
+        }
+
+        &.active {
+            /*text-decoration: underline;*/
+
+            &.warning {
+                background-color: shade-color($red-600, 5%);
+                color: $white;
+            }
+
+            &:not(.warning) {
+                background-color: $blue-700;
+                color: $white;
+
+                a {
+                    color: $white;
+                }
+            }
+        }
+
+
+        .card-body {
+
+            &.alert {
+                margin-bottom: 0;
+                border: 0;
+                border-radius: $alert-border-radius;
+            }
+
+            h4 {
+                font-weight: bold;
+                font-size: 1.55rem;
+                margin-bottom: $m-gutter;
+            }
+
+            h5 {
+                font-size: 1.15rem;
+            }
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            h4,
+            h5 {
+                text-decoration: none;
+                line-height: 1.75rem;
+            }
+        }
     }
 }

@@ -238,26 +238,50 @@
   border-bottom: 0;
 }
 
-#statements-tabs-content {
+#credit-control-content {
   background-color: #fff;
   border: 1px solid #dee2e6;
-  border-radius: 0 0.375rem 0.375rem 0.375rem;
-  margin-bottom: 1rem;
+  /*border-radius: 0 $border-radius $border-radius $border-radius;*/
+  border-radius: 0;
+  margin-bottom: 0;
 }
-#statements-tabs-content .tab-pane {
+#credit-control-content .tab-pane {
   padding: 1rem;
 }
-#statements-tabs-content #prefilters {
-  display: flex;
+#credit-control-content #credit-control-prefilters {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
   gap: 1rem;
   margin: 0;
-  padding: 0 0 1rem 0;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  padding: 0;
 }
-#statements-tabs-content #prefilters .prefilter {
+#credit-control-content #credit-control-prefilters .prefilter {
   flex: 1;
   position: relative;
+  /*
+  .mdc-validating-field {
+      flex: 1;
+
+      > .mdc-select--selected {
+          .k-dropdown-wrap {
+              > span.k-input {
+                  background-color: $blue-100;
+              }
+          }
+      }
+
+      .date-select--selected {
+          background-color: $blue-100;
+      }
+
+      .dropdown {
+          &.selected {
+              .btn {
+                  background-color: $blue-100;
+              }
+          }
+      }
+  }*/
   /*.k-dropdown-wrap {
       > span.k-input {
           padding: 0;
@@ -271,30 +295,90 @@
       }
   }*/
 }
-#statements-tabs-content #prefilters .prefilter .mdc-validating-field {
-  flex: 1;
-}
-#statements-tabs-content #prefilters .prefilter .mdc-validating-field > .mdc-select--selected .k-dropdown-wrap > span.k-input {
-  background-color: #cfe2ff;
-}
-#statements-tabs-content #prefilters .prefilter .mdc-validating-field .date-select--selected {
-  background-color: #cfe2ff;
-}
-#statements-tabs-content #prefilters .prefilter .mdc-validating-field .dropdown.selected .btn {
-  background-color: #cfe2ff;
-}
-#statements-tabs-content #prefilters .prefilter .bi-lock-fill {
+#credit-control-content #credit-control-prefilters .prefilter .bi-lock-fill {
   flex: 0;
 }
-#statements-tabs-content #prefilters .prefilter .k-list .k-item {
+#credit-control-content #credit-control-prefilters .prefilter .k-list .k-item {
   white-space: nowrap;
 }
-#statements-tabs-content #prefilters .date-prefilter {
+#credit-control-content #credit-control-prefilters #credit-control-trade-account-prefilter {
+  grid-column-start: 1;
+  grid-column-end: 3;
+}
+#credit-control-content #credit-control-prefilters #credit-control-date-prefilter {
+  grid-column-start: 3;
+  grid-column-end: 4;
+}
+#credit-control-content #credit-control-prefilters .date-prefilter {
   display: block;
   width: 100%;
 }
-#statements-tabs-content #prefilters .date-picker {
+#credit-control-content #credit-control-prefilters .date-picker {
   flex: 1;
+}
+#credit-control-content .k-filter-row th,
+#credit-control-content .k-grid-header th.k-header {
+  overflow: visible;
+  white-space: normal;
+  word-break: break-word;
+}
+#credit-control-content .statement-column i {
+  font-size: 2rem;
+}
+#credit-control-content .k-grid-norecords {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 240px;
+}
+#credit-control-content .k-grid .k-alt:not(.k-state-selected):hover {
+  background-color: #e9ecef;
+}
+#credit-control-content .k-grid tr:hover {
+  background-color: #e9ecef;
+}
+#credit-control-content .k-grid .html-cell .alert {
+  margin-bottom: 0;
+}
+#credit-control-content .k-grid .grid-btn {
+  padding: 0 0.75rem;
+}
+#credit-control-content .k-grid .grid-btn .bi {
+  font-size: 2.5rem;
+}
+#credit-control-content .k-grid .grid-btn .bi:hover, #credit-control-content .k-grid .grid-btn .bi:focus, #credit-control-content .k-grid .grid-btn .bi:focus-within {
+  cursor: pointer;
+  text-shadow: 0 0 6px #6c757d;
+}
+#credit-control-content .k-grid .credit-limit-heading,
+#credit-control-content .k-grid .totals-heading,
+#credit-control-content .k-grid .orders-heading,
+#credit-control-content .k-grid .debt-breakdown-heading,
+#credit-control-content .k-grid .other-heading,
+#credit-control-content .k-grid .sales-heading {
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  background-color: #084298;
+  color: #fff;
+}
+#credit-control-content .k-grid .credit-limit-subheading,
+#credit-control-content .k-grid .totals-subheading,
+#credit-control-content .k-grid .orders-subheading,
+#credit-control-content .k-grid .debt-breakdown-subheading,
+#credit-control-content .k-grid .other-subheading,
+#credit-control-content .k-grid .sales-subheading {
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  background-color: #e7f1ff;
+  color: #000;
+}
+#credit-control-content .k-grid-header .k-with-icon .k-link {
+  margin: 0;
+}
+#credit-control-content .k-grid-content-locked {
+  height: 100% !important;
 }
 
 #response-container .alert {
@@ -310,10 +394,75 @@
   margin-bottom: 0;
   border: 0;
 }
-#contacts-tab-pane #trade-account-contacts-tabs-content #trade-account-contacts-prefilters .prefilter {
+#contacts-tab-pane #trade-account-contacts-tabs-content .trade-account-contacts-prefilters .prefilter {
   flex: 1 0 calc(20% - 3rem);
 }
 #contacts-tab-pane #trade-account-contacts-modal-dialog {
   margin-top: 0;
+}
+
+.dashboard {
+  margin: 1rem 0 0 0;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+}
+.dashboard .dashboard-pod {
+  flex: 1;
+  text-align: center;
+  align-self: stretch;
+  cursor: pointer;
+  will-change: background-color;
+  background-color: #fff;
+  color: #212529;
+  border-color: #adb5bd;
+  transition: background-color 150ms ease-in-out, color 150ms ease-in-out, border-color 150ms ease-in-out;
+}
+.dashboard .dashboard-pod:hover .card-body h4, .dashboard .dashboard-pod:hover .card-body h5, .dashboard .dashboard-pod:focus .card-body h4, .dashboard .dashboard-pod:focus .card-body h5, .dashboard .dashboard-pod:focus-within .card-body h4, .dashboard .dashboard-pod:focus-within .card-body h5 {
+  text-decoration: underline;
+}
+.dashboard .dashboard-pod.warning {
+  background-color: #b02a37;
+  color: #fff;
+  border-color: #b43541;
+}
+.dashboard .dashboard-pod.active {
+  /*text-decoration: underline;*/
+}
+.dashboard .dashboard-pod.active.warning {
+  background-color: #a72834;
+  color: #fff;
+}
+.dashboard .dashboard-pod.active:not(.warning) {
+  background-color: #084298;
+  color: #fff;
+}
+.dashboard .dashboard-pod.active:not(.warning) a {
+  color: #fff;
+}
+.dashboard .dashboard-pod .card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.dashboard .dashboard-pod .card-body.alert {
+  margin-bottom: 0;
+  border: 0;
+  border-radius: 0.375rem;
+}
+.dashboard .dashboard-pod .card-body h4 {
+  font-weight: bold;
+  font-size: 1.55rem;
+  margin-bottom: 0.75rem;
+}
+.dashboard .dashboard-pod .card-body h5 {
+  font-size: 1.15rem;
+}
+.dashboard .dashboard-pod .card-body h4,
+.dashboard .dashboard-pod .card-body h5 {
+  text-decoration: none;
+  line-height: 1.75rem;
 }
 /*# sourceMappingURL=credit-control.css.map */

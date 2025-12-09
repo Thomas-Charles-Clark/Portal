@@ -466,7 +466,11 @@ namespace Portal
                       $"{jsPrefix}/lib/kendo/kendo.2018.3.1017.all{jsSuffix}"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/popper").Include(
+			bundles.Add(new ScriptBundle("~/bundles/js/kendo-2023").Include(
+					  $"{jsPrefix}/lib/kendo/kendo.2023.1.314.all{jsSuffix}"
+				));
+
+			bundles.Add(new ScriptBundle("~/bundles/js/popper").Include(
                       $"{jsPrefix}/lib/popper-2.11.6/popper-2.11.6{jsSuffix}"
                 ));
 
@@ -638,8 +642,9 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-enquiry").Include(
                       $"{jsPrefix}/models/business-potential{jsSuffix}",
+                      $"{jsPrefix}/models/price-checker{jsSuffix}",
                       $"{jsPrefix}/models/customer-enquiry{jsSuffix}"
-                ));
+				));
 
             bundles.Add(new ScriptBundle("~/bundles/js/pricing-enquiry").Include(
                         $"{jsPrefix}/models/price-checker{jsSuffix}",
@@ -999,8 +1004,10 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/credit-control").Include(
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/credit-control/statements-filters{jsSuffix}",
-                        $"{jsPrefix}/models/credit-control/statements{jsSuffix}"
+                        $"{jsPrefix}/models/credit-control/credit-control-dashboard-pod{jsSuffix}",
+                        $"{jsPrefix}/models/credit-control/credit-control-trade-account-search-result{jsSuffix}",
+                        $"{jsPrefix}/models/credit-control/credit-control-filters{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control{jsSuffix}"
                 ));
 
 			bundles.Add(new ScriptBundle("~/bundles/js/trade-account-contacts").Include(

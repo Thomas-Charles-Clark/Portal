@@ -1,6 +1,4 @@
-﻿const EMPTY_STRING = '';
-
-const advertiserMaintenanceViewModel = (() => {
+﻿const advertiserMaintenanceViewModel = (() => {
     var self = {};
 
     //#region Properties

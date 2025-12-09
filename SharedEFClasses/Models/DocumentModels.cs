@@ -49,7 +49,8 @@ namespace SharedEFClasses.Models.Documents
         public string HeaderPageLabel { get; set; }
         public string HeaderOfLabel { get; set; } // The date to render in the top-right.
         public string HeaderOrderIdentifierLabel { get; set; }
-    }
+		public string LogoFileName { get; set; }
+	}
 
     public class DocumentOrderHeader
     {

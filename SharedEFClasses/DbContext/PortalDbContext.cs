@@ -5,6 +5,7 @@ using SharedEFClasses.Models.ActiveDirectory;
 using SharedEFClasses.Models.Advertisers;
 using SharedEFClasses.Models.Applications;
 using SharedEFClasses.Models.Attributes;
+using SharedEFClasses.Models.CreditControl;
 using SharedEFClasses.Models.Documents;
 using SharedEFClasses.Models.DotDigital;
 using SharedEFClasses.Models.Fenwick;
@@ -264,7 +265,7 @@ namespace SharedEFClasses.Models
         public DbSet<Models.Mertexer.CreditController> CreditControllers { get; set; }
         public DbSet<Models.Mertex.CreditControllerLive> CreditControllersLive { get; set; }
 		public DbSet<Models.Mertexer.CreditController_SalesMarket> CreditControllerSalesMarketMap { get; set; }
-
+        public DbSet<SalesHistoryAnalysisPeriod> SalesHistoryAnalysisPeriods { get; set; }
         public DbSet<TradeAccountCreationEmail> TradeAccountCreationEmails { get; set; }
         public DbSet<TradeAccountCreationEmailAttachment> TradeAccountCreationEmailAttachments { get; set; }
         public DbSet<CreditControlRegion> CreditControlRegions { get; set; }

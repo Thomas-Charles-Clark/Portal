@@ -1,11 +1,11 @@
-﻿const statementsFiltersViewModel = ({
+﻿const creditControlFiltersViewModel = ({
+    params,
     parent
 } = {
-    parent
+    params: {},
+    parent: {}
 }) => {
-    let self = {
-        parent: parent
-    };
+    let self = {};
 
     //#region Properties
 
@@ -24,12 +24,24 @@
     self.includeClosedTradeAccounts = ko.observable(false);
     self.includeDeletedTradeAccounts = ko.observable(false);
 
-    self.tradeAccountId = ko.observable(self.toLoadDto?.tradeAccountId ?? '');
+    self.tradeAccountId = ko.observable(params.tradeAccountId ?? '');
     self.tradeAccount = ko.observable();
+
+    self.salesHistoryAnalysisPeriodId = ko.observable(params.salesHistoryAnalysisPeriodId ?? '');
+    self.salesHistoryAnalysisPeriod = ko.observable();
+    self.salesHistoryAnalysisPeriodAwaitingBinding = ko.observable(params.salesHistoryAnalysisPeriodId != null && params.salesHistoryAnalysisPeriodId != '');
+
+    self.languageId = ko.observable(params.languageId ?? '');
+    self.language = ko.observable();
 
     self.errors = ko.validation.group([
         self.date
     ])
+
+    self = Object.assign(tradeAccountContactsFiltersViewModel({
+        params: Object.assign({ filtersPrefix: 'credit-control-' }, params),
+        parent: parent
+    }), self);
 
     //#endregion
 
@@ -272,6 +284,77 @@
         decorateInputElement: true,
     };
 
+    self.salesHistoryAnalysisPeriodGroupBy = `groupby((SalesHistoryAnalysisPeriod/SalesHistoryAnalysisPeriodID,SalesHistoryAnalysisPeriod/Name))/filter((SalesHistoryAnalysisPeriod/SalesHistoryAnalysisPeriodID ne null))`;
+
+    self.salesHistoryAnalysisPeriodTemplate = (e) => {
+        if (e.SalesHistoryAnalysisPeriod && e.SalesHistoryAnalysisPeriod.SalesHistoryAnalysisPeriodID && e.SalesHistoryAnalysisPeriod.Name) {
+            return `<span title="${e.SalesHistoryAnalysisPeriod.Name}">${e.SalesHistoryAnalysisPeriod.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.salesHistoryAnalysisPeriodValueTemplate = (e) => {
+        if (e.SalesHistoryAnalysisPeriod && e.SalesHistoryAnalysisPeriod.SalesHistoryAnalysisPeriodID && e.SalesHistoryAnalysisPeriod.Name) {
+            return `<span title="${e.SalesHistoryAnalysisPeriod.Name}">${e.SalesHistoryAnalysisPeriod.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.salesHistoryAnalysisPeriodsParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Sales History Analysis Period',
+        odata: true,
+        endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        textField: 'SalesHistoryAnalysisPeriod.Name',
+        valueField: 'SalesHistoryAnalysisPeriod.SalesHistoryAnalysisPeriodID',
+        template: self.salesHistoryAnalysisPeriodTemplate,
+        valueTemplate: self.salesHistoryAnalysisPeriodValueTemplate,
+        idObservable: self.salesHistoryAnalysisPeriodId,
+        objObservable: self.salesHistoryAnalysisPeriod,
+        locked: ko.observable(self.salesHistoryAnalysisPeriodId() != ''),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'SalesHistoryAnalysisPeriod.Name'
+        },
+        select: function (e) {
+            console.log('salesHistoryAnalysisPeriod select', e);
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => self.paymentTermsAwaitingBinding(false),
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.salesHistoryAnalysisPeriodGroupBy),
+        popupSettings: {
+            appendTo: document.getElementById(`${self.filtersPrefix}sales-history-analysis-period-prefilter`)
+        }
+    });
+
+    self.languageParams = kendoMDCDropDownList({
+        label: 'Language',
+        odata: true,
+        endPoint: '/odata/Languages',
+        textField: 'Name',
+        valueField: 'LanguageID',
+        virtual: false,
+        idObservable: self.languageId,
+        objObservable: self.language,
+        optionLabel: {
+            LanguageID: '',
+            Name: ''
+        },
+        optionLabelTemplate: '',
+        filter: false,
+        autoBind: true
+    });
+
     //#endregion
 
 
@@ -290,7 +373,43 @@
 
     //#region Computeds
 
+    self.getData = ko.computed(() => {
 
+        let salesMarketIds = [];
+
+        ko.ignoreDependencies(() => {
+            salesMarketIds = self.salesMarketIds();
+        });
+
+        let salesMarketIdsCount = self.salesMarketIdsCount();
+
+        let result = {
+            salesMarketIds: salesMarketIds,
+            salesRepresentativeId: self.salesRepresentativeId(),
+            salesAgentId: self.salesAgentId(),
+            salesAreaId: self.salesAreaId(),
+            countryId: self.countryId(),
+            tradeAccountGroupId: self.tradeAccountGroupId(),
+            tradeAccountTypeId: self.tradeAccountTypeId(),
+            paymentTermsId: self.paymentTermsId(),
+            paymentTermsTypeId: self.paymentTermsTypeId(),
+            creditStopped: self.creditStopped(),
+            creditControllerCode: self.creditControllerId() == "" ? null : self.creditControllerId(), // contol holds empty string if nothing selected; can't pass CreditControllerCode = N'' to the procedure; demands an empty test here
+            tradeAccountTypeGroupId: self.tradeAccountTypeGroupId(),
+            open: true,
+            searchTerm: null,
+            date: typeof self.date() == 'object' ? self.date().toUTCString() : self.date(),
+            tradeAccountId: self.tradeAccountId(), 
+            languageId: self.languageId()
+        };
+
+        return result;
+    }, self).extend({
+        rateLimit: {
+            timeout: 100,
+            method: 'notifyWhenChangesStop'
+        }
+    });
 
     //#endregion
 

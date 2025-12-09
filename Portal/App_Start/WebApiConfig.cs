@@ -32,6 +32,7 @@ using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Advertisers;
 using SharedEFClasses.Models.Documents;
 using System.Net.Http.Headers;
+using SharedEFClasses.Models.CreditControl;
 
 namespace Portal
 {
@@ -146,9 +147,10 @@ namespace Portal
             odataBuilder.EntitySet<SupplierLive>("MertexLiveSuppliers");
             odataBuilder.EntitySet<SupplierPaymentTerms>("SupplierPaymentTerms");
             odataBuilder.EntitySet<AdvertiserClass>("AdvertiserClasses");
+            odataBuilder.EntitySet<SalesHistoryAnalysisPeriod>("SalesHistoryAnalysisPeriods");
 
-            // This because it's not mapped to SQL and has the [NotMapped] attribute
-            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
+			// This because it's not mapped to SQL and has the [NotMapped] attribute
+			odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("PseudoKey"));
 
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(ProductFilterGroup)).AddProperty(typeof(ProductFilterGroup).GetProperty("ProductTypeIDs"));
@@ -171,7 +173,14 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_DeliveryType)).AddProperty(typeof(Mertex_DeliveryType).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SupplierLive)).AddProperty(typeof(SupplierLive).GetProperty("AddressDisplaySingleLine"));
 
-            var documentsValueMapperFunction = odataBuilder.EntityType<Document>()
+			var salesHistoryAnalysisPeriodValueMapperFunction = odataBuilder.EntityType<SalesHistoryAnalysisPeriod>()
+				.Collection
+				.Function("SalesHistoryAnalysisPeriodValueMapper")
+				.ReturnsCollectionFromEntitySet<Document>("Documents");
+
+			salesHistoryAnalysisPeriodValueMapperFunction.Parameter<byte?>("salesHistoryAnalysisPeriodId");
+
+			var documentsValueMapperFunction = odataBuilder.EntityType<Document>()
                 .Collection
                 .Function("DocumentsValueMapper")
                 .ReturnsCollectionFromEntitySet<Document>("Documents");

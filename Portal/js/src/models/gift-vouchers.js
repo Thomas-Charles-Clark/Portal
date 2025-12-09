@@ -1,6 +1,4 @@
-﻿const EMPTY_STRING = '';
-
-const giftVouchersViewModel = (() => {
+﻿const giftVouchersViewModel = (() => {
     var self = {};
 
     //#region Properties

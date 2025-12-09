@@ -22,9 +22,9 @@ namespace Portal.Areas.Orders.Controllers
     [RouteArea("credit-control")]
     [RoutePrefix("")]
     [Route("{action=index}")]
-    public class CreditControlGeneralController : BaseController
+    public class CreditControlController : BaseController
     {
-        public CreditControlGeneralController(ApplicationUserManager userManager, PortalDbContext portalDbContext) : base (userManager, portalDbContext)
+        public CreditControlController(ApplicationUserManager userManager, PortalDbContext portalDbContext) : base (userManager, portalDbContext)
         {
 
         }
@@ -40,7 +40,7 @@ namespace Portal.Areas.Orders.Controllers
                 application.Heading, 
                 application.SubHeading);
 
-            return View("General", model);
+            return View("CreditControl", model);
         }
     }
 }

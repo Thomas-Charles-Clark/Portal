@@ -1,6 +1,4 @@
-﻿const EMPTY_STRING = '';
-
-const invoiceBookingViewModel = ({
+﻿const invoiceBookingViewModel = ({
     mailboxId
 } = {
     mailboxId: 1

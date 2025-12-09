@@ -3,8 +3,7 @@
 // related to the filter components behaving in the same way as native <select> components
 // in that the value presented when an empty option is selected (selects always have a selected option), even if they don't appear to
 // is the empty string.
-const EMPTY_STRING = '',
-    yesNoOptions = [{
+const yesNoOptions = [{
         Name: 'Yes',
         Value: 'true'
     }, {

@@ -243,7 +243,7 @@
 #trade-account-contacts-tabs-content .tab-pane {
   padding: 1rem;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 1rem;
@@ -252,109 +252,109 @@
   justify-content: center;
   flex-wrap: wrap;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .prefilter {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .prefilter {
   position: relative;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .prefilter .mdc-validating-field {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .prefilter .mdc-validating-field {
   flex: 1;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .prefilter .bi-lock-fill {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .prefilter .bi-lock-fill {
   flex: 0;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .prefilter .k-list .k-item {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .prefilter .k-list .k-item {
   white-space: nowrap;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .k-list-scroller .market-multiselect-checkbox {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .k-list-scroller .market-multiselect-checkbox {
   flex: 1;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .k-list-scroller .market-multiselect-checkbox label {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .k-list-scroller .market-multiselect-checkbox label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .k-list-scroller .market-multiselect-checkbox label .form-check-input {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .k-list-scroller .market-multiselect-checkbox label .form-check-input {
   margin-top: -5px;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .k-list-scroller .k-item.k-state-selected {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .k-list-scroller .k-item.k-state-selected {
   background-color: #084298;
   color: #fff;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters #trade-account-prefilter {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters #trade-account-prefilter {
   flex: 1 0 100%;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .date-prefilter {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .date-prefilter {
   display: block;
   width: 100%;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .date-picker {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .date-picker {
   flex: 1;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters #sales-markets-prefilter .k-animation-container {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters #sales-markets-prefilter .k-animation-container {
   font-size: 1rem;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters #sales-markets-prefilter .k-animation-container .k-list-container.k-popup li {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters #sales-markets-prefilter .k-animation-container .k-list-container.k-popup li {
   height: 34px;
   min-height: 34px;
   line-height: 34px;
   font-size: 1rem !important;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover,
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover,
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover,
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover,
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover {
   background-color: #f5f9ff;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover .k-state-hover,
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover .k-state-hover,
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover .k-state-hover {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover .k-state-hover,
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover .k-state-hover,
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover .k-state-hover {
   background-color: #f5f9ff;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input,
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input,
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input,
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input,
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover input {
   cursor: pointer;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading,
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading,
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading,
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading,
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__leading {
   border-color: #adb5bd;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch,
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch,
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch,
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch,
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__notch {
   border-color: #adb5bd;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing,
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing,
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-text-field--outlined:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing,
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-text-field--textarea:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing,
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-select:not(.mdc-select--selected):not(.mdc-select--disabled):not(.mdc-text-field--disabled):not(.mdc-text-field--focused) .mdc-text-field__input:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing {
   border-color: #adb5bd;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .user-defined-filter {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .user-defined-filter {
   position: relative;
   height: 28px;
   display: flex;
   align-items: center;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters span.k-input {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters span.k-input {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   max-width: 100%;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-select .k-dropdown-wrap.k-state-focused, #trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-select .k-dropdown-wrap.k-state-hover {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-select .k-dropdown-wrap.k-state-focused, #trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-select .k-dropdown-wrap.k-state-hover {
   /*background-color: $light-blue-bg;*/
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-select.mdc-select--focused .mdc-floating-label {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-select.mdc-select--focused .mdc-floating-label {
   position: relative;
   top: 4px;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-select.mdc-select--focused:hover ~ .mdc-notched-outline .mdc-notched-outline__leading {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-select.mdc-select--focused:hover ~ .mdc-notched-outline .mdc-notched-outline__leading {
   border-color: #adb5bd;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-select.mdc-select--focused:hover ~ .mdc-notched-outline .mdc-notched-outline__notch {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-select.mdc-select--focused:hover ~ .mdc-notched-outline .mdc-notched-outline__notch {
   border-color: #adb5bd;
 }
-#trade-account-contacts-tabs-content #trade-account-contacts-prefilters .mdc-select.mdc-select--focused:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing {
+#trade-account-contacts-tabs-content .trade-account-contacts-prefilters .mdc-select.mdc-select--focused:hover ~ .mdc-notched-outline .mdc-notched-outline__trailing {
   border-color: #adb5bd;
 }
 

@@ -1,5 +1,4 @@
-﻿const EMPTY_STRING = '',
-    yesNoOptions = [{
+﻿const yesNoOptions = [{
         text: 'Yes',
         value: true
     }, {
