@@ -115,6 +115,9 @@
         justify-content: center;
         align-items: center;
         min-height: 240px;
+        position: sticky;
+        left: 0;
+        top: 0;
     }
 
     .k-grid {
@@ -134,18 +137,33 @@
             }
         }
 
-        .grid-btn {
-            padding: 0 $btn-padding-x;
+        .grid-btn-cell {
+            &:hover,
+            &:focus,
+            &:focus-within {
+                background-color: $gray-200;
+            }
 
-            .bi {
-                font-size: 2.5rem;
+            .grid-btn {
+                padding: 0 $btn-padding-x;
 
-                &:hover,
-                &:focus,
-                &:focus-within {
-                    cursor: pointer;
-                    text-shadow: 0 0 6px $gray-600;
+                .bi {
+                    font-size: 2.5rem;
+
+                    &:hover,
+                    &:focus,
+                    &:focus-within {
+                        cursor: pointer;
+                        /*text-shadow: 0 0 6px $blue-700;*/
+                        color: $blue-500;
+                    }
                 }
+            }
+        }
+
+        .credit-stopped {
+            &:hover {
+                cursor: not-allowed
             }
         }
 
@@ -173,6 +191,12 @@
             vertical-align: middle;
             background-color: tint-color($blue-100, 50%);
             color: $black;
+        }
+
+        .other-trade-account-associations {
+            div {
+                white-space: nowrap;
+            }
         }
     }
 

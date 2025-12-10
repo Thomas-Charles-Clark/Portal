@@ -1,4 +1,7 @@
 ﻿const gridColumnWidths = {
+    seventy: 70,
+    eighty: 80,
+    ninety: 90,
     oneHundred: 100,
     oneTwenty: 120,
     oneForty: 140,
@@ -22,6 +25,11 @@ const creditControlViewModel = (() => {
     self.busyMessage = ko.observable('Please wait...');
 
     self.validateNow = ko.observable(false);
+
+    self.refresh = () => {
+        console.log('creditControlViewModel refresh called');
+        self.tradeAccountSearch(self.filters.getData());
+    }
 
     self.filters = creditControlFiltersViewModel({
         params: {},
@@ -169,7 +177,7 @@ const creditControlViewModel = (() => {
             field: 'Contacts',
             title: 'Contacts',
             attributes: {
-                "class": "text-center"
+                "class": "text-center grid-btn-cell"
             },
             locked: true,
             width: gridColumnWidths.oneHundred,
@@ -207,11 +215,17 @@ const creditControlViewModel = (() => {
                 }
             },
             locked: true,
-            width: gridColumnWidths.oneHundred,
+            width: gridColumnWidths.seventy,
             attributes: {
                 "class": (e) => e.CreditStop ? `text-danger bold` : ``
             },
-            template: '#: CreditStop ? "On Stop" : "" #',
+            template: (e) => {
+                if (e.CreditStop) {
+                    return '<i class="text-danger bi bi-sign-stop-fill fs-1 credit-stopped" title="Credit Stopped"></i>';
+                } else {
+                    return '';
+                }
+            },
             attributes: {
                 "class": 'text-center'
             }
@@ -355,7 +369,7 @@ const creditControlViewModel = (() => {
             },
             columns: [{
                 field: 'NotDueTotalValue',
-                title: 'No Due',
+                title: 'Due',
                 headerAttributes: {
                     "class": "debt-breakdown-subheading"
                 },
@@ -464,7 +478,7 @@ const creditControlViewModel = (() => {
                     "class": "debt-breakdown-subheading"
                 },
                 attributes: {
-                    "class": "text-center"
+                    "class": "text-center grid-btn-cell"
                 },
                 width: gridColumnWidths.oneTwenty,
                 template: (e) => {
@@ -710,7 +724,7 @@ const creditControlViewModel = (() => {
     //#region Subscriptions
 
     self.filters.getData.subscribe(nv => {
-        if (JSON.stringify(nv) == '{"salesMarketIds":[],"salesRepresentativeId":"","salesAgentId":"","salesAreaId":"","countryId":"","tradeAccountGroupId":"","tradeAccountTypeId":"","paymentTermsId":"","paymentTermsTypeId":"","creditControllerCode":null,"tradeAccountTypeGroupId":"","open":true,"searchTerm":null,"tradeAccountId":"","languageId":""}') {
+        if (JSON.stringify(nv) == '{"salesMarketIds":[],"salesRepresentativeId":"","salesAgentId":"","salesAreaId":"","countryId":"","tradeAccountGroupId":"","tradeAccountTypeId":"","paymentTermsId":"","paymentTermsTypeId":"","creditStopped":"","creditControllerCode":null,"tradeAccountTypeGroupId":"","open":true,"searchTerm":null,"tradeAccountCode":null,"languageId":""}') {
             self.gridParams.widget().dataSource.data([]);
         } else {
             self.gridParams.widget().dataSource.page(1);
@@ -731,7 +745,7 @@ const creditControlViewModel = (() => {
     //#region Methods
 
     self.init = () => {
-        self.tradeAccountSearch({});
+
     }
 
     self.tradeAccountSearch = (data) => {
@@ -807,10 +821,6 @@ const creditControlViewModel = (() => {
 
             });
         }
-    }
-
-    self.refresh = () => {
-        console.log('refresh called');
     }
 
     //#endregion

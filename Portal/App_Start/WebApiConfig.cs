@@ -93,7 +93,8 @@ namespace Portal
             odataBuilder.EntitySet<Range>("Ranges");
             odataBuilder.EntitySet<BranchStockLocation>("BranchStockLocations");
             odataBuilder.EntitySet<TradeAccount>("TradeAccounts");
-            odataBuilder.EntitySet<TradeAccountType>("TradeAccountTypes");
+            odataBuilder.EntitySet<TradeAccountLive>("TradeAccounts_Live");
+			odataBuilder.EntitySet<TradeAccountType>("TradeAccountTypes");
             odataBuilder.EntitySet<TradeAccountGroup>("TradeAccountGroups");
             odataBuilder.EntitySet<StockLocation>("StockLocations");
             odataBuilder.EntitySet<StockLocationGroup>("StockLocationGroups");
@@ -159,6 +160,7 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesRepresentative)).AddProperty(typeof(SalesRepresentative).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesAgent)).AddProperty(typeof(SalesAgent).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccount)).AddProperty(typeof(TradeAccount).GetProperty("ShortLabel"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountLive)).AddProperty(typeof(TradeAccountLive).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccount)).AddProperty(typeof(TradeAccount).GetProperty("AdvertiserSinceDT"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_Operator)).AddProperty(typeof(Mertex_Operator).GetProperty("Label"));
             //odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountGroup)).AddProperty(typeof(TradeAccountGroup).GetProperty("ShortLabel"));
@@ -469,13 +471,13 @@ namespace Portal
             tradeAccountDocumentsSentReportFilterFunction.Parameter<bool>("includeDeletedAccounts");
             tradeAccountDocumentsSentReportFilterFunction.Parameter<bool>("includeClosedAccounts");
 
-            var tradeAccountStatementsFilterFunction = odataBuilder.EntityType<TradeAccount>()
+            var tradeAccountsForCreditControlFilterFunction = odataBuilder.EntityType<TradeAccountLive>()
                 .Collection
-                .Function("GetTradeAccountsForStatements")
-                .ReturnsCollectionFromEntitySet<TradeAccount>("TradeAccounts");
+                .Function("GetTradeAccountsForCreditControl")
+                .ReturnsCollectionFromEntitySet<TradeAccountLive>("TradeAccounts_Live");
 
-            tradeAccountStatementsFilterFunction.Parameter<bool>("includeDeletedAccounts");
-            tradeAccountStatementsFilterFunction.Parameter<bool>("includeClosedAccounts");
+			tradeAccountsForCreditControlFilterFunction.Parameter<bool>("includeDeletedAccounts");
+			tradeAccountsForCreditControlFilterFunction.Parameter<bool>("includeClosedAccounts");
 
             var tradeAccountGroupFilterFunction = odataBuilder.EntityType<TradeAccount>()
                 .Collection
@@ -676,7 +678,16 @@ namespace Portal
 
 
 
-            var haulierValueMapperFunction = odataBuilder.EntityType<Haulier>()
+			var tradeAccounts_LiveValueMapperFunction = odataBuilder.EntityType<TradeAccountLive>()
+				.Collection
+				.Function("TradeAccountLiveValueMapper")
+				.ReturnsCollectionFromEntitySet<TradeAccountLive>("TradeAccounts_Live");
+
+			tradeAccounts_LiveValueMapperFunction.Parameter<string>("tradeAccountCode");
+
+
+
+			var haulierValueMapperFunction = odataBuilder.EntityType<Haulier>()
                 .Collection
                 .Function("HaulierValueMapper")
                 .ReturnsCollectionFromEntitySet<Haulier>("Hauliers");

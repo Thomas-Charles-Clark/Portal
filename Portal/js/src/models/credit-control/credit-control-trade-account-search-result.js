@@ -48,7 +48,9 @@
     //#region Methods
 
     self.openContactsModal = () => {
-        self.selectionObservable(tradeAccountViewModel(self));
+        self.selectionObservable(tradeAccountViewModel({
+            rec: self
+        }));
         self.fetchContacts(self.TradeAccountID);
     }
 

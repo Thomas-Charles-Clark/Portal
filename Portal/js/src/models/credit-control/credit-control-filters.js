@@ -5,7 +5,9 @@
     params: {},
     parent: {}
 }) => {
-    let self = {};
+    let self = {
+        refreshParent: parent.refresh
+    };
 
     //#region Properties
 
@@ -21,10 +23,10 @@
         }
     });
 
-    self.includeClosedTradeAccounts = ko.observable(false);
+    self.includeClosedTradeAccounts = ko.observable(true);
     self.includeDeletedTradeAccounts = ko.observable(false);
 
-    self.tradeAccountId = ko.observable(params.tradeAccountId ?? '');
+    self.tradeAccountCode = ko.observable(params.tradeAccountCode ?? '');
     self.tradeAccount = ko.observable();
 
     self.salesHistoryAnalysisPeriodId = ko.observable(params.salesHistoryAnalysisPeriodId ?? '');
@@ -131,9 +133,9 @@
         skipCascade: true,
         label: 'Trade Account',
         odata: true,
-        endPoint: () => `/odata/TradeAccounts/Default.GetTradeAccountsForStatements(includeClosedAccounts=${ko.unwrap(self.includeClosedTradeAccounts)}, includeDeletedAccounts=${ko.unwrap(self.includeDeletedTradeAccounts)})`,
+        endPoint: () => `/odata/TradeAccounts_Live/Default.GetTradeAccountsForCreditControl(includeClosedAccounts=${ko.unwrap(self.includeClosedTradeAccounts)}, includeDeletedAccounts=${ko.unwrap(self.includeDeletedTradeAccounts)})`,
         textField: 'ShortLabel',
-        valueField: 'TradeAccountID',
+        valueField: 'Code',
         virtual: true,
         pageSize: 40,
         virtualOptions: {
@@ -142,7 +144,7 @@
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/TradeAccounts/Default.TradeAccountValueMapper(tradeAccountId=${options.value})`,
+                        url: `/odata/TradeAccounts_Live/Default.TradeAccountLiveValueMapper(tradeAccountCode=${options.value})`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
@@ -157,14 +159,14 @@
             return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
         },
         valueTemplate: (e) => {
-            if ((e.ShortLabel != '') && (e.TradeAccountID != null))
+            if ((e.ShortLabel != '') && (e.Code != null))
                 return `<span title="${e.ShortLabel}">Trade Account: ${e.ShortLabel}</span>`
             else
                 return '';
         },
-        idObservable: self.tradeAccountId,
+        idObservable: self.tradeAccountCode,
         objObservable: self.tradeAccount,
-        locked: ko.observable(self.tradeAccountId() != ''),
+        locked: ko.observable(false),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -187,7 +189,7 @@
 
         },
         clearFunction: () => {
-            self.tradeAccountId('');
+            self.tradeAccountCode('');
             self.tradeAccount(undefined);
             self.tradeAccountParams.dropDownListSettings.widget().value('');
             self.tradeAccountParams.dropDownListSettings.widget().trigger('change');
@@ -360,7 +362,7 @@
 
     //#region Subscriptions
 
-    self.tradeAccountId.subscribe(nv => {
+    self.tradeAccountCode.subscribe(nv => {
         self.refreshParent();
     })
 
@@ -393,13 +395,13 @@
             tradeAccountTypeId: self.tradeAccountTypeId(),
             paymentTermsId: self.paymentTermsId(),
             paymentTermsTypeId: self.paymentTermsTypeId(),
-            creditStopped: self.creditStopped(),
-            creditControllerCode: self.creditControllerId() == "" ? null : self.creditControllerId(), // contol holds empty string if nothing selected; can't pass CreditControllerCode = N'' to the procedure; demands an empty test here
+            creditStopped: self.creditStoppedId(),
+            creditControllerCode: self.creditControllerId() == "" ? null : self.creditControllerId(),
             tradeAccountTypeGroupId: self.tradeAccountTypeGroupId(),
             open: true,
             searchTerm: null,
             date: typeof self.date() == 'object' ? self.date().toUTCString() : self.date(),
-            tradeAccountId: self.tradeAccountId(), 
+            tradeAccountCode: self.tradeAccountCode() == '' ? null : self.tradeAccountCode(), 
             languageId: self.languageId()
         };
 
@@ -416,9 +418,7 @@
 
     //#region Methods
 
-    self.refreshParent = () => {
-        self.parent.refresh();
-    }
+
 
     //#endregion
 

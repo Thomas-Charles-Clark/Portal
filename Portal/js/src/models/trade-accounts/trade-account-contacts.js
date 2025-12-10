@@ -23,6 +23,8 @@
 
     self.tradeAccountContactsModal = bootstrap.Modal.getOrCreateInstance(self.tradeAccountContactsModalElement);
 
+    self.validateNow = ko.observable(false);
+
     self.unsavedChanges = ko.observableArray([]);
 
     //#endregion
@@ -31,8 +33,11 @@
     //#region Components
 
     self.errors = new ko.validation.group([
-
-    ]);
+        self.selectedTradeAccountContacts
+    ], {
+        deep: true,
+        live: true
+    });
 
     self.gridParams = {
         autoBind: true,
@@ -211,6 +216,7 @@
                 self.busy(false);
                 self.selectedTradeAccountContacts(data.Records.map(d => tradeAccountContactViewModel({
                     rec: d,
+                    parent: self
                 })));
                 self.unsavedChanges([]);
             })
@@ -221,29 +227,44 @@
     }
 
     self.saveTradeAccountContacts = () => {
-        self.busy(true);
 
-        let data = {
-            tradeAccountId: self.selectedTradeAccount().TradeAccountID,
-            contacts: self.selectedTradeAccountContacts().map(c => c.toJS())
-        };
+        self.errors.showAllMessages(false);
 
-        fetch('/api/tradeaccountcontactsapi/SaveChanges', {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            body: JSON.stringify(data)
-        })
-            .then(window.handleFetchResponse)
-            .then(data => {
-                self.busy(false);
-                self.tradeAccountContactsModal.hide();
+        self.validateNow(true);
+
+        if (self.errors().length) {
+
+            self.errors.showAllMessages(true);
+
+            self.errors.filter(x => {
+                x.isValid.notifySubscribers(x.isValid())
             })
-            .catch(err => {
-                self.busy(false);
-                window.catchFetchError(err);
+        } else {
+            self.busy(true);
+
+            let data = {
+                tradeAccountId: self.selectedTradeAccount().TradeAccountID,
+                contacts: self.selectedTradeAccountContacts().map(c => c.toJS())
+            };
+
+            fetch('/api/tradeaccountcontactsapi/SaveChanges', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                body: JSON.stringify(data)
             })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    self.busy(false);
+                    self.validateNow(false);
+                    self.tradeAccountContactsModal.hide();
+                })
+                .catch(err => {
+                    self.busy(false);
+                    window.catchFetchError(err);
+                })
+        }
     }
 
     self.cancelTradeAccountContactsModal = () => {
@@ -258,7 +279,8 @@
 
     self.addNewTradeAccountContact = () => {
         self.selectedTradeAccountContacts.push(tradeAccountContactViewModel({
-            rec: {}
+            rec: {},
+            parent: self
         }))
     }
 

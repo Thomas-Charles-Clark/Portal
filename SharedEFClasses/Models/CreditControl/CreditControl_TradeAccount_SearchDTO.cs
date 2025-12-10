@@ -18,6 +18,8 @@ namespace SharedEFClasses.Models.CreditControl
 
 		public short? CountryID { get; set; }
 
+		public string TradeAccountCode { get; set; }
+
 		public int? TradeAccountGroupID { get; set; }
 
 		public short? TradeAccountTypeID { get; set; }

@@ -40,6 +40,7 @@ namespace SharedEFClasses.Models
                 dto.SalesAgentID,
                 dto.SalesAreaID,
                 dto.CountryID,
+                dto.TradeAccountCode,
                 dto.TradeAccountGroupID,
                 dto.TradeAccountTypeID,
                 dto.TradeAccountTypeGroupID,

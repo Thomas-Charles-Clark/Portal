@@ -330,6 +330,9 @@
   justify-content: center;
   align-items: center;
   min-height: 240px;
+  position: sticky;
+  left: 0;
+  top: 0;
 }
 #credit-control-content .k-grid .k-alt:not(.k-state-selected):hover {
   background-color: #e9ecef;
@@ -340,15 +343,22 @@
 #credit-control-content .k-grid .html-cell .alert {
   margin-bottom: 0;
 }
-#credit-control-content .k-grid .grid-btn {
+#credit-control-content .k-grid .grid-btn-cell:hover, #credit-control-content .k-grid .grid-btn-cell:focus, #credit-control-content .k-grid .grid-btn-cell:focus-within {
+  background-color: #e9ecef;
+}
+#credit-control-content .k-grid .grid-btn-cell .grid-btn {
   padding: 0 0.75rem;
 }
-#credit-control-content .k-grid .grid-btn .bi {
+#credit-control-content .k-grid .grid-btn-cell .grid-btn .bi {
   font-size: 2.5rem;
 }
-#credit-control-content .k-grid .grid-btn .bi:hover, #credit-control-content .k-grid .grid-btn .bi:focus, #credit-control-content .k-grid .grid-btn .bi:focus-within {
+#credit-control-content .k-grid .grid-btn-cell .grid-btn .bi:hover, #credit-control-content .k-grid .grid-btn-cell .grid-btn .bi:focus, #credit-control-content .k-grid .grid-btn-cell .grid-btn .bi:focus-within {
   cursor: pointer;
-  text-shadow: 0 0 6px #6c757d;
+  /*text-shadow: 0 0 6px $blue-700;*/
+  color: #0d6efd;
+}
+#credit-control-content .k-grid .credit-stopped:hover {
+  cursor: not-allowed;
 }
 #credit-control-content .k-grid .credit-limit-heading,
 #credit-control-content .k-grid .totals-heading,
@@ -373,6 +383,9 @@
   vertical-align: middle;
   background-color: #e7f1ff;
   color: #000;
+}
+#credit-control-content .k-grid .other-trade-account-associations div {
+  white-space: nowrap;
 }
 #credit-control-content .k-grid-header .k-with-icon .k-link {
   margin: 0;

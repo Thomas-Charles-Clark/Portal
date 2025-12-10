@@ -466,8 +466,8 @@ namespace SharedEFClasses.Models.Mertex
 
         public byte? DaysForwardForReservations { get; set; }
 
-        [Column("eCommerceCustomer")]
-        public bool ECommerceCustomer { get; set; }
+        [Column("DebtCollector")]
+        public string DebtCollector { get; set; }
 
         [Column("SSField2")]
         [StringLength(50)]
@@ -490,5 +490,14 @@ namespace SharedEFClasses.Models.Mertex
         public DateTime? DeletedDT { get; set; }
 
         public bool? Deleted { get; set; }
-    }
+
+		[NotMapped]
+		public string ShortLabel
+		{
+			get
+			{
+				return $"{Code} - {Name}{(CreditStopped ? " (On Stop)" : "")}";
+			}
+		}
+	}
 }

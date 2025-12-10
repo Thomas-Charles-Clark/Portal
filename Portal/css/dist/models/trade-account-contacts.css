@@ -456,14 +456,26 @@
   border-top: 1px solid #fff;
   margin-bottom: 0;
 }
-.trade-account-contacts-table colgroup .mw-l {
-  min-width: 200px;
-}
-.trade-account-contacts-table colgroup .mw-m {
-  min-width: 64px;
-}
 .trade-account-contacts-table colgroup col {
-  width: 40px;
+  width: 110px;
+}
+.trade-account-contacts-table colgroup col.no-borders {
+  width: 20px;
+}
+.trade-account-contacts-table colgroup col.no-borders.delete-icon {
+  width: 64px;
+}
+.trade-account-contacts-table colgroup col:nth-of-type(1) {
+  width: 200px;
+}
+.trade-account-contacts-table colgroup col:nth-of-type(2) {
+  width: 300px;
+}
+.trade-account-contacts-table colgroup col:nth-of-type(3) {
+  width: 200px;
+}
+.trade-account-contacts-table colgroup col.other-trade-account-associations {
+  width: 340px;
 }
 .trade-account-contacts-table td {
   vertical-align: middle;
@@ -485,12 +497,17 @@
 .trade-account-contacts-table td.bg-trade-permissions * {
   cursor: not-allowed;
 }
+.trade-account-contacts-table td.email .contact-email {
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 .trade-account-contacts-table tr th {
   text-align: center;
 }
 .trade-account-contacts-table td.no-borders, .trade-account-contacts-table th.no-borders {
   background: none !important;
-  background-color: #fff !important;
+  background-color: transparent !important;
   border: 0 !important;
   border-top: 0 !important;
   border-right: 0 !important;
@@ -501,41 +518,98 @@
   background-color: #ced4da;
   text-align: left;
 }
+.trade-account-contacts-table td.errata-subheader.end-cell, .trade-account-contacts-table th.errata-subheader.end-cell {
+  border-color: #ced4da;
+}
+.trade-account-contacts-table td.errata-cell, .trade-account-contacts-table th.errata-cell {
+  background-color: #fff !important;
+  position: relative;
+  z-index: 2;
+}
 .trade-account-contacts-table td.b2b-permissions-header, .trade-account-contacts-table td.communication-preferences-header, .trade-account-contacts-table td.other-trade-account-associations-header, .trade-account-contacts-table th.b2b-permissions-header, .trade-account-contacts-table th.communication-preferences-header, .trade-account-contacts-table th.other-trade-account-associations-header {
-  border-top: 1px solid #dee2e6 !important;
   text-align: center;
   vertical-align: middle;
 }
 .trade-account-contacts-table td.b2b-permissions-header, .trade-account-contacts-table th.b2b-permissions-header {
   background-color: #052c65;
+  border-left: 1px solid #052c65;
+  border-right: 1px solid #052c65;
+  border-top: 1px solid #052c65;
   color: #fff;
 }
 .trade-account-contacts-table td.b2b-permissions-subheader, .trade-account-contacts-table th.b2b-permissions-subheader {
   background-color: #cfe2ff;
+  border-color: #9ec5fe;
 }
 .trade-account-contacts-table td.communication-preferences-header, .trade-account-contacts-table th.communication-preferences-header {
   background-color: #198754;
+  border-color: #198754;
   color: #fff;
 }
 .trade-account-contacts-table td.communication-preferences-subheader, .trade-account-contacts-table th.communication-preferences-subheader {
   background-color: #d1e7dd;
+  border-color: #a3cfbb;
 }
 .trade-account-contacts-table td.other-trade-account-associations-header, .trade-account-contacts-table th.other-trade-account-associations-header {
   background-color: #ced4da;
 }
+.trade-account-contacts-table td .other-trade-account-associations, .trade-account-contacts-table th .other-trade-account-associations {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .contacts-table-wrapper {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 1rem;
+  overflow-x: auto;
 }
 .contacts-table-wrapper .contact-details-table-wrapper {
-  width: 640px;
+  /*width: 640px;*/
   display: flex;
   align-items: flex-end;
-  padding-bottom: 15px;
+  position: relative;
+}
+.contacts-table-wrapper .contact-details-table-wrapper table {
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.contacts-table-wrapper .contact-details-table-wrapper table tr td {
+  border-bottom: 1px solid #ced4da;
 }
 .contacts-table-wrapper .contact-details-table-wrapper table td {
   height: 58px;
+}
+.contacts-table-wrapper .contact-details-table-wrapper table th:nth-of-type(1) {
+  position: sticky;
+  left: 0;
+}
+.contacts-table-wrapper .contact-details-table-wrapper table th:nth-of-type(2) {
+  position: sticky;
+  left: 200px;
+}
+.contacts-table-wrapper .contact-details-table-wrapper table th:nth-of-type(3) {
+  position: sticky;
+  left: 500px;
+}
+.contacts-table-wrapper .contact-details-table-wrapper table th:nth-of-type(3):not(.no-borders) {
+  box-shadow: 6px 0px 4px -6px #fff;
+}
+.contacts-table-wrapper .contact-details-table-wrapper table td:nth-of-type(1) {
+  position: sticky;
+  left: 0;
+}
+.contacts-table-wrapper .contact-details-table-wrapper table td:nth-of-type(2) {
+  position: sticky;
+  left: 200px;
+}
+.contacts-table-wrapper .contact-details-table-wrapper table td:nth-of-type(3) {
+  position: sticky;
+  left: 500px;
+  box-shadow: 6px 0px 4px -6px #fff;
 }
 .contacts-table-wrapper .contact-b2b-preferences-table-wrapper {
   width: auto;

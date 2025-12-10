@@ -38,11 +38,11 @@ namespace Portal.Areas.Customers.Controllers
 		}
 
         [HttpPost]
-        public async Task<IHttpActionResult> SaveChanges([FromBody] TradeAccountMaintenance_TradeAccount_Member_Save_DTO dto)
+        public async Task<IHttpActionResult> SaveChanges([FromBody] TradeAccountMaintenance_TradeAccount_Member_Upsert_DTO dto)
         {
-            await Task.Run(() => { });
+            dto.MemberID = User.Identity.GetUserId<int>();
 
-            return Ok(new { });
+            return Ok(await PortalDb.TradeAccountMaintenance_TradeAccount_Member_Upsert(dto));
         }
 	}
 }

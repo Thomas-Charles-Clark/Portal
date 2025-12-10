@@ -3094,7 +3094,7 @@ ko.bindingHandlers.matrixLoader = {
         self.spriteCtx = null;
         self.fontSize = 24;
         self.textWidth = 48;
-        self.textHeight = 48;
+        self.textHeight = 64;
         self.textHeightOffset = 0;
 
         self.fpsInterval = 1000 / 120;
@@ -3131,25 +3131,25 @@ ko.bindingHandlers.matrixLoader = {
             //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x26C4), String.fromCodePoint(0x1F3BF), String.fromCodePoint(0x1F3C2), String.fromCodePoint(0x2B50)]
 
             // Christmas
-            //return [String.fromCodePoint(0x2744),
-            //    String.fromCodePoint(0x26C4),
-            //    String.fromCodePoint(0x1F381),
-            //    String.fromCodePoint(0x1F380), // ribbon
-            //    String.fromCodePoint(0x1F384), // christmas tree
-            //    String.fromCodePoint(0x2B50),
-            //    String.fromCodePoint(0x1F385),
-            //    String.fromCodePoint(0x1F98C),
-            //    String.fromCodePoint(0x1F328),
-            //    String.fromCodePoint(0x1F384), // christmas tree
-            //    String.fromCodePoint(0x2603),
-            //    String.fromCodePoint(0x1F941), // drum
-            //    String.fromCodePoint(0x26C4),
-            //    String.fromCodePoint(0x2728),
-            //    String.fromCodePoint(0x1F56F), // candle
-            //    String.fromCodePoint(0x1F384), // christmas tree
-            //    String.fromCodePoint(0x1F514), // bell
-            //    String.fromCodePoint(0x1F370)
-            //]
+            return [String.fromCodePoint(0x2744),
+                String.fromCodePoint(0x26C4),
+                String.fromCodePoint(0x1F381),
+                String.fromCodePoint(0x1F380), // ribbon
+                String.fromCodePoint(0x1F384), // christmas tree
+                String.fromCodePoint(0x2B50),
+                String.fromCodePoint(0x1F385),
+                String.fromCodePoint(0x1F98C),
+                String.fromCodePoint(0x1F328),
+                String.fromCodePoint(0x1F384), // christmas tree
+                String.fromCodePoint(0x2603),
+                String.fromCodePoint(0x1F941), // drum
+                String.fromCodePoint(0x26C4),
+                String.fromCodePoint(0x2728),
+                String.fromCodePoint(0x1F56F), // candle
+                String.fromCodePoint(0x1F384), // christmas tree
+                String.fromCodePoint(0x1F514), // bell
+                String.fromCodePoint(0x1F370)
+            ]
 
             //Valentine's
             //return [
@@ -3215,14 +3215,14 @@ ko.bindingHandlers.matrixLoader = {
             //return [String.fromCodePoint(0x1F31E), String.fromCodePoint(0x1F33B), String.fromCodePoint(0x1F3BE), String.fromCodePoint(0x1F349), String.fromCodePoint(0x1F353), String.fromCodePoint(0x1F343), String.fromCodePoint(0x1F33E), String.fromCodePoint(0x1F337), String.fromCodePoint(0x1F425), String.fromCodePoint(0x1F3CF)]
 
             // Autumn
-            return [
-                String.fromCodePoint(0x1F341),
-                String.fromCodePoint(0x1F342),
-                String.fromCodePoint(0x1F341),
-                String.fromCodePoint(0x1F343),
-                String.fromCodePoint(0x2614),
-                String.fromCodePoint(0x2615),
-                String.fromCodePoint(0x1F36C)]
+            //return [
+            //    String.fromCodePoint(0x1F341),
+            //    String.fromCodePoint(0x1F342),
+            //    String.fromCodePoint(0x1F341),
+            //    String.fromCodePoint(0x1F343),
+            //    String.fromCodePoint(0x2614),
+            //    String.fromCodePoint(0x2615),
+            //    String.fromCodePoint(0x1F36C)]
 
             // Halloween
             //return [
@@ -3251,9 +3251,9 @@ ko.bindingHandlers.matrixLoader = {
             //return "rgba(0,0,0,0.25)"; // also darkish
             //return "#da5e04"; // autumn (bright)
             //return '#c86e2d'; // autumn (darker)
-            return "#f0b447"; // autumn (golden yellow)
+            //return "#f0b447"; // autumn (golden yellow)
             //return '#003153'; // autumn (prussian blue)
-            //return "#66b8ff"; //winter
+            return "#66b8ff"; //winter
             //return "#ffbbd7"; //valentine's (pink)
             //return '#f8c9dd'; // spring (pink)
             //return '#53bfea'; // spring (sky blue)

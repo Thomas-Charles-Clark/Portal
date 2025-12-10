@@ -1057,7 +1057,7 @@
             tradeAccountTypeId: self.tradeAccountTypeId(),
             paymentTermsId: self.paymentTermsId(),
             paymentTermsTypeId: self.paymentTermsTypeId(),
-            creditStopped: self.creditStopped(),
+            creditStopped: self.creditStoppedId(),
             creditControllerCode: self.creditControllerId() == "" ? null : self.creditControllerId(), // contol holds empty string if nothing selected; can't pass CreditControllerCode = N'' to the procedure; demands an empty test here
             tradeAccountTypeGroupId: self.tradeAccountTypeGroupId(),
             open: true,

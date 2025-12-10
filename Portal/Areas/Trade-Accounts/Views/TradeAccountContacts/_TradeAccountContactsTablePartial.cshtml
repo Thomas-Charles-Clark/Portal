@@ -2,93 +2,37 @@
 @Styles.Render("~/bundles/css/trade-account-contacts")
 <div class="contacts-table-wrapper">
 	<div class="contact-details-table-wrapper">
-		<table class="table table-bordered table-condensed trade-account-contacts-table">
+		<table class="table table-bordered trade-account-contacts-table">
 			<colgroup>
-				<col class="mw-l" />
-				<col class="mw-l" />
-				<col class="mw-l" />
+				<col class="name" />
+				<col class="email" />
+				<col class="phone" />
+				<col class="no-borders" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="no-borders" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="" />
+				<col class="no-borders delete-icon" />
+				<col class="other-trade-account-associations" />
 			</colgroup>
 			<thead>
 				<tr>
-					<th colspan="3" class="no-borders"></th>
-				</tr>
-				<tr>
-					<th class="errata-subheader">
-						Name
-					</th>
-					<th class="errata-subheader">
-						Email
-					</th>
-					<th class="errata-subheader">
-						Phone
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				<!-- ko foreach: selectedTradeAccountContacts -->
-				<tr>
-					<td tabindex="0">
-						<div class="d-flex justify-content-between align-items-center">
-							<!-- ko if: editingFullName -->
-							<input class="form-control" type="text" data-bind="keepElement: fullName, textInput: fullName, event: { blur: toggleEditingFullName }" />
-							<!-- /ko -->
-							<!-- ko ifnot: editingFullName -->
-							<span data-bind="text: fullName"></span>
-							<i class="bi bi-pencil pointer" data-bind="click: toggleEditingFullName"></i>
-							<!-- /ko -->
-						</div>
-					</td>
-					<td tabindex="0">
-						<div class="d-flex justify-content-between align-items-center">
-							<!-- ko if: editingEmail -->
-							<input class="form-control" type="email" data-bind="keepElement: email, textInput: email, event: { blur: toggleEditingEmail }" />
-							<!-- /ko -->
-							<!-- ko ifnot: editingEmail -->
-							<a class="contact-email" data-bind="text: email, attr: { href: `mailto:${ko.unwrap(email)}` }"></a>
-							<i class="bi bi-pencil pointer" data-bind="click: toggleEditingEmail"></i>
-							<!-- /ko -->
-						</div>
-					</td>
-					<td tabindex="0">
-						<div class="d-flex justify-content-between align-items-center">
-							<!-- ko if: editingPhone -->
-							<input class="form-control" type="text" data-bind="keepElement: phone, textInput: phone, event: { blur: toggleEditingPhone }" />
-							<!-- /ko -->
-							<!-- ko ifnot: editingPhone -->
-							<a class="contact-phone" data-bind="text: phone, attr: { href: `tel:${ko.unwrap(phone)}` }"></a>
-							<i class="bi bi-pencil pointer" data-bind="click: toggleEditingPhone"></i>
-							<!-- /ko -->
-						</div>
-					</td>
-				</tr>
-				<!-- /ko -->
-			</tbody>
-		</table>
-	</div>
-	<div class="contact-b2b-preferences-table-wrapper">
-		<table class="table table-bordered table-condensed trade-account-contacts-table">
-			<colgroup>
-				<col class="" />
-				<col class="" />
-				<col class="" />
-				<col class="" />
-				<col class="mw-m" />
-				<col class="" />
-				<col class="" />
-				<col class="" />
-				<col class="" />
-				<col class="" />
-				<col class="" />
-				<col class="" />
-				<col class="" />
-				<col class="" />
-				<col class="" />
-				<col class="" />
-				<col class="" />
-				<col class="" />
-			</colgroup>
-			<thead>
-				<tr>
+					<th class="no-borders errata-cell"></th>
+					<th class="no-borders errata-cell"></th>
+					<th class="no-borders errata-cell"></th>
+					<th class="no-borders errata-cell"></th>
 					<th colspan="8" class="communication-preferences-header">
 						Communication Preferences
 					</th>
@@ -100,47 +44,57 @@
 					<th class="no-borders"></th>
 				</tr>
 				<tr>
-					<th class="communication-preferences-subheader">
+					<th class="errata-subheader border-end-0 end-cell">
+						Name
+					</th>
+					<th class="errata-subheader border-end-0">
+						Email
+					</th>
+					<th class="errata-subheader end-cell">
+						Phone
+					</th>
+					<th class="no-borders"></th>
+					<th class="communication-preferences-subheader border-end-0">
 						Order Notifications
 					</th>
-					<th class="communication-preferences-subheader">
+					<th class="communication-preferences-subheader border-end-0">
 						Delivery Notifications
 					</th>
-					<th class="communication-preferences-subheader">
+					<th class="communication-preferences-subheader border-end-0">
 						Invoices
 					</th>
-					<th class="communication-preferences-subheader">
+					<th class="communication-preferences-subheader border-end-0">
 						Credit Notes
 					</th>
-					<th class="communication-preferences-subheader">
+					<th class="communication-preferences-subheader border-end-0">
 						Statements of Account &amp; Payment Requests
 					</th>
-					<th class="communication-preferences-subheader">
+					<th class="communication-preferences-subheader border-end-0">
 						Proof of Delivery
 					</th>
-					<th class="communication-preferences-subheader">
+					<th class="communication-preferences-subheader border-end-0">
 						Pricelists
 					</th>
 					<th class="communication-preferences-subheader">
 						Sales, Marketing &amp; Promotions
 					</th>
 					<th class="no-borders"></th>
-					<th class="b2b-permissions-subheader">
+					<th class="b2b-permissions-subheader border-end-0">
 						Setup Complete
 					</th>
-					<th class="b2b-permissions-subheader">
+					<th class="b2b-permissions-subheader border-end-0">
 						Account Admin
 					</th>
-					<th class="b2b-permissions-subheader">
+					<th class="b2b-permissions-subheader border-end-0">
 						Place Order
 					</th>
-					<th class="b2b-permissions-subheader">
+					<th class="b2b-permissions-subheader border-end-0">
 						Request Sample
 					</th>
-					<th class="b2b-permissions-subheader">
+					<th class="b2b-permissions-subheader border-end-0">
 						View Accounts
 					</th>
-					<th class="b2b-permissions-subheader">
+					<th class="b2b-permissions-subheader border-end-0">
 						Download Pricelists &amp; Brochures
 					</th>
 					<th class="b2b-permissions-subheader">
@@ -155,47 +109,81 @@
 			<tbody>
 				<!-- ko foreach: selectedTradeAccountContacts -->
 				<tr>
-					<td>
+					<td tabindex="0" class="errata-cell border-end-0">
+						<div class="d-flex justify-content-between align-items-center gap-3">
+							<!-- ko if: editingFullName -->
+							<input class="form-control" type="text" data-bind="keepElement: fullName, textInput: fullName, event: { blur: toggleEditingFullName }" />
+							<!-- /ko -->
+							<!-- ko ifnot: editingFullName -->
+							<span data-bind="text: fullName"></span>
+							<i class="bi bi-pencil pointer" data-bind="click: toggleEditingFullName"></i>
+							<!-- /ko -->
+						</div>
+					</td>
+					<td tabindex="0" class="errata-cell border-end-0">
+						<div class="d-flex justify-content-between align-items-center gap-3">
+							<!-- ko if: editingEmail -->
+							<input class="form-control" type="email" data-bind="keepElement: email, textInput: email, event: { blur: toggleEditingEmail }" />
+							<!-- /ko -->
+							<!-- ko ifnot: editingEmail -->
+							<a class="contact-email" data-bind="text: email, attr: { href: `mailto:${ko.unwrap(email)}` }"></a>
+							<i class="bi bi-pencil pointer" data-bind="click: toggleEditingEmail"></i>
+							<!-- /ko -->
+						</div>
+					</td>
+					<td tabindex="0" class="errata-cell">
+						<div class="d-flex justify-content-between align-items-center gap-3">
+							<!-- ko if: editingPhone -->
+							<input class="form-control" type="text" data-bind="keepElement: phone, textInput: phone, event: { blur: toggleEditingPhone }" />
+							<!-- /ko -->
+							<!-- ko ifnot: editingPhone -->
+							<a class="contact-phone" data-bind="text: phone, attr: { href: `tel:${ko.unwrap(phone)}` }"></a>
+							<i class="bi bi-pencil pointer" data-bind="click: toggleEditingPhone"></i>
+							<!-- /ko -->
+						</div>
+					</td>
+					<td class="no-borders"></td>
+					<td class="border-end-0">
 						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_OrderNotificationsParams }"></div>
 					</td>
-					<td>
+					<td class="border-end-0">
 						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_DeliveryNotificationsParams }"></div>
 					</td>
-					<td>
+					<td class="border-end-0">
 						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_InvoicesParams }"></div>
 					</td>
-					<td>
+					<td class="border-end-0">
 						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_CreditNotesParams }"></div>
 					</td>
-					<td>
+					<td class="border-end-0">
 						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_StatementsOfAccountAndPaymentRequestsParams }"></div>
 					</td>
-					<td>
+					<td class="border-end-0">
 						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_ProofOfDeliveryParams }"></div>
 					</td>
-					<td>
+					<td class="border-end-0">
 						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_PriceListsParams }"></div>
 					</td>
 					<td>
 						<div data-bind="component: { name: 'mdc-checkbox-component', params: communicationPreference_SalesMarketingAndPromotionalInformationParams }"></div>
 					</td>
 					<td class="no-borders"></td>
-					<td class="bg-trade-permissions">
+					<td class="bg-trade-permissions border-end-0">
 						<div data-bind="component: { name: 'mdc-checkbox-component', params: tradeAccountRegistrationCompleteParams }"></div>
 					</td>
-					<td class="bg-trade-permissions">
+					<td class="bg-trade-permissions border-end-0">
 						<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionAccountAdminParams }"></div>
 					</td>
-					<td class="bg-trade-permissions">
+					<td class="bg-trade-permissions border-end-0">
 						<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionPlaceOrderParams }"></div>
 					</td>
-					<td class="bg-trade-permissions">
+					<td class="bg-trade-permissions border-end-0">
 						<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionRequestSampleParams }"></div>
 					</td>
-					<td class="bg-trade-permissions">
+					<td class="bg-trade-permissions border-end-0">
 						<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionViewAccountsParams }"></div>
 					</td>
-					<td class="bg-trade-permissions">
+					<td class="bg-trade-permissions border-end-0">
 						<div data-bind="component: { name: 'mdc-checkbox-component', params: tradePermissionDownloadPricelistsBrochuresParams }"></div>
 					</td>
 					<td class="bg-trade-permissions">
@@ -207,7 +195,7 @@
 						</button>
 					</td>
 					<td>
-						<span data-bind="text: otherTradeAccountAssociations"></span>
+						<div class="other-trade-account-associations" data-bind="html: otherTradeAccountAssociations"></div>
 					</td>
 				</tr>
 				<!-- /ko -->
@@ -215,7 +203,7 @@
 		</table>
 	</div>
 </div>
-<div class="d-flex gap-3">
+<div class="d-flex gap-3 mt-3">
 	<button type="button" class="btn btn-success me-auto" data-bind="click: addNewTradeAccountContact">
 		Add Contact
 		<i class="bi bi-plus-lg"></i>

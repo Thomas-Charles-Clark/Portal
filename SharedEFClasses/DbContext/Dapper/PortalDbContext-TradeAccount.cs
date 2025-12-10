@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using SimpleImpersonation;
 using SharedEFClasses.Models.NeimanMarcus;
 using SharedEFClasses.Models.TradeAccounts;
+using Newtonsoft.Json;
 
 namespace SharedEFClasses.Models
 {
@@ -189,6 +190,22 @@ namespace SharedEFClasses.Models
 			return new TradeAccountMaintenance_TradeAccount_Member_Select_Result()
 			{
 				Records = await reply.ReadAsync<TradeAccountMaintenance_TradeAccount_Member_Select_Record>()
+			};
+		}
+
+		public async Task<TradeAccountMaintenance_TradeAccount_Member_Upsert_Result> TradeAccountMaintenance_TradeAccount_Member_Upsert(TradeAccountMaintenance_TradeAccount_Member_Upsert_DTO dto)
+		{
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[TradeAccountMaintenance_Member_Upsert]", new { 
+                dto.MemberID,
+                dto.TradeAccountID,
+                ContactsJSON = JsonConvert.SerializeObject(dto.Contacts, new JsonSerializerSettings() { 
+                    NullValueHandling = NullValueHandling.Include
+                })
+            }, null, 30, CommandType.StoredProcedure);
+
+			return new TradeAccountMaintenance_TradeAccount_Member_Upsert_Result()
+			{
+				Results = await reply.ReadAsync<TradeAccountMaintenance_TradeAccount_Member_Upsert_Record>()
 			};
 		}
 	}

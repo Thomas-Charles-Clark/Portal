@@ -1,10 +1,11 @@
 ﻿const tradeAccountContactViewModel = ({
-    rec
+	rec,
+	parent
 } = {
     rec: {}
 }) => {
     let self = Object.assign({
-
+		validateNow: parent.validateNow
     }, rec);
 
     //#region Properties
@@ -44,6 +45,11 @@
 	self.fullName = ko.observable(self.FullName);
 
 	self.email = ko.observable(self.Email).extend({
+		required: {
+			params: true,
+			onlyIf: self.validateNow,
+			message: 'You must provide an Email Address'
+		},
 		email: {
 			params: true
 		}

@@ -674,6 +674,7 @@
     <Compile Include="Controllers\ODataControllers\DocumentOutputModesController.cs" />
     <Compile Include="Controllers\ODataControllers\GeneralLedgerAnalysisGroupDsController.cs" />
     <Compile Include="Controllers\ODataControllers\AdvertiserClassesController.cs" />
+    <Compile Include="Controllers\ODataControllers\TradeAccounts_LiveController.cs" />
     <Compile Include="Controllers\ODataControllers\SaleHistoryAnalysisPeriodsController.cs" />
     <Compile Include="Controllers\ODataControllers\SupplierPaymentTermsController.cs" />
     <Compile Include="Controllers\ODataControllers\SupplierTypesController.cs" />
