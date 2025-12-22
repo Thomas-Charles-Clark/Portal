@@ -59,5 +59,6 @@ namespace SharedEFClasses.Models.CreditControl
 		public int? RefundsQuantity { get; set; }
 		public int? SalesRank { get; set; }
 		public decimal? SalesValue { get; set; }
+		public int MemberCount { get; set; }
 	}
 }

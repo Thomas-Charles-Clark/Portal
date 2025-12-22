@@ -43,10 +43,10 @@
         
         var viewModel = new documentsPreviewViewModel();
 
-        viewModel.emailer.to('@Html.Raw(Model.To)');
-        viewModel.emailer.subject('@Html.Raw(Model.Subject)');
+        viewModel.emailer.to('@Html.Raw(Model.To?.Replace("'", "\\'"))');
+        viewModel.emailer.subject('@Html.Raw(Model.Subject?.Replace("'", "\\'"))');
         viewModel.emailer.originalSubject(viewModel.emailer.subject());
-        viewModel.emailer.body('@Html.Raw(Model.Body)');
+        viewModel.emailer.body('@Html.Raw(Model.Body?.Replace("'", "\\'"))');
         viewModel.emailer.originalBody(viewModel.emailer.body());
 
         ko.options.deferUpdates = true;

@@ -52,8 +52,8 @@ namespace Portal.Areas.Documents.ViewModels
             PDFData = pdfData;
             To = to;
             ReplyTo = replyTo;
-            Subject = subject;
-            Body = body;
+            Subject = subject?.Replace("'", "\'");
+            Body = body?.Replace("'", "\'");
         }
     }
 }

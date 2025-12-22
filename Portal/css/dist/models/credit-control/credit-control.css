@@ -1,0 +1,455 @@
+:root {
+  --vsm-gutter: 0.25rem;
+  --sm-gutter: 0.5rem;
+  --m-gutter: 0.75rem;
+  --l-gutter: 1rem;
+  --mxl-gutter: 1.5rem;
+  --xl-gutter: 2rem;
+  --xxl-gutter: 3rem;
+  --disco-color: #e51f7c;
+  --letter-spacing-slight: 0.05rem;
+  --page-heading-colour: #44546b;
+}
+
+.input-group-lg .btn {
+  font-size: 1rem;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.halloween-message {
+  font-family: "Trixie";
+}
+.halloween-message .shining {
+  display: block;
+  font-family: "Trixie Rough";
+}
+.halloween-message .attribution {
+  font-size: 60%;
+  font-family: "Courier New";
+  font-style: italic;
+}
+.halloween-message .attribution::before {
+  content: " - ";
+}
+
+.mdc-text-field--html-editor .mdc-text-field__input {
+  line-height: normal;
+}
+.mdc-text-field--html-editor .k-widget {
+  border: 0;
+}
+.mdc-text-field--html-editor .k-widget .k-content {
+  height: 450px;
+}
+.mdc-text-field--html-editor .k-widget.k-editor-widget {
+  background-color: transparent;
+  box-shadow: none;
+}
+.mdc-text-field--html-editor .mdc-text-field__input {
+  display: none !important;
+}
+.mdc-text-field--html-editor .k-button-group {
+  box-shadow: none;
+}
+.mdc-text-field--html-editor .k-editor-toolbar {
+  margin-left: 100px;
+  transition: margin-left 150ms ease-in-out;
+}
+.mdc-text-field--html-editor .mdc-notched-outline .mdc-notched-outline__notch .mdc-floating-label {
+  top: 14px;
+}
+.mdc-text-field--html-editor:has(.mdc-floating-label--float-above) .k-editor-toolbar {
+  margin-left: 0;
+}
+.mdc-text-field--html-editor .controls {
+  position: relative;
+  top: 6px;
+}
+
+.mdc-text-field--html-editor-inline-no-outline {
+  display: inline-flex;
+  align-items: center;
+}
+.mdc-text-field--html-editor-inline-no-outline .k-widget {
+  border: 0;
+  flex: 1;
+  box-shadow: none;
+}
+.mdc-text-field--html-editor-inline-no-outline .k-widget.k-editor-widget {
+  background-color: transparent;
+  box-shadow: none;
+}
+.mdc-text-field--html-editor-inline-no-outline .mdc-text-field__input {
+  display: none !important;
+}
+.mdc-text-field--html-editor-inline-no-outline .k-editor-inline {
+  line-height: 1.6em;
+  padding: 0.4em 0.6em;
+}
+.mdc-text-field--html-editor-inline-no-outline .controls {
+  position: static;
+}
+
+.mdc-bootstrap-multiselect.mdc-text-field .dropdown .dropdown-toggle:after {
+  display: none;
+}
+.mdc-bootstrap-multiselect .dropdown .dropdown-toggle:after {
+  /*display: inline-block;*/
+}
+.mdc-bootstrap-multiselect .dropdown .dropdown-menu {
+  min-width: 320px;
+  margin-bottom: 0.5rem;
+}
+.mdc-bootstrap-multiselect .dropdown .dropdown-menu .form-check {
+  margin: 0;
+  padding-left: 0.75rem;
+}
+.mdc-bootstrap-multiselect .dropdown .dropdown-menu .form-check.group-wrapper {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #4861b8;
+  color: #fff;
+  /* border-top-left-radius: $border-radius;
+  border-top-right-radius: $border-radius;*/
+}
+.mdc-bootstrap-multiselect .dropdown .dropdown-menu .form-check.group-wrapper a {
+  color: #fff;
+  text-decoration: none;
+}
+.mdc-bootstrap-multiselect .dropdown .dropdown-menu .form-check.group-wrapper:hover a, .mdc-bootstrap-multiselect .dropdown .dropdown-menu .form-check.group-wrapper:focus a, .mdc-bootstrap-multiselect .dropdown .dropdown-menu .form-check.group-wrapper:focus-within a {
+  text-decoration: underline;
+}
+.mdc-bootstrap-multiselect .dropdown .dropdown-menu .form-check.group-item {
+  border-left: 2px solid #4861b8;
+  border-right: 2px solid #4861b8;
+}
+.mdc-bootstrap-multiselect .dropdown .dropdown-menu .form-check.group-item.final-group-item {
+  /*         border-bottom-left-radius: $border-radius;
+  border-bottom-right-radius: $border-radius;*/
+  border-bottom: 2px solid #4861b8;
+}
+.mdc-bootstrap-multiselect .dropdown .dropdown-menu .dropdown-item {
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.mdc-bootstrap-multiselect .dropdown .dropdown-menu .dropdown-item .form-check-input {
+  top: 0;
+  cursor: pointer;
+}
+.mdc-bootstrap-multiselect .dropdown .dropdown-menu .form-check {
+  text-indent: 0;
+  padding-left: 0;
+}
+.mdc-bootstrap-multiselect .dropdown .dropdown-menu .form-check label {
+  padding-left: 2rem;
+}
+
+.mdc-validating-field {
+  /* Why... not disabled - aha, because colouring...? */
+}
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--selected:not(.mdc-select--disabled) .dropdown-toggle {
+  background: #084298;
+  color: #fff;
+  border-radius: 0.375rem;
+}
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--selected:not(.mdc-select--disabled) .mdc-floating-label {
+  color: #fff;
+}
+.mdc-validating-field .mdc-bootstrap-multiselect.mdc-select--selected:not(.mdc-select--disabled) .controls > div {
+  color: #fff;
+  text-shadow: 0 1px 0 #000;
+}
+.mdc-validating-field .mdc-bootstrap-multiselect li:nth-of-type(2) {
+  border-top: 0;
+}
+.mdc-validating-field .mdc-bootstrap-multiselect li + li {
+  border-top: 1px solid #ced4da;
+}
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled) .mdc-notched-outline__notch,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect) .mdc-notched-outline__notch {
+  opacity: 1;
+  will-change: opacity, display;
+  transition: opacity 150ms ease-in-out;
+  transition-behavior: allow-discrete;
+}
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .k-dropdown-wrap.k-state-default, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .k-dropdown-wrap.k-state-default,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .k-dropdown-wrap.k-state-default,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .k-dropdown-wrap.k-state-default {
+  position: relative;
+  z-index: 0;
+  background: #084298;
+  color: #fff;
+  border-radius: 0.375rem;
+}
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .k-dropdown-wrap.k-state-default .k-input, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .k-dropdown-wrap.k-state-default .k-input,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .k-dropdown-wrap.k-state-default .k-input,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .k-dropdown-wrap.k-state-default .k-input {
+  color: #fff;
+}
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls > div {
+  color: #fff;
+  text-shadow: 0 1px 0 #000;
+}
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .mdc-notched-outline__notch, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .mdc-notched-outline__notch,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .mdc-notched-outline__notch,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .mdc-notched-outline__notch {
+  opacity: 0;
+  display: none;
+}
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--disabled .k-dropdown-wrap.k-state-default, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--disabled .k-dropdown-wrap.k-state-default,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--disabled .k-dropdown-wrap.k-state-default,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--disabled .k-dropdown-wrap.k-state-default {
+  color: #6c757d;
+}
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--disabled .k-dropdown-wrap.k-state-default .k-input, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--disabled .k-dropdown-wrap.k-state-default .k-input,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--disabled .k-dropdown-wrap.k-state-default .k-input,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--disabled .k-dropdown-wrap.k-state-default .k-input {
+  color: #6c757d;
+}
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--disabled .controls > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--disabled .controls > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--disabled .controls > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--disabled .controls > div {
+  color: #000;
+  text-shadow: none;
+}
+.mdc-validating-field .date-select--selected:not(.mdc-text-field--disabled) input {
+  position: relative;
+  z-index: 0;
+  background: #084298;
+  color: #fff;
+  border-radius: 0.375rem;
+}
+.mdc-validating-field .mdc-text-field--selected:not(.mdc-text-field--disabled) input {
+  position: relative;
+  z-index: 0;
+  background: #084298;
+  color: #fff;
+  border-radius: 0.375rem;
+}
+
+html {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+html body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+html body .container.body-content {
+  flex: 1 1 100%;
+  width: 100% !important;
+  display: flex;
+}
+html body > nav.navbar-default h1, html body > nav.navbar-default h2, html body > nav.navbar-default h3, html body > nav.navbar-default h4, html body > nav.navbar-default h5, html body > nav.navbar-default h6 {
+  font-family: "Trixie", "Open Sans", Arial;
+  font-weight: 800;
+}
+html body > nav.navbar-default h1 span, html body > nav.navbar-default h2 span, html body > nav.navbar-default h3 span, html body > nav.navbar-default h4 span, html body > nav.navbar-default h5 span, html body > nav.navbar-default h6 span {
+  font-family: Courier New, Courier, monospace;
+  font-weight: 400;
+}
+html body > nav.navbar-default .nav.navbar-nav {
+  flex-wrap: nowrap;
+}
+html body > nav.navbar-default .nav.navbar-nav .app-title h2 {
+  flex-wrap: nowrap;
+}
+html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
+  white-space: nowrap;
+}
+
+#main-credit-control-container {
+  will-change: opacity;
+  transition: opacity 300ms ease-in-out;
+  flex: 1;
+  align-self: stretch;
+  max-height: calc(100% - 50px);
+  transform: translate3d(0, 0, 0);
+}
+#main-credit-control-container #credit-control-main {
+  padding: 1rem;
+}
+#main-credit-control-container #credit-control-main #credit-control-grid-container .k-grid-norecords {
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 3rem;
+  align-items: center;
+  min-height: 240px;
+  position: sticky;
+  left: 0;
+  top: 0;
+}
+
+#credit-control-main {
+  /*border-radius: 0 $border-radius $border-radius $border-radius;*/
+  border-radius: 0;
+  margin-bottom: 0;
+}
+#credit-control-main .tab-pane {
+  padding: 1rem;
+}
+#credit-control-main .k-filter-row th,
+#credit-control-main .k-grid-header th.k-header {
+  overflow: visible;
+  white-space: normal;
+  word-break: break-word;
+}
+#credit-control-main .statement-column i {
+  font-size: 2rem;
+}
+#credit-control-main .k-grid .k-alt:not(.k-state-selected):hover {
+  background-color: #e9ecef;
+}
+#credit-control-main .k-grid tr:hover {
+  background-color: #e9ecef;
+}
+#credit-control-main .k-grid .html-cell .alert {
+  margin-bottom: 0;
+}
+#credit-control-main .k-grid .grid-btn-cell:hover, #credit-control-main .k-grid .grid-btn-cell:focus, #credit-control-main .k-grid .grid-btn-cell:focus-within {
+  background-color: #e9ecef;
+}
+#credit-control-main .k-grid .grid-btn-cell .grid-btn {
+  padding: 0 0.75rem;
+}
+#credit-control-main .k-grid .grid-btn-cell .grid-btn .bi {
+  font-size: 2.5rem;
+}
+#credit-control-main .k-grid .grid-btn-cell .grid-btn .bi:hover, #credit-control-main .k-grid .grid-btn-cell .grid-btn .bi:focus, #credit-control-main .k-grid .grid-btn-cell .grid-btn .bi:focus-within {
+  cursor: pointer;
+  /*text-shadow: 0 0 6px $blue-700;*/
+  color: #0d6efd;
+}
+#credit-control-main .k-grid .credit-stopped:hover {
+  cursor: not-allowed;
+}
+#credit-control-main .k-grid .credit-limit-heading,
+#credit-control-main .k-grid .totals-heading,
+#credit-control-main .k-grid .orders-heading,
+#credit-control-main .k-grid .debt-breakdown-heading,
+#credit-control-main .k-grid .other-heading,
+#credit-control-main .k-grid .sales-heading {
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  background-color: #084298;
+  color: #fff;
+}
+#credit-control-main .k-grid .credit-limit-subheading,
+#credit-control-main .k-grid .totals-subheading,
+#credit-control-main .k-grid .orders-subheading,
+#credit-control-main .k-grid .debt-breakdown-subheading,
+#credit-control-main .k-grid .other-subheading,
+#credit-control-main .k-grid .sales-subheading {
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  background-color: #e7f1ff;
+  color: #000;
+}
+#credit-control-main .k-grid .other-trade-account-associations div {
+  white-space: nowrap;
+}
+#credit-control-main .k-grid-header .k-with-icon .k-link {
+  margin: 0;
+}
+#credit-control-main .k-grid-content-locked {
+  height: 100% !important;
+}
+
+#response-container .alert {
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+
+#contacts-tab-pane #trade-account-contacts-filters-tab {
+  padding: 0;
+  border: 0;
+}
+#contacts-tab-pane #trade-account-contacts-tabs-content {
+  margin-bottom: 0;
+  border: 0;
+}
+#contacts-tab-pane #trade-account-contacts-tabs-content .trade-account-contacts-prefilters .prefilter {
+  flex: 1 0 calc(20% - 3rem);
+}
+#contacts-tab-pane #trade-account-contacts-modal-dialog {
+  margin-top: 0;
+}
+
+.dashboard {
+  margin: 0 0 1rem 0;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+}
+.dashboard .dashboard-pod {
+  flex: 1;
+  text-align: center;
+  align-self: stretch;
+  cursor: pointer;
+  will-change: background-color;
+  background-color: #fff;
+  color: #212529;
+  border-color: #adb5bd;
+  transition: background-color 150ms ease-in-out, color 150ms ease-in-out, border-color 150ms ease-in-out;
+}
+.dashboard .dashboard-pod:hover .card-body h4, .dashboard .dashboard-pod:hover .card-body h5, .dashboard .dashboard-pod:focus .card-body h4, .dashboard .dashboard-pod:focus .card-body h5, .dashboard .dashboard-pod:focus-within .card-body h4, .dashboard .dashboard-pod:focus-within .card-body h5 {
+  text-decoration: underline;
+}
+.dashboard .dashboard-pod.warning {
+  background-color: #b02a37;
+  color: #fff;
+  border-color: #b43541;
+}
+.dashboard .dashboard-pod.active {
+  /*text-decoration: underline;*/
+}
+.dashboard .dashboard-pod.active.warning {
+  background-color: #a72834;
+  color: #fff;
+}
+.dashboard .dashboard-pod.active:not(.warning) {
+  background-color: #084298;
+  color: #fff;
+}
+.dashboard .dashboard-pod.active:not(.warning) a {
+  color: #fff;
+}
+.dashboard .dashboard-pod .card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.dashboard .dashboard-pod .card-body.alert {
+  margin-bottom: 0;
+  border: 0;
+  border-radius: 0.375rem;
+}
+.dashboard .dashboard-pod .card-body h4 {
+  font-weight: bold;
+  font-size: 1.55rem;
+  margin-bottom: 0.75rem;
+}
+.dashboard .dashboard-pod .card-body h5 {
+  font-size: 1.15rem;
+}
+.dashboard .dashboard-pod .card-body h4,
+.dashboard .dashboard-pod .card-body h5 {
+  text-decoration: none;
+  line-height: 1.75rem;
+}
+/*# sourceMappingURL=credit-control.css.map */

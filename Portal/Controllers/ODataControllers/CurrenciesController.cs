@@ -40,9 +40,17 @@ namespace Portal.Controllers
         public IQueryable<Currency> GetCurrencies()
         {
             return PortalDb.Currencies.AsQueryable();
-        }
+		}
 
-        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+		// GET: odata/Currencies
+		[EnableQuery]
+		[HttpGet]
+		public IQueryable<Currency> CurrencyValueMapper(byte? currencyId)
+		{
+			return PortalDb.Currencies.Where(c => c.CurrencyID == currencyId).AsQueryable();
+		}
+
+		[EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<Currency> InvoiceRegistrationCurrencies()
         {

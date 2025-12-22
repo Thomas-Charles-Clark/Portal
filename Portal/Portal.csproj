@@ -670,6 +670,7 @@
     <Compile Include="Areas\Trade-Accounts\TradeAccountsAreaRegistration.cs" />
     <Compile Include="Areas\Trade-Accounts\ViewModels\TradeAccountContactsViewModel.cs" />
     <Compile Include="Controllers\IncomingEmailAttachmentController.cs" />
+    <Compile Include="Controllers\ODataControllers\DebtFundersController.cs" />
     <Compile Include="Controllers\ODataControllers\CreditControllersController.cs" />
     <Compile Include="Controllers\ODataControllers\DocumentOutputModesController.cs" />
     <Compile Include="Controllers\ODataControllers\GeneralLedgerAnalysisGroupDsController.cs" />
@@ -1661,13 +1662,13 @@
     <Content Include="css\src\models\marketing-messages.scss" />
     <Content Include="css\src\models\member-search.scss" />
     <Content Include="css\src\models\new-test.scss" />
-    <Content Include="css\src\models\order-book-advanced-filters.scss" />
-    <Content Include="css\src\models\order-book-date-filters.scss" />
-    <Content Include="css\src\models\order-book-detail.scss" />
-    <Content Include="css\src\models\order-book-pre-defined-filters.scss" />
-    <Content Include="css\src\models\order-book-reallocate-stock.scss" />
-    <Content Include="css\src\models\order-book-user-defined-filters.scss" />
-    <Content Include="css\src\models\order-book.scss" />
+    <Content Include="css\src\models\order-book\order-book-advanced-filters.scss" />
+    <Content Include="css\src\models\order-book\order-book-date-filters.scss" />
+    <Content Include="css\src\models\order-book\order-book-detail.scss" />
+    <Content Include="css\src\models\order-book\order-book-pre-defined-filters.scss" />
+    <Content Include="css\src\models\order-book\order-book-reallocate-stock.scss" />
+    <Content Include="css\src\models\order-book\order-book-user-defined-filters.scss" />
+    <Content Include="css\src\models\order-book\order-book.scss" />
     <Content Include="css\src\models\order-import.scss" />
     <Content Include="css\src\models\order-products-e.scss" />
     <Content Include="css\src\models\order-returns.scss" />
@@ -2685,11 +2686,7 @@
     <Content Include="css\src\models\contract-pricing.scss" />
     <Content Include="css\src\models\virtual-scrolling-deferred-data.scss" />
     <Content Include="css\src\models\press-contacts.scss" />
-    <Content Include="css\src\models\order-book.scss" />
     <Content Include="css\src\models\full-width-app.scss" />
-    <Content Include="css\src\models\order-book-user-defined-filters.scss" />
-    <Content Include="css\src\models\order-book-date-filters.scss" />
-    <Content Include="css\src\models\order-book-pre-defined-filters.scss" />
     <Content Include="css\src\fonts\bootstrap-icons.min.css.map" />
     <Content Include="css\src\fonts\font-awesome.min.css.map" />
     <Content Include="css\src\fonts\fonts.min.css.map" />
@@ -3057,11 +3054,8 @@
     <Content Include="css\src\fonts\src\verdana-400.woff2" />
     <Content Include="css\src\fonts\src\verdana-700.woff2" />
     <Content Include="css\src\fonts\src\wash-care-symbols-m54.woff2" />
-    <Content Include="css\src\models\order-book-detail.scss" />
-    <Content Include="css\src\models\order-book-advanced-filters.scss" />
-    <Content Include="css\src\models\order-book-reallocate-stock.scss" />
     <Content Include="css\src\lib\bootstrap-icons\bootstrap-icons.scss" />
-    <Content Include="css\src\models\order-book-sales.scss" />
+    <Content Include="css\src\models\order-book\order-book-sales.scss" />
     <Content Include="css\src\models\parcel-calculator.scss" />
     <Content Include="css\src\models\pattern-books.scss" />
     <Content Include="css\src\models\gift-vouchers.scss" />
@@ -3072,16 +3066,17 @@
     <Content Include="css\src\models\order-products-d.scss" />
     <Content Include="css\src\models\marylebone-boxing.scss" />
     <Content Include="css\src\models\neiman-marcus-order-status.scss" />
-    <Content Include="css\src\models\order-book-back-orders-without-purchase-orders.scss" />
+    <Content Include="css\src\models\order-book\order-book-back-orders-without-purchase-orders.scss" />
     <Content Include="css\src\models\invoice-booking.scss" />
-    <Content Include="css\src\models\order-book-orders.scss" />
+    <Content Include="css\src\models\order-book\order-book-orders.scss" />
     <Content Include="css\src\models\invoice-booking-email-viewer.scss" />
     <Content Include="css\src\models\advertiser-maintenance.scss" />
     <Content Include="css\src\models\documents-sent-report.scss" />
     <Content Include="css\src\lib\prettify\sunburst.scss" />
-    <Content Include="css\src\models\credit-control.scss" />
+    <Content Include="css\src\models\credit-control\credit-control.scss" />
     <Content Include="css\src\models\trade-account-contacts.scss" />
     <Content Include="css\src\models\trade-account-contacts-widener.scss" />
+    <Content Include="css\src\models\credit-control\credit-control-sidebar.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

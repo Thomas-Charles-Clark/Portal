@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.CreditControl
 {
-	[Table("SalesHistoryAnalsisPeriod", Schema = "dbo")]
+	[Table("SaleHistoryAnalysisPeriod", Schema = "dbo")]
 	public class SalesHistoryAnalysisPeriod
 	{
 		[Key]
-		public byte SalesHistoryAnalysisPeriodID { get; set; }
+		public string Code { get; set; }
 
 		public string Name { get; set; }
 

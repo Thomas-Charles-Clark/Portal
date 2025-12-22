@@ -76,81 +76,49 @@
 	</div>
 </div>
 
-@*<div class="page-heading-wrapper">
-		<div class="page-heading-logo">
-			<div></div>
-		</div>
-		<div class="page-heading text-right">
-			@if (!String.IsNullOrEmpty(Model.ApplicationHeading))
-			{
-				<h1 class="main-heading main-heading my-2 mx-3">
-					@(Model.ApplicationHeading)
-				</h1>
-			}
-			@if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
-			{
-				<h4 class="sub-heading">
-					<span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
-				</h4>
-			}
-		</div>
-	</div>*@
-
-@*<ul class="nav nav-tabs">
-		<li class="nav-item">
-			<button class="nav-link active" id="credit-control-tab-btn" data-bs-toggle="tab" data-bs-target="#credit-control-tab-pane" type="button" role="tab" aria-controls="statement-tab-pane" aria-selected="true">
-				Credit Control
-			</button>
-		</li>
-		<li class="nav-item">
-			<button class="nav-link" id="contacts-tab-btn" data-bs-toggle="tab" data-bs-target="#contacts-tab-pane" type="button" role="tab" aria-controls="contacts-tab-pane" aria-selected="true">
-				Contacts
-			</button>
-		</li>
-	</ul>*@
-@*<div class="tab-content" id="credit-control-tabs-content">
-		<div id="credit-control-tab-pane" class="tab-pane fade show active" role="tabpanel" aria-labelledby="credit-control-tab-btn" tabindex="0">
-			<form id="credit-control-prefilters" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
-				<div class="trade-account-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
-				<div class="prefilter">
-					<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
-					<span class="validation-message" data-bind="validationMessage: date"></span>
-				</div>
-			</form>
-			<div id="controls-wrapper">
-				<button class="btn btn-dark" data-bind="click: sendStatements">
-					Send Statements
+<div id="main-credit-control-container" class="d-flex align-items-start w-100 opacity-100" data-bind="flexFadeVisible: true">
+	<sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top">
+		<div class="sidebar-inner">
+			<div class="sidebar-header" data-bind="click: filters.togglePinning">
+				<button type="button" class="btn btn-light" title="Toggle Pinning">
+					<i class="bi bi-pin-angle-fill fs-5"></i>
 				</button>
+				<label class="filters-count" data-bind="html: filters.countDisplay"></label>
 			</div>
-			<div id="response-container" data-bind="html: sendResponse"></div>
-		</div>
-		<div id="contacts-tab-pane" class="tab-pane fade" role="tabpanel" aria-labelledby="contacts-tab-btn" tabindex="0">
-			@Html.Action("TradeAccountContactsPartial", "TradeAccountContacts", new { Area = "trade-accounts" })
-		</div>
-	</div>*@
-
-<div id="credit-control-content" class="card">
-	<div class="card-body">
-		<form id="credit-control-prefilters" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
-			<div id="credit-control-sales-markets-prefilter" class="prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: salesMarketsParams }"></div>
-			<div id="credit-control-sales-representative-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesRepresentativeParams }"></div>
-			<div id="credit-control-sales-agent-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAgentParams }"></div>
-			<div id="credit-control-sales-area-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAreaParams }"></div>
-			<div id="credit-control-country-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: countryParams }"></div>
-			<div id="credit-control-credit-controller-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: creditControllerParams }"></div>
-			<div id="credit-control-trade-account-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeParams }"></div>
-			<div id="credit-control-trade-account-type-group-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeGroupParams }"></div>
-			<div id="credit-control-trade-account-group-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountGroupParams }"></div>
-			<div id="credit-control-payment-terms-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
-			<div id="credit-control-payment-terms-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsTypeParams }"></div>
-			<div id="credit-control-credit-stopped-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: creditStoppedParams }"></div>
-			<div id="credit-control-trade-account-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
-			<div id="credit-control-date-prefilter" class="prefilter">
-				<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
-				<span class="validation-message" data-bind="validationMessage: date"></span>
+			<div id="sidebar-collapse" class="sidebar-body">
+				<form id="credit-control-prefilters" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
+					<div class="prefilter-group">
+						<h5 class="sidebar-heading">
+							Customers
+						</h5>
+						<div id="credit-control-sales-markets-prefilter" class="prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: salesMarketsParams }"></div>
+						<div id="credit-control-sales-representative-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesRepresentativeParams }"></div>
+						<div id="credit-control-sales-agent-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAgentParams }"></div>
+						<div id="credit-control-sales-area-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAreaParams }"></div>
+						<div id="credit-control-country-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: countryParams }"></div>
+						<div id="credit-control-credit-controller-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: creditControllerParams }"></div>
+						<div id="credit-control-trade-account-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeParams }"></div>
+						<div id="credit-control-trade-account-type-group-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeGroupParams }"></div>
+						<div id="credit-control-trade-account-group-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountGroupParams }"></div>
+						<div id="credit-control-payment-terms-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
+						<div id="credit-control-payment-terms-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsTypeParams }"></div>
+						<div id="credit-control-credit-stopped-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: creditStoppedParams }"></div>
+						<div id="credit-control-trade-account-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
+						<div id="credit-control-debt-funder-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: debtFunderParams }"></div>
+						<div id="credit-control-currency-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyParams }"></div>
+					</div>
+					<div class="prefilter-group">
+						<h5 class="sidebar-heading">
+							Sales Analysis
+						</h5>
+						<div id="sales-history-analysis-period-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesHistoryAnalysisPeriodParams }"></div>
+					</div>
+				</form>
 			</div>
-		</form>
-		<div class="dashboard mt-3" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
+		</div>
+	</sidebar>
+	<main id="credit-control-main">
+		<div class="dashboard" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
 			<div class="dashboard-pod card">
 				<div class="card-body" data-bind="class: Classes">
 					<h4 data-bind="html: Heading"></h4>
@@ -158,6 +126,17 @@
 				</div>
 			</div>
 		</div>
-		<div id="credit-control-grid-container" class="mt-3" data-bind="kendoGrid: gridParams"></div>
-	</div>
+		<div id="credit-control-grid-container" data-bind="kendoGrid: gridParams"></div>
+		@*<div id="credit-control-content" class="card">
+			<div class="card-body">
+				<div id="credit-control-date-prefilter" class="prefilter">
+					<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
+					<span class="validation-message" data-bind="validationMessage: date"></span>
+				</div>
+			</div>
+		</div>*@
+		<i class="d-block mt-3">
+			Must re-instate ability to send Statements to (a set of? all?) Trade Accounts for a given Date - see dateParams, sendStatements, etc.
+		</i>
+	</main>
 </div>

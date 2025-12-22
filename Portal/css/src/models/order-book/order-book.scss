@@ -1,4 +1,4 @@
-@import "common.scss";
+@import "../common.scss";
 
 $grid-column-count: var(--grid-column-count);
 $grid-column-count-minus-one: calc($grid-column-count - 1);

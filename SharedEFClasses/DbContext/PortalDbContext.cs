@@ -150,6 +150,8 @@ namespace SharedEFClasses.Models
         
         public DbSet<AdvertiserClass_TradeAccount_Audit> AdvertiserClass_TradeAccount_Audits { get; set; }
 
+        public DbSet<DebtFunder> DebtFunders { get; set; }
+
         #endregion
 
         #region Maintenance

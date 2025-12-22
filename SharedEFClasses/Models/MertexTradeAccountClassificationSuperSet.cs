@@ -47,6 +47,10 @@ namespace SharedEFClasses.Models
 
         public string CreditControllerCode { get; set; }
 
+        public string DebtFunderCode { get; set; }
+
+        public byte? CurrencyID { get; set; }
+
         [ForeignKey("SalesMarketID")]
         public virtual SalesMarket SalesMarket { get; set; }
 
@@ -79,5 +83,11 @@ namespace SharedEFClasses.Models
 
         [ForeignKey("CreditControllerCode")]
         public virtual CreditControllerLive CreditController { get; set; }
+
+        [ForeignKey("DebtFunderCode")]
+        public virtual DebtFunder DebtFunder { get; set; }
+
+        [ForeignKey("CurrencyID")]
+        public virtual Currency Currency { get; set; }
     }
 }

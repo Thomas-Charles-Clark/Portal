@@ -22,7 +22,6 @@ namespace SharedEFClasses.Models
 {
     public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
-
 		public async Task<CreditControl_TradeAccount_Search_Result> CreditControl_TradeAccount_Search(CreditControl_TradeAccount_SearchDTO dto)
 		{
 			var SalesMarketIDs = new DataTable();
@@ -51,7 +50,9 @@ namespace SharedEFClasses.Models
                 dto.Open,
                 dto.SearchTerm,
                 dto.SalesHistoryAnalysisPeriod,
-                dto.LanguageID
+                dto.LanguageID,
+                dto.DebtFunderCode,
+                dto.CurrencyID
             }, null, 30, CommandType.StoredProcedure);
 
 			return new CreditControl_TradeAccount_Search_Result()

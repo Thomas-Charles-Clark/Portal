@@ -46,9 +46,9 @@ namespace Portal.Controllers
 
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         [HttpGet]
-        public IQueryable<SalesHistoryAnalysisPeriod> SalesHistoryAnalysisPeriodValueMapper(byte? salesAnalysisHistoryPeriodId)
+        public IQueryable<SalesHistoryAnalysisPeriod> SalesHistoryAnalysisPeriodValueMapper(string code)
         {
-            return PortalDb.SalesHistoryAnalysisPeriods.Where(p => p.SalesHistoryAnalysisPeriodID == salesAnalysisHistoryPeriodId).AsQueryable();
+            return PortalDb.SalesHistoryAnalysisPeriods.Where(p => p.Code == code).AsQueryable();
         }
     }
 }

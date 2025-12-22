@@ -330,54 +330,54 @@ namespace Portal
             bundles.Add(new StyleBundle("~/bundles/css/order-book").Include(
                 $"{cssPrefix}/models/full-width-app{cssSuffix}",
                 $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
-                $"{cssPrefix}/models/order-book-user-defined-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book-date-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book-pre-defined-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book-sales{cssSuffix}",
-                $"{cssPrefix}/models/order-book-orders{cssSuffix}",
-                $"{cssPrefix}/models/order-book{cssSuffix}"
+                $"{cssPrefix}/models/order-book/order-book-user-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-date-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-pre-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-sales{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-orders{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book{cssSuffix}"
             ));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-book-detail").Include(
                 $"{cssPrefix}/mopdels/virtual-scrolling-deferred-data{cssSuffix}",
                 $"{cssPrefix}/models/full-width-app{cssSuffix}",
                 $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
-                $"{cssPrefix}/models/order-book-user-defined-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book-date-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book-pre-defined-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book-sales{cssSuffix}",
-                $"{cssPrefix}/models/order-book-orders{cssSuffix}",
-                $"{cssPrefix}/models/order-book-advanced-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book{cssSuffix}",
-                $"{cssPrefix}/models/order-book-detail{cssSuffix}"
+                $"{cssPrefix}/models/order-book/order-book-user-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-date-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-pre-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-sales{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-orders{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-advanced-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-detail{cssSuffix}"
             ));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-book-reallocate-stock").Include(
                 $"{cssPrefix}/mopdels/virtual-scrolling-deferred-data{cssSuffix}",
                 $"{cssPrefix}/models/full-width-app{cssSuffix}",
                 $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
-                $"{cssPrefix}/models/order-book-user-defined-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book-date-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book-pre-defined-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book-sales{cssSuffix}",
-                $"{cssPrefix}/models/order-book-orders{cssSuffix}",
-                $"{cssPrefix}/models/order-book-advanced-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book{cssSuffix}",
-                $"{cssPrefix}/models/order-book-reallocate-stock{cssSuffix}"
+                $"{cssPrefix}/models/order-book/order-book-user-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-date-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-pre-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-sales{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-orders{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-advanced-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-reallocate-stock{cssSuffix}"
             ));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-book-back-orders-without-purchase-orders").Include(
                 $"{cssPrefix}/mopdels/virtual-scrolling-deferred-data{cssSuffix}",
                 $"{cssPrefix}/models/full-width-app{cssSuffix}",
                 $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
-                $"{cssPrefix}/models/order-book-user-defined-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book-date-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book-pre-defined-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book-sales{cssSuffix}",
-                $"{cssPrefix}/models/order-book-orders{cssSuffix}",
-                $"{cssPrefix}/models/order-book-advanced-filters{cssSuffix}",
-                $"{cssPrefix}/models/order-book{cssSuffix}",
-                $"{cssPrefix}/models/order-book-back-orders-without-purchase-orders{cssSuffix}"
+                $"{cssPrefix}/models/order-book/order-book-user-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-date-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-pre-defined-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-sales{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-orders{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-advanced-filters{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book{cssSuffix}",
+                $"{cssPrefix}/models/order-book/order-book-back-orders-without-purchase-orders{cssSuffix}"
             ));
 
             bundles.Add(new StyleBundle("~/bundles/css/parcel-calculator").Include(
@@ -429,7 +429,8 @@ namespace Portal
             ));
 
             bundles.Add(new StyleBundle("~/bundles/css/credit-control").Include(
-                    $"{cssPrefix}/models/credit-control{cssSuffix}",
+                    $"{cssPrefix}/models/credit-control/credit-control{cssSuffix}",
+                    $"{cssPrefix}/models/credit-control/credit-control-sidebar{cssSuffix}",
 					$"{cssPrefix}/models/trade-account-contacts-widener{cssSuffix}"
 			));
 

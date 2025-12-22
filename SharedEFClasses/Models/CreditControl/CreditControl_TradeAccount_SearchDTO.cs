@@ -41,5 +41,9 @@ namespace SharedEFClasses.Models.CreditControl
 		public string SalesHistoryAnalysisPeriod { get; set; }
 
 		public byte? LanguageID { get; set; }
+
+		public string DebtFunderCode { get; set; }
+
+		public byte? CurrencyID { get; set; }
 	}
 }

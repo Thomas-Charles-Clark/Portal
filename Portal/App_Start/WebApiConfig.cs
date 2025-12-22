@@ -149,6 +149,7 @@ namespace Portal
             odataBuilder.EntitySet<SupplierPaymentTerms>("SupplierPaymentTerms");
             odataBuilder.EntitySet<AdvertiserClass>("AdvertiserClasses");
             odataBuilder.EntitySet<SalesHistoryAnalysisPeriod>("SalesHistoryAnalysisPeriods");
+            odataBuilder.EntitySet<DebtFunder>("DebtFunders");
 
 			// This because it's not mapped to SQL and has the [NotMapped] attribute
 			odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
@@ -175,12 +176,19 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_DeliveryType)).AddProperty(typeof(Mertex_DeliveryType).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SupplierLive)).AddProperty(typeof(SupplierLive).GetProperty("AddressDisplaySingleLine"));
 
+			var debtFunderValueMapperFunction = odataBuilder.EntityType<DebtFunder>()
+				.Collection
+				.Function("DebtFunderValueMapper")
+				.ReturnsCollectionFromEntitySet<DebtFunder>("DebtFunders");
+
+			debtFunderValueMapperFunction.Parameter<string>("code");
+
 			var salesHistoryAnalysisPeriodValueMapperFunction = odataBuilder.EntityType<SalesHistoryAnalysisPeriod>()
 				.Collection
 				.Function("SalesHistoryAnalysisPeriodValueMapper")
-				.ReturnsCollectionFromEntitySet<Document>("Documents");
+				.ReturnsCollectionFromEntitySet<SalesHistoryAnalysisPeriod>("SalesHistoryAnalysisPeriods");
 
-			salesHistoryAnalysisPeriodValueMapperFunction.Parameter<byte?>("salesHistoryAnalysisPeriodId");
+			salesHistoryAnalysisPeriodValueMapperFunction.Parameter<string>("code");
 
 			var documentsValueMapperFunction = odataBuilder.EntityType<Document>()
                 .Collection
@@ -196,13 +204,21 @@ namespace Portal
 
 			documentOutputModesValueMapperFunction.Parameter<short>("documentOutputModeId");
 
+
 			var currencyInvoiceRegistrationFunction = odataBuilder.EntityType<Currency>()
                 .Collection
                 .Function("InvoiceRegistrationCurrencies")
                 .ReturnsCollectionFromEntitySet<Currency>("Currencies");
 
+			var currencyValueMapperFunction = odataBuilder.EntityType<Currency>()
+				.Collection
+				.Function("CurrencyValueMapper")
+				.ReturnsCollectionFromEntitySet<Currency>("Currencies");
 
-            var supplierPaymentTermsValueMapperFunction = odataBuilder.EntityType<SupplierPaymentTerms>()
+			currencyValueMapperFunction.Parameter<byte>("currencyId");
+
+
+			var supplierPaymentTermsValueMapperFunction = odataBuilder.EntityType<SupplierPaymentTerms>()
                 .Collection
                 .Function("SupplierPaymentTermsValueMapper")
                 .ReturnsCollectionFromEntitySet<SupplierPaymentTerms>("SupplierPaymentTerms");

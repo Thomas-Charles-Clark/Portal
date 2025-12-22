@@ -1,100 +1,89 @@
-﻿@import "../models/common.scss";
+﻿@import "../common.scss";
 
-.body-content {
-    > ul.nav {
-        &.nav-tabs {
-            border-bottom: 0;
+html {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    body {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+
+        .container {
+            &.body-content {
+                flex: 1 1 100%;
+                width: 100% !important;
+                display: flex;
+            }
+        }
+
+        > nav {
+            &.navbar-default {
+                h1, h2, h3, h4, h5, h6 {
+                    font-family: "Trixie", "Open Sans", Arial;
+                    font-weight: 800;
+
+                    span {
+                        font-family: Courier New, Courier, monospace;
+                        font-weight: 400;
+                    }
+                }
+
+                .nav.navbar-nav {
+                    flex-wrap: nowrap;
+
+                    .app-title {
+                        h2 {
+                            flex-wrap: nowrap;
+
+                            span {
+                                white-space: nowrap;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
-#credit-control-content {
-    background-color: $white;
-    border: 1px solid $gray-300;
+#main-credit-control-container {
+    will-change: opacity;
+    transition: opacity 300ms ease-in-out;
+    flex: 1;
+    align-self: stretch;
+    max-height: calc(100% - 50px);
+    transform: translate3d(0,0,0);
+
+    #credit-control-main {
+        padding: $l-gutter;
+
+        #credit-control-grid-container {
+
+            .k-grid-norecords {
+                display: flex;
+                justify-content: flex-start;
+                padding-left: 3rem;
+                align-items: center;
+                min-height: 240px;
+                position: sticky;
+                left: 0;
+                top: 0;
+            }
+        }
+    }
+}
+
+#credit-control-main {
     /*border-radius: 0 $border-radius $border-radius $border-radius;*/
     border-radius: 0;
     margin-bottom: 0;
 
     .tab-pane {
         padding: $l-gutter;
-    }
-
-    #credit-control-prefilters {
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        gap: $l-gutter;
-        margin: 0;
-        padding: 0;
-
-        .prefilter {
-            flex: 1;
-            position: relative;
-            /*
-            .mdc-validating-field {
-                flex: 1;
-
-                > .mdc-select--selected {
-                    .k-dropdown-wrap {
-                        > span.k-input {
-                            background-color: $blue-100;
-                        }
-                    }
-                }
-
-                .date-select--selected {
-                    background-color: $blue-100;
-                }
-
-                .dropdown {
-                    &.selected {
-                        .btn {
-                            background-color: $blue-100;
-                        }
-                    }
-                }
-            }*/
-
-            .bi-lock-fill {
-                flex: 0;
-            }
-
-            .k-list {
-                .k-item {
-                    white-space: nowrap;
-                }
-            }
-            /*.k-dropdown-wrap {
-            > span.k-input {
-                padding: 0;
-                display: flex;
-
-                > span {
-                    flex: 1;
-                    display: inline-block;
-                    padding: 4px 32px 4px 0;
-                }
-            }
-        }*/
-        }
-
-        #credit-control-trade-account-prefilter {
-            grid-column-start: 1;
-            grid-column-end: 3;
-        }
-
-        #credit-control-date-prefilter {
-            grid-column-start: 3;
-            grid-column-end: 4;
-        }
-
-        .date-prefilter {
-            display: block;
-            width: 100%;
-        }
-
-        .date-picker {
-            flex: 1;
-        }
     }
 
     .k-filter-row th,
@@ -108,16 +97,6 @@
         i {
             font-size: $xl-gutter;
         }
-    }
-
-    .k-grid-norecords {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 240px;
-        position: sticky;
-        left: 0;
-        top: 0;
     }
 
     .k-grid {
@@ -244,7 +223,7 @@
 }
 
 .dashboard {
-    margin: $l-gutter 0 0 0;
+    margin: 0 0 $l-gutter 0;
     display: flex;
     gap: $l-gutter;
     justify-content: space-between;

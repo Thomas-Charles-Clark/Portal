@@ -21,7 +21,12 @@
             onlyIf: self.validateNow,
             message: 'Please specify a date'
         }
-    });
+    }); // this is for Statement Sending only, and must be removed from the main filtering thingies
+
+    self.sidebarElement = document.getElementById('filters-sidebar');
+
+    self.sidebarCollapseElement = document.getElementById('sidebar-collapse');
+    self.sidebarCollapse = bootstrap.Collapse.getOrCreateInstance(self.sidebarCollapseElement);
 
     self.includeClosedTradeAccounts = ko.observable(true);
     self.includeDeletedTradeAccounts = ko.observable(false);
@@ -33,17 +38,28 @@
     self.salesHistoryAnalysisPeriod = ko.observable();
     self.salesHistoryAnalysisPeriodAwaitingBinding = ko.observable(params.salesHistoryAnalysisPeriodId != null && params.salesHistoryAnalysisPeriodId != '');
 
+    self.currencyId = ko.observable(params.currencyId ?? '');
+    self.currency = ko.observable();
+
+    self.debtFunderCode = ko.observable(params.debtFunderCode ?? '');
+    self.debtFunder = ko.observable();
+
     self.languageId = ko.observable(params.languageId ?? '');
     self.language = ko.observable();
 
+    self.salesHistoryAnalysisPeriodCode = ko.observable(params.salesHistoryAnalysisPeriodCode ?? '');
+    self.salesHistoryAnalysisPeriod = ko.observable();
+
     self.errors = ko.validation.group([
         self.date
-    ])
+    ]);
 
     self = Object.assign(tradeAccountContactsFiltersViewModel({
         params: Object.assign({ filtersPrefix: 'credit-control-' }, params),
         parent: parent
     }), self);
+
+    self.filtersCountDisplay = ko.observable(undefined);
 
     //#endregion
 
@@ -357,6 +373,167 @@
         autoBind: true
     });
 
+
+    self.debtFunderGroupBy = `groupby((DebtFunder/Code,DebtFunder/Name))/filter((DebtFunder/Code ne null))`;
+
+    self.debtFunderTemplate = (e) => {
+        if (e.DebtFunder && e.DebtFunder.Code && e.DebtFunder.Name) {
+            return `<span title="${e.DebtFunder.Name}">${e.DebtFunder.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.DebtFunderValueTemplate = (e) => {
+        if (e.DebtFunder && e.DebtFunder.Code && e.DebtFunder.Name) {
+            return `<span title="${e.DebtFunder.Name}">${e.DebtFunder.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.debtFunderParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Debt Funder',
+        odata: true,
+        endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        textField: 'DebtFunder.Name',
+        valueField: 'DebtFunder.Code',
+        template: self.debtFunderTemplate,
+        valueTemplate: self.debtFunderTemplate,
+        idObservable: self.debtFunderCode,
+        objObservable: self.debtFunder,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'DebtFunder.Name'
+        },
+        select: function (e) {
+            console.log('debtFunder select', e);
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => self.paymentTermsAwaitingBinding(false),
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.debtFunderGroupBy),
+        popupSettings: {
+            appendTo: document.getElementById(`${self.filtersPrefix}debt-funder-prefilter`)
+        }
+    });
+
+
+    self.currencyGroupBy = `groupby((Currency/CurrencyID,Currency/Name))/filter((Currency/CurrencyID ne null))`;
+
+    self.currencyTemplate = (e) => {
+        if (e.Currency && e.Currency.CurrencyID && e.Currency.Name) {
+            return `<span title="${e.Currency.Name}">${e.Currency.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.CurrencyValueTemplate = (e) => {
+        if (e.Currency && e.Currency.CurrencyID && e.Currency.Name) {
+            return `<span title="${e.Currency.Name}">${e.Currency.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.currencyParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Currency',
+        odata: true,
+        endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        textField: 'Currency.Name',
+        valueField: 'Currency.CurrencyID',
+        template: self.currencyTemplate,
+        valueTemplate: self.currencyValueTemplate,
+        idObservable: self.currencyId,
+        objObservable: self.currency,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Currency.Name'
+        },
+        select: function (e) {
+            console.log('currency select', e);
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        dataBound: (e) => self.paymentTermsAwaitingBinding(false),
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.currencyGroupBy),
+        popupSettings: {
+            appendTo: document.getElementById(`${self.filtersPrefix}currency-prefilter`)
+        }
+    });
+
+    self.saleHistoryAnalysisPeriodTemplate = (e) => {
+        if (e.SaleHistoryAnalysisPeriod && e.SaleHistoryAnalysisPeriod.Code && e.SaleHistoryAnalysisPeriod.Name) {
+            return `<span title="${e.SaleHistoryAnalysisPeriod.Name}">${e.SaleHistoryAnalysisPeriod.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.saleHistoryAnalysisPeriodValueTemplate = (e) => {
+        if (e.SaleHistoryAnalysisPeriod && e.SaleHistoryAnalysisPeriod.Code && e.SaleHistoryAnalysisPeriod.Name) {
+            return `<span title="${e.SaleHistoryAnalysisPeriod.Name}">${e.SaleHistoryAnalysisPeriod.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.salesHistoryAnalysisPeriodParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Sales History Analysis Period',
+        odata: true,
+        endPoint: '/odata/SalesHistoryAnalysisPeriods',
+        textField: 'Name',
+        valueField: 'Code',
+        //template: self.saleHistoryAnalysisPeriodTemplate,
+        //valueTemplate: self.saleHistoryAnalysisPeriodValueTemplate,
+        idObservable: self.salesHistoryAnalysisPeriodCode,
+        objObservable: self.salesHistoryAnalysisPeriod,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'SortOrder'
+        },
+        //grouping: [{
+        //    field: 'GroupName',
+        //    dir: 'asc'
+        //}],
+        select: function (e) {
+            console.log('saleHistoryAnalysisPeriod select', e);
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById(`${self.filtersPrefix}sales-history-analysis-period-prefilter`)
+        }
+    });
+
     //#endregion
 
 
@@ -367,6 +544,14 @@
     })
 
     self.date.subscribe(nv => {
+        self.refreshParent();
+    });
+
+    self.debtFunderCode.subscribe(nv => {
+        self.refreshParent();
+    });
+
+    self.currencyId.subscribe(nv => {
         self.refreshParent();
     });
 
@@ -402,7 +587,10 @@
             searchTerm: null,
             date: typeof self.date() == 'object' ? self.date().toUTCString() : self.date(),
             tradeAccountCode: self.tradeAccountCode() == '' ? null : self.tradeAccountCode(), 
-            languageId: self.languageId()
+            debtFunderCode: self.debtFunderCode() == '' ? null : self.debtFunderCode(), 
+            languageId: self.languageId(),
+            currencyId: self.currencyId(),
+            salesHistoryAnalysisPeriod: self.salesHistoryAnalysisPeriodCode() == '' ? null : self.salesHistoryAnalysisPeriodCode()
         };
 
         return result;
@@ -413,12 +601,73 @@
         }
     });
 
+    self.selectedFilterCount = ko.computed(() => {
+        let filtersCount = Object.keys(self)
+            .filter(k => {
+                return (k.length)
+                    && (k != 'initialParams')
+                    && (k.indexOf('Params') > -1)
+                    && (k.indexOf('Params') == k.length - 6);
+            }).map(k => self[k])
+            .filter(p => {
+                let selected = false;
+
+                if (p.hasOwnProperty('locked')) {
+                    if (p.locked() == false) {
+                        if (p.hasOwnProperty('multiSelectSettings')) {
+                            if (p.multiSelectSettings.observableArray().length)
+                                selected = true;
+                        } else if (p.hasOwnProperty('observable')) {
+                            if (p.observable())
+                                selected = true;
+                        }
+                    }
+                } else {
+                    console.log(p);
+                }
+
+                return selected;
+            }).length;
+
+        console.log('filtersCount', filtersCount);
+
+        return filtersCount;
+    }, self);
+
     //#endregion
 
 
+
+    //#region Late Subscriptions
+
+    self.selectedFilterCount.subscribe(nv => {
+        if (nv == 0) {
+            self.filtersCountDisplay(undefined);
+        } else if (nv == 1) {
+            self.filtersCountDisplay('1 Filter Selected')
+        } else if (nv > 1) {
+            self.filtersCountDisplay(`${nv} Filters Selected`)
+        }
+    });
+
+    self.filtersCountDisplay.subscribe(nv => {
+        if (window.parent && window.parent.document.querySelector('#filter-top-btn-display')) {
+            if (nv) {
+                window.parent.document.querySelector('#filter-top-btn-display').innerHTML = nv;
+            } else {
+                window.parent.document.querySelector('#filter-top-btn-display').innerHTML = 'Filters';
+            }
+        }
+    });
+
+    //#endregion
+
     //#region Methods
 
-
+    self.togglePinning = (data, event) => {
+        self.sidebarElement.classList.toggle('pinned');
+        event && event.target.closest('button') && event.target.closest('button').blur();
+    }
 
     //#endregion
 

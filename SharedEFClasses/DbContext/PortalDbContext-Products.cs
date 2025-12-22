@@ -829,7 +829,43 @@ namespace SharedEFClasses.Models
 
             results.AddRange(seasonalResults);
 
-            cmd.CommandText = "[portal].[Product_Search_KeywordHint]";
+			cmd.CommandText = "[portal].[Product_Search_HangerHint]";
+
+			cmd.Parameters.Clear();
+
+			cmd.Parameters.Add(new SqlParameter("@SearchTerm", objSearch.searchTerm ?? (object)DBNull.Value));
+
+			var hangerResults = new List<ProductSearchKeyword>();
+
+			try
+			{
+				this.Database.Connection.Open();
+				// Run the sproc 
+				var reader = cmd.ExecuteReader();
+
+				hangerResults = ((IObjectContextAdapter)this)
+					.ObjectContext
+					.Translate<ProductSearchKeyword>(reader).ToList();
+			}
+			catch (SqlException e)
+			{
+				PortalFramework.LogErrorToDatabase(e);
+				throw e;
+			}
+			finally
+			{
+				this.Database.Connection.Close();
+			}
+
+			hangerResults.ForEach(c =>
+			{
+				c.Type = "Standard";
+				c.Suggestion = $"{c.Suggestion}";
+			});
+
+			results.AddRange(hangerResults);
+
+			cmd.CommandText = "[portal].[Product_Search_KeywordHint]";
 
             cmd.Parameters.Clear();
 

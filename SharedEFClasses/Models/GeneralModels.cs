@@ -269,7 +269,11 @@ namespace SharedEFClasses.Models.General
         [JsonIgnore]
         [InverseProperty("DocumentCurrency")]
         public virtual ICollection<Attachment> Attachments { get; set; }
-    }
+
+		[JsonIgnore]
+        [InverseProperty("Currency")]
+		public virtual ICollection<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSetRecords { get; set; }
+	}
 
     public class Language
     {

@@ -157,6 +157,8 @@
             let tradeAccountTypeGroupId = null;
             let creditControllerId = null;
             let salesAnalysisHistoryPeriodId = null;
+            let debtFunderCode = null;
+            let currencyId = null;
 
             if (defaultOp.indexOf("SalesMarketID") == -1) {
                 salesMarketIds = self.salesMarketIds();
@@ -205,6 +207,22 @@
                     salesAnalysisHistoryPeriodId = self.salesAnalysisHistoryPeriodId();
                 } else {
                     salesAnalysisHistoryPeriodId = self.salesAnalysisHistoryPeriodId.peek();
+                }
+            }
+
+            if (Object.hasOwn(self, 'debtFunderCode')) {
+                if (defaultOp.indexOf("DebtFunderCode") == -1) {
+                    debtFunderCode = self.debtFunderCode();
+                } else {
+                    debtFunderCode = self.debtFunderCode.peek();
+                }
+            }
+
+            if (Object.hasOwn(self, 'currencyId')) {
+                if (defaultOp.indexOf("CurrencyID") == -1) {
+                    currencyId = self.currencyId();
+                } else {
+                    currencyId = self.currencyId.peek();
                 }
             }
 
@@ -294,6 +312,18 @@
             if (Object.hasOwn(self, 'salesAnalysisHistoryPeriodId')) {
                 if (defaultOp.indexOf('SalesAnalysisHistoryPeriodID') == -1 && salesAnalysisHistoryPeriodId != '') {
                     filters.push(`SalesAnalysisHistoryPeriodID eq ${salesAnalysisHistoryPeriodId}`);
+                }
+            }
+
+            if (Object.hasOwn(self, 'debtFunderCode')) {
+                if (defaultOp.indexOf('DebtFunderCode') == -1 && debtFunderCode != '') {
+                    filters.push(`DebtFunderCode eq '${debtFunderCode}'`);
+                }
+            }
+
+            if (Object.hasOwn(self, 'currencyId')) {
+                if (defaultOp.indexOf('CurrencyID') == -1 && currencyId != '') {
+                    filters.push(`CurrencyID eq ${currencyId}`);
                 }
             }
 

@@ -466,8 +466,8 @@ namespace SharedEFClasses.Models.Mertex
 
         public byte? DaysForwardForReservations { get; set; }
 
-        [Column("DebtCollector")]
-        public string DebtCollector { get; set; }
+        [Column("DebtFunder")]
+        public string DebtFunder { get; set; }
 
         [Column("SSField2")]
         [StringLength(50)]
