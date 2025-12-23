@@ -1,5 +1,8 @@
-﻿using Kendo.Mvc.Extensions;
+﻿using DocumentFormat.OpenXml.EMMA;
+
+using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using Portal.Models;
@@ -40,12 +43,24 @@ namespace Portal.Areas.CreditControl.Controllers
             this.PortalDb = portalDbContext;
         }
 
-        [HttpPost]
-        public async Task<IHttpActionResult> TradeAccountSearch([FromBody] CreditControl_TradeAccount_SearchDTO dto)
+		[HttpGet]
+		public async Task<IHttpActionResult> TradeAccountSearch(
+			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+			[FromUri] CreditControl_TradeAccount_SearchDTO dto)
         {
-            var result = await PortalDb.CreditControl_TradeAccount_Search(dto);
+            var model = await PortalDb.CreditControl_TradeAccount_Search(dto);
 
-            return Ok(result);
+			request.Page = 1; // This is a super weird and stupid hack but...
+
+			var gridData = model.Results.ToDataSourceResult(request);
+
+			gridData.Total = model.ResultsCount;
+
+			return Ok(new
+			{
+                gridData = gridData,
+				dashboardPods = model.DashboardPods
+			});
         }
     }
 }

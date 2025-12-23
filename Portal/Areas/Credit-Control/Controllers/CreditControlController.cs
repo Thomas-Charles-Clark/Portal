@@ -36,7 +36,8 @@ namespace Portal.Areas.Orders.Controllers
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
             var model = await StatementsViewModel.CreateAsync(
-                user.GetActiveRoleProperties(),
+				user.Id,
+				user.GetActiveRoleProperties(),
                 application.Heading, 
                 application.SubHeading);
 

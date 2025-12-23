@@ -91,6 +91,8 @@
 		margin-top: -42px;
 		position: relative;
 		z-index: 1;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.sidebar-heading {
@@ -260,16 +262,10 @@
 	.k-dropdown-wrap {
 		&.k-state-default {
 
-			.k-input span {
+			span.k-input {
 				font-size: $font-size-sm;
 				position: relative;
-				top: -2px;
-			}
-
-			.k-input span {
-				font-size: $font-size-sm;
-				position: relative;
-				top: -2px;
+				top: -1px;
 			}
 		}
 	}
@@ -281,6 +277,7 @@
 					background-color: $blue-700;
 				}
 			}
+
 			&.k-state-border-down {
 				background-color: $blue-700;
 			}

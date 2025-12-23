@@ -45,6 +45,8 @@ namespace SharedEFClasses.Models.CreditControl
 		public decimal? Debt60DayQuantity { get; set; }
 		public decimal? Debt90DayQuantity { get; set; } 
 		public decimal? Debt120DayQuantity { get; set; }
+		public int? ClaimCount { get; set; }
+		public decimal? ClaimValue { get; set; }
 		public decimal? DisputedQuantity { get; set; }
 		public decimal? WrittenOffQuantity { get; set; }
 		public string StatementURI { get; set; }
@@ -57,7 +59,7 @@ namespace SharedEFClasses.Models.CreditControl
 		public int? DepositsQuantity { get; set; }
 		public int? OverpaymentsQuantity { get; set; }
 		public int? RefundsQuantity { get; set; }
-		public int? SalesRank { get; set; }
+		public string SalesRank { get; set; }
 		public decimal? SalesValue { get; set; }
 		public int MemberCount { get; set; }
 	}

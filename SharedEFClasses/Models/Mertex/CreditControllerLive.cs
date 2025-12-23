@@ -36,8 +36,14 @@ namespace SharedEFClasses.Models.Mertex
 
 		public string Region { get; set; }
 
+		public int? MemberID { get; set; }
+
 		[JsonIgnore]
 		[InverseProperty("CreditController")]
 		public virtual ICollection<MertexTradeAccountClassificationSuperSet> SuperSetRecords { get; set; }
+
+		[JsonIgnore]
+		[ForeignKey("MemberID")]
+		public virtual Member MemberRecord { get; set; }
 	}
 }

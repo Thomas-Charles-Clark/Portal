@@ -81,6 +81,7 @@ html {
     /*border-radius: 0 $border-radius $border-radius $border-radius;*/
     border-radius: 0;
     margin-bottom: 0;
+    width: calc(100% - 50px);
 
     .tab-pane {
         padding: $l-gutter;
@@ -113,10 +114,13 @@ html {
         .html-cell {
             .alert {
                 margin-bottom: 0;
+                padding: $vsm-gutter $sm-gutter;
             }
         }
 
         .grid-btn-cell {
+            position: relative;
+
             &:hover,
             &:focus,
             &:focus-within {
@@ -126,17 +130,32 @@ html {
             .grid-btn {
                 padding: 0 $btn-padding-x;
 
+                &:hover,
+                &:focus,
+                &:focus-within {
+                    cursor: pointer;
+                    /*text-shadow: 0 0 6px $blue-700;*/
+                    color: $blue-500;
+                }
+
                 .bi {
                     font-size: 2.5rem;
 
-                    &:hover,
-                    &:focus,
-                    &:focus-within {
-                        cursor: pointer;
-                        /*text-shadow: 0 0 6px $blue-700;*/
-                        color: $blue-500;
+                    &.bi-people-fill {
+                        font-size: 2.05rem;
                     }
                 }
+            }
+        }
+
+        .contacts-btn {
+            position: relative;
+
+            .badge {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                top: 25px;
             }
         }
 
@@ -150,6 +169,7 @@ html {
         .totals-heading,
         .orders-heading,
         .debt-breakdown-heading,
+        .claim-heading,
         .other-heading,
         .sales-heading {
             font-weight: bold;
@@ -163,6 +183,7 @@ html {
         .totals-subheading,
         .orders-subheading,
         .debt-breakdown-subheading,
+        .claim-subheading,
         .other-subheading,
         .sales-subheading {
             font-weight: bold;
@@ -240,9 +261,11 @@ html {
         border-color: $gray-500;
         transition: background-color 150ms ease-in-out, color 150ms ease-in-out, border-color 150ms ease-in-out;
 
-        &:hover,
-        &:focus,
-        &:focus-within {
+        a {
+            color: $primary;
+        } 
+        
+        &:hover, &:focus, &:focus-within {
             .card-body {
                 h4, h5 {
                     text-decoration: underline;
@@ -254,6 +277,10 @@ html {
             background-color: $red-600;
             color: $white;
             border-color: tint-color($red-600, 5%);
+
+            .btn {
+                color: $white;
+            }
         }
 
         &.active {
@@ -303,6 +330,100 @@ html {
                 text-decoration: none;
                 line-height: 1.75rem;
             }
+        }
+    }
+}
+
+.k-loading-mask {
+    display: none !important;
+}
+
+#selected-filter-pills {
+    margin-bottom: $l-gutter;
+    display: flex;
+
+    .filter-pill {
+        background-color: #ccc;
+        color: $body-color;
+
+        &::focus-visible {
+            color: var(--bs-btn-hover-color);
+            background-color: var(--bs-btn-hover-bg);
+            border-color: var(--bs-btn-hover-border-color);
+            outline: 0;
+            box-shadow: var(--bs-btn-focus-box-shadow);
+        }
+
+        &.rounded-pill {
+            border-radius: 4px;
+        }
+    }
+
+    .btn-display-options {
+        margin-left: auto;
+    }
+}
+
+.display-mode-list {
+    cursor: pointer;
+    z-index: 200;
+    padding: 0;
+
+    li {
+        padding: 0;
+
+        &.disabled {
+            filter: brightness(95%);
+        }
+
+        .form-check {
+            cursor: pointer;
+            padding: $sm-gutter $list-group-item-padding-x;
+            padding-left: calc($xl-gutter + $sm-gutter);
+            display: flex;
+            align-items: center;
+            gap: $m-gutter;
+            margin-bottom: 0;
+
+            .form-check-input {
+                top: 1px;
+            }
+
+            span {
+                display: inline-block;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                font-weight: normal;
+            }
+        }
+    }
+
+    li + li {
+        border-top: 1px solid $gray-200;
+    }
+
+    li,
+    li .dropdown-item,
+    li .dropdown-item .form-check-input {
+        cursor: pointer;
+        user-select: none;
+    }
+
+
+    .dropdown-menu-controls {
+        position: sticky;
+        top: 0;
+        padding: $sm-gutter;
+        z-index: 1;
+        background-color: $white;
+
+        .btn {
+            white-space: nowrap;
+        }
+
+        a.btn {
+            padding: $btn-padding-y-sm $btn-padding-x-sm;
+            color: $white;
         }
     }
 }

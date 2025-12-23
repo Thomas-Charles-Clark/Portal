@@ -372,3 +372,59 @@ $readonly-background: repeating-linear-gradient(-45deg, rgb(0 0 0 / 5%), transpa
         }
     }
 }
+
+.filter-pills {
+    gap: 10px;
+
+    .filter-pill {
+        display: inline-flex;
+        gap: $sm-gutter;
+        align-items: center;
+        padding: $sm-gutter $m-gutter;
+        border-radius: 4px;
+
+        &:focus-visible {
+            outline: 0;
+            box-shadow: $btn-focus-box-shadow;
+        }
+
+        span {
+            line-height: 1;
+        }
+
+        .btn-close {
+            height: $sm-gutter;
+            width: $sm-gutter;
+        }
+
+        .btn-close,
+        .btn-reset-filters {
+            font-weight: normal;
+            opacity: 0.2;
+            transition: opacity 150ms ease-in-out;
+        }
+
+        &:hover,
+        &:focus,
+        &:focus-within {
+            .btn-close,
+            .btn-reset-filters {
+                font-weight: bold;
+                opacity: 0.85;
+            }
+        }
+
+        .stretched-link {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-reset-filters {
+            padding: 0;
+            font-size: $font-size-md;
+            line-height: $l-gutter;
+            opacity: 0.45;
+            color: $body-color;
+        }
+    }
+}

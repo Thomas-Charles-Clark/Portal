@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace SharedEFClasses.Models.Mertexer
 {
@@ -19,6 +20,8 @@ namespace SharedEFClasses.Models.Mertexer
         public string Email { get; set; }
 
         public string Region { get; set; }
+
+        public int? MemberID { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool Deleted { get; set; }

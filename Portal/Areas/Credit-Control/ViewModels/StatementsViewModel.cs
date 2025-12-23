@@ -8,27 +8,33 @@ using SharedEFClasses.Models.General;
 using SharedEFClasses.Models;
 
 using SharedEFClasses;
+using System.Data.Entity;
 
 namespace Portal.Areas.CreditControl.ViewModels
 {
     public class StatementsViewModel : BaseViewModel
     {
-        public StatementsViewModel(RoleProperties properties, string applicationHeading, string applicationSubHeading)
+        public string CreditControllerCode { get; set; }
+
+        public StatementsViewModel(string creditControllerCode,RoleProperties properties, string applicationHeading, string applicationSubHeading)
             : base(properties,
                    applicationHeading,
                    applicationSubHeading)
         {
-
+            CreditControllerCode = creditControllerCode;
         }
 
         public static async Task<StatementsViewModel> CreateAsync(
+            int memberId,
             RoleProperties properties,
             string applicationHeading,
             string applicationSubHeading)
         {
             var portalDb = new PortalDbContext();
 
-            var result = new StatementsViewModel(properties, applicationHeading, applicationSubHeading);
+            var creditController = await portalDb.CreditControllersLive.FirstOrDefaultAsync(cc => cc.MemberID == memberId);
+            
+            var result = new StatementsViewModel(creditController?.Code, properties, applicationHeading, applicationSubHeading);
 
             return result;
         }

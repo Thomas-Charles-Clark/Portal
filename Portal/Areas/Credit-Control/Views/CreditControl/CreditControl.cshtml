@@ -20,6 +20,13 @@
 	@Scripts.Render("~/bundles/js/tempus-dominus")
 
 	<script type="text/javascript">
+		window.getCreditControllerCode = () => {
+			return '@(Model.CreditControllerCode)'
+		}
+		window.lockCreditController = () => false;
+	</script>
+
+	<script type="text/javascript">
 
 		var viewModel = creditControlViewModel();
 
@@ -106,24 +113,39 @@
 						<div id="credit-control-trade-account-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
 						<div id="credit-control-debt-funder-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: debtFunderParams }"></div>
 						<div id="credit-control-currency-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyParams }"></div>
+						<div id="trade-account-status-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountStatusParams }"></div>
 					</div>
 					<div class="prefilter-group">
 						<h5 class="sidebar-heading">
 							Sales Analysis
 						</h5>
-						<div id="sales-history-analysis-period-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesHistoryAnalysisPeriodParams }"></div>
+						<div id="sales-history-analysis-period-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesHistoryAnalysisPeriodsParams }"></div>
 					</div>
 				</form>
+				<button type="button" class="btn btn-secondary gap-3 mt-5" data-bind="click: filters.reset">
+					Reset Filters
+					<i class="bi bi-arrow-counterclockwise"></i>
+				</button>
 			</div>
 		</div>
 	</sidebar>
 	<main id="credit-control-main">
 		<div class="dashboard" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
-			<div class="dashboard-pod card">
+			<div class="dashboard-pod card" data-bind="css: { 'selected-pod': $parent.selectedPod() == $data }">
 				<div class="card-body" data-bind="class: Classes">
 					<h4 data-bind="html: Heading"></h4>
 					<div data-bind="html: Stats"></div>
+					<a href="#" class="stretched-link" data-bind="click: $parent.dashboardClick"></a>
 				</div>
+			</div>
+		</div>
+		<div id="selected-filter-pills">
+			<!-- ko template: { name: 'filter-pills-template', data: filters } --><!-- /ko -->
+			<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
+				<a class="btn btn-secondary dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
+					<i class="bi bi-list-check"></i>
+				</a>
+				<!-- ko template: { name: 'credit-control-quantity-value-dropdown-container', data: filters } --><!-- /ko -->
 			</div>
 		</div>
 		<div id="credit-control-grid-container" data-bind="kendoGrid: gridParams"></div>

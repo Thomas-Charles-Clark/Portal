@@ -34,7 +34,7 @@ namespace SharedEFClasses.Models.CreditControl
 
 		public bool? CreditStopped { get; set; }
 
-		public bool Open { get; set; } = true;
+		public bool? Open { get; set; }
 
 		public string SearchTerm { get; set; }
 
@@ -45,5 +45,11 @@ namespace SharedEFClasses.Models.CreditControl
 		public string DebtFunderCode { get; set; }
 
 		public byte? CurrencyID { get; set; }
+
+		public string SelectedPOD { get; set; }
+
+		public int Page { get; set; }
+
+		public int? PageSize { get; set; }
 	}
 }

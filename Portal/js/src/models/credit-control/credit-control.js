@@ -1,4 +1,6 @@
 ﻿const gridColumnWidths = {
+    fifty: 50,
+    sixty: 60,
     seventy: 70,
     eighty: 80,
     ninety: 90,
@@ -8,6 +10,8 @@
     oneFortyFive: 145,
     oneSixty: 160,
     twoHundred: 200,
+    twoTwenty: 220,
+    twoForty: 240,
     twoSixty: 260,
     threeTwenty: 320,
     fiveHundred: 500
@@ -20,7 +24,7 @@ const creditControlViewModel = (() => {
 
     //#region Properties
 
-    self.busy = ko.observable(false);
+    self.busy = ko.observable(true);
 
     self.busyMessage = ko.observable('Please wait...');
 
@@ -28,8 +32,14 @@ const creditControlViewModel = (() => {
 
     self.refresh = () => {
         console.log('creditControlViewModel refresh called');
-        self.tradeAccountSearch(self.filters.getData());
+
+        self.gridParams.widget().dataSource.query({
+            page: self.gridParams.widget().dataSource.page() ?? 1,
+            pageSize: self.gridParams.widget().dataSource.pageSize() ?? 0
+        });
     }
+
+    self.selectedPod = ko.observable();
 
     self.filters = creditControlFiltersViewModel({
         params: {},
@@ -104,6 +114,77 @@ const creditControlViewModel = (() => {
         });
     }
 
+    self.gridDataSourceRead = (options) => {
+
+        var webapi = new kendo.data.transports.webapi({ prefix: "" });
+
+        var mapped = webapi.parameterMap(options.data);
+
+        var additionalParameters = self.filters.getData();
+
+        var params = new URLSearchParams();
+
+        if (self.selectedPod()) {
+            additionalParameters.selectedPod = self.selectedPod().PodHandle;
+        }
+
+        var data = Object.assign(mapped, additionalParameters);
+
+        for (var propertyName in data) {
+            params.append(propertyName, data[propertyName]);
+        }
+
+        console.log('tradeAccountSearch calling with', data);
+
+        self.busy(true);
+
+        fetch('/api/creditcontrolapi/TradeAccountSearch?' + params, {
+            method: 'GET',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin'
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+
+                console.log('tradeAccountSearch returned', data);
+
+                self.previouslySelectedDashboardPod = self.selectedPod()?.PodHandle;
+
+                self.dashboardPods(data.dashboardPods.map(dp => creditControlDashboardPodViewModel({
+                    rec: dp
+                })));
+
+                if (self.previouslySelectedDashboardPod) {
+                    self.selectedPod(self.dashboardPods().find(dp => dp.PodHandle == self.previouslySelectedDashboardPod));
+                } 
+
+                options.success(data.gridData);
+
+                self.tradeAccounts(data.gridData); // the mapping to ViewModel occurs in the grid's dataBound event handler
+
+                //self.gridParams.widget().setOptions({
+                //    columns: self.gridColumns()
+                //});
+
+
+                if (typeof callback == 'function') {
+                    callback();
+                } else {
+                    self.busy(false);
+                }
+
+            })
+            .catch(err => {
+
+                self.busy(false);
+
+                window.catchFetchError(err);
+
+            })
+    }
+
+
     //#endregion
 
 
@@ -117,9 +198,9 @@ const creditControlViewModel = (() => {
         }
     }
 
-    self.formatNumber = (e, fieldName) => {
+    self.formatNumber = (e, fieldName, decimals = 0) => {
         if (e[fieldName] != null) {
-            return window.formatNumber(e[fieldName], 2, e.FormattingCulture);
+            return window.formatNumber(e[fieldName], decimals, e.FormattingCulture);
         } else {
             return ``;
         }
@@ -132,11 +213,11 @@ const creditControlViewModel = (() => {
         width: gridColumnWidths.oneHundred
     }, {
         field: 'CurrencyCode',
-        title: 'Currency',
+        title: 'Curr.',
         filterable: false,
         locked: true,
         hidden: false, //self.tradeAccounts().length == 0,
-        width: gridColumnWidths.oneTwenty
+        width: gridColumnWidths.fifty
     }, {
         field: 'FormattingCulture',
         title: 'Formatting Culture',
@@ -151,30 +232,31 @@ const creditControlViewModel = (() => {
         filterable: false,
         locked: true,
         hidden: false, // self.tradeAccounts().length == 0,
-        width: gridColumnWidths.oneTwenty
+        width: gridColumnWidths.oneHundred
     }, {
         field: 'TradeAccountCode',
         title: 'Code',
         filterable: false,
         locked: true,
         hidden: false, //self.tradeAccounts().length == 0,
-        width: gridColumnWidths.oneForty
+        width: gridColumnWidths.ninety
     }, {
         field: 'TradeAccountName',
         title: 'Name',
         filterable: false,
         locked: true,
         hidden: false, //self.tradeAccounts().length == 0,
-        width: gridColumnWidths.twoSixty
+        width: gridColumnWidths.oneForty
     }, {
         field: 'Contacts',
         title: 'Contacts',
         attributes: {
             "class": "text-center grid-btn-cell"
         },
+        filterable: false,
         locked: true,
         hidden: false, //self.tradeAccounts().length == 0,
-        width: gridColumnWidths.oneHundred,
+        width: gridColumnWidths.eighty,
         template: (e) => {
             return `<a href="#" class="btn grid-btn contacts-btn" data-bind="click: openContactsModal">
 					<i class="bi bi-people-fill"></i>
@@ -184,9 +266,7 @@ const creditControlViewModel = (() => {
     }, {
         field: 'Status',
         title: 'Status',
-        filterable: {
-            extra: false
-        },
+        filterable: false,
         locked: true,
         hidden: false, //self.tradeAccounts().length == 0,
         width: gridColumnWidths.twoHundred,
@@ -200,36 +280,38 @@ const creditControlViewModel = (() => {
                 return EMPTY_STRING;
             }
         }
-    }, {
-        field: 'CreditStop',
-        title: 'On Stop',
-        filterable: {
-            extra: false,
-            messages: {
-                isTrue: 'On Stop',
-                isFalse: 'Not on Stop'
-            }
-        },
-        locked: true,
-        hidden: false, //self.tradeAccounts().length == 0,
-        width: gridColumnWidths.seventy,
-        attributes: {
-            "class": (e) => e.CreditStop ? `text-danger bold` : ``
-        },
-        template: (e) => {
-            if (e.CreditStop) {
-                return '<i class="text-danger bi bi-sign-stop-fill fs-1 credit-stopped" title="Credit Stopped"></i>';
-            } else {
-                return '';
-            }
-        },
-        attributes: {
-            "class": 'text-center'
-        }
-    }, {
+    },
+    //{
+    //    field: 'CreditStop',
+    //    title: 'On Stop',
+    //    filterable: {
+    //        extra: false,
+    //        messages: {
+    //            isTrue: 'On Stop',
+    //            isFalse: 'Not on Stop'
+    //        }
+    //    },
+    //    locked: true,
+    //    hidden: true,
+    //    width: gridColumnWidths.seventy,
+    //    attributes: {
+    //        "class": (e) => e.CreditStop ? `text-danger bold` : ``
+    //    },
+    //    template: (e) => {
+    //        if (e.CreditStop) {
+    //            return '<i class="text-danger bi bi-sign-stop-fill fs-1 credit-stopped" title="Credit Stopped"></i>';
+    //        } else {
+    //            return '';
+    //        }
+    //    },
+    //    attributes: {
+    //        "class": 'text-center'
+    //    }
+    //},
+    {
         field: 'Advisory',
         title: 'Advisory',
-        width: 140,
+        width: gridColumnWidths.twoHundred,
         filterable: {
             extra: false,
             defaultOperation: 'contains'
@@ -245,6 +327,27 @@ const creditControlViewModel = (() => {
                 return e.Advisory;
             } else {
                 return EMPTY_STRING;
+            }
+        }
+    }, {
+        field: 'StatementURI',
+        title: 'Statement',
+        headerAttributes: {
+            "class": "errata-heading"// "debt-breakdown-subheading"
+        },
+        attributes: {
+            "class": "text-center grid-btn-cell"
+        },
+        locked: true,
+        filterable: false,
+        width: gridColumnWidths.ninety,
+        template: (e) => {
+            if (e.StatementURI) {
+                return `<a href="#" class="btn grid-btn statement-btn" data-bind="attr: { href: StatementURI, target: '_blank' }">
+					    <i class="bi bi-filetype-pdf"></i>
+				    </a>`;
+            } else {
+                return ``;
             }
         }
     }, {
@@ -471,25 +574,6 @@ const creditControlViewModel = (() => {
                 + SINGLE_BR
                 + self.formatNumber(e, 'WrittenOffQuantity')
         }, {
-            field: 'StatementURI',
-            title: 'Statement',
-            headerAttributes: {
-                "class": "debt-breakdown-subheading"
-            },
-            attributes: {
-                "class": "text-center grid-btn-cell"
-            },
-            width: gridColumnWidths.oneTwenty,
-            template: (e) => {
-                if (e.StatementURI) {
-                    return `<a href="#" class="btn grid-btn statement-btn" data-bind="attr: { href: StatementURI, target: '_blank' }">
-					        <i class="bi bi-filetype-pdf"></i>
-				        </a>`;
-                } else {
-                    return ``;
-                }
-            }
-        }, {
             field: 'StatementTotalValue',
             title: 'Total',
             headerAttributes: {
@@ -500,6 +584,34 @@ const creditControlViewModel = (() => {
             },
             width: gridColumnWidths.oneForty,
             template: (e) => self.formatCurrency(e, 'StatementTotalValue')
+        }]
+    }, {
+        title: 'Claims',
+        headerAttributes: {
+            "class": "claim-heading"
+        },
+        columns: [{
+            field: 'ClaimCount',
+            title: 'Count',
+            headerAttributes: {
+                "class": "claim-subheading"
+            },
+            attributes: {
+                "class": 'text-end'
+            },
+            width: gridColumnWidths.oneForty,
+            template: (e) => self.formatNumber(e, 'ClaimCount')
+        }, {
+            field: 'ClaimValue',
+            title: 'Value',
+            headerAttributes: {
+                "class": "claim-subheading"
+            },
+            attributes: {
+                "class": 'text-end'
+            },
+            width: gridColumnWidths.oneForty,
+            template: (e) => self.formatCurrency(e, 'ClaimValue')
         }]
     }, {
         title: 'Other',
@@ -559,14 +671,14 @@ const creditControlViewModel = (() => {
                 + SINGLE_BR
                 + self.formatNumber(e, 'RefundsQuantity')
         }]
-    }, {
-        title: 'Sales',
+        }, {
+            title: self.filters.salesHistoryAnalysisPeriod() ? `Sales (${self.filters.salesHistoryAnalysisPeriod().Name})` : `Sales`,
         headerAttributes: {
             "class": "sales-heading"
         },
         columns: [{
             field: 'SalesRank',
-            title: 'Sales',
+            title: 'Rank',
             headerAttributes: {
                 "class": "sales-subheading"
             },
@@ -577,7 +689,7 @@ const creditControlViewModel = (() => {
             template: (e) => self.formatNumber(e, 'SalesRank')
         }, {
             field: 'SalesValue',
-            title: 'Sales',
+            title: 'Value',
             headerAttributes: {
                 "class": "sales-subheading"
             },
@@ -593,14 +705,19 @@ const creditControlViewModel = (() => {
         autoBind: true,
         widget: ko.observable(),
         columns: self.gridColumns(),
-        data: self.tradeAccounts,
-        dataSource: new kendo.data.DataSource({
-            sortable: true,
+        data: new kendo.data.DataSource({
+            transport: {
+                read: self.gridDataSourceRead,
+            },
+            batch: false,
+            sortable: false,
             filterable: true,
             grouping: false,
-            serverGrouping: false,
             serverFiltering: false,
-            serverPaging: false,
+            serverGrouping: false,
+            serverPaging: true,
+            serverAggregates: false,
+            serverSorting: false,
             pageSize: 10,
             pageable: {
                 pageSize: 10,
@@ -651,7 +768,7 @@ const creditControlViewModel = (() => {
                         Debt120DayQuantity: { type: 'number' },
                         DisputedQuantity: { type: 'number' },
                         WrittenOffQuantity: { type: 'number' },
-                        StatementURI: { type: 'number' },
+                        StatementURI: { type: 'string' },
                         StatementTotalValue: { type: 'number' },
                         CreditsValue: { type: 'number' },
                         DepositsValue: { type: 'number' },
@@ -660,6 +777,8 @@ const creditControlViewModel = (() => {
                         SalesRank: { type: 'number' },
                         SalesValue: { type: 'number' },
                         MemberCount: { type: 'number' },
+                        ClaimCount: { type: 'number' },
+                        ClaimValue: { type: 'number' },
                     }
                 }
             }),
@@ -728,16 +847,34 @@ const creditControlViewModel = (() => {
 
     //#region Subscriptions
 
-    self.emptyFiltersJSON = JSON.stringify(self.filters.getData());
+    self.filters.salesHistoryAnalysisPeriod.subscribe(nv => {
+        self.gridParams.widget().setOptions({
+            columns: self.gridColumns()
+        });
+    });
 
     self.filters.getData.subscribe(nv => {
-        if (JSON.stringify(nv) == self.emptyFiltersJSON) {
-            self.gridParams.widget().dataSource.data([]);
-        } else {
-            self.gridParams.widget().dataSource.page(1);
-            self.tradeAccountSearch(nv);
-        }
+        self.gridParams.widget().dataSource.query({
+            page: 1,
+            pageSize: (self.gridParams.widget() && self.gridParams.widget().dataSource.pageSize())
+        });
     });
+
+    //self.emptyFiltersJSON = JSON.stringify(self.filters.getData());
+
+    //self.filters.getData.subscribe(nv => {
+    //    //if (JSON.stringify(nv) == self.emptyFiltersJSON) {
+    //    //    self.gridParams.widget().dataSource.data([]);
+    //    //} else {
+
+    //    self.selectedPod(undefined);
+
+    //    self.tradeAccountSearch(nv, () => {
+    //        self.gridParams.widget().dataSource.page(1);
+    //        self.busy(false);
+    //    });
+    //    //}
+    //});
 
     //#endregion
 
@@ -751,49 +888,28 @@ const creditControlViewModel = (() => {
 
     //#region Methods
 
-    self.init = () => {
+    self.filters.tradeAccountStatusParams.dropDownListSettings.widget.subscribe(nv => {
+        window.setTimeout(() => {
+            nv.trigger('change');
+        }, 0);
+    });
 
-    }
+    self.dashboardClick = (data, event) => {
+        console.log('dashboardClick', data);
 
-    self.tradeAccountSearch = (data) => {
+        self.selectedPod(data);
 
-        self.busy(true);
+        let searchParams = Object.assign({
+            selectedPod: self.selectedPod().PodHandle,
+            page: (self.gridParams.widget() && self.gridParams.widget().dataSource.page()) ?? 1,
+            pageSize: (self.gridParams.widget() && self.gridParams.widget().dataSource.pageSize()) ?? 0,
+        }, self.filters.getData());
 
-        console.log('tradeAccountSearch calling with', data);
-
-        fetch('/api/creditcontrolapi/TradeAccountSearch', {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            body: JSON.stringify(data)
+        self.gridParams.widget().dataSource.query({
+            page: self.gridParams.widget().dataSource.page() ?? 1,
+            pageSize: self.gridParams.widget().dataSource.pageSize() ?? 0
         })
-            .then(window.handleFetchResponse)
-            .then(data => {
-
-                console.log('tradeAccountSearch returned', data);
-                
-                self.dashboardPods(data.DashboardPods.map(dp => creditControlDashboardPodViewModel({
-                    rec: dp
-                })));
-
-                self.tradeAccounts(data.Results); // the mapping to ViewModel occurs in the grid's dataBound event handler
-
-                //self.gridParams.widget().setOptions({
-                //    columns: self.gridColumns()
-                //});
-
-                self.busy(false);
-
-            })
-            .catch(err => {
-
-                self.busy(false);
-
-                window.catchFetchError(err);
-
-            })
-    }
+    };
 
     self.sendStatements = (data, event) => {
 

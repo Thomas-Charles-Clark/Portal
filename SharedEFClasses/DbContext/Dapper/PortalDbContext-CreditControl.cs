@@ -28,10 +28,13 @@ namespace SharedEFClasses.Models
 
 			SalesMarketIDs.Columns.Add("ID", typeof(byte));
 
-            foreach (var sm in dto.SalesMarketIDs)
-            {
-                SalesMarketIDs.Rows.Add(sm);
-            }
+            if (dto.SalesMarketIDs != null)
+			{
+				foreach (var sm in dto.SalesMarketIDs)
+				{
+					SalesMarketIDs.Rows.Add(sm);
+				}
+			}
 
             var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_Search]", new { 
                 SalesMarketIDs,
@@ -52,13 +55,17 @@ namespace SharedEFClasses.Models
                 dto.SalesHistoryAnalysisPeriod,
                 dto.LanguageID,
                 dto.DebtFunderCode,
-                dto.CurrencyID
+                dto.CurrencyID,
+                dto.SelectedPOD,
+                dto.PageSize,
+                dto.Page
             }, null, 30, CommandType.StoredProcedure);
 
 			return new CreditControl_TradeAccount_Search_Result()
 			{
 				DashboardPods = await reply.ReadAsync<CreditControl_TradeAccount_Search_DashboardPod>(),
-                Results = await reply.ReadAsync<CreditControl_TradeAccount_Search_Record>()
+                Results = await reply.ReadAsync<CreditControl_TradeAccount_Search_Record>(),
+                ResultsCount = await reply.ReadSingleAsync<int>()
 			};
 		}
 	}

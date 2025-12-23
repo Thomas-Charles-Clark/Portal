@@ -875,22 +875,6 @@ $heading-font-size: 1.1rem;
 }
 
 .display-mode-list {
-    .dropdown-menu-controls {
-        position: sticky;
-        top: 0;
-        padding: $sm-gutter;
-        z-index: 1;
-        background-color: $white;
-
-        .btn {
-            white-space: nowrap;
-        }
-
-        a.btn {
-            padding: $btn-padding-y-sm $btn-padding-x-sm;
-            color: $white;
-        }
-    }
 }
 
 #header-accordion {

@@ -234,6 +234,46 @@
   border-radius: 0.375rem;
 }
 
+.filter-pills {
+  gap: 10px;
+}
+.filter-pills .filter-pill {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+}
+.filter-pills .filter-pill span {
+  line-height: 1;
+}
+.filter-pills .filter-pill .btn-close {
+  height: 0.5rem;
+  width: 0.5rem;
+}
+.filter-pills .filter-pill .btn-close,
+.filter-pills .filter-pill .btn-reset-filters {
+  font-weight: normal;
+  opacity: 0.2;
+  transition: opacity 150ms ease-in-out;
+}
+.filter-pills .filter-pill:hover .btn-close,
+.filter-pills .filter-pill:hover .btn-reset-filters, .filter-pills .filter-pill:focus .btn-close,
+.filter-pills .filter-pill:focus .btn-reset-filters, .filter-pills .filter-pill:focus-within .btn-close,
+.filter-pills .filter-pill:focus-within .btn-reset-filters {
+  font-weight: bold;
+  opacity: 0.85;
+}
+.filter-pills .filter-pill .stretched-link {
+  display: flex;
+  align-items: center;
+}
+.filter-pills .filter-pill .btn-reset-filters {
+  padding: 0;
+  font-size: 1.15rem;
+  line-height: 1rem;
+}
+
 .container {
   max-width: 1200px;
 }

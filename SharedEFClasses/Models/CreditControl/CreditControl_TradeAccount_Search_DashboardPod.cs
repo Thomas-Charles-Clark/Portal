@@ -17,5 +17,7 @@ namespace SharedEFClasses.Models.CreditControl
 		public string Stats { get; set; }
 
 		public string ParameterJSON { get; set; }
+
+		public string PodHandle { get; set; }
 	}
 }

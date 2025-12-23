@@ -1,4 +1,12 @@
-﻿const tradeAccountContactsFiltersViewModel = ({
+﻿const tradeAccountStatuses = [{
+    name: 'Open',
+    value: true
+}, {
+    name: 'Closed',
+    value: false
+}]
+
+const tradeAccountContactsFiltersViewModel = ({
     params
 } = {
     params: {}
@@ -62,12 +70,15 @@
 
     self.creditControllerId = ko.observable(params.creditController ?? '');
     self.creditController = ko.observable();
-    self.creditControllerAwaitingBinding = ko.observable(params.creditControllerId != null && params.creditControllerId != '');
+    self.creditControllerAwaitingBinding = ko.observable(params.creditController != null && params.creditController != '');
 
     self.creditStoppedId = ko.observable(params.creditStopped ?? '');
     self.creditStopped = ko.observable();
     self.creditStoppedAwaitingBinding = ko.observable(params.creditStoppedId != null && params.creditStoppedId != '');
 
+    self.tradeAccountStatusId = ko.observable(params.tradeAccountStatusId ?? true);
+    self.tradeAccountStatus = ko.observable();
+    self.tradeAccountStatusAwaitingBinding = ko.observable(params.tradeAccountStatusId != null && params.tradeAccountStatusId != '');
 
     //#endregion
 
@@ -236,6 +247,12 @@
                 creditStoppedId = self.creditStoppedId();
             } else {
                 creditStoppedId = self.creditStoppedId.peek();
+            }
+
+            if (defaultOp.indexOf("TradeAccountStatusID") == -1) {
+                tradeAccountStatusId = self.tradeAccountStatusId();
+            } else {
+                tradeAccountStatusId = self.tradeAccountStatusId.peek();
             }
 
             if (defaultOp.indexOf("CreditController") == -1) {
@@ -514,6 +531,8 @@
         endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
         textField: 'SalesRepresentative.Name',
         valueField: 'SalesRepresentative.SalesRepresentativeID',
+        complexObjectName: 'SalesRepresentative',
+        complexObjectTextField: 'Name',
         template: self.salesRepresentativeTemplate,
         valueTemplate: self.salesRepresentativeValueTemplate,
         idObservable: self.salesRepresentativeId,
@@ -567,6 +586,8 @@
         endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
         textField: 'SalesAgent.Name',
         valueField: 'SalesAgent.SalesAgentID',
+        complexObjectName: 'SalesAgent',
+        complexObjectTextField: 'Name',
         template: self.salesAgentTemplate,
         valueTemplate: self.salesAgentValueTemplate,
         idObservable: self.salesAgentId,
@@ -620,6 +641,8 @@
         endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
         textField: 'SalesArea.Name',
         valueField: 'SalesArea.SalesAreaID',
+        complexObjectName: 'SalesArea',
+        complexObjectTextField: 'Name',
         virtual: false,
         template: self.salesAreaTemplate,
         valueTemplate: self.salesAreaValueTemplate,
@@ -674,6 +697,8 @@
         endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
         textField: 'Country.Name',
         valueField: 'Country.CountryID',
+        complexObjectName: 'Country',
+        complexObjectTextField: 'Name',
         virtual: false,
         template: self.countryTemplate,
         valueTemplate: self.countryValueTemplate,
@@ -728,6 +753,8 @@
         endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
         textField: 'TradeAccountType.Name',
         valueField: 'TradeAccountType.TradeAccountTypeID',
+        complexObjectName: 'TradeAccountType',
+        complexObjectTextField: 'Name',
         template: self.tradeAccountTypeTemplate,
         valueTemplate: self.tradeAccountTypeValueTemplate,
         idObservable: self.tradeAccountTypeId,
@@ -781,6 +808,8 @@
         endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
         textField: 'TradeAccountTypeGroup.Name',
         valueField: 'TradeAccountTypeGroup.TradeAccountTypeGroupID',
+        complexObjectName: 'TradeAccountTypeGroup',
+        complexObjectTextField: 'Name',
         template: self.tradeAccountTypeGroupTemplate,
         valueTemplate: self.tradeAccountTypeValueGroupTemplate,
         idObservable: self.tradeAccountTypeGroupId,
@@ -834,6 +863,8 @@
         endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
         textField: 'TradeAccountGroup.Name',
         valueField: 'TradeAccountGroup.TradeAccountGroupID',
+        complexObjectName: 'TradeAccountGroup',
+        complexObjectTextField: 'Name',
         template: self.tradeAccountGroupTemplate,
         valueTemplate: self.tradeAccountGroupValueTemplate,
         idObservable: self.tradeAccountGroupId,
@@ -887,6 +918,8 @@
         endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
         textField: 'PaymentTerms.Name',
         valueField: 'PaymentTerms.PaymentTermsID',
+        complexObjectName: 'PaymentTerms',
+        complexObjectTextField: 'Name',
         template: self.paymentTermsTemplate,
         valueTemplate: self.paymentTermsValueTemplate,
         idObservable: self.paymentTermsId,
@@ -940,6 +973,8 @@
         endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
         textField: 'PaymentTermsType.Name',
         valueField: 'PaymentTermsType.PaymentTermsTypeID',
+        complexObjectName: 'PaymentTermsType',
+        complexObjectTextField: 'Name',
         template: self.paymentTermsTypeTemplate,
         valueTemplate: self.paymentTermsTypeValueTemplate,
         idObservable: self.paymentTermsTypeId,
@@ -974,7 +1009,7 @@
         if (e.CreditController && e.CreditController.Code && e.CreditController.Name) {
             return `<span title="${e.CreditController.Name}">${e.CreditController.Name}</span>`;
         } else {
-            return '';
+            return 'Credit Controller';
         }
     }
 
@@ -988,16 +1023,18 @@
 
     self.creditControllerParams = kendoMDCDropDownList({
         skipCascade: true,
-        label: 'Credit Controller',
         odata: true,
         endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        label: 'Credit Controller',
         textField: 'CreditController.Name',
         valueField: 'CreditController.Code',
+        complexObjectName: 'CreditController',
+        complexObjectTextField: 'Name',
         template: self.creditControllerTemplate,
         valueTemplate: self.creditControllerValueTemplate,
         idObservable: self.creditControllerId,
         objObservable: self.creditController,
-        locked: ko.observable(self.creditControllerId() != ''),
+        locked: ko.observable(typeof window.lockCreditController == 'function' ? window.lockCreditController() : self.creditControllerId() != ''),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
@@ -1055,6 +1092,31 @@
         }
     });
 
+    self.tradeAccountStatusParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Trade Account Status',
+        data: tradeAccountStatuses,
+        textField: 'name',
+        valueField: 'value',
+        idObservable: self.tradeAccountStatusId,
+        objObservable: self.tradeAccountStatus,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        select: function (e) {
+            console.log('tradeAccountStatus select', e);
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById(`${self.filtersPrefix}trade-account-status-prefilter`)
+        }
+    });
+
     self.errors = new ko.validation.group([
 
     ]);
@@ -1090,7 +1152,7 @@
             creditStopped: self.creditStoppedId(),
             creditControllerCode: self.creditControllerId() == "" ? null : self.creditControllerId(), // contol holds empty string if nothing selected; can't pass CreditControllerCode = N'' to the procedure; demands an empty test here
             tradeAccountTypeGroupId: self.tradeAccountTypeGroupId(),
-            open: true,
+            open: self.tradeAccountStatusId(),
             searchTerm: null
         };
 

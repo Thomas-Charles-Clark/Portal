@@ -11,5 +11,7 @@ namespace SharedEFClasses.Models.CreditControl
 		public IEnumerable<CreditControl_TradeAccount_Search_DashboardPod> DashboardPods { get; set; }
 
 		public IEnumerable<CreditControl_TradeAccount_Search_Record> Results { get; set; }
+
+		public int ResultsCount { get; set; }
 	}
 }

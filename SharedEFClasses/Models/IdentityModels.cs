@@ -314,6 +314,9 @@ namespace SharedEFClasses.Models
         [InverseProperty("ModifiedBy")]
         public virtual ICollection<Resource_Language> ResourcesTranslated { get; set; }
 
+        [JsonIgnore]
+        [InverseProperty("MemberRecord")]
+        public virtual ICollection<CreditControllerLive> CreditControllers { get; set; }
 
 		public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {
