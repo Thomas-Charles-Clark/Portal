@@ -17,7 +17,11 @@
     fiveHundred: 500
 },
     SINGLE_BR = '<br/>',
-    DOUBLE_BR = '<br/><br/>'
+    DOUBLE_BR = '<br/><br/>',
+
+    DISPLAY_MODE_QUANTITY = 1,
+    DISPLAY_MODE_VALUE = 2
+
 
 const creditControlViewModel = (() => {
     let self = {};
@@ -52,9 +56,9 @@ const creditControlViewModel = (() => {
 
     self.tradeAccounts = ko.observableArray([]);
 
-    self.selectedTradeAccount = ko.observable();
-
     self.tradeAccountContacts = tradeAccountContactsViewModel({});
+
+    self.selectedTradeAccount = self.tradeAccountContacts.selectedTradeAccount;
 
     //#endregion
 
@@ -421,9 +425,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'OrdersTotalValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'OrdersTotalQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'OrdersTotalValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'OrdersTotalQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }, {
             field: 'OrdersInProgressValue',
             title: 'In Progress',
@@ -434,9 +447,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'OrdersInProgressValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'OrdersInProgressQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'OrdersInProgressValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'OrdersInProgressQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }, {
             field: 'OrdersHeldPortalValue',
             title: 'Held Portal',
@@ -447,9 +469,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'OrdersHeldPortalValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'OrdersHeldPortalQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'OrdersHeldPortalValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'OrdersHeldPortalQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }, {
             field: 'OrdersHeldMertexValue',
             title: 'Held Mertex',
@@ -460,9 +491,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'OrdersHeldMertexValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'OrdersHeldMertexQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'OrdersHeldMertexValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'OrdersHeldMertexQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }]
     }, {
         title: 'Debt Breakdown',
@@ -479,9 +519,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'NotDueTotalValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'NotDueTotalQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'NotDueTotalValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'NotDueTotalQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }, {
             field: 'OverdueTotalValue',
             title: 'Overdue',
@@ -492,9 +541,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-danger text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'OverdueTotalValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'OverdueTotalQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'OverdueTotalValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'OverdueTotalQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }, {
             field: 'Debt30DayValue',
             title: '30 Day',
@@ -505,9 +563,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-danger text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'Debt30DayValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'Debt30DayQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'Debt30DayValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'Debt30DayQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }, {
             field: 'Debt60DayValue',
             title: '60 Day',
@@ -518,9 +585,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-danger text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'Debt60DayValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'Debt60DayQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'Debt60DayValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'Debt60DayQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }, {
             field: 'Debt90DayValue',
             title: '90 Day',
@@ -531,9 +607,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-danger text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'Debt90DayValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'Debt90DayQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'Debt90DayValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'Debt90DayQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }, {
             field: 'Debt120DayValue',
             title: '120 Day',
@@ -544,9 +629,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-danger text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'Debt120DayValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'Debt120DayQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'Debt120DayValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'Debt120DayQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }, {
             field: 'DisputedValue',
             title: 'Disputed',
@@ -557,9 +651,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-danger text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'DisputedValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'DisputedQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'DisputedValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'DisputedQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }, {
             field: 'WrittenOffValue',
             title: 'Written Off',
@@ -570,9 +673,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-danger text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'WrittenOffValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'WrittenOffQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'WrittenOffValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'WrittenOffQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }, {
             field: 'StatementTotalValue',
             title: 'Total',
@@ -628,9 +740,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'CreditsValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'CreditsQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'CreditsValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'CreditsQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }, {
             field: 'DepositsValue',
             title: 'Deposits',
@@ -641,9 +762,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'DepositsValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'DepositsQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'DepositsValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'DepositsQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }, {
             field: 'OverpaymentsValue',
             title: 'Overpayments',
@@ -654,9 +784,18 @@ const creditControlViewModel = (() => {
                 "class": 'text-end'
             },
             width: gridColumnWidths.oneFortyFive,
-            template: (e) => self.formatCurrency(e, 'OverpaymentsValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'OverpaymentsQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'OverpaymentsValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'OverpaymentsQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }, {
             field: 'RefundsValue',
             title: 'Refunds',
@@ -667,12 +806,21 @@ const creditControlViewModel = (() => {
                 "class": 'text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'RefundsValue')
-                + SINGLE_BR
-                + self.formatNumber(e, 'RefundsQuantity')
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'RefundsValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'RefundsQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
         }]
-        }, {
-            title: self.filters.salesHistoryAnalysisPeriod() ? `Sales (${self.filters.salesHistoryAnalysisPeriod().Name})` : `Sales`,
+    }, {
+        title: self.filters.salesHistoryAnalysisPeriod() ? `Sales (${self.filters.salesHistoryAnalysisPeriod().Name})` : `Sales`,
         headerAttributes: {
             "class": "sales-heading"
         },
@@ -811,7 +959,9 @@ const creditControlViewModel = (() => {
 
             console.log('change', dataItem);
 
-            self.selectedTradeAccount(dataItem);
+            self.selectedTradeAccount(tradeAccountViewModel({
+                rec: dataItem
+            }));
         },
         filterMenuInit: (e) => {
             if (e.field === "CreditStop") {
@@ -846,6 +996,12 @@ const creditControlViewModel = (() => {
 
 
     //#region Subscriptions
+
+    self.filters.displayModes.subscribe(nv => {
+        self.gridParams.widget().setOptions({
+            columns: self.gridColumns()
+        });
+    }, self, 'arrayChange');
 
     self.filters.salesHistoryAnalysisPeriod.subscribe(nv => {
         self.gridParams.widget().setOptions({
@@ -924,7 +1080,7 @@ const creditControlViewModel = (() => {
             window.showConfirm('Are you sure?', 'This might send Statement PDF(s)', () => {
                 self.busy(true);
 
-                let data = self.getParameters();
+                let data = self.filters.getStatementParameters();
 
                 console.log('calling sendStatements with', data);
 

@@ -42,7 +42,7 @@
     }, self);
 
     self.label = ko.computed(() => {
-        return `${self.Code} - ${self.Name}`;
+        return `${self.Code ?? self.TradeAccountCode} - ${self.Name ?? self.TradeAccountName}`;
     }, self);
 
     //#endregion

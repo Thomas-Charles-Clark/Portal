@@ -50,11 +50,28 @@
 
 }
 @section navbarTitle {
-	<div>
-		<h2 class="d-flex gap-3 align-items-center">
+	<h2 class="d-flex gap-3 align-items-center">
+		<span>
 			@(ViewBag.Title)
-		</h2>
-	</div>
+		</span>
+		<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
+			<a class="btn btn-secondary dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
+				<i class="bi bi-list-check"></i>
+			</a>
+			<ul class="dropdown-menu">
+				<li>
+					<a class="dropdown-item" href="#">
+						Dashboard
+					</a>
+				</li>
+				<li>
+					<a class="dropdown-item" href="#" data-bs-target="#send-statements-modal" data-bs-toggle="modal">
+						Send Statements
+					</a>
+				</li>
+			</ul>
+		</div>
+	</h2>
 }
 
 <div class="blocker" data-bind="flexFadeVisible: busy">
@@ -62,8 +79,42 @@
 	<h4 class="mt-3" data-bind="text: busyMessage"></h4>
 </div>
 
+<div class="modal fade" id="send-statements-modal" tabindex="-1">
+	<div class="modal-dialog modal-lg" id="send-statements-modal-dialog">
+		<div class="modal-content">
+			<div class="blocker" data-bind="flexFadeVisible: busy">
+				<div class="loading-spinner"></div>
+				<h4>
+					Please Wait...
+				</h4>
+			</div>
+			<div class="modal-header grey-blue">
+				<h4 class="modal-title">
+					Send Statements
+				</h4>
+				<button type="button" class="btn-close btn-close-white" aria-label="Close" data-bs-dismiss="modal"></button>
+			</div>
+			<div class="modal-body">
+				<form id="send-statements-controls" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
+					<div class="trade-account-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statementsTradeAccountParams }"></div>
+					<div class="prefilter">
+						<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
+						<span class="validation-message" data-bind="validationMessage: date"></span>
+					</div>
+				</form>
+				<div id="controls-wrapper">
+					<button class="btn btn-dark" data-bind="click: sendStatements">
+						Send Statements
+					</button>
+				</div>
+				<div id="response-container" data-bind="html: sendResponse"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
 <div class="modal fade" id="trade-account-contacts-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-	<div class="modal-dialog" id="trade-account-contacts-modal-dialog" data-bind="with: tradeAccountContacts">
+	<div class="modal-dialog modal-fullscreen" id="trade-account-contacts-modal-dialog" data-bind="with: tradeAccountContacts">
 		<div class="modal-content">
 			<div class="blocker" data-bind="flexFadeVisible: busy">
 				<div class="loading-spinner"></div>
@@ -149,16 +200,5 @@
 			</div>
 		</div>
 		<div id="credit-control-grid-container" data-bind="kendoGrid: gridParams"></div>
-		@*<div id="credit-control-content" class="card">
-			<div class="card-body">
-				<div id="credit-control-date-prefilter" class="prefilter">
-					<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
-					<span class="validation-message" data-bind="validationMessage: date"></span>
-				</div>
-			</div>
-		</div>*@
-		<i class="d-block mt-3">
-			Must re-instate ability to send Statements to (a set of? all?) Trade Accounts for a given Date - see dateParams, sendStatements, etc.
-		</i>
 	</main>
 </div>

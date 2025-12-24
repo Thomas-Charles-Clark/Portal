@@ -285,34 +285,46 @@ html {
   display: flex;
   flex-direction: column;
 }
-html body {
+html > body {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
 }
-html body .container.body-content {
+html > body .container.body-content {
   flex: 1 1 100%;
   width: 100% !important;
   display: flex;
 }
-html body > nav.navbar-default h1, html body > nav.navbar-default h2, html body > nav.navbar-default h3, html body > nav.navbar-default h4, html body > nav.navbar-default h5, html body > nav.navbar-default h6 {
+html > body > nav.navbar-default .container #navbarSupportedContent h1, html > body > nav.navbar-default .container #navbarSupportedContent h2, html > body > nav.navbar-default .container #navbarSupportedContent h3, html > body > nav.navbar-default .container #navbarSupportedContent h4, html > body > nav.navbar-default .container #navbarSupportedContent h5, html > body > nav.navbar-default .container #navbarSupportedContent h6 {
   font-family: "Trixie", "Open Sans", Arial;
   font-weight: 800;
 }
-html body > nav.navbar-default h1 span, html body > nav.navbar-default h2 span, html body > nav.navbar-default h3 span, html body > nav.navbar-default h4 span, html body > nav.navbar-default h5 span, html body > nav.navbar-default h6 span {
-  font-family: Courier New, Courier, monospace;
-  font-weight: 400;
+html > body > nav.navbar-default .container #navbarSupportedContent h1 span, html > body > nav.navbar-default .container #navbarSupportedContent h2 span, html > body > nav.navbar-default .container #navbarSupportedContent h3 span, html > body > nav.navbar-default .container #navbarSupportedContent h4 span, html > body > nav.navbar-default .container #navbarSupportedContent h5 span, html > body > nav.navbar-default .container #navbarSupportedContent h6 span {
+  font-family: "Trixie", "Open Sans", Arial;
+  font-weight: 800;
 }
-html body > nav.navbar-default .nav.navbar-nav {
+html > body > nav.navbar-default .container #navbarSupportedContent .nav.navbar-nav {
   flex-wrap: nowrap;
 }
-html body > nav.navbar-default .nav.navbar-nav .app-title h2 {
+html > body > nav.navbar-default .container #navbarSupportedContent .nav.navbar-nav .app-title h2 {
   flex-wrap: nowrap;
 }
-html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
+html > body > nav.navbar-default .container #navbarSupportedContent .nav.navbar-nav .app-title h2 span {
   white-space: nowrap;
+}
+html > body > nav.navbar-default .container #navbarSupportedContent .nav.navbar-nav .app-title .dropdown-toggle {
+  vertical-align: top;
+}
+html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-menu {
+  overflow-y: auto;
+}
+html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-menu li:not(.app-title) {
+  padding: 0;
+}
+html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-menu li:not(.app-title) .dropdown-item {
+  padding: 0.75rem 1rem;
 }
 
 #main-credit-control-container {
@@ -335,6 +347,23 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
   position: sticky;
   left: 0;
   top: 0;
+}
+
+#send-statements-controls {
+  display: flex;
+  gap: 1rem;
+}
+#send-statements-controls > div:first-of-type {
+  flex: 0 1 75%;
+}
+#send-statements-controls > div:nth-of-type(2) {
+  flex: 0 1 25%;
+}
+
+#controls-wrapper {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
 }
 
 #credit-control-main {
@@ -449,8 +478,15 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 #contacts-tab-pane #trade-account-contacts-tabs-content .trade-account-contacts-prefilters .prefilter {
   flex: 1 0 calc(20% - 3rem);
 }
-#contacts-tab-pane #trade-account-contacts-modal-dialog {
+
+#trade-account-contacts-modal-dialog {
   margin-top: 0;
+}
+#trade-account-contacts-modal-dialog .modal-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .dashboard {

@@ -47,6 +47,10 @@ namespace Portal.Areas.CreditControl.Controllers
 
             dto.MemberID = memberId;
 
+            var tradeAccount = PortalDb.TradeAccounts.FirstOrDefault(ta => ta.Code == dto.TradeAccountCode);
+
+            dto.TradeAccountID = tradeAccount?.TradeAccountID;
+
             var result = await PortalDb.SendStatements(dto);
 
             return Ok(result);

@@ -1,7 +1,4 @@
-﻿const DISPLAY_MODE_QUANTITY = 1,
-      DISPLAY_MODE_VALUE = 2
-
-const creditControlFiltersViewModel = ({
+﻿const creditControlFiltersViewModel = ({
     params,
     parent
 } = {
@@ -36,6 +33,9 @@ const creditControlFiltersViewModel = ({
 
     self.tradeAccountCode = ko.observable(params.tradeAccountCode ?? '');
     self.tradeAccount = ko.observable();
+
+    self.statementsTradeAccountCode = ko.observable(params.statementsTradeAccountCode ?? '');
+    self.statementsTradeAccount = ko.observable();
 
     self.salesHistoryAnalysisPeriodId = ko.observable(params.salesHistoryAnalysisPeriodId ?? '');
     self.salesHistoryAnalysisPeriod = ko.observable();
@@ -253,6 +253,112 @@ const creditControlFiltersViewModel = ({
             }
 
             return d;
+        }
+    });
+
+    self.statementsTradeAccountParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Trade Account',
+        odata: true,
+        endPoint: () => `/odata/TradeAccounts_Live/Default.GetTradeAccountsForCreditControl(includeClosedAccounts=${ko.unwrap(self.includeClosedTradeAccounts)}, includeDeletedAccounts=${ko.unwrap(self.includeDeletedTradeAccounts)})`,
+        textField: 'ShortLabel',
+        valueField: 'Code',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/TradeAccounts_Live/Default.TradeAccountLiveValueMapper(tradeAccountCode=${options.value})`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        template: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        valueTemplate: (e) => {
+            if ((e.ShortLabel != '') && (e.Code != null))
+                return `<span title="${e.ShortLabel}">Trade Account: ${e.ShortLabel}</span>`
+            else
+                return '';
+        },
+        idObservable: self.statementsTradeAccountCode,
+        objObservable: self.statementsTradeAccount,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: [{
+            dir: 'asc',
+            field: 'Code'
+        }, {
+            dir: 'asc',
+            field: 'Name'
+        }],
+        select: function (e) {
+            console.log('statementsTradeAccountParams select', e);
+        },
+        requestStart: function (e) {
+
+        },
+        clearFunction: () => {
+            self.statementsTradeAccountCode('');
+            self.statementsTradeAccount(undefined);
+            self.statementsTradeAccountParams.dropDownListSettings.widget().value('');
+            self.statementsTradeAccountParams.dropDownListSettings.widget().trigger('change');
+        },
+        parameterMap: (data) => {
+
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            let filters = [];
+
+            if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "ShortLabel")) {
+                let f = data.filter.filters.find(f => f.field === "ShortLabel");
+                filters.push(`(contains(Name,'${f.value}') or startswith(Code,'${f.value}'))`);
+            }
+
+            if (d.$filter) {
+                delete d.$filter;
+            }
+
+            // regardless whether or not a filter has a selection it must be refreshed if ANOTHER filter changes.
+            // the implementation beneath is *not quite* sufficient  
+
+            if (filters.length) {
+                let filterString = filters.join(' and ');
+                d.$apply = `filter(${filterString})`;
+            }
+
+            if (!d.$apply) {
+                delete d.$apply;
+            }
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.querySelector("#send-statements-modal .modal-body")
         }
     });
 
@@ -633,11 +739,11 @@ const creditControlFiltersViewModel = ({
             result.creditControllerCode = self.creditControllerId();
         }
 
-        if (typeof self.date() == 'object') {
-            result.date = self.date().toUTCString()
-        } else {
-            result.date = self.date();
-        }
+        //if (typeof self.date() == 'object') {
+        //    result.date = self.date().toUTCString()
+        //} else {
+        //    result.date = self.date();
+        //}
 
         if (self.tradeAccountCode() != '') {
             result.tradeAccountCode = self.tradeAccountCode();
@@ -661,11 +767,20 @@ const creditControlFiltersViewModel = ({
         }
     });
 
+    self.getStatementParameters = () => {
+        return {
+            tradeAccountCode: self.statementsTradeAccountCode(),
+            date: typeof self.date() == 'object' ? self.date().toUTCString() : self.date()
+        };
+    }
+
     self.getSelectedFilters = ko.computed(() => {
         return Object.keys(self)
             .filter(k => {
                 return (k.length)
                     && (k != 'initialParams')
+                    && (k != 'dateParams')
+                    && (k != 'statementsTradeAccountParams')
                     && (k.indexOf('Params') > -1)
                     && (k.indexOf('Params') == k.length - 6);
             }).map(k => self[k])

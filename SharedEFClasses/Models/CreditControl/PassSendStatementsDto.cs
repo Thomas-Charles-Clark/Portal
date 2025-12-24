@@ -9,6 +9,7 @@ namespace SharedEFClasses.Models.CreditControl
     public class PassSendStatementsDto
     {
         public int MemberID { get; set; }
+        public string TradeAccountCode { get; set; }
         public int? TradeAccountID { get; set; }
         public DateTime? Date { get; set; }
     }

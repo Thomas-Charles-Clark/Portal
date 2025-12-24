@@ -232,39 +232,42 @@
 
         self.validateNow(true);
 
-        if (self.errors().length) {
+        window.setTimeout(() => {
 
-            self.errors.showAllMessages(true);
+            if (self.errors().length) {
 
-            self.errors.filter(x => {
-                x.isValid.notifySubscribers(x.isValid())
-            })
-        } else {
-            self.busy(true);
+                self.errors.showAllMessages(true);
 
-            let data = {
-                tradeAccountId: self.selectedTradeAccount().TradeAccountID,
-                contacts: self.selectedTradeAccountContacts().map(c => c.toJS())
-            };
-
-            fetch('/api/tradeaccountcontactsapi/SaveChanges', {
-                method: 'POST',
-                headers: window.fetchHeaders,
-                cache: 'no-cache',
-                credentials: 'same-origin',
-                body: JSON.stringify(data)
-            })
-                .then(window.handleFetchResponse)
-                .then(data => {
-                    self.busy(false);
-                    self.validateNow(false);
-                    self.tradeAccountContactsModal.hide();
+                self.errors.filter(x => {
+                    x.isValid.notifySubscribers(x.isValid())
                 })
-                .catch(err => {
-                    self.busy(false);
-                    window.catchFetchError(err);
+            } else {
+                self.busy(true);
+
+                let data = {
+                    tradeAccountId: self.selectedTradeAccount().TradeAccountID,
+                    contacts: self.selectedTradeAccountContacts().map(c => c.toJS())
+                };
+
+                fetch('/api/tradeaccountcontactsapi/SaveChanges', {
+                    method: 'POST',
+                    headers: window.fetchHeaders,
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    body: JSON.stringify(data)
                 })
-        }
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        self.busy(false);
+                        self.validateNow(false);
+                        self.tradeAccountContactsModal.hide();
+                    })
+                    .catch(err => {
+                        self.busy(false);
+                        window.catchFetchError(err);
+                    })
+            }
+        }, 0);
     }
 
     self.cancelTradeAccountContactsModal = () => {

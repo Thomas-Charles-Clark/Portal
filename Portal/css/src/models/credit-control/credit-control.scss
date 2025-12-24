@@ -5,7 +5,7 @@ html {
     display: flex;
     flex-direction: column;
 
-    body {
+    > body {
         flex-grow: 1;
         display: flex;
         flex-direction: column;
@@ -22,25 +22,47 @@ html {
 
         > nav {
             &.navbar-default {
-                h1, h2, h3, h4, h5, h6 {
-                    font-family: "Trixie", "Open Sans", Arial;
-                    font-weight: 800;
 
-                    span {
-                        font-family: Courier New, Courier, monospace;
-                        font-weight: 400;
-                    }
-                }
+                .container {
 
-                .nav.navbar-nav {
-                    flex-wrap: nowrap;
-
-                    .app-title {
-                        h2 {
-                            flex-wrap: nowrap;
+                    #navbarSupportedContent {
+                        h1, h2, h3, h4, h5, h6 {
+                            font-family: "Trixie", "Open Sans", Arial;
+                            font-weight: 800;
 
                             span {
-                                white-space: nowrap;
+                                font-family: "Trixie", "Open Sans", Arial;
+                                font-weight: 800;
+                            }
+                        }
+
+                        .nav.navbar-nav {
+                            flex-wrap: nowrap;
+
+                            .app-title {
+                                h2 {
+                                    flex-wrap: nowrap;
+
+                                    span {
+                                        white-space: nowrap;
+                                    }
+                                }
+
+                                .dropdown-toggle {
+                                    vertical-align: top;
+                                }
+                            }
+                        }
+
+                        ul.dropdown-menu {
+                            overflow-y: auto;
+
+                            li:not(.app-title) {
+                                padding: 0;
+
+                                .dropdown-item {
+                                    padding: $m-gutter $l-gutter;
+                                }
                             }
                         }
                     }
@@ -75,6 +97,24 @@ html {
             }
         }
     }
+}
+
+#send-statements-controls {
+    display: flex;
+    gap: $l-gutter;
+    > div:first-of-type {
+        flex: 0 1 75%;
+    }
+
+    > div:nth-of-type(2) {
+        flex: 0 1 25%;
+    }
+}
+
+#controls-wrapper {
+    margin-top: $l-gutter;
+    display: flex;
+    justify-content: flex-end;
 }
 
 #credit-control-main {
@@ -237,9 +277,16 @@ html {
             }
         }
     }
+}
 
-    #trade-account-contacts-modal-dialog {
-        margin-top: 0;
+#trade-account-contacts-modal-dialog {
+    margin-top: 0;
+
+    .modal-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: $l-gutter;
     }
 }
 
