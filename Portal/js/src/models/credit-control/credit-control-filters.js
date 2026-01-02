@@ -168,7 +168,7 @@
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/TradeAccounts_Live/Default.TradeAccountLiveValueMapper(tradeAccountCode=${options.value})`,
+                        url: `/odata/TradeAccounts_Live/Default.TradeAccountLiveValueMapper(tradeAccountCode='${options.value}')`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
@@ -271,7 +271,7 @@
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/TradeAccounts_Live/Default.TradeAccountLiveValueMapper(tradeAccountCode=${options.value})`,
+                        url: `/odata/TradeAccounts_Live/Default.TradeAccountLiveValueMapper(tradeAccountCode='${options.value}')`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);

@@ -36,30 +36,33 @@ namespace SharedEFClasses.Models
 				}
 			}
 
-            var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_Search]", new { 
-                SalesMarketIDs,
-                dto.SalesRepresentativeID,
-                dto.SalesAgentID,
-                dto.SalesAreaID,
-                dto.CountryID,
-                dto.TradeAccountCode,
-                dto.TradeAccountGroupID,
-                dto.TradeAccountTypeID,
-                dto.TradeAccountTypeGroupID,
-                dto.PaymentTermsID,
-                dto.PaymentTermsTypeID,
-                dto.CreditStopped,
-                dto.CreditControllerCode,
-                dto.Open,
-                dto.SearchTerm,
-                dto.SalesHistoryAnalysisPeriod,
-                dto.LanguageID,
-                dto.DebtFunderCode,
-                dto.CurrencyID,
-                dto.SelectedPOD,
-                dto.PageSize,
-                dto.Page
-            }, null, 30, CommandType.StoredProcedure);
+			var dat = new
+			{
+				SalesMarketIDs,
+				dto.SalesRepresentativeID,
+				dto.SalesAgentID,
+				dto.SalesAreaID,
+				dto.CountryID,
+				dto.TradeAccountCode,
+				dto.TradeAccountGroupID,
+				dto.TradeAccountTypeID,
+				dto.TradeAccountTypeGroupID,
+				dto.PaymentTermsID,
+				dto.PaymentTermsTypeID,
+				dto.CreditStopped,
+				dto.CreditControllerCode,
+				dto.Open,
+				dto.SearchTerm,
+				dto.SalesHistoryAnalysisPeriod,
+				dto.LanguageID,
+				dto.DebtFunderCode,
+				dto.CurrencyID,
+				dto.SelectedPOD,
+				dto.PageSize,
+				Page = dto.Page - 1
+			};
+
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_Search]", dat, null, 300, CommandType.StoredProcedure);
 
 			return new CreditControl_TradeAccount_Search_Result()
 			{
