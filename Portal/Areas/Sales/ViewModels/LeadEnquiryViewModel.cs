@@ -47,7 +47,7 @@ namespace Portal.Areas.Sales.ViewModels
         public List<Tag> AvailableTags { get; set; }
         public List<RetailAppointmentType> RetailAppointmentTypes { get; set; }
         public List<TradeAccountClass> TradeAccountClasses { get; set; }
-        public List<SharedEFClasses.Models.Mertexer.CreditController> CreditControllers { get; set; }
+        public List<CreditControllerLive> CreditControllers { get; set; }
         public List<CreditController_SalesMarket> CreditControllerSalesMarketMap { get; set; }
         public List<Bank> Banks { get; set; }
         public List<Bank_SalesMarket> BankSalesMarketMap { get; set; }
@@ -88,7 +88,7 @@ namespace Portal.Areas.Sales.ViewModels
             bool lockedToRep,
             short preselectedLaunchId,
             List<TradeAccountClass> tradeAccountClasses,
-            List<SharedEFClasses.Models.Mertexer.CreditController> creditControllers,
+            List<CreditControllerLive> creditControllers,
             List<CreditController_SalesMarket> creditControllerSalesMarketLanguageMap,
             List<CreditControllerAssignment> creditControllerAssignments,
             List<Bank> banks,

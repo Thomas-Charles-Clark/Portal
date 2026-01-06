@@ -402,12 +402,17 @@
     <Compile Include="Models\ContractPricing\ContractProductRestriction.cs" />
     <Compile Include="Models\CreditControlRegion.cs" />
     <Compile Include="Models\CreditControlRegion_SalesMarket.cs" />
+    <Compile Include="Models\CreditControl\CreditControl_DebtBreakdown_HeadingResult.cs" />
+    <Compile Include="Models\CreditControl\CreditControl_DebtBreakdown_Pod.cs" />
+    <Compile Include="Models\CreditControl\CreditControl_DebtBreakdown_Record.cs" />
     <Compile Include="Models\CreditControl\CreditControl_TradeAccount_Breakdown_SelectDTO.cs" />
+    <Compile Include="Models\CreditControl\CreditControl_TradeAccount_DebtBreakdown_Result.cs" />
     <Compile Include="Models\CreditControl\CreditControl_TradeAccount_SearchDTO.cs" />
     <Compile Include="Models\CreditControl\CreditControl_TradeAccount_Search_DashboardPod.cs" />
     <Compile Include="Models\CreditControl\CreditControl_TradeAccount_Search_Record.cs" />
     <Compile Include="Models\CreditControl\CreditControl_TradeAccount_Search_Result.cs" />
     <Compile Include="Models\CreditControl\PassSendStatementsDto.cs" />
+    <Compile Include="Models\CreditControl\CreditControl_TradeAccount_DebtBreakdownDTO.cs" />
     <Compile Include="Models\CreditControl\SalesHistoryAnalysisPeriod.cs" />
     <Compile Include="Models\CreditControl\SendStatementsResult.cs" />
     <Compile Include="Models\Department.cs" />

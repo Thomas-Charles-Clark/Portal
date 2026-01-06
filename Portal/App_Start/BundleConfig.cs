@@ -1005,8 +1005,11 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/credit-control").Include(
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/credit-control/credit-control-debt-breakdown{jsSuffix}",
+                        $"{jsPrefix}/models/credit-control/credit-control-debt-breakdown-pod{jsSuffix}",
+                        $"{jsPrefix}/models/credit-control/credit-control-debt-breakdown-record{jsSuffix}",
                         $"{jsPrefix}/models/credit-control/credit-control-dashboard-pod{jsSuffix}",
-                        $"{jsPrefix}/models/credit-control/credit-control-trade-account-search-result{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-trade-account-search-result{jsSuffix}",
                         $"{jsPrefix}/models/credit-control/credit-control-filters{jsSuffix}",
 						$"{jsPrefix}/models/credit-control/credit-control{jsSuffix}"
                 ));

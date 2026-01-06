@@ -264,7 +264,6 @@ namespace SharedEFClasses.Models
 
         public DbSet<Models.Mertexer.Bank> Banks { get; set; }
         public DbSet<Models.Mertexer.Bank_SalesMarket> BankSalesMarketMap { get; set; }
-        public DbSet<Models.Mertexer.CreditController> CreditControllers { get; set; }
         public DbSet<Models.Mertex.CreditControllerLive> CreditControllersLive { get; set; }
 		public DbSet<Models.Mertexer.CreditController_SalesMarket> CreditControllerSalesMarketMap { get; set; }
         public DbSet<SalesHistoryAnalysisPeriod> SalesHistoryAnalysisPeriods { get; set; }

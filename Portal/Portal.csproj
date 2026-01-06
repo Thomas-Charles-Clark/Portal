@@ -822,6 +822,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
+    <Content Include="Areas\Credit-Control\Views\CreditControl\CreditControl.cshtml" />
     <Content Include="Areas\Downloads\WindowsDownloaderBase\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Content>
@@ -1763,8 +1764,11 @@
     <Content Include="js\src\models\common-modals.js" />
     <Content Include="js\src\models\contract-pricing.js" />
     <Content Include="js\src\models\credit-control\credit-control-dashboard-pod.js" />
+    <Content Include="js\src\models\credit-control\credit-control-debt-breakdown-record.js" />
+    <Content Include="js\src\models\credit-control\credit-control-debt-breakdown-pod.js" />
     <Content Include="js\src\models\credit-control\credit-control-filters.js" />
     <Content Include="js\src\models\credit-control\credit-control-trade-account-search-result.js" />
+    <Content Include="js\src\models\credit-control\credit-control-debt-breakdown.js" />
     <Content Include="js\src\models\customer-care.js" />
     <Content Include="js\src\models\customer-enquiry.js" />
     <Content Include="js\src\models\customer-invite.js" />
@@ -2656,7 +2660,6 @@
     <Content Include="Areas\Customers\Views\AdvertiserMaintenance\AdvertiserMaintenance.cshtml" />
     <Content Include="Areas\Documents\Views\SentReport\DocumentsSentReport.cshtml" />
     <Content Include="Areas\Credit-Control\Views\web.config" />
-    <Content Include="Areas\Credit-Control\Views\CreditControl\CreditControl.cshtml" />
     <Content Include="Areas\Credit-Control\Views\_ViewStart.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />

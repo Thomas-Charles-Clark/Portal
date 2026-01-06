@@ -455,11 +455,17 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #credit-control-main .k-grid .other-trade-account-associations div {
   white-space: nowrap;
 }
+#credit-control-main .k-grid .k-state-selected {
+  background-color: #cfe2ff;
+}
 #credit-control-main .k-grid-header .k-with-icon .k-link {
   margin: 0;
 }
 #credit-control-main .k-grid-content-locked {
   height: 100% !important;
+}
+#credit-control-main .debt-breakdown {
+  cursor: pointer;
 }
 
 #response-container .alert {
@@ -637,5 +643,87 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 .display-mode-list .dropdown-menu-controls a.btn {
   padding: 0.25rem 0.5rem;
   color: #fff;
+}
+
+#debt-breakdown-modal #debt-breakdown-modal-dialog .debt-breakdown-modal-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .statement-btn {
+  display: inline-flex;
+  gap: 1rem;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods {
+  margin: 0 0 1rem 0;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod {
+  flex: 1;
+  text-align: center;
+  align-self: stretch;
+  cursor: pointer;
+  will-change: background-color;
+  background-color: #fff;
+  color: #212529;
+  border-color: #adb5bd;
+  transition: background-color 150ms ease-in-out, color 150ms ease-in-out, border-color 150ms ease-in-out;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod a {
+  color: #0d6efd;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod:hover .card-body h4, #debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod:hover .card-body h5, #debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod:focus .card-body h4, #debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod:focus .card-body h5, #debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod:focus-within .card-body h4, #debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod:focus-within .card-body h5 {
+  text-decoration: underline;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod.warning {
+  background-color: #b02a37;
+  color: #fff;
+  border-color: #b43541;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod.warning .btn {
+  color: #fff;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod.selected-pod .alert-primary {
+  background-color: #0a54c0;
+  color: #fff;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod.selected-pod .alert-danger {
+  background-color: #a72834;
+  color: #fff;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod.selected-pod .alert-warning {
+  background-color: #feb272;
+  color: #653208;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod.selected-pod .alert-warning a {
+  color: #fff;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod .card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod .card-body.alert {
+  margin-bottom: 0;
+  border: 0;
+  border-radius: 0.375rem;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod .card-body h4 {
+  font-weight: bold;
+  font-size: 1.55rem;
+  margin-bottom: 0.75rem;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod .card-body h5 {
+  font-size: 1.15rem;
+}
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod .card-body h4,
+#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod .card-body h5 {
+  text-decoration: none;
+  line-height: 1.75rem;
 }
 /*# sourceMappingURL=credit-control.css.map */

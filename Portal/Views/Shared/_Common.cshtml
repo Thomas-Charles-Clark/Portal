@@ -311,17 +311,6 @@
 			</button>
 		</li>
 		<li style="padding-left: 2rem;">
-			<label class="form-check" data-bind="attr: { 'for': `display-mode-quantity` }, click: function() { return true }, clickBubble: false">
-				<input class="form-check-input" type="checkbox" data-bind="checked: displayModes,
-                checkedValue: DISPLAY_MODE_QUANTITY,
-                attr: {
-                    id: `display-mode-quantity`,
-                    disabled: false
-                }" />
-				<span data-bind="text: 'Quantity'"></span>
-			</label>
-		</li>
-		<li style="padding-left: 2rem;">
 			<label class="form-check" data-bind="attr: { 'for': `display-mode-value` }, click: function() { return true }, clickBubble: false">
 				<input class="form-check-input" type="checkbox" data-bind="checked: displayModes,
                 checkedValue: DISPLAY_MODE_VALUE,
@@ -330,6 +319,17 @@
                     disabled: false
                 }" />
 				<span data-bind="text: 'Value'"></span>
+			</label>
+		</li>
+		<li style="padding-left: 2rem;">
+			<label class="form-check" data-bind="attr: { 'for': `display-mode-quantity` }, click: function() { return true }, clickBubble: false">
+				<input class="form-check-input" type="checkbox" data-bind="checked: displayModes,
+                checkedValue: DISPLAY_MODE_QUANTITY,
+                attr: {
+                    id: `display-mode-quantity`,
+                    disabled: false
+                }" />
+				<span data-bind="text: 'Quantity'"></span>
 			</label>
 		</li>
 	</ul>

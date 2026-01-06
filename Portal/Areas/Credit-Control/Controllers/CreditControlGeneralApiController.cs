@@ -61,6 +61,15 @@ namespace Portal.Areas.CreditControl.Controllers
                 gridData = gridData,
 				dashboardPods = model.DashboardPods
 			});
-        }
-    }
+		}
+
+		[HttpPost]
+		public async Task<IHttpActionResult> FetchDebtBreakdown(
+			[FromBody] CreditControl_TradeAccount_DebtBreakdownDTO dto)
+		{
+			var result = await PortalDb.CreditControl_TradeAccount_DebtBreakdown(dto);
+
+			return Ok(result);
+		}
+	}
 }

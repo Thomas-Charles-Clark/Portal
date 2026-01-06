@@ -60,6 +60,12 @@ const creditControlViewModel = (() => {
 
     self.selectedTradeAccount = self.tradeAccountContacts.selectedTradeAccount;
 
+    self.debtBreakdown = ko.observable();
+
+    self.debtBreakdownModalElement = document.querySelector('#debt-breakdown-modal');
+
+    self.debtBreakdownModal = bootstrap.Modal.getOrCreateInstance(self.debtBreakdownModalElement);
+
     //#endregion
 
     //#region Lifted Methods
@@ -255,7 +261,7 @@ const creditControlViewModel = (() => {
         field: 'Contacts',
         title: 'Contacts',
         attributes: {
-            "class": "text-center grid-btn-cell"
+            "class": "text-center grid-btn-cell contacts-cell"
         },
         filterable: false,
         locked: true,
@@ -507,16 +513,16 @@ const creditControlViewModel = (() => {
     }, {
         title: 'Debt Breakdown',
         headerAttributes: {
-            "class": "debt-breakdown-heading"
+            "class": "debt-breakdown-heading debt-breakdown"
         },
         columns: [{
             field: 'NotDueTotalValue',
             title: 'Due',
             headerAttributes: {
-                "class": "debt-breakdown-subheading"
+                "class": "debt-breakdown-subheading debt-breakdown"
             },
             attributes: {
-                "class": 'text-end'
+                "class": 'text-end debt-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -535,10 +541,10 @@ const creditControlViewModel = (() => {
             field: 'OverdueTotalValue',
             title: 'Overdue',
             headerAttributes: {
-                "class": "debt-breakdown-subheading"
+                "class": "debt-breakdown-subheading debt-breakdown"
             },
             attributes: {
-                "class": 'text-danger text-end'
+                "class": 'text-danger text-end debt-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -557,10 +563,10 @@ const creditControlViewModel = (() => {
             field: 'Debt30DayValue',
             title: '30 Day',
             headerAttributes: {
-                "class": "debt-breakdown-subheading"
+                "class": "debt-breakdown-subheading debt-breakdown"
             },
             attributes: {
-                "class": 'text-danger text-end'
+                "class": 'text-danger text-end debt-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -579,10 +585,10 @@ const creditControlViewModel = (() => {
             field: 'Debt60DayValue',
             title: '60 Day',
             headerAttributes: {
-                "class": "debt-breakdown-subheading"
+                "class": "debt-breakdown-subheading debt-breakdown"
             },
             attributes: {
-                "class": 'text-danger text-end'
+                "class": 'text-danger text-end debt-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -601,10 +607,10 @@ const creditControlViewModel = (() => {
             field: 'Debt90DayValue',
             title: '90 Day',
             headerAttributes: {
-                "class": "debt-breakdown-subheading"
+                "class": "debt-breakdown-subheading debt-breakdown"
             },
             attributes: {
-                "class": 'text-danger text-end'
+                "class": 'text-danger text-end debt-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -623,10 +629,10 @@ const creditControlViewModel = (() => {
             field: 'Debt120DayValue',
             title: '120 Day',
             headerAttributes: {
-                "class": "debt-breakdown-subheading"
+                "class": "debt-breakdown-subheading debt-breakdown"
             },
             attributes: {
-                "class": 'text-danger text-end'
+                "class": 'text-danger text-end debt-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -645,10 +651,10 @@ const creditControlViewModel = (() => {
             field: 'DisputedValue',
             title: 'Disputed',
             headerAttributes: {
-                "class": "debt-breakdown-subheading"
+                "class": "debt-breakdown-subheading debt-breakdown"
             },
             attributes: {
-                "class": 'text-danger text-end'
+                "class": 'text-danger text-end debt-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -667,10 +673,10 @@ const creditControlViewModel = (() => {
             field: 'WrittenOffValue',
             title: 'Written Off',
             headerAttributes: {
-                "class": "debt-breakdown-subheading"
+                "class": "debt-breakdown-subheading debt-breakdown"
             },
             attributes: {
-                "class": 'text-danger text-end'
+                "class": 'text-danger text-end debt-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -689,10 +695,10 @@ const creditControlViewModel = (() => {
             field: 'StatementTotalValue',
             title: 'Total',
             headerAttributes: {
-                "class": "debt-breakdown-subheading"
+                "class": "debt-breakdown-subheading debt-breakdown"
             },
             attributes: {
-                "class": "text-danger text-end"
+                "class": "text-danger text-end debt-breakdown"
             },
             width: gridColumnWidths.oneForty,
             template: (e) => self.formatCurrency(e, 'StatementTotalValue')
@@ -834,7 +840,13 @@ const creditControlViewModel = (() => {
                 "class": 'text-end'
             },
             width: gridColumnWidths.oneForty,
-            template: (e) => self.formatNumber(e, 'SalesRank')
+            template: (e) => {
+                if (e.SalesRank) {
+                    return e.SalesRank;
+                } else {
+                    return '';
+                }
+            }
         }, {
             field: 'SalesValue',
             title: 'Value',
@@ -922,7 +934,7 @@ const creditControlViewModel = (() => {
                         DepositsValue: { type: 'number' },
                         OverpaymentsValue: { type: 'number' },
                         RefundsValue: { type: 'number' },
-                        SalesRank: { type: 'number' },
+                        SalesRank: { type: 'string' },
                         SalesValue: { type: 'number' },
                         MemberCount: { type: 'number' },
                         ClaimCount: { type: 'number' },
@@ -953,15 +965,26 @@ const creditControlViewModel = (() => {
             pageSizes: [10, 20, 50, 100, 250, 500, 'all']
         },
         //height: 'calc(100vh - 230px)',
-        selectable: false,
-        change: function (e) {
-            let dataItem = e.sender.dataItem(e.sender.select());
+        selectable: 'cell',
+        change: function (event) {
+            console.log('change', event, event.sender.select());
 
-            console.log('change', dataItem);
+            if (event.sender.select()) {
 
-            self.selectedTradeAccount(tradeAccountViewModel({
-                rec: dataItem
-            }));
+                let classList = event.sender.select()[0].classList;
+
+                let dataItem = event.sender.dataItem(event.sender.select().closest('tr'));
+
+                if (classList.contains('debt-breakdown')) {
+                    self.fetchDebtBreakdown(dataItem);
+                }
+
+                if (classList.contains('contacts-cell')) {
+                    self.selectedTradeAccount(tradeAccountViewModel({
+                        rec: dataItem
+                    }));
+                }
+            }
         },
         filterMenuInit: (e) => {
             if (e.field === "CreditStop") {
@@ -1106,11 +1129,39 @@ const creditControlViewModel = (() => {
         }
     }
 
+    self.fetchDebtBreakdown = (data, event) => {
+        self.busy(true);
+
+        console.log('fetchDebtBreakdown calling with', data);
+
+        fetch("/api/CreditControlAPI/FetchDebtBreakdown", {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(result => {
+                console.log('fetchDebtBreakdown returned', result);
+                self.debtBreakdown(creditControlDebtBreakdownViewModel({
+                    callee: data,
+                    rec: result
+                }));
+
+                self.busy(false);
+
+                self.debtBreakdownModal.show();
+            })
+    }
+
     //#endregion
 
     //#region Events
 
-
+    self.debtBreakdownModalElement.addEventListener('bs.modal.hidden', () => {
+        self.debtBreakdown(undefined);
+    });
 
     //#endregion
 

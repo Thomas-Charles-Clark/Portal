@@ -53,7 +53,7 @@ namespace Portal.Areas.Sales.Controllers
 
             var lockedToRep = !user.Roles.Where(p => powerRoles.Contains(p.RoleId)).Any();
             var tradeAccountClasses = PortalDb.TradeAccountClasses.ToList();
-            var creditControllers = PortalDb.CreditControllers.Where(cc => cc.Deleted == false).ToList();
+            var creditControllers = PortalDb.CreditControllersLive.Where(cc => cc.Deleted == false).ToList();
             var creditControllerSalesMarketMap = PortalDb.CreditControllerSalesMarketMap.ToList();
             var creditControllerAssignments = PortalDb.CreditControllerAssignments.Where(ca => ca.Deleted == false).ToList();
             var banks = PortalDb.Banks.Where(b => b.CreditControlVisible == true).OrderBy(b => b.BankCode).ToList();

@@ -25,7 +25,6 @@ using SharedEFClasses.Models.Fenwick;
 using SharedEFClasses.Models.Maintenance;
 using SharedEFClasses.Models.OrderBook;
 using DocumentFormat.OpenXml.EMMA;
-using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Parcel;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.IncomingEmail;

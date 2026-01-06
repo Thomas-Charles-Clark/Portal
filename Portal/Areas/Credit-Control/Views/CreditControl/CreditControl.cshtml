@@ -79,6 +79,44 @@
 	<h4 class="mt-3" data-bind="text: busyMessage"></h4>
 </div>
 
+<div class="modal fade" id="debt-breakdown-modal" tabindex="-1">
+	<div class="modal-dialog modal-lg modal-xl" id="debt-breakdown-modal-dialog">
+		<div class="modal-content">
+			<div class="blocker" data-bind="flexFadeVisible: busy">
+				<div class="loading-spinner"></div>
+				<h4>
+					Please Wait...
+				</h4>
+			</div>
+			<div class="modal-header grey-blue">
+				<h4 class="modal-title">
+					Debt Breakdown
+				</h4>
+				<button type="button" class="btn-close btn-close-white" aria-label="Close" data-bs-dismiss="modal"></button>
+			</div>
+			<div class="modal-body" data-bind="with: debtBreakdown">
+				<h4 class="debt-breakdown-modal-heading" data-bind="with: heading">
+					<span data-bind="text: Heading"></span>
+					<a class="btn btn-dark statement-btn" href="javascript:;" data-bind="attr: { 'href': StatementURI }" target="_blank">
+						View Statement
+						<i class="bi bi-receipt-cutoff"></i>
+					</a>
+				</h4>
+				<div class="debt-breakdown-pods" data-bind="foreach: pods">
+					<div class="debt-breakdown-pod card" data-bind="css: { 'selected-pod': $parent.selectedPod() == PodHandle }">
+						<div class="card-body" data-bind="class: Classes">
+							<h4 data-bind="html: Heading"></h4>
+							<div data-bind="html: Stats"></div>
+							<a href="#" class="stretched-link" data-bind="click: $parent.podClick"></a>
+						</div>
+					</div>
+				</div>
+				<div data-bind="kendoGrid: gridParams"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
 <div class="modal fade" id="send-statements-modal" tabindex="-1">
 	<div class="modal-dialog modal-lg" id="send-statements-modal-dialog">
 		<div class="modal-content">

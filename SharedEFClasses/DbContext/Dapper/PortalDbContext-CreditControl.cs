@@ -71,5 +71,17 @@ namespace SharedEFClasses.Models
                 ResultsCount = await reply.ReadSingleAsync<int>()
 			};
 		}
+
+		public async Task<CreditControl_TradeAccount_DebtBreakdown_Result> CreditControl_TradeAccount_DebtBreakdown(CreditControl_TradeAccount_DebtBreakdownDTO dto)
+		{
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_DebtBreakdown_Select]", dto, null, 300, CommandType.StoredProcedure);
+
+			return new CreditControl_TradeAccount_DebtBreakdown_Result()
+			{
+				Heading = await reply.ReadSingleAsync<CreditControl_DebtBreakdown_HeadingResult>(),
+				Pods = await reply.ReadAsync<CreditControl_DebtBreakdown_Pod>(),
+				Records = await reply.ReadAsync<CreditControl_DebtBreakdown_Record>()
+			};
+		}
 	}
 }
