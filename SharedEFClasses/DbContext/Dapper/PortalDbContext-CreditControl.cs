@@ -59,10 +59,12 @@ namespace SharedEFClasses.Models
 				dto.CurrencyID,
 				dto.SelectedPOD,
 				dto.PageSize,
-				Page = dto.Page - 1
+				Page = dto.Page - 1,
+				dto.TradeAccountCompanyCode,
+				dto.InvoiceCompanyCode
 			};
 
-			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_Search]", dat, null, 300, CommandType.StoredProcedure);
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_Search]", dat, null, 30, CommandType.StoredProcedure);
 
 			return new CreditControl_TradeAccount_Search_Result()
 			{
@@ -72,15 +74,63 @@ namespace SharedEFClasses.Models
 			};
 		}
 
-		public async Task<CreditControl_TradeAccount_DebtBreakdown_Result> CreditControl_TradeAccount_DebtBreakdown(CreditControl_TradeAccount_DebtBreakdownDTO dto)
+		public async Task<CreditControl_TradeAccount_DebtBreakdown_Result> CreditControl_TradeAccount_DebtBreakdown_Select(CreditControl_TradeAccount_DebtBreakdownDTO dto)
 		{
 			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_DebtBreakdown_Select]", dto, null, 300, CommandType.StoredProcedure);
 
 			return new CreditControl_TradeAccount_DebtBreakdown_Result()
 			{
-				Heading = await reply.ReadSingleAsync<CreditControl_DebtBreakdown_HeadingResult>(),
-				Pods = await reply.ReadAsync<CreditControl_DebtBreakdown_Pod>(),
-				Records = await reply.ReadAsync<CreditControl_DebtBreakdown_Record>()
+				Heading = await reply.ReadSingleAsync<CreditControl_TradeAccount_DebtBreakdown_HeadingResult>(),
+				Pods = await reply.ReadAsync<CreditControl_TradeAccount_DebtBreakdown_Pod>(),
+				Records = await reply.ReadAsync<CreditControl_TradeAccount_DebtBreakdown_Record>()
+			};
+		}
+
+		public async Task<CreditControl_TradeAccount_OrderBreakdown_Result> CreditControl_TradeAccount_OrderBreakdown_Select(CreditControl_TradeAccount_OrderBreakdownDTO dto)
+		{
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_OrderBreakdown_Select]", dto, null, 30, CommandType.StoredProcedure);
+
+			return new CreditControl_TradeAccount_OrderBreakdown_Result()
+			{
+				Heading = await reply.ReadSingleAsync<CreditControl_TradeAccount_OrderBreakdown_HeadingResult>(),
+				Pods = await reply.ReadAsync<CreditControl_TradeAccount_OrderBreakdown_Pod>(),
+				Records = await reply.ReadAsync<CreditControl_TradeAccount_OrderBreakdown_Record>()
+			};
+		}
+
+		public async Task<CreditControl_TradeAccount_ClaimBreakdown_Result> CreditControl_TradeAccount_ClaimBreakdown_Select(CreditControl_TradeAccount_ClaimBreakdownDTO dto)
+		{
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_ClaimBreakdown_Select]", dto, null, 30, CommandType.StoredProcedure);
+
+			return new CreditControl_TradeAccount_ClaimBreakdown_Result()
+			{
+				Heading = await reply.ReadSingleAsync<CreditControl_TradeAccount_ClaimBreakdown_HeadingResult>(),
+				Pods = await reply.ReadAsync<CreditControl_TradeAccount_ClaimBreakdown_Pod>(),
+				Records = await reply.ReadAsync<CreditControl_TradeAccount_ClaimBreakdown_Record>()
+			};
+		}
+
+		public async Task<CreditControl_TradeAccount_OtherBreakdown_Result> CreditControl_TradeAccount_OtherBreakdown_Select(CreditControl_TradeAccount_OtherBreakdownDTO dto)
+		{
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_OtherBreakdown_Select]", dto, null, 30, CommandType.StoredProcedure);
+
+			return new CreditControl_TradeAccount_OtherBreakdown_Result()
+			{
+				Heading = await reply.ReadSingleAsync<CreditControl_TradeAccount_OtherBreakdown_HeadingResult>(),
+				Pods = await reply.ReadAsync<CreditControl_TradeAccount_OtherBreakdown_Pod>(),
+				Records = await reply.ReadAsync<CreditControl_TradeAccount_OtherBreakdown_Record>()
+			};
+		}
+
+		public async Task<CreditControl_TradeAccount_SalesBreakdown_Result> CreditControl_TradeAccount_SalesBreakdown_Select(CreditControl_TradeAccount_SalesBreakdownDTO dto)
+		{
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_SalesBreakdown_Select]", dto, null, 30, CommandType.StoredProcedure);
+
+			return new CreditControl_TradeAccount_SalesBreakdown_Result()
+			{
+				Heading = await reply.ReadSingleAsync<CreditControl_TradeAccount_SalesBreakdown_HeadingResult>(),
+				Pods = await reply.ReadAsync<CreditControl_TradeAccount_SalesBreakdown_Pod>(),
+				Records = await reply.ReadAsync<CreditControl_TradeAccount_SalesBreakdown_Record>()
 			};
 		}
 	}

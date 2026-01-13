@@ -1,4 +1,4 @@
-﻿const exampleViewModel = ({ } = {}) => {
+﻿const viewModel = ({ } = {}) => {
     let self = {};
 
     //#region Properties
@@ -7,13 +7,7 @@
 
     self.busy = ko.observable(false);
 
-    //#endregion
-
-
-
-    //#region Methods
-
-
+    self.busyMessage = ko.observable('Please Wait');
 
     //#endregion
 
@@ -37,9 +31,15 @@
 
 
 
-
-
     //#region Subscriptions
+
+
+
+    //#endregion
+
+
+
+    //#region Methods
 
 
 

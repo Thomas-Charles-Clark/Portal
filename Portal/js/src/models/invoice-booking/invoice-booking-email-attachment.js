@@ -590,7 +590,8 @@
                             }
                         }),
                         duplicateResults: props.duplicateResults(),
-                        isFlaggedAsDuplicate: props.isFlaggedAsDuplicate()
+                        isFlaggedAsDuplicate: props.isFlaggedAsDuplicate(),
+                        designersGuildCompanyCode: props.designersGuildCompanyCode() ?? null
                     }, null, 4);
                     break;
                 case 3:
@@ -664,7 +665,8 @@
                             }
                         }),
                         duplicateResults: props.duplicateResults(),
-                        isFlaggedAsDuplicate: props.isFlaggedAsDuplicate()
+                        isFlaggedAsDuplicate: props.isFlaggedAsDuplicate(),
+                        designersGuildCompanyCode: props.designersGuildCompanyCode() ?? null
                     }, null, 4);
                     break;
                 default:

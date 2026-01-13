@@ -236,12 +236,89 @@
                 filters.push(`(contains(Name,'${f.value}') or startswith(Code,'${f.value}'))`);
             }
 
-            if (d.$filter) {
-                delete d.$filter;
+            let salesMarketIds = self.salesMarketIds();
+            let salesRepresentativeId = self.salesRepresentativeId();
+            let salesAgentId = self.salesAgentId();
+            let salesAreaId = self.salesAreaId();
+            let countryId = self.countryId();
+            let tradeAccountGroupId = self.tradeAccountGroupId();
+            let paymentTermsId = self.paymentTermsId();
+            let paymentTermsTypeId = self.paymentTermsTypeId();
+            let creditStoppedId = self.creditStoppedId();
+            let tradeAccountTypeId = self.tradeAccountTypeId();
+            let tradeAccountTypeGroupId = self.tradeAccountTypeGroupId();
+            let creditControllerId = self.creditControllerId();
+            let debtFunderCode = self.debtFunderCode();
+            let currencyId = self.currencyId();
+            let tradeAccountCompanyId = self.tradeAccountCompanyId();
+
+            if (salesMarketIds.length > 0) {
+                let salesMarketFilters = [];
+
+                salesMarketIds.forEach(sm => {
+                    salesMarketFilters.push(`TradeAccount/SalesMarketID eq ${sm}`);
+                });
+
+                let salesMarketFilter = salesMarketFilters.join(' or ');
+
+                filters.push(`(${salesMarketFilter})`);
             }
 
-            // regardless whether or not a filter has a selection it must be refreshed if ANOTHER filter changes.
-            // the implementation beneath is *not quite* sufficient  
+            if (tradeAccountCompanyId != '') {
+                filters.push(`PartnerCompany eq '${tradeAccountCompanyId}'`);
+            }
+
+            if (salesRepresentativeId != '') {
+                filters.push(`TradeAccount/SalesRepresentativeID eq ${salesRepresentativeId}`);
+            }
+
+            if (salesAgentId != '') {
+                filters.push(`TradeAccount/SalesAgentID eq ${salesAgentId}`);
+            }
+
+            if (salesAreaId != '') {
+                filters.push(`TradeAccount/SalesAreaID eq ${salesAreaId}`);
+            }
+
+            if (countryId != '') {
+                filters.push(`TradeAccount/CountryID eq ${countryId}`);
+            }
+
+            if (tradeAccountGroupId != '') {
+                filters.push(`TradeAccount/TradeAccountGroupID eq ${tradeAccountGroupId}`);
+            }
+
+            if (paymentTermsId != '') {
+                filters.push(`TradeAccount/PaymentTermsID eq ${paymentTermsId}`);
+            }
+
+            if (debtFunderCode) {
+                filters.push(`DebtFunder eq '${debtFunderCode}'`);
+            }
+            
+            if (currencyId != '') {
+                filters.push(`TradeAccount/CurrencyID eq ${currencyId}`);
+            }
+
+            if (paymentTermsTypeId != '') {
+                filters.push(`TradeAccount/PaymentTerms/PaymentTermsTypeID eq ${paymentTermsTypeId}`);
+            }
+
+            if (creditStoppedId != '') {
+                filters.push(`CreditStopped eq ${creditStoppedId}`);
+            }
+
+            if (creditControllerId != '') {
+                filters.push(`CreditController eq '${creditControllerId}'`);
+            }
+
+            if (tradeAccountTypeId != '') {
+                filters.push(`TradeAccount/TradeAccountTypeID eq ${tradeAccountTypeId}`);
+            }
+
+            if (tradeAccountTypeGroupId != '') {
+                filters.push(`TradeAccount/TradeAccountType/TradeAccountTypeGroupID eq ${tradeAccountTypeGroupId}`);
+            }
 
             if (filters.length) {
                 let filterString = filters.join(' and ');
@@ -250,9 +327,12 @@
 
             if (!d.$apply) {
                 delete d.$apply;
+            } else {
+                //console.log(d.$apply);
             }
 
             return d;
+
         }
     });
 
@@ -436,69 +516,170 @@
 
 
     // why TF can't I get grouping to work vs odata controller endpoints
-    self.salesHistoryAnalysisPeriodsParams = kendoMDCDropDownList({
-        skipCascade: true,
-        label: 'Sales History Analysis Period',
-        odata: true,
-        endPoint: '/odata/SalesHistoryAnalysisPeriods',
-        textField: 'Name',
-        valueField: 'Code',
-        groupTemplate: '<strong>#:data#</strong>',
-        template: self.salesHistoryAnalysisPeriodTemplate,
-        valueTemplate: self.salesHistoryAnalysisPeriodValueTemplate,
-        idObservable: self.salesHistoryAnalysisPeriodId,
-        objObservable: self.salesHistoryAnalysisPeriod,
-        //grouping: [{
-        //    field: 'GroupName',
-        //    dir: 'asc'
-        //}],
-        schema: {
-            model: {
-                id: 'Code',
-                fields: [{
-                    GroupName: { type: 'string' },
-                    Name: { type: 'string' },
-                    Code: { type: 'string' },
-                    SortOrder: { type: 'number' }
-                }]
-            }
-        },
-        locked: ko.observable(self.salesHistoryAnalysisPeriodId() != ''),
+  //  self.salesHistoryAnalysisPeriodsParams = kendoMDCDropDownList({
+  //      skipCascade: true,
+  //      label: 'Sales History Analysis Period',
+  //      odata: true,
+  //      endPoint: '/odata/GetSalesHistoryAnalysisPeriodGroups',
+  //      textField: 'Name',
+  //      valueField: 'Code',
+  //      groupTemplate: '<strong>#:data#</strong>',
+  //      template: self.salesHistoryAnalysisPeriodTemplate,
+  //      valueTemplate: self.salesHistoryAnalysisPeriodValueTemplate,
+  //      idObservable: self.salesHistoryAnalysisPeriodId,
+  //      objObservable: self.salesHistoryAnalysisPeriod,
+  //      fixedGroupTemplate: (e) => `Group: #: data #`,
+  //      //grouping: [{
+  //      //    field: 'GroupName',
+  //      //    dir: 'asc'
+  //      //}],
+  //      locked: ko.observable(self.salesHistoryAnalysisPeriodId() != ''),
+  //      enable: ko.observable(true),
+  //      disable: ko.observable(false),
+  //      clearable: ko.observable(true),
+  //      revertible: ko.observable(false),
+  //      readOnly: false,
+  //      filter: 'contains',
+  //      autoBind: true,
+  //      height: 340,
+  //      sort: {
+  //          dir: 'asc',
+  //          field: 'GroupName'
+  //      },
+  //      select: function (e) {
+  //          console.log('salesHistoryAnalysisPeriod select', e);
+  //      },
+  //      clearFunction: self.genericUnsavedChangesClear,
+  //      parameterMap: (data) => {
+
+  //          //Generate parameters in odata v4 format
+  //          let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+  //          delete d.$inlinecount; // <-- remove inlinecount
+  //          delete d.$format; // <-- remove format
+  //          delete d.$callback; // <-- remove callback
+
+  //          d.$count = true;
+
+  //          /*
+            
+            
+		//[Key]
+		//public string Code { get; set; }
+
+		//public string Name { get; set; }
+
+		//public string GroupName { get; set; }
+
+		//public byte SortOrder { get; set; }
+  //          */
+
+  //          d.$apply = 'groupby((Code,GroupName,Name))/filter((Code ne null))';
+
+  //          return d;
+  //      },
+  //      popupSettings: {
+  //          appendTo: document.getElementById(`${self.filtersPrefix}sales-history-analysis-period-prefilter`)
+  //      }
+  //  });
+
+    self.salesHistoryAnalysisPeriodsParams = {
+        enable: true,
         enable: ko.observable(true),
         disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'asc',
-            field: 'Name'
+        observable: self.salesHistoryAnalysisPeriodId,
+        clearable: true,
+        revertible: false,
+        width: 'auto',
+        label: 'Sales History Analysis Period',
+        valuePrimitive: false,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        controlClass: 'form-control',
+        complexObjectName: undefined, // don't remove this; see _Common.cshtml:276
+        dropDownListSettings: {
+            value: self.salesHistoryAnalysisPeriodId, // for a multi-select list, this is NOT a one-way street.
+            dataItem: self.salesHistoryAnalysisPeriod,
+            dataValueField: 'Code',
+            dataTextField: 'Name',
+            height: 300,
+            widget: ko.observable(),
+            groupClick: function (e, sender) {
+                var self = this;
+                console.log('groupClick', e);
+            },
+            open: function (e) {
+                //var self = this;
+                //$(e.sender._widgetOptions.dataItem.mdcSelect.root_).toggleClass('mdc-select--focused');
+                //console.log(self);
+            },
+            close: function (e) {
+                /*$(e.sender._widgetOptions.dataItem.mdcSelect.root_).toggleClass('mdc-select--focused');*/
+            },
+            data: new kendo.data.DataSource({
+                serverFiltering: true,
+                serverSorting: true,
+                serverGrouping: true,
+                schema: $.extend({}, kendo.data.schemas.webapi, {
+                    data: "Data",
+                    total: "Total",
+                    filters: "Filters",
+                    aggregates: "Aggregates",
+                    errors: "Errors"
+                }),
+                transport: {
+                    read: function (options) {
+                        var webapi = new kendo.data.transports.webapi({ prefix: "" });
+
+                        var mapped = webapi.parameterMap(options.data);
+
+                        var data = {};
+
+                        for (var propertyName in mapped) {
+                            data[propertyName] = mapped[propertyName];
+                        }
+
+                        var params = new URLSearchParams();
+
+                        for (var propertyName in data) {
+                            params.append(propertyName, data[propertyName]);
+                        }
+
+                        fetch(`/api/CreditControlAPI/FetchSalesAnalysisGroups?${params}`, {
+                            method: "GET",
+                            headers: window.fetchHeaders,
+                            cache: 'no-cache',
+                            credentials: 'same-origin',
+                            data: JSON.stringify(data),
+                        })
+                            .then(window.handleFetchResponse)
+                            .then(data => {
+                                options.success(data);
+                            })
+                            .catch(window.catchFetchError)
+                    }
+                },
+                group: { field: 'GroupName' }
+            }),
+            valuePrimitive: true,
+            autoWidth: false,
+            autoBind: true, // this should be left true for multiselects so they don't go a bit skewiff -
+            // if you don't permit autoBinding, and provide preselected values 
+            // and rely on knockout-kendo to perform the updating... it *almost* works
+            // however it does not clear the widget()._initialValues array,
+            // which - when you then go to clear the widget - reloads selection
+            // upon open. Which is pants.
+            autoClose: false,
+            optionLabel: ' ',
+            filter: 'startswith'
         },
-        select: function (e) {
-            console.log('salesHistoryAnalysisPeriod select', e);
-        },
-        clearFunction: self.genericUnsavedChangesClear,
-        //parameterMap: (data) => {
-
-        //    //Generate parameters in odata v4 format
-        //    let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-        //    delete d.$inlinecount; // <-- remove inlinecount
-        //    delete d.$format; // <-- remove format
-        //    delete d.$callback; // <-- remove callback
-
-        //    d.$count = true;
-
-        //    d.$apply = 'groupby((Code,Name,GroupName,SortOrder))/filter((Code ne null))';
-
-        //    return d;
-        //},
-        popupSettings: {
-            appendTo: document.getElementById(`${self.filtersPrefix}sales-history-analysis-period-prefilter`)
+        clearFunction: function () {
+            var self = this
+            self.dropDownListSettings.value('');
+            self.dropDownListSettings.widget().trigger('change');
         }
-    });
+    }
 
     self.languageParams = kendoMDCDropDownList({
         label: 'Language',
@@ -728,8 +909,16 @@
             tradeAccountTypeGroupId: self.tradeAccountTypeGroupId(),
             open: self.tradeAccountStatusId(),
             languageId: self.languageId(),
-            currencyId: self.currencyId(),
+            currencyId: self.currencyId()
         };
+
+        if (self.tradeAccountCompanyId()) {
+            result.tradeAccountCompanyCode = self.tradeAccountCompanyId();
+        }
+
+        if (self.invoiceCompanyId()) {
+            result.invoiceCompanyCode = self.invoiceCompanyId();
+        }
 
         if (salesMarketIds.length) {
             result.salesMarketIds = salesMarketIds;
@@ -781,6 +970,7 @@
                     && (k != 'initialParams')
                     && (k != 'dateParams')
                     && (k != 'statementsTradeAccountParams')
+                    && (k != 'includeClosedTradeAccountsParams')
                     && (k.indexOf('Params') > -1)
                     && (k.indexOf('Params') == k.length - 6);
             }).map(k => self[k])
@@ -798,7 +988,13 @@
                         }
                     }
                 } else {
-                    console.log(p);
+                    if (p.hasOwnProperty('multiSelectSettings')) {
+                        if (p.multiSelectSettings.observableArray().length)
+                            selected = true;
+                    } else if (p.hasOwnProperty('observable')) {
+                        if (p.observable())
+                            selected = true;
+                    }
                 }
 
                 return selected;

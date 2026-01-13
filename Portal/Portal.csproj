@@ -558,6 +558,10 @@
     <Compile Include="Areas\Credit-Control\ViewModels\StatementsViewModel.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceController.cs" />
+    <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentRequestsAPIController.cs" />
+    <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentRequestsController.cs" />
+    <Compile Include="Areas\Suppliers\SuppliersAreaRegistration.cs" />
+    <Compile Include="Areas\Suppliers\ViewModels\SupplierPaymentRequestViewModel.cs" />
     <Compile Include="Areas\Trade-Accounts\Controllers\TradeAccountContactsAPIController.cs" />
     <Compile Include="Areas\Trade-Accounts\Controllers\TradeAccountContactsController.cs" />
     <Compile Include="Areas\Customers\Controllers\GiftVouchersAPIController.cs" />
@@ -670,6 +674,8 @@
     <Compile Include="Areas\Trade-Accounts\TradeAccountsAreaRegistration.cs" />
     <Compile Include="Areas\Trade-Accounts\ViewModels\TradeAccountContactsViewModel.cs" />
     <Compile Include="Controllers\IncomingEmailAttachmentController.cs" />
+    <Compile Include="Controllers\ODataControllers\PaymentRequestStatusesController.cs" />
+    <Compile Include="Controllers\ODataControllers\CompaniesController.cs" />
     <Compile Include="Controllers\ODataControllers\DebtFundersController.cs" />
     <Compile Include="Controllers\ODataControllers\CreditControllersController.cs" />
     <Compile Include="Controllers\ODataControllers\DocumentOutputModesController.cs" />
@@ -1763,7 +1769,19 @@
     <Content Include="js\src\models\common-modals-old.js" />
     <Content Include="js\src\models\common-modals.js" />
     <Content Include="js\src\models\contract-pricing.js" />
+    <Content Include="js\src\models\credit-control\credit-control-sales-breakdown.js" />
+    <Content Include="js\src\models\credit-control\credit-control-sales-breakdown-pod.js" />
+    <Content Include="js\src\models\credit-control\credit-control-sales-breakdown-record.js" />
+    <Content Include="js\src\models\credit-control\credit-control-other-breakdown.js" />
+    <Content Include="js\src\models\credit-control\credit-control-other-breakdown-pod.js" />
+    <Content Include="js\src\models\credit-control\credit-control-other-breakdown-record.js" />
     <Content Include="js\src\models\credit-control\credit-control-dashboard-pod.js" />
+    <Content Include="js\src\models\credit-control\credit-control-claims-breakdown.js" />
+    <Content Include="js\src\models\credit-control\credit-control-claims-breakdown-pod.js" />
+    <Content Include="js\src\models\credit-control\credit-control-claims-breakdown-record.js" />
+    <Content Include="js\src\models\credit-control\credit-control-orders-breakdown.js" />
+    <Content Include="js\src\models\credit-control\credit-control-orders-breakdown-pod.js" />
+    <Content Include="js\src\models\credit-control\credit-control-orders-breakdown-record.js" />
     <Content Include="js\src\models\credit-control\credit-control-debt-breakdown-record.js" />
     <Content Include="js\src\models\credit-control\credit-control-debt-breakdown-pod.js" />
     <Content Include="js\src\models\credit-control\credit-control-filters.js" />
@@ -1828,6 +1846,10 @@
     <Content Include="js\src\models\pager.js" />
     <Content Include="js\src\models\credit-control\credit-control.js" />
     <Content Include="js\src\models\stock-check-request.js" />
+    <Content Include="js\src\models\suppliers\payment-requests\supplier-payment-decision.js" />
+    <Content Include="js\src\models\suppliers\payment-requests\supplier-payment-request.js" />
+    <Content Include="js\src\models\suppliers\payment-requests\supplier-payment-requests-filters.js" />
+    <Content Include="js\src\models\suppliers\payment-requests\supplier-payment-requests.js" />
     <Content Include="js\src\models\trade-accounts\trade-account-contacts-dashboard-pod.js" />
     <Content Include="js\src\models\trade-accounts\trade-account-contact.js" />
     <Content Include="js\src\models\trade-accounts\trade-account-contacts-filters.js" />
@@ -2668,6 +2690,9 @@
     <Content Include="Areas\Trade-Accounts\Views\TradeAccountContacts\_TradeAccountContactsPartial.cshtml" />
     <Content Include="Areas\Trade-Accounts\Views\TradeAccountContacts\_TradeAccountContactsTablePartial.cshtml" />
     <Content Include="Areas\Trade-Accounts\Views\TradeAccountContacts\TradeAccountContacts.cshtml" />
+    <Content Include="Areas\Suppliers\Views\web.config" />
+    <Content Include="Areas\Suppliers\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Suppliers\Views\PaymentRequests\PaymentRequests.cshtml" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -3080,6 +3105,8 @@
     <Content Include="css\src\models\trade-account-contacts.scss" />
     <Content Include="css\src\models\trade-account-contacts-widener.scss" />
     <Content Include="css\src\models\credit-control\credit-control-sidebar.scss" />
+    <Content Include="css\src\models\suppliers\payment-requests\supplier-payment-requests.scss" />
+    <Content Include="css\src\models\suppliers\payment-requests\supplier-payment-requests-sidebar.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -6584,6 +6611,8 @@
     <Folder Include="Areas\Pricing\Views\PricingWebApi\" />
     <Folder Include="Areas\Pricing\Views\Shared\" />
     <Folder Include="Areas\Retail\Views\Shared\" />
+    <Folder Include="Areas\Suppliers\Data\" />
+    <Folder Include="Areas\Suppliers\Views\Shared\" />
     <Folder Include="Areas\Trade-Accounts\Views\Shared\" />
     <Folder Include="Content\fonts\trixie\" />
     <Folder Include="edge\x64\" />

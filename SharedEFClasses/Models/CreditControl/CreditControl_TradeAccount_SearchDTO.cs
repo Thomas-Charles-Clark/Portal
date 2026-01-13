@@ -51,5 +51,9 @@ namespace SharedEFClasses.Models.CreditControl
 		public int Page { get; set; }
 
 		public int? PageSize { get; set; }
+
+		public string TradeAccountCompanyCode { get; set; }
+
+		public string InvoiceCompanyCode { get; set; }
 	}
 }

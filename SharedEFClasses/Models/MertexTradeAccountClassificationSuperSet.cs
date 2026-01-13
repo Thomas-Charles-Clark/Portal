@@ -51,6 +51,8 @@ namespace SharedEFClasses.Models
 
         public byte? CurrencyID { get; set; }
 
+        public string CompanyCode { get; set; }
+
         [ForeignKey("SalesMarketID")]
         public virtual SalesMarket SalesMarket { get; set; }
 
@@ -89,5 +91,8 @@ namespace SharedEFClasses.Models
 
         [ForeignKey("CurrencyID")]
         public virtual Currency Currency { get; set; }
+
+        [ForeignKey("CompanyCode")]
+        public virtual Company Company { get; set; }
     }
 }

@@ -20,6 +20,7 @@ using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.OrderBook;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Parcel;
+using SharedEFClasses.Models.Paying;
 using SharedEFClasses.Models.Press;
 using SharedEFClasses.Models.Pricing;
 using SharedEFClasses.Models.Products;
@@ -110,6 +111,7 @@ namespace SharedEFClasses.Models
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<SupplierType> SupplierTypes { get; set; }
         public DbSet<VATCode> VATCodes { get; set; }
+        public DbSet<Company> Companies { get; set; }
 
         #endregion
 
@@ -613,9 +615,11 @@ namespace SharedEFClasses.Models
         public DbSet<ParcelDestination> ParcelDestinations { get; set; }
         public DbSet<ParcelRate> ParcelRates { get; set; }
 
-        #endregion
+		#endregion
 
-        public DbSet<GiftVoucher> GiftVouchers { get; set; }
+		#region Other Stuff
+
+		public DbSet<GiftVoucher> GiftVouchers { get; set; }
 
         public DbSet<GiftVoucherType> GiftVoucherTypes { get; set; }
 
@@ -625,21 +629,32 @@ namespace SharedEFClasses.Models
 
         public DbSet<AdvertiserClass> AdvertiserClasses { get; set; }
 
+		#endregion
+
+		#region Incoming Email
+
+		public virtual DbSet<Attachment> Attachments { get; set; }
+		public virtual DbSet<AttachmentType> AttachmentTypes { get; set; }
+		public virtual DbSet<AttachmentStatus> AttachmentStatuses { get; set; }
+		public virtual DbSet<Domain_SupplierCode_Map> Domain_SupplierCode_Maps { get; set; }
+		public virtual DbSet<Email> EmailStubs { get; set; }
+		public virtual DbSet<Mailbox> Mailboxes { get; set; }
+		public virtual DbSet<MailboxFolder> MailboxFolders { get; set; }
+		public virtual DbSet<MailboxFunction> MailboxFunctions { get; set; }
+		public virtual DbSet<BudgetHolderSuperSet> BudgetHolderSuperSet { get; set; }
+		public virtual DbSet<EmailStatus> EmailStatuses { get; set; }
+		public virtual DbSet<SupplierBankDetails> SupplierBankDetails { get; set; }
+
         #endregion
 
-        #region Incoming Email
+        #region Paying
 
-        public virtual DbSet<Attachment> Attachments { get; set; }
-        public virtual DbSet<AttachmentType> AttachmentTypes { get; set; }
-        public virtual DbSet<AttachmentStatus> AttachmentStatuses { get; set; }
-        public virtual DbSet<Domain_SupplierCode_Map> Domain_SupplierCode_Maps { get; set; }
-        public virtual DbSet<Email> EmailStubs { get; set; }
-        public virtual DbSet<Mailbox> Mailboxes { get; set; }
-        public virtual DbSet<MailboxFolder> MailboxFolders { get; set; }
-        public virtual DbSet<MailboxFunction> MailboxFunctions { get; set; }
-        public virtual DbSet<BudgetHolderSuperSet> BudgetHolderSuperSet { get; set; }
-        public virtual DbSet<EmailStatus> EmailStatuses { get; set; }
-        public virtual DbSet<SupplierBankDetails> SupplierBankDetails { get; set; }
+        public virtual DbSet<PaymentDecision> PaymentDecisions { get; set; }
+        public virtual DbSet<PaymentDecision_PaymentRequest> PaymentDecision_PaymentRequests { get; set; }
+        public virtual DbSet<PaymentRequest> PaymentRequests { get; set; }
+        public virtual DbSet<PaymentRequestStatus> PaymentRequestStatuses { get; set; }
+
+        #endregion
 
         #endregion
 

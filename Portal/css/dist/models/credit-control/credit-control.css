@@ -177,7 +177,8 @@
   transition: opacity 150ms ease-in-out;
   transition-behavior: allow-discrete;
 }
-.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .k-dropdown-wrap.k-state-default, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .k-dropdown-wrap.k-state-default,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .k-dropdown-wrap.k-state-default, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .k-dropdown-wrap.k-state-default, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .k-dropdown-wrap.k-state-default,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .k-dropdown-wrap.k-state-default,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .k-dropdown-wrap.k-state-default,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .k-dropdown-wrap.k-state-default {
   position: relative;
@@ -186,18 +187,35 @@
   color: #fff;
   border-radius: 0.375rem;
 }
-.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .k-dropdown-wrap.k-state-default .k-input, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .k-dropdown-wrap.k-state-default .k-input,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .k-dropdown-wrap.k-state-default .k-input, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .k-dropdown-wrap.k-state-default .k-input, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .k-dropdown-wrap.k-state-default .k-input,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .k-dropdown-wrap.k-state-default .k-input,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .k-dropdown-wrap.k-state-default .k-input,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .k-dropdown-wrap.k-state-default .k-input {
   color: #fff;
 }
-.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls > div,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls > div,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls > div,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls > div {
   color: #fff;
   text-shadow: 0 1px 0 #000;
+  opacity: 0.55;
+  transition: opacity 150ms ease-in-out;
 }
-.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .mdc-notched-outline__notch, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .mdc-notched-outline__notch,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls:hover > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls:focus > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls:focus-within > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls:hover > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls:focus > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls:focus-within > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls:hover > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls:focus > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls:focus-within > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls:hover > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls:focus > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls:focus-within > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls:hover > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls:focus > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls:focus-within > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls:hover > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls:focus > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls:focus-within > div {
+  opacity: 0.9;
+}
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .mdc-notched-outline__notch, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .mdc-notched-outline__notch, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .mdc-notched-outline__notch,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .mdc-notched-outline__notch,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .mdc-notched-outline__notch,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .mdc-notched-outline__notch {
   opacity: 0;
@@ -457,6 +475,7 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 }
 #credit-control-main .k-grid .k-state-selected {
   background-color: #cfe2ff;
+  color: #212529;
 }
 #credit-control-main .k-grid-header .k-with-icon .k-link {
   margin: 0;
@@ -464,7 +483,9 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #credit-control-main .k-grid-content-locked {
   height: 100% !important;
 }
-#credit-control-main .debt-breakdown {
+#credit-control-main .debt-breakdown,
+#credit-control-main .orders-breakdown,
+#credit-control-main .claims-breakdown {
   cursor: pointer;
 }
 
@@ -645,24 +666,24 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   color: #fff;
 }
 
-#debt-breakdown-modal #debt-breakdown-modal-dialog .debt-breakdown-modal-heading {
+.breakdown-modal .modal-dialog .breakdown-modal-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
 }
-#debt-breakdown-modal #debt-breakdown-modal-dialog .statement-btn {
+.breakdown-modal .modal-dialog .statement-btn {
   display: inline-flex;
   gap: 1rem;
 }
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods {
+.breakdown-modal .modal-dialog .modal-body .breakdown-pods {
   margin: 0 0 1rem 0;
   display: flex;
   gap: 1rem;
   justify-content: space-between;
   align-items: center;
 }
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod {
+.breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod {
   flex: 1;
   text-align: center;
   align-self: stretch;
@@ -673,57 +694,65 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   border-color: #adb5bd;
   transition: background-color 150ms ease-in-out, color 150ms ease-in-out, border-color 150ms ease-in-out;
 }
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod a {
+.breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod a {
   color: #0d6efd;
 }
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod:hover .card-body h4, #debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod:hover .card-body h5, #debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod:focus .card-body h4, #debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod:focus .card-body h5, #debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod:focus-within .card-body h4, #debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod:focus-within .card-body h5 {
+.breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod:hover .card-body h4, .breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod:hover .card-body h5, .breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod:focus .card-body h4, .breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod:focus .card-body h5, .breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod:focus-within .card-body h4, .breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod:focus-within .card-body h5 {
   text-decoration: underline;
 }
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod.warning {
+.breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod.warning {
   background-color: #b02a37;
   color: #fff;
   border-color: #b43541;
 }
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod.warning .btn {
+.breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod.warning .btn {
   color: #fff;
 }
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod.selected-pod .alert-primary {
-  background-color: #0a54c0;
-  color: #fff;
-}
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod.selected-pod .alert-danger {
-  background-color: #a72834;
-  color: #fff;
-}
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod.selected-pod .alert-warning {
-  background-color: #feb272;
-  color: #653208;
-}
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod.selected-pod .alert-warning a {
-  color: #fff;
-}
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod .card-body {
+.breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod .card-body {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod .card-body.alert {
+.breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod .card-body.alert {
   margin-bottom: 0;
   border: 0;
   border-radius: 0.375rem;
 }
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod .card-body h4 {
+.breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod .card-body h4 {
   font-weight: bold;
   font-size: 1.55rem;
   margin-bottom: 0.75rem;
 }
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod .card-body h5 {
+.breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod .card-body h5 {
   font-size: 1.15rem;
 }
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod .card-body h4,
-#debt-breakdown-modal #debt-breakdown-modal-dialog .modal-body .debt-breakdown-pods .debt-breakdown-pod .card-body h5 {
+.breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod .card-body h4,
+.breakdown-modal .modal-dialog .modal-body .breakdown-pods .breakdown-pod .card-body h5 {
   text-decoration: none;
   line-height: 1.75rem;
+}
+
+.selected-pod .alert-primary {
+  background-color: #0a54c0;
+  color: #fff;
+}
+.selected-pod .alert-danger {
+  background-color: #a72834;
+  color: #fff;
+}
+.selected-pod .alert-warning {
+  background-color: #feb272;
+  color: #653208;
+}
+.selected-pod .alert-warning a {
+  color: #fff;
+}
+.selected-pod .alert-success {
+  background-color: #16764a;
+  color: #fff;
+}
+.selected-pod .alert-success a {
+  color: #fff;
 }
 /*# sourceMappingURL=credit-control.css.map */

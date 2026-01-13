@@ -1124,6 +1124,10 @@ $light-blue-highlight: tint-color($blue-100, 75%);
                             justify-content: space-between;
                             flex: 1;
                         }
+
+                        .attachment-supplier-wrapper {
+                            margin-left: auto;
+                        }
                     }
 
                     .attachment-property {
@@ -1418,7 +1422,7 @@ $light-blue-highlight: tint-color($blue-100, 75%);
 
                                 label {
                                     font-weight: bold;
-                                    font-size: $font-size-md;
+                                    font-size: $font-size-base;
 
                                     span {
                                         font-weight: normal;

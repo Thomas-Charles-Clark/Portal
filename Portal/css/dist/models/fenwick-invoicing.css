@@ -244,6 +244,10 @@
   padding: 0.5rem 0.75rem;
   border-radius: 4px;
 }
+.filter-pills .filter-pill:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
 .filter-pills .filter-pill span {
   line-height: 1;
 }
@@ -272,6 +276,8 @@
   padding: 0;
   font-size: 1.15rem;
   line-height: 1rem;
+  opacity: 0.45;
+  color: #212529;
 }
 
 .page-heading-logo {

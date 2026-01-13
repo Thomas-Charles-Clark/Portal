@@ -18,11 +18,13 @@ using SimpleImpersonation;
 
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Management.Automation.Language;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,28 +50,83 @@ namespace Portal.Areas.CreditControl.Controllers
 			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
 			[FromUri] CreditControl_TradeAccount_SearchDTO dto)
         {
-            var model = await PortalDb.CreditControl_TradeAccount_Search(dto);
-
-			request.Page = 1; // This is a super weird and stupid hack but...
-
-			var gridData = model.Results.ToDataSourceResult(request);
-
-			gridData.Total = model.ResultsCount;
-
-			return Ok(new
+			try
 			{
-                gridData = gridData,
-				dashboardPods = model.DashboardPods
-			});
+				var model = await PortalDb.CreditControl_TradeAccount_Search(dto);
+
+				request.Page = 1; // This is a super weird and stupid hack but...
+
+				var gridData = model.Results.ToDataSourceResult(request);
+
+				gridData.Total = model.ResultsCount;
+
+				return Ok(new
+				{
+					gridData = gridData,
+					dashboardPods = model.DashboardPods
+				});
+			}
+			catch(SqlException)
+			{
+				return Ok(new
+				{
+					errorMessage = "Sorry, a database timeout error occurred.<br/>Please click to close this dialog box to retry, or reload your browser tab."
+				});
+			}
 		}
 
 		[HttpPost]
 		public async Task<IHttpActionResult> FetchDebtBreakdown(
 			[FromBody] CreditControl_TradeAccount_DebtBreakdownDTO dto)
 		{
-			var result = await PortalDb.CreditControl_TradeAccount_DebtBreakdown(dto);
+			var result = await PortalDb.CreditControl_TradeAccount_DebtBreakdown_Select(dto);
 
 			return Ok(result);
+		}
+
+		[HttpPost]
+		public async Task<IHttpActionResult> FetchOrdersBreakdown(
+			[FromBody] CreditControl_TradeAccount_OrderBreakdownDTO dto)
+		{
+			var result = await PortalDb.CreditControl_TradeAccount_OrderBreakdown_Select(dto);
+
+			return Ok(result);
+		}
+
+		[HttpPost]
+		public async Task<IHttpActionResult> FetchClaimsBreakdown(
+			[FromBody] CreditControl_TradeAccount_ClaimBreakdownDTO dto)
+		{
+			var result = await PortalDb.CreditControl_TradeAccount_ClaimBreakdown_Select(dto);
+
+			return Ok(result);
+		}
+
+		[HttpPost]
+		public async Task<IHttpActionResult> FetchOtherBreakdown(
+			[FromBody] CreditControl_TradeAccount_OtherBreakdownDTO dto)
+		{
+			var result = await PortalDb.CreditControl_TradeAccount_OtherBreakdown_Select(dto);
+
+			return Ok(result);
+		}
+
+		[HttpPost]
+		public async Task<IHttpActionResult> FetchSalesBreakdown(
+			[FromBody] CreditControl_TradeAccount_SalesBreakdownDTO dto)
+		{
+			var result = await PortalDb.CreditControl_TradeAccount_SalesBreakdown_Select(dto);
+
+			return Ok(result);
+		}
+
+		[HttpGet]
+		public IHttpActionResult FetchSalesAnalysisGroups(
+			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
+		{
+			var results = PortalDb.SalesHistoryAnalysisPeriods.AsQueryable();
+
+			return Ok(results.ToDataSourceResult(request));
 		}
 	}
 }

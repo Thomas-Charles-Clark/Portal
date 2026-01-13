@@ -8,10 +8,10 @@ namespace SharedEFClasses.Models.CreditControl
 {
 	public class CreditControl_TradeAccount_DebtBreakdown_Result
 	{
-		public CreditControl_DebtBreakdown_HeadingResult Heading { get; set; }
+		public CreditControl_TradeAccount_DebtBreakdown_HeadingResult Heading { get; set; }
 
-		public IEnumerable<CreditControl_DebtBreakdown_Pod> Pods { get; set; }
+		public IEnumerable<CreditControl_TradeAccount_DebtBreakdown_Pod> Pods { get; set; }
 
-		public IEnumerable<CreditControl_DebtBreakdown_Record> Records { get; set; }
+		public IEnumerable<CreditControl_TradeAccount_DebtBreakdown_Record> Records { get; set; }
 	}
 }

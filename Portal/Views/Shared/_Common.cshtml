@@ -273,26 +273,27 @@
 				<!-- ko if: Object.hasOwn(ko.unwrap(dropDownListSettings.dataItem), 'complexObjectName') -->
 				<span data-bind="html: `= ${ko.unwrap(dropDownListSettings.dataItem)[complexObjectName][complexObjectTextField]}`"></span>
 				<!-- /ko -->
-				<!-- ko ifnot: Object.hasOwn(ko.unwrap(dropDownListSettings.dataItem), 'complexObjectName') -->
-				<span data-bind="html: `= ${ko.unwrap(dropDownListSettings.dataItem)[dropDownListSettings.dataTextField]}`"></span>
+				<!-- ko ifnot: complexObjectName -->
+				<span data-bind="html: `= ${(dropDownListSettings.dataValueField == 'Code' ? ko.unwrap(dropDownListSettings.dataItem)[dropDownListSettings.dataValueField] 
+					  + ' -' : '')} ${ko.unwrap(dropDownListSettings.dataItem)[dropDownListSettings.dataTextField]}`"></span>
 				<!-- /ko -->
 				<!-- /ko -->
 				<!-- /ko -->
 			</span>
+			<!-- ko if: typeof(clearFunction) != 'undefined' -->
 			<a class="stretched-link" href="javascript:;" data-bind="click: clearFunction">
 				<button type="button" class="btn-close"></button>
 			</a>
+			<!-- /ko -->
 		</li>
 		<!-- /ko -->
-		<li class="filter-pill relative">
-			<span>
+		<li>
+			<button class="btn btn-secondary" href="javascript:;" data-bind="click: reset">
 				<span>
 					Reset Filters
 				</span>
-			</span>
-			<a class="stretched-link" href="javascript:;" data-bind="click: reset">
-				<button type="button" class="btn btn-reset-filters bi bi-arrow-counterclockwise"></button>
-			</a>
+				<i class="bi bi-arrow-counterclockwise"></i>
+			</button>
 		</li>
 	</ul>
 </script>

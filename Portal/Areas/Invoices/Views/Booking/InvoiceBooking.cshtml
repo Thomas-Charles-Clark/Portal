@@ -209,20 +209,28 @@
                         Change
                     </button>
                 </div>
-                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: supplier">
-                    <!-- ko ifnot: typeof BudgetHolder === 'undefined' -->
-                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder, attr: { 'a': 1 }">
-                        <div class="attachment-supplier">
-                            <label>
-                                Budget Holder: <span data-bind="text: Name"></span>
-                            </label>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-dark" data-bind="css: { 'd-none': $parent.readOnly }, click: $parentContext.$parent.requestBudgetHolderChange">
-                        Change
-                    </button>
+				<div class="attachment-property-wrap">
+					<!-- ko if: displayDesignersGuildCompanyCode -->
+					<div>
+						<div id="designers-guild-company" class="attachment-property" data-bind="highlightNullField: designersGuildCompanyCode, component: { name: 'mdc-kendo-dropdown-component', params: designersGuildCompanyParams }"></div>
+						<span class="validation-message" data-bind="validationMessage: designersGuildCompanyCode"></span>
+					</div>
                     <!-- /ko -->
-                </div>
+					<div class="attachment-property attachment-supplier-wrapper" data-bind="with: supplier">
+						<!-- ko ifnot: typeof BudgetHolder === 'undefined' -->
+						<div class="attachment-supplier-container" data-bind="with: BudgetHolder, attr: { 'a': 1 }">
+							<div class="attachment-supplier">
+								<label>
+									Budget Holder: <span data-bind="text: Name"></span>
+								</label>
+							</div>
+						</div>
+						<button type="button" class="btn btn-dark" data-bind="css: { 'd-none': $parent.readOnly }, click: $parentContext.$parent.requestBudgetHolderChange">
+							Change
+						</button>
+						<!-- /ko -->
+					</div>
+				</div>
                 <div id="invoice-reference" class="attachment-property" data-bind="highlightNullField: supplierInvoiceReference, component: { name: 'mdc-text-field-component', params: invoiceReferenceParams }"></div>
                 <span class="validation-message" data-bind="validationMessage: supplierInvoiceReference"></span>
                 <div class="attachment-property-wrap">
@@ -585,75 +593,83 @@
 
     <script type="text/html" id="invoice-booking-credit-note-template">
         <div id="invoice-properties" class="card">
-            <div class="card-body">
-                <h5 class="data-heading">
-                    <!-- ko ifnot: $parent.Processed -->
-                    Please Enter the Credit Note Details
+			<div class="card-body">
+				<h5 class="data-heading">
+					<!-- ko ifnot: $parent.Processed -->
+					Please Enter the Credit Note Details
+					<!-- /ko -->
+					<!-- ko if: $parent.Processed -->
+					Credit Note
+					<!-- /ko -->
+				</h5>
+				<div class="attachment-property attachment-supplier-wrapper">
+					<div class="attachment-supplier-container">
+						<div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
+						<div class="supplier-address-display" style="display: none" data-bind="visible: supplierParams.locked, with: supplier">
+							<p class="mb-0" data-bind="text: typeof AddressDisplaySingleLine === 'undefined' ? '' : AddressDisplaySingleLine, attr: { 'a': '3' }"></p>
+						</div>
+					</div>
+					<button type="button" class="btn btn-dark" style="display: none;" data-bind="visible: supplierParams.changeBtnVisible, click: () => { supplierParams.locked(!supplierParams.locked()) }">
+						Change
+					</button>
+				</div>
+				<div class="attachment-property-wrap">
+                    <!-- ko if: displayDesignersGuildCompanyCode -->
+					<div>
+						<div id="designers-guild-company" class="attachment-property" data-bind="highlightNullField: designersGuildCompanyCode, component: { name: 'mdc-kendo-dropdown-component', params: designersGuildCompanyParams }"></div>
+						<span class="validation-message" data-bind="validationMessage: designersGuildCompanyCode"></span>
+					</div>
                     <!-- /ko -->
-                    <!-- ko if: $parent.Processed -->
-                    Credit Note
-                    <!-- /ko -->
-                </h5>
-                <div class="attachment-property attachment-supplier-wrapper">
-                    <div class="attachment-supplier-container">
-                        <div class="attachment-supplier" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
-                        <div class="supplier-address-display" style="display: none" data-bind="visible: supplierParams.locked, with: supplier">
-                            <p class="mb-0" data-bind="text: typeof AddressDisplaySingleLine === 'undefined' ? '' : AddressDisplaySingleLine, attr: { 'a': '3' }"></p>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-dark" style="display: none;" data-bind="visible: supplierParams.changeBtnVisible, click: () => { supplierParams.locked(!supplierParams.locked()) }">
-                        Change
-                    </button>
-                </div>
-                <div class="attachment-property attachment-supplier-wrapper" data-bind="with: supplier">
-                    <!-- ko ifnot: typeof BudgetHolder === 'undefined' -->
-                    <div class="attachment-supplier-container" data-bind="with: BudgetHolder, attr: { 'a': 3 }">
-                        <div class="attachment-supplier">
-                            <label>
-                                Budget Holder: <span data-bind="text: Name"></span>
-                            </label>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-dark" data-bind="css: { 'd-none': $parent.readOnly }, click: $parentContext.$parent.requestBudgetHolderChange">
-                        Change
-                    </button>
-                    <!-- /ko -->
-                </div>
-                <div id="invoice-reference" class="attachment-property" data-bind="highlightNullField: supplierInvoiceReference, component: { name: 'mdc-text-field-component', params: invoiceReferenceParams }"></div>
-                <span class="validation-message" data-bind="validationMessage: supplierInvoiceReference"></span>
-                <div class="attachment-property-wrap">
-                    <div id="invoice-date" class="attachment-property pe-2" data-bind="highlightNullField: invoiceDate, component: { name: 'tempus-dominus-date-picker-component', params: invoiceDateParams }"></div>
-                    <div id="invoice-terms" class="attachment-property d-none" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
-                </div>
-                <span class="validation-message" data-bind="validationMessage: invoiceDate"></span>
+					<div class="attachment-property attachment-supplier-wrapper" data-bind="with: supplier">
+						<!-- ko ifnot: typeof BudgetHolder === 'undefined' -->
+						<div class="attachment-supplier-container" data-bind="with: BudgetHolder, attr: { 'a': 3 }">
+							<div class="attachment-supplier">
+								<label>
+									Budget Holder: <span data-bind="text: Name"></span>
+								</label>
+							</div>
+						</div>
+						<button type="button" class="btn btn-dark" data-bind="css: { 'd-none': $parent.readOnly }, click: $parentContext.$parent.requestBudgetHolderChange">
+							Change
+						</button>
+						<!-- /ko -->
+					</div>
+				</div>
+				<div id="invoice-reference" class="attachment-property" data-bind="highlightNullField: supplierInvoiceReference, component: { name: 'mdc-text-field-component', params: invoiceReferenceParams }"></div>
+				<span class="validation-message" data-bind="validationMessage: supplierInvoiceReference"></span>
+				<div class="attachment-property-wrap">
+					<div id="invoice-date" class="attachment-property pe-2" data-bind="highlightNullField: invoiceDate, component: { name: 'tempus-dominus-date-picker-component', params: invoiceDateParams }"></div>
+					<div id="invoice-terms" class="attachment-property d-none" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
+				</div>
+				<span class="validation-message" data-bind="validationMessage: invoiceDate"></span>
 
-                <div class="mt-4" data-bind="validationElement: documentCurrencyEqualsSupplierCurrency, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
-                    <div id="document-currency" class="attachment-property" data-bind="highlightNullField: documentCurrencyCode, component: { name: 'mdc-kendo-dropdown-component', params: documentCurrencyParams }"></div>
-                </div>
-                <span class="validation-message" data-bind="validationMessage: documentCurrencyCode"></span>
+				<div class="mt-4" data-bind="validationElement: documentCurrencyEqualsSupplierCurrency, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
+					<div id="document-currency" class="attachment-property" data-bind="highlightNullField: documentCurrencyCode, component: { name: 'mdc-kendo-dropdown-component', params: documentCurrencyParams }"></div>
+				</div>
+				<span class="validation-message" data-bind="validationMessage: documentCurrencyCode"></span>
 
-                <div class="attachment-property" data-bind="validationElement: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
-                    <div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: netTotal }"></div>
-                </div>
-                <span class="validation-message" data-bind="validationMessage: netTotalCurrency"></span>
+				<div class="attachment-property" data-bind="validationElement: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
+					<div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: netTotal }"></div>
+				</div>
+				<span class="validation-message" data-bind="validationMessage: netTotalCurrency"></span>
 
-                <div class="attachment-property" data-bind="validationElement: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
-                    <div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: vatTotal }"></div>
-                </div>
-                <span class="validation-message" data-bind="validationMessage: vatTotalCurrency"></span>
+				<div class="attachment-property" data-bind="validationElement: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
+					<div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: vatTotal }"></div>
+				</div>
+				<span class="validation-message" data-bind="validationMessage: vatTotalCurrency"></span>
 
-                <div class="attachment-property" data-bind="validationElement: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
-                    <div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: invoiceTotal }"></div>
-                </div>
-                <span class="validation-message" data-bind="validationMessage: invoiceTotalIncVATCurrency"></span>
+				<div class="attachment-property" data-bind="validationElement: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT, validationOptions: { decorateInputElement: true, errorElementClass: 'border-danger'  }">
+					<div class="converting-component-wrapper" data-bind="component: { name: 'invoice-conversion-control', params: invoiceTotal }"></div>
+				</div>
+				<span class="validation-message" data-bind="validationMessage: invoiceTotalIncVATCurrency"></span>
 
-                <span class="validation-message" data-bind="validationMessage: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT"></span>
-                @*<div class="attachment-property dispute-checkbox" data-bind="component: { name: 'mdc-checkbox-component', params: disputeParams }"></div>*@
+				<span class="validation-message" data-bind="validationMessage: netTotalCurrencyEqualsInvoiceTotalCurrencyMinusVAT"></span>
+				@*<div class="attachment-property dispute-checkbox" data-bind="component: { name: 'mdc-checkbox-component', params: disputeParams }"></div>*@
 
-                <div class="gross-threshold-warning-wrapper mt-3" style="display: none" data-bind="visible: invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningThresholdGBP">
-                    <div data-bind="component: { name: 'mdc-checkbox-component', params: invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningParams }"></div>
-                </div>
-            </div>
+				<div class="gross-threshold-warning-wrapper mt-3" style="display: none" data-bind="visible: invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningThresholdGBP">
+					<div data-bind="component: { name: 'mdc-checkbox-component', params: invoiceTotalIncVATCurrencyExceedsSupplierInvoiceWarningParams }"></div>
+				</div>
+			</div>
         </div>
 
         <div id="duplicate-warnings" class="card" style="display: none" data-bind="visible: duplicateResults().length > 0">

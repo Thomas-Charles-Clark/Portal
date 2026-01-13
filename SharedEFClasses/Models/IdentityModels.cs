@@ -25,6 +25,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 using SharedEFClasses.Models.IncomingEmail;
+using SharedEFClasses.Models.Paying;
 
 namespace SharedEFClasses.Models
 {
@@ -317,6 +318,14 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("MemberRecord")]
         public virtual ICollection<CreditControllerLive> CreditControllers { get; set; }
+
+		[JsonIgnore]
+		[InverseProperty("RequestedByMember")]
+		public virtual ICollection<PaymentRequest> PaymentRequests { get; set; }
+
+		[JsonIgnore]
+		[InverseProperty("DecidedBy")]
+		public virtual ICollection<PaymentDecision> PaymentDecisions { get; set; }
 
 		public async Task<ClaimsIdentity> GenerateUserIdentityAsync(ApplicationUserManager manager)
         {

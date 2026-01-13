@@ -300,6 +300,7 @@ $readonly-background: repeating-linear-gradient(-45deg, rgb(0 0 0 / 5%), transpa
             transition-behavior: allow-discrete;
         }
 
+        &.mdc-text-field--selected,
         &.date-select--selected,
         &.mdc-select--selected {
 
@@ -319,6 +320,16 @@ $readonly-background: repeating-linear-gradient(-45deg, rgb(0 0 0 / 5%), transpa
                 > div {
                     color: $white;
                     text-shadow: 0 1px 0 $black;
+                    opacity: 0.55;
+                    transition: opacity 150ms ease-in-out;
+                }
+
+                &:hover,
+                    &:focus,
+                    &:focus-within {
+                    > div {
+                        opacity: 0.9;
+                    }
                 }
             }
 

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using DocumentFormat.OpenXml.EMMA;
+
+using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using Portal.Areas.Documents.ViewModels;
 using Portal.Areas.Orders.ViewModels;
@@ -9,8 +11,12 @@ using Portal.Utilities.DynamicRoles;
 using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Documents;
+using SimpleImpersonation;
+
 using System;
+using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Web.Mvc;
 
@@ -72,5 +78,21 @@ namespace Portal.Areas.Orders.Controllers
 
             return View("Document", model);
         }
+
+        public FileResult Statement(string filePath)
+		{
+			var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
+
+			var token = credentials.LogonUser(LogonType.Interactive);
+
+            byte[] fileBytes = null;
+
+			WindowsIdentity.RunImpersonated(token, () =>
+			{
+				fileBytes = System.IO.File.ReadAllBytes(filePath);
+			});
+
+			return File(fileBytes, "application/pdf", Path.GetFileName(filePath));
+		}
     }
 }

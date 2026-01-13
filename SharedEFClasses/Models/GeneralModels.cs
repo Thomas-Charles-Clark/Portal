@@ -4,6 +4,7 @@ using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Orders;
+using SharedEFClasses.Models.Paying;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Samples;
 using SharedEFClasses.Models.TradeAccounts;
@@ -273,6 +274,10 @@ namespace SharedEFClasses.Models.General
 		[JsonIgnore]
         [InverseProperty("Currency")]
 		public virtual ICollection<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSetRecords { get; set; }
+
+		[JsonIgnore]
+		[InverseProperty("Currency")]
+		public virtual ICollection<PaymentRequest> PaymentRequests { get; set; }
 	}
 
     public class Language

@@ -70,6 +70,22 @@
         }
     });
 
+    self.displayDesignersGuildCompanyCode = ko.observable(true);
+
+    self.requireDesignersGuildCompanyCode = ko.observable(false);
+
+    self.designersGuildCompanyCode = ko.observable(rec.designersGuildCompanyCode ?? null).extend({
+        required: {
+            params: true,
+            onlyIf: () => {
+                return self.validateNow() && self.requireDesignersGuildCompanyCode();
+            },
+            message: 'Please specify a Designers Guild Company'
+        }
+    });
+
+    self.designersGuildCompany = ko.observable();
+
     self.invoiceDate = ko.observable(rec.invoiceDate).extend({
         required: {
             params: true,
@@ -696,7 +712,7 @@
         skipCascade: true,
         label: 'Supplier',
         odata: true,
-        endPoint: '/odata/MertexLiveSuppliers?$expand=Currency,ExchangeRate,PaymentTerms,VATCode',
+        endPoint: '/odata/MertexLiveSuppliers?$expand=Currency,ExchangeRate,PaymentTerms,VATCode,BudgetHolder,SupplierType',
         textField: 'Name',
         valueField: 'Code',
         template: (e) => {
@@ -715,7 +731,7 @@
             valueMapper: function (options) {
                 if (options.value) {
                     $.ajax({
-                        url: `/odata/MertexLiveSuppliers/Default.MertexLiveSupplierValueMapper(supplierCode='${options.value}')?$expand=Currency,ExchangeRate,PaymentTerms,VATCode`,
+                        url: `/odata/MertexLiveSuppliers/Default.MertexLiveSupplierValueMapper(supplierCode='${options.value}')?$expand=Currency,ExchangeRate,PaymentTerms,VATCode,BudgetHolder,SupplierType`,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
@@ -1065,6 +1081,67 @@
         }
     });
 
+    self.designersGuildCompanyParams = kendoMDCDropDownList({
+        autoBind: true,
+        label: 'Designers Guild Company',
+        odata: true,
+        endPoint: '/odata/Companies',
+        textField: 'Name',
+        valueField: 'Code',
+        virtual: false,
+        idObservable: self.designersGuildCompanyCode,
+        objObservable: self.designersGuildCompany,
+        template: (e) => {
+            return `${e.Name} (${e.Code})`;
+        },
+        valueTemplate: (e) => {
+            if (e.Name && e.Code) {
+                return `${e.Name} (${e.Code})`;
+            } else {
+                return '';
+            }
+        },
+        enable: ko.computed(() => {
+            return !self.readOnly()
+        }, self),
+        disable: self.readOnly,
+        locked: self.readOnly,
+        clearable: ko.observable(false),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        height: 340,
+        sort: {
+            field: 'SortOrder',
+            dir: 'asc'
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            /// thanks, https://stackoverflow.com/questions/28995757/a-binary-operator-with-incompatible-types-was-detected-found-operand-types-edm/48919770
+            delete d.$inlinecount; // <-- remove inlinecount
+            //delete d.$format; // <-- remove format
+            //delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            if (data.filter &&
+                data.filter.filters.length &&
+                data.filter.filters[0].value != '') {
+
+                let filterValue = data.filter.filters[0].value;
+
+                d.$filter = `StartsWith(ToLower(Name), '${filterValue}') OR StartsWith(ToLower(Code), '${filterValue}')`;
+            }
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: '#designers-guild-company'
+        }
+    });
+
     self.invoiceReferenceParams = {
         label: 'Supplier Credit Note Reference',
         observable: self.supplierInvoiceReference,
@@ -1296,6 +1373,7 @@
         self.generalLedgerSumEqualsTotalMinusVAT,
         self.invoiceTotalIncVATInSterlingExceedsSupplierInvoiceWarningAccepted,
         self.documentCurrencyCode,
+        self.designersGuildCompanyCode,
         self.documentCurrencyEqualsSupplierCurrency,
         self.vatErrors
     ];
@@ -1326,6 +1404,34 @@
                     v.vatCode(nv.DefaultVATCode);
                 }
             })
+
+            switch (nv.SupplierType?.CollectDGCompany) {
+                case 0:
+                    self.displayDesignersGuildCompanyCode(false);
+                    self.requireDesignersGuildCompanyCode(false);
+                    console.log('displayDesignersGuildCompanyCode', false);
+                    console.log('requireDesignersGuildCompanyCode', false);
+                    break;
+                case 1:
+                    self.displayDesignersGuildCompanyCode(true);
+                    self.requireDesignersGuildCompanyCode(true);
+                    console.log('displayDesignersGuildCompanyCode', true);
+                    console.log('requireDesignersGuildCompanyCode', true);
+                    break;
+                case null:
+                    self.displayDesignersGuildCompanyCode(true);
+                    self.requireDesignersGuildCompanyCode(null);
+                    console.log('displayDesignersGuildCompanyCode', true);
+                    console.log('requireDesignersGuildCompanyCode', null);
+                    break;
+                default:
+                    self.displayDesignersGuildCompanyCode(true);
+                    self.requireDesignersGuildCompanyCode(null);
+                    console.warn('nv.SupplierType?.CollectDGCompany switch statement: default branch hit');
+                    console.log('displayDesignersGuildCompanyCode', true);
+                    console.log('requireDesignersGuildCompanyCode', null);
+                    break;
+            }
             self.supplierCurrency(nv.Currency);
         } else {
             self.supplierCurrency(undefined);

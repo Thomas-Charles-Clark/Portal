@@ -32,6 +32,7 @@ using SharedEFClasses.Models.Advertisers;
 using SharedEFClasses.Models.Documents;
 using System.Net.Http.Headers;
 using SharedEFClasses.Models.CreditControl;
+using SharedEFClasses.Models.Paying;
 
 namespace Portal
 {
@@ -149,6 +150,8 @@ namespace Portal
             odataBuilder.EntitySet<AdvertiserClass>("AdvertiserClasses");
             odataBuilder.EntitySet<SalesHistoryAnalysisPeriod>("SalesHistoryAnalysisPeriods");
             odataBuilder.EntitySet<DebtFunder>("DebtFunders");
+            odataBuilder.EntitySet<Company>("Companies");
+            odataBuilder.EntitySet<PaymentRequestStatus>("PaymentRequestStatuses");
 
 			// This because it's not mapped to SQL and has the [NotMapped] attribute
 			odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
@@ -174,6 +177,20 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderTaker)).AddProperty(typeof(OrderTaker).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_DeliveryType)).AddProperty(typeof(Mertex_DeliveryType).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SupplierLive)).AddProperty(typeof(SupplierLive).GetProperty("AddressDisplaySingleLine"));
+
+			var paymentRequestStatusValueMapperFunction = odataBuilder.EntityType<PaymentRequestStatus>()
+				.Collection
+				.Function("PaymentRequestStatusValueMapper")
+				.ReturnsCollectionFromEntitySet<PaymentRequestStatus>("PaymentRequestStatuses");
+
+			paymentRequestStatusValueMapperFunction.Parameter<byte?>(name: "paymentStatusRequestId");
+
+			var companyValueMapperFunction = odataBuilder.EntityType<DebtFunder>()
+				.Collection
+				.Function("CompanyValueMapper")
+				.ReturnsCollectionFromEntitySet<Company>("Companies");
+
+			companyValueMapperFunction.Parameter<string>(name: "code");
 
 			var debtFunderValueMapperFunction = odataBuilder.EntityType<DebtFunder>()
 				.Collection

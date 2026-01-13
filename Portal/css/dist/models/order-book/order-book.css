@@ -244,6 +244,10 @@
   padding: 0.5rem 0.75rem;
   border-radius: 4px;
 }
+.filter-pills .filter-pill:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
 .filter-pills .filter-pill span {
   line-height: 1;
 }
@@ -273,6 +277,7 @@
   font-size: 1.15rem;
   line-height: 1rem;
   opacity: 0.45;
+  color: #212529;
 }
 
 html {
@@ -950,21 +955,6 @@ html body > nav.navbar-default .nav.navbar-nav .app-title h2 span {
 #order-book-sales-summary-modal .modal-body #order-book-sales-summary-table tbody tr td:not(:first-of-type),
 #order-book-sales-summary-modal .modal-body #order-book-orders-summary-table tbody tr td:not(:first-of-type) {
   text-align: center;
-}
-
-.display-mode-list .dropdown-menu-controls {
-  position: sticky;
-  top: 0;
-  padding: 0.5rem;
-  z-index: 1;
-  background-color: #fff;
-}
-.display-mode-list .dropdown-menu-controls .btn {
-  white-space: nowrap;
-}
-.display-mode-list .dropdown-menu-controls a.btn {
-  padding: 0.25rem 0.5rem;
-  color: #fff;
 }
 
 #header-accordion .accordion-item .accordion-header .accordion-button .dropdown-menu-controls {

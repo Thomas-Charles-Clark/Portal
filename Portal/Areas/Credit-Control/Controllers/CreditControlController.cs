@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+
+using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 
 using Portal.Areas.CreditControl.ViewModels;
@@ -42,6 +45,6 @@ namespace Portal.Areas.Orders.Controllers
                 application.SubHeading);
 
             return View("CreditControl", model);
-        }
-    }
+		}
+	}
 }

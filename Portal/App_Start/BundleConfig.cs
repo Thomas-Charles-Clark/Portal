@@ -442,6 +442,11 @@ namespace Portal
 					$"{cssPrefix}/models/trade-account-contacts-widener{cssSuffix}"
 			));
 
+			bundles.Add(new StyleBundle("~/bundles/css/supplier-payment-requests").Include(
+                    $"{cssPrefix}/models/full-width-app{cssSuffix}",
+                    $"{cssPrefix}/models/suppliers/payment-requests/supplier-payment-requests{cssSuffix}"
+			));
+
 			//  
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			//
@@ -1005,10 +1010,22 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/credit-control").Include(
                         $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/credit-control/credit-control-debt-breakdown{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-sales-breakdown{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-sales-breakdown-pod{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-sales-breakdown-record{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-other-breakdown{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-other-breakdown-pod{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-other-breakdown-record{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-claims-breakdown{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-claims-breakdown-pod{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-claims-breakdown-record{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-debt-breakdown{jsSuffix}",
                         $"{jsPrefix}/models/credit-control/credit-control-debt-breakdown-pod{jsSuffix}",
                         $"{jsPrefix}/models/credit-control/credit-control-debt-breakdown-record{jsSuffix}",
-                        $"{jsPrefix}/models/credit-control/credit-control-dashboard-pod{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-orders-breakdown{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-orders-breakdown-pod{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-orders-breakdown-record{jsSuffix}",
+						$"{jsPrefix}/models/credit-control/credit-control-dashboard-pod{jsSuffix}",
 						$"{jsPrefix}/models/credit-control/credit-control-trade-account-search-result{jsSuffix}",
                         $"{jsPrefix}/models/credit-control/credit-control-filters{jsSuffix}",
 						$"{jsPrefix}/models/credit-control/credit-control{jsSuffix}"
@@ -1021,6 +1038,14 @@ namespace Portal
 						$"{jsPrefix}/models/trade-accounts/trade-account-contacts{jsSuffix}",
 						$"{jsPrefix}/models/trade-accounts/trade-account-contacts-dashboard-pod{jsSuffix}",
 						$"{jsPrefix}/models/trade-accounts/trade-account-contact{jsSuffix}"
+				));
+
+			bundles.Add(new ScriptBundle("~/bundles/js/supplier-payment-requests").Include(
+						$"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payment-requests/supplier-payment-requests{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payment-requests/supplier-payment-requests-filters{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payment-requests/supplier-payment-request{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payment-requests/supplier-payment-decision{jsSuffix}"
 				));
 
 			foreach (var b in BundleTable.Bundles)

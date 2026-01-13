@@ -5,7 +5,10 @@
     callee: {},
     rec: {}
 }) => {
-    let self = {};
+    let self = {
+        currencyCode: rec.Heading.CurrencyCode,
+        formattingCulture: rec.Heading.FormattingCulture
+    };
 
     //#region Properties
 
@@ -98,7 +101,7 @@
         }, {
             field: 'InvoiceURI',
             title: 'Invoice',
-            template: (e) => `<a target="_blank" href="${e.InvoiceURI}">${e.InvoiceID}</a>`
+            template: (e) => `<a target="_self" href="/documents/view/statement?filePath=${encodeURIComponent(e.InvoiceURI)}">${e.InvoiceID}</a>`
         }, {
             field: 'InvoiceDT',
             title: 'Invoice Date',
@@ -110,7 +113,7 @@
         }, {
             field: 'OriginalValueInCurrency',
             title: 'Original Value (in Currency)',
-            template: (e) => formatCurrency(e.OriginalValueInCurrency, 2, e.FormattingCulture, e.CurrencyCode),
+            template: (e) => e.OriginalValueInCurrency != null ? formatCurrency(e.OriginalValueInCurrency, 2, self.formattingCulture, self.currencyCode) : '',
             attributes: {
                 'class': 'text-end'
             },
@@ -120,7 +123,7 @@
         }, {
             field: 'OutstandingAmountInCurrency',
             title: 'Outstanding Amount (in Currency)',
-            template: (e) => formatCurrency(e.OutstandingAmountInCurrency, 2, e.FormattingCulture, e.CurrencyCode),
+            template: (e) => e.OutstandingAmountInCurrency != null ? formatCurrency(e.OutstandingAmountInCurrency, 2, self.formattingCulture, self.currencyCode) : '',
             attributes: {
                 'class': 'text-end'
             },

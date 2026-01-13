@@ -1,0 +1,77 @@
+﻿@import '../../common.scss';
+
+html {
+	min-height: 100%;
+	display: flex;
+	flex-direction: column;
+
+	> body {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		align-items: flex-start;
+
+		.container {
+			&.body-content {
+				flex: 1 1 100%;
+				width: 100% !important;
+				display: flex;
+			}
+		}
+
+		> nav {
+			&.navbar-default {
+
+				.container {
+
+					#navbarSupportedContent {
+						h1, h2, h3, h4, h5, h6 {
+							font-family: "Trixie", "Open Sans", Arial;
+							font-weight: 800;
+
+							span {
+								font-family: "Trixie", "Open Sans", Arial;
+								font-weight: 800;
+							}
+						}
+
+						.nav.navbar-nav {
+							flex-wrap: nowrap;
+
+							.app-title {
+								h2 {
+									flex-wrap: nowrap;
+
+									span {
+										white-space: nowrap;
+									}
+								}
+
+								.dropdown-toggle {
+									vertical-align: top;
+								}
+							}
+						}
+
+						ul.dropdown-menu {
+							overflow-y: auto;
+
+							li:not(.app-title) {
+								padding: 0;
+
+								.dropdown-item {
+									padding: $m-gutter $l-gutter;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+#main-supplier-payments-container {
+
+}

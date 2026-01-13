@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using SharedEFClasses.Models.Advertisers;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
@@ -376,6 +377,10 @@ namespace SharedEFClasses.Models.TradeAccounts
                 }
             }
         }
+
+        [JsonIgnore]
+        [InverseProperty("TradeAccount")]
+        public virtual ICollection<TradeAccountLive> MertexTradeAccountRecords { get; set; }
     }
     
     [Table("TradeAccountAddress_Tag", Schema = "dbo")]

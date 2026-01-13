@@ -1,6 +1,7 @@
 ﻿using Microsoft.Owin.Security;
 
 using SharedEFClasses.Models.General;
+using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Products;
 
 using System;

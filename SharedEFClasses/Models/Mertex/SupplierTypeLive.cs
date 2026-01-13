@@ -14,6 +14,13 @@ namespace SharedEFClasses.Models.Mertex
 
         public string Name { get; set; }
 
+        /// <summary>
+        /// 1 = Mandatory
+        /// 0 = not required (do not present Designers Guild Company control in Invoice Registration app)
+        /// NULL = optional
+        /// </summary>
+        public bool? CollectDGCompany { get; set; }
+
         [JsonIgnore]
         [InverseProperty("SupplierType")]
         public virtual ICollection<SupplierLive> Suppliers { get; set; }

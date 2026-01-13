@@ -6,14 +6,10 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.CreditControl
 {
-	public class CreditControl_TradeAccount_Breakdown_SelectDTO
+	public class CreditControl_TradeAccount_ClaimBreakdownDTO
 	{
 		public int TradeAccountID { get; set; }
 
 		public string SelectedPOD { get; set; }
-
-		public int DebtAgeBracket { get; set; }
-
-
 	}
 }

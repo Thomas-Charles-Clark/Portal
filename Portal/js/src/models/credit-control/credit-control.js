@@ -18,7 +18,6 @@
 },
     SINGLE_BR = '<br/>',
     DOUBLE_BR = '<br/><br/>',
-
     DISPLAY_MODE_QUANTITY = 1,
     DISPLAY_MODE_VALUE = 2
 
@@ -65,6 +64,30 @@ const creditControlViewModel = (() => {
     self.debtBreakdownModalElement = document.querySelector('#debt-breakdown-modal');
 
     self.debtBreakdownModal = bootstrap.Modal.getOrCreateInstance(self.debtBreakdownModalElement);
+
+    self.ordersBreakdown = ko.observable();
+
+    self.ordersBreakdownModalElement = document.querySelector('#orders-breakdown-modal');
+
+    self.ordersBreakdownModal = bootstrap.Modal.getOrCreateInstance(self.ordersBreakdownModalElement);
+
+    self.claimsBreakdown = ko.observable();
+
+    self.claimsBreakdownModalElement = document.querySelector('#claims-breakdown-modal');
+
+    self.claimsBreakdownModal = bootstrap.Modal.getOrCreateInstance(self.claimsBreakdownModalElement);
+
+    self.otherBreakdown = ko.observable();
+
+    self.otherBreakdownModalElement = document.querySelector('#other-breakdown-modal');
+
+    self.otherBreakdownModal = bootstrap.Modal.getOrCreateInstance(self.otherBreakdownModalElement);
+
+    self.salesBreakdown = ko.observable();
+
+    self.salesBreakdownModalElement = document.querySelector('#sales-breakdown-modal');
+
+    self.salesBreakdownModal = bootstrap.Modal.getOrCreateInstance(self.salesBreakdownModalElement);
 
     //#endregion
 
@@ -141,7 +164,13 @@ const creditControlViewModel = (() => {
         var data = Object.assign(mapped, additionalParameters);
 
         for (var propertyName in data) {
-            params.append(propertyName, data[propertyName]);
+            if (Array.isArray(data[propertyName])) {
+                data[propertyName].forEach(v => {
+                    params.append(propertyName, v);
+                });
+            } else {
+                params.append(propertyName, data[propertyName]);
+            }
         }
 
         console.log('tradeAccountSearch calling with', data);
@@ -159,23 +188,32 @@ const creditControlViewModel = (() => {
 
                 console.log('tradeAccountSearch returned', data);
 
-                self.previouslySelectedDashboardPod = self.selectedPod()?.PodHandle;
+                if (Object.hasOwn(data, 'errorMessage')) {
 
-                self.dashboardPods(data.dashboardPods.map(dp => creditControlDashboardPodViewModel({
-                    rec: dp
-                })));
+                    document.querySelector('#info-modal').addEventListener('hide.bs.modal', self.refresh);
+                    options.success([]);
+                    window.showInfo('Sorry', data.errorMessage);
 
-                if (self.previouslySelectedDashboardPod) {
-                    self.selectedPod(self.dashboardPods().find(dp => dp.PodHandle == self.previouslySelectedDashboardPod));
-                } 
+                } else {
+                    document.querySelector('#info-modal').removeEventListener('hide.bs.modal', self.refresh);
+                    self.previouslySelectedDashboardPod = self.selectedPod()?.PodHandle;
 
-                options.success(data.gridData);
+                    self.dashboardPods(data.dashboardPods.map(dp => creditControlDashboardPodViewModel({
+                        rec: dp
+                    })));
 
-                self.tradeAccounts(data.gridData); // the mapping to ViewModel occurs in the grid's dataBound event handler
+                    if (self.previouslySelectedDashboardPod) {
+                        self.selectedPod(self.dashboardPods().find(dp => dp.PodHandle == self.previouslySelectedDashboardPod));
+                    }
 
-                //self.gridParams.widget().setOptions({
-                //    columns: self.gridColumns()
-                //});
+                    options.success(data.gridData);
+
+                    self.tradeAccounts(data.gridData); // the mapping to ViewModel occurs in the grid's dataBound event handler
+
+                    //self.gridParams.widget().setOptions({
+                    //    columns: self.gridColumns()
+                    //});
+                }
 
 
                 if (typeof callback == 'function') {
@@ -419,16 +457,16 @@ const creditControlViewModel = (() => {
     }, {
         title: 'Orders',
         headerAttributes: {
-            "class": "orders-heading"
+            "class": "orders-heading orders-breakdown"
         },
         columns: [{
             field: 'OrdersTotalValue',
             title: 'Total',
             headerAttributes: {
-                "class": "orders-subheading"
+                "class": "orders-subheading orders-breakdown"
             },
             attributes: {
-                "class": 'text-end'
+                "class": 'text-end orders-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -447,10 +485,10 @@ const creditControlViewModel = (() => {
             field: 'OrdersInProgressValue',
             title: 'In Progress',
             headerAttributes: {
-                "class": "orders-subheading"
+                "class": "orders-subheading orders-breakdown"
             },
             attributes: {
-                "class": 'text-end'
+                "class": 'text-end orders-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -469,10 +507,10 @@ const creditControlViewModel = (() => {
             field: 'OrdersHeldPortalValue',
             title: 'Held Portal',
             headerAttributes: {
-                "class": "orders-subheading"
+                "class": "orders-subheading orders-breakdown"
             },
             attributes: {
-                "class": 'text-end'
+                "class": 'text-end orders-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -491,10 +529,10 @@ const creditControlViewModel = (() => {
             field: 'OrdersHeldMertexValue',
             title: 'Held Mertex',
             headerAttributes: {
-                "class": "orders-subheading"
+                "class": "orders-subheading orders-breakdown"
             },
             attributes: {
-                "class": 'text-end'
+                "class": 'text-end orders-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -706,16 +744,16 @@ const creditControlViewModel = (() => {
     }, {
         title: 'Claims',
         headerAttributes: {
-            "class": "claim-heading"
+            "class": "claim-heading claims-breakdown"
         },
         columns: [{
             field: 'ClaimCount',
             title: 'Count',
             headerAttributes: {
-                "class": "claim-subheading"
+                "class": "claim-subheading claims-breakdown"
             },
             attributes: {
-                "class": 'text-end'
+                "class": 'text-end claims-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => self.formatNumber(e, 'ClaimCount')
@@ -723,10 +761,10 @@ const creditControlViewModel = (() => {
             field: 'ClaimValue',
             title: 'Value',
             headerAttributes: {
-                "class": "claim-subheading"
+                "class": "claim-subheading claims-breakdown"
             },
             attributes: {
-                "class": 'text-end'
+                "class": 'text-end claims-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => self.formatCurrency(e, 'ClaimValue')
@@ -734,16 +772,16 @@ const creditControlViewModel = (() => {
     }, {
         title: 'Other',
         headerAttributes: {
-            "class": "other-heading"
+            "class": "other-heading other-breakdown"
         },
         columns: [{
             field: 'CreditsValue',
             title: 'Credits',
             headerAttributes: {
-                "class": "other-subheading"
+                "class": "other-subheading other-breakdown"
             },
             attributes: {
-                "class": 'text-end'
+                "class": 'text-end other-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -762,10 +800,10 @@ const creditControlViewModel = (() => {
             field: 'DepositsValue',
             title: 'Deposits',
             headerAttributes: {
-                "class": "other-subheading"
+                "class": "other-subheading other-breakdown"
             },
             attributes: {
-                "class": 'text-end'
+                "class": 'text-end other-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -784,10 +822,10 @@ const creditControlViewModel = (() => {
             field: 'OverpaymentsValue',
             title: 'Overpayments',
             headerAttributes: {
-                "class": "other-subheading"
+                "class": "other-subheading other-breakdown"
             },
             attributes: {
-                "class": 'text-end'
+                "class": 'text-end other-breakdown'
             },
             width: gridColumnWidths.oneFortyFive,
             template: (e) => {
@@ -806,10 +844,10 @@ const creditControlViewModel = (() => {
             field: 'RefundsValue',
             title: 'Refunds',
             headerAttributes: {
-                "class": "other-subheading"
+                "class": "other-subheading other-breakdown"
             },
             attributes: {
-                "class": 'text-end'
+                "class": 'text-end other-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -828,16 +866,16 @@ const creditControlViewModel = (() => {
     }, {
         title: self.filters.salesHistoryAnalysisPeriod() ? `Sales (${self.filters.salesHistoryAnalysisPeriod().Name})` : `Sales`,
         headerAttributes: {
-            "class": "sales-heading"
+            "class": "sales-heading sales-breakdown"
         },
         columns: [{
             field: 'SalesRank',
             title: 'Rank',
             headerAttributes: {
-                "class": "sales-subheading"
+                "class": "sales-subheading sales-breakdown"
             },
             attributes: {
-                "class": 'text-end'
+                "class": 'text-end sales-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -851,10 +889,10 @@ const creditControlViewModel = (() => {
             field: 'SalesValue',
             title: 'Value',
             headerAttributes: {
-                "class": "sales-subheading"
+                "class": "sales-subheading sales-breakdown"
             },
             attributes: {
-                "class": 'text-end'
+                "class": 'text-end sales-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => self.formatCurrency(e, 'SalesValue')
@@ -978,8 +1016,19 @@ const creditControlViewModel = (() => {
                 if (classList.contains('debt-breakdown')) {
                     self.fetchDebtBreakdown(dataItem);
                 }
-
-                if (classList.contains('contacts-cell')) {
+                else if (classList.contains('orders-breakdown')) {
+                    self.fetchOrdersBreakdown(dataItem);
+                }
+                else if (classList.contains('claims-breakdown')) {
+                    self.fetchClaimsBreakdown(dataItem);
+                }
+                else if (classList.contains('other-breakdown')) {
+                    self.fetchOtherBreakdown(dataItem);
+                }
+                else if (classList.contains('sales-breakdown')) {
+                    self.fetchSalesBreakdown(dataItem);
+                }
+                else if (classList.contains('contacts-cell')) {
                     self.selectedTradeAccount(tradeAccountViewModel({
                         rec: dataItem
                     }));
@@ -1155,12 +1204,120 @@ const creditControlViewModel = (() => {
             })
     }
 
+    self.fetchOrdersBreakdown = (data, event) => {
+        self.busy(true);
+
+        console.log('fetchOrdersBreakdown calling with', data);
+
+        fetch("/api/CreditControlAPI/FetchOrdersBreakdown", {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(result => {
+                console.log('fetchOrdersBreakdown returned', result);
+                self.ordersBreakdown(creditControlOrdersBreakdownViewModel({
+                    callee: data,
+                    rec: result
+                }));
+
+                self.busy(false);
+
+                self.ordersBreakdownModal.show();
+            })
+    }
+
+    self.fetchClaimsBreakdown = (data, event) => {
+        self.busy(true);
+
+        console.log('fetchClaimsBreakdown calling with', data);
+
+        fetch("/api/CreditControlAPI/FetchClaimsBreakdown", {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(result => {
+                console.log('fetchClaimsBreakdown returned', result);
+                self.claimsBreakdown(creditControlClaimsBreakdownViewModel({
+                    callee: data,
+                    rec: result
+                }));
+
+                self.busy(false);
+
+                self.claimsBreakdownModal.show();
+            })
+    }
+
+    self.fetchOtherBreakdown = (data, event) => {
+        self.busy(true);
+
+        console.log('fetchOtherBreakdown calling with', data);
+
+        fetch("/api/CreditControlAPI/FetchOtherBreakdown", {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(result => {
+                console.log('fetchOtherBreakdown returned', result);
+                self.otherBreakdown(creditControlOtherBreakdownViewModel({
+                    callee: data,
+                    rec: result
+                }));
+
+                self.busy(false);
+
+                self.otherBreakdownModal.show();
+            })
+    }
+
+    self.fetchSalesBreakdown = (data, event) => {
+        self.busy(true);
+
+        console.log('fetchSalesBreakdown calling with', data);
+
+        fetch("/api/CreditControlAPI/FetchSalesBreakdown", {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(result => {
+                console.log('fetchSalesBreakdown returned', result);
+                self.salesBreakdown(creditControlSalesBreakdownViewModel({
+                    callee: data,
+                    rec: result
+                }));
+
+                self.busy(false);
+
+                self.salesBreakdownModal.show();
+            })
+    }
+
     //#endregion
 
     //#region Events
 
     self.debtBreakdownModalElement.addEventListener('bs.modal.hidden', () => {
         self.debtBreakdown(undefined);
+    });
+
+    self.ordersBreakdownModalElement.addEventListener('bs.modal.hidden', () => {
+        self.ordersBreakdown(undefined);
     });
 
     //#endregion

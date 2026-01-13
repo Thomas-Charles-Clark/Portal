@@ -42,9 +42,16 @@ namespace Portal.Controllers
         public IQueryable<SalesHistoryAnalysisPeriod> GetSalesHistoryAnalysisPeriods()
         {
             return PortalDb.SalesHistoryAnalysisPeriods.AsQueryable();
-        }
+		}
 
-        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+		// GET: odata/Products
+		[EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
+		public IQueryable<object> GetSalesHistoryAnalysisPeriodGroups()
+		{
+			return PortalDb.SalesHistoryAnalysisPeriods.GroupBy(p => p.GroupName).AsQueryable();
+		}
+
+		[EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<SalesHistoryAnalysisPeriod> SalesHistoryAnalysisPeriodValueMapper(string code)
         {

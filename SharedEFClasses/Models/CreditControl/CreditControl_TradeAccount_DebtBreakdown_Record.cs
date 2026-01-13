@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.CreditControl
 {
-	public class CreditControl_DebtBreakdown_Record
+	public class CreditControl_TradeAccount_DebtBreakdown_Record
 	{
 		public string UniVerseAccount { get; set; }
 		public string DebtAgeBracketName { get; set; }
@@ -17,7 +17,5 @@ namespace SharedEFClasses.Models.CreditControl
 		public decimal OriginalValueInCurrency { get; set; }
 		public decimal OutstandingAmountInCurrency { get; set; }
 		public bool Disputed { get; set; }
-		public string CurrencyCode { get; set; }
-		public string FormattingCulture { get; set; }
 	}
 }

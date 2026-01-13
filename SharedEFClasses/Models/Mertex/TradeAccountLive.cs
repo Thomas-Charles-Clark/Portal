@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SharedEFClasses.Models.TradeAccounts;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -491,6 +493,8 @@ namespace SharedEFClasses.Models.Mertex
 
         public bool? Deleted { get; set; }
 
+        public int? TradeAccountID { get; set; }
+
 		[NotMapped]
 		public string ShortLabel
 		{
@@ -499,5 +503,11 @@ namespace SharedEFClasses.Models.Mertex
 				return $"{Code} - {Name}{(CreditStopped ? " (On Stop)" : "")}";
 			}
 		}
+
+        [ForeignKey("PartnerCompany")]
+        public virtual Company Company { get; set; }
+
+        [ForeignKey("TradeAccountID")]
+        public virtual TradeAccount TradeAccount { get; set; }
 	}
 }

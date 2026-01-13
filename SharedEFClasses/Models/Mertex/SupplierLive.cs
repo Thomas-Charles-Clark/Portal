@@ -2,6 +2,7 @@
 
 using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Mertex;
+using SharedEFClasses.Models.Paying;
 
 using System;
 using System.Collections.Generic;
@@ -139,6 +140,10 @@ namespace SharedEFClasses.Models.Mertex
 
                 return String.Join(", ", parts);
             }
-        }
-    }
+		}
+
+		[JsonIgnore]
+		[InverseProperty("Supplier")]
+		public virtual ICollection<PaymentRequest> PaymentRequests { get; set; }
+	}
 }

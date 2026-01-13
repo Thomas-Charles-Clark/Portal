@@ -80,6 +80,12 @@ const tradeAccountContactsFiltersViewModel = ({
     self.tradeAccountStatus = ko.observable();
     self.tradeAccountStatusAwaitingBinding = ko.observable(params.tradeAccountStatusId != null && params.tradeAccountStatusId != '');
 
+    self.tradeAccountCompanyId = ko.observable(params.tradeAccountCompanyId ?? '');
+    self.tradeAccountCompany = ko.observable();
+
+    self.invoiceCompanyId = ko.observable(params.invoiceCompanyId ?? '');
+    self.invoiceCompany = ko.observable();
+    
     //#endregion
 
 
@@ -138,7 +144,6 @@ const tradeAccountContactsFiltersViewModel = ({
         });
     }
 
-
     self.generateTradeAccountSuperSetParameterMap = (defaultODataOperation) => {
         return (data) => {
 
@@ -167,9 +172,15 @@ const tradeAccountContactsFiltersViewModel = ({
             let tradeAccountTypeId = null;
             let tradeAccountTypeGroupId = null;
             let creditControllerId = null;
-            let salesAnalysisHistoryPeriodId = null;
             let debtFunderCode = null;
             let currencyId = null;
+            let tradeAccountCompanyId = null;
+
+            if (defaultOp.indexOf("TradeAccountCompanyID") == -1) {
+                tradeAccountCompanyId = self.tradeAccountCompanyId();
+            } else {
+                tradeAccountCompanyId = self.tradeAccountCompanyId.peek();
+            }
 
             if (defaultOp.indexOf("SalesMarketID") == -1) {
                 salesMarketIds = self.salesMarketIds();
@@ -213,16 +224,8 @@ const tradeAccountContactsFiltersViewModel = ({
                 paymentTermsId = self.paymentTermsId.peek();
             }
 
-            if (Object.hasOwn(self, 'salesAnalysisHistoryPeriodId')) {
-                if (defaultOp.indexOf("SalesAnalysisHistoryPeriodID") == -1) {
-                    salesAnalysisHistoryPeriodId = self.salesAnalysisHistoryPeriodId();
-                } else {
-                    salesAnalysisHistoryPeriodId = self.salesAnalysisHistoryPeriodId.peek();
-                }
-            }
-
             if (Object.hasOwn(self, 'debtFunderCode')) {
-                if (defaultOp.indexOf("DebtFunderCode") == -1) {
+                if (defaultOp.indexOf("DebtFunder") == -1) {
                     debtFunderCode = self.debtFunderCode();
                 } else {
                     debtFunderCode = self.debtFunderCode.peek();
@@ -247,12 +250,6 @@ const tradeAccountContactsFiltersViewModel = ({
                 creditStoppedId = self.creditStoppedId();
             } else {
                 creditStoppedId = self.creditStoppedId.peek();
-            }
-
-            if (defaultOp.indexOf("TradeAccountStatusID") == -1) {
-                tradeAccountStatusId = self.tradeAccountStatusId();
-            } else {
-                tradeAccountStatusId = self.tradeAccountStatusId.peek();
             }
 
             if (defaultOp.indexOf("CreditController") == -1) {
@@ -302,6 +299,10 @@ const tradeAccountContactsFiltersViewModel = ({
                 filters.push(`(${salesMarketFilter})`);
             }
 
+            if (defaultOp.indexOf('Company/Code') == -1 && tradeAccountCompanyId != '') {
+                filters.push(`CompanyCode eq '${tradeAccountCompanyId}'`);
+            }
+
             if (defaultOp.indexOf('SalesRepresentativeID') == -1 && salesRepresentativeId != '') {
                 filters.push(`SalesRepresentativeID eq ${salesRepresentativeId}`);
             }
@@ -324,12 +325,6 @@ const tradeAccountContactsFiltersViewModel = ({
 
             if (defaultOp.indexOf('PaymentTermsID') == -1 && paymentTermsId != '') {
                 filters.push(`PaymentTermsID eq ${paymentTermsId}`);
-            }
-
-            if (Object.hasOwn(self, 'salesAnalysisHistoryPeriodId')) {
-                if (defaultOp.indexOf('SalesAnalysisHistoryPeriodID') == -1 && salesAnalysisHistoryPeriodId != '') {
-                    filters.push(`SalesAnalysisHistoryPeriodID eq ${salesAnalysisHistoryPeriodId}`);
-                }
             }
 
             if (Object.hasOwn(self, 'debtFunderCode')) {
@@ -357,7 +352,7 @@ const tradeAccountContactsFiltersViewModel = ({
             }
 
             if (defaultOp.indexOf('CreditController') == -1 && creditControllerId != '') {
-                filters.push(`CreditController eq ${creditControllerId}`);
+                filters.push(`CreditControllerCode eq '${creditControllerId}'`);
             }
 
             if (defaultOp.indexOf('TradeAccountTypeID') == -1 && tradeAccountTypeId != '') {
@@ -505,6 +500,101 @@ const tradeAccountContactsFiltersViewModel = ({
             self.salesMarketsParams.multiSelectSettings.controls.applySelection(false);
         }
     }
+
+
+    self.tradeAccountCompanyGroupBy = `groupby((Company/Code,Company/Name,Company/SortOrder))/filter((Company/Code ne null))`;
+
+    self.tradeAccountCompanyTemplate = (e) => {
+        if (e.Company && e.Company.Code && e.Company.Name) {
+            return `<span title="${e.Company.Code} - ${e.Company.Name}">${e.Company.Code} - ${e.Company.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.tradeAccountCompanyValueTemplate = (e) => {
+        if (e.Company && e.Company.Code && e.Company.Name) {
+            return `<span title="${e.Company.Code} - ${e.Company.Name}">${e.Company.Code} - ${e.Company.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.tradeAccountCompanyParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Designers Guild Company',
+        odata: true,
+        endPoint: '/odata/MertexTradeAccountClassificationSuperSet',
+        textField: 'Company.Name',
+        valueField: 'Company.Code',
+        complexObjectName: 'Company',
+        complexObjectTextField: 'Name',
+        template: self.tradeAccountCompanyTemplate,
+        valueTemplate: self.tradeAccountCompanyValueTemplate,
+        idObservable: self.tradeAccountCompanyId,
+        objObservable: self.tradeAccountCompany,
+        locked: ko.observable(self.tradeAccountCompanyId() != ''),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'Company.SortOrder'
+        },
+        select: function (e) {
+            console.log('tradeAccountCompanyParams select', e);
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.tradeAccountCompanyGroupBy),
+        popupSettings: {
+            appendTo: document.getElementById(`${self.filtersPrefix}trade-account-company-prefilter`)
+        }
+    });
+
+    self.invoiceCompanyParams = kendoMDCDropDownList({
+        label: 'Invoice Company',
+        odata: true,
+        endPoint: '/odata/Companies',
+        textField: 'Name',
+        valueField: 'Code',
+        idObservable: self.invoiceCompanyId,
+        objObservable: self.invoiceCompany,
+        locked: ko.observable(self.invoiceCompanyId() != ''),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        clearFunction: self.genericUnsavedChangesClear,
+        sort: {
+            field: 'SortOrder'
+        },
+        popupSettings: {
+            appendTo: document.getElementById('invoice-company-prefilter')
+        },
+        template: (e) => {
+            if ((e.Name != '') && (e.Code != null)) {
+                return `<span title="${e.Code} - ${e.Name}">${e.Code} - ${e.Name}</span>`
+            } else {
+                return '';
+            }
+        },
+        valueTemplate: (e) => {
+            if ((e.Name != '') && (e.Code != null)) {
+                return `<span title="${e.Code} - ${e.Name}">${e.Code} - ${e.Name}</span>`
+            } else {
+                return '';
+            }
+        },
+    });
 
     self.salesRepresentativeGroupBy = `groupby((SalesRepresentative/SalesRepresentativeID,SalesRepresentative/Code,SalesRepresentative/Name))/filter((SalesRepresentative/SalesRepresentativeID ne null))`;
 
@@ -1153,7 +1243,9 @@ const tradeAccountContactsFiltersViewModel = ({
             creditControllerCode: self.creditControllerId() == "" ? null : self.creditControllerId(), // contol holds empty string if nothing selected; can't pass CreditControllerCode = N'' to the procedure; demands an empty test here
             tradeAccountTypeGroupId: self.tradeAccountTypeGroupId(),
             open: self.tradeAccountStatusId(),
-            searchTerm: null
+            searchTerm: null,
+            companyCode: self.tradeAccountCompanyId() == "" ? null : self.tradeAccountCompanyId(),
+            invoiceCompanyCode: self.invoiceCompanyId() == "" ? null : self.invoiceCompanyId()
         };
 
         return result;
