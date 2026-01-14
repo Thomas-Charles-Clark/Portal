@@ -274,7 +274,7 @@
 				<span data-bind="html: `= ${ko.unwrap(dropDownListSettings.dataItem)[complexObjectName][complexObjectTextField]}`"></span>
 				<!-- /ko -->
 				<!-- ko ifnot: complexObjectName -->
-				<span data-bind="html: `= ${(dropDownListSettings.dataValueField == 'Code' ? ko.unwrap(dropDownListSettings.dataItem)[dropDownListSettings.dataValueField] 
+				<span data-bind="html: `= ${(dropDownListSettings.dataValueField == 'Code' ? ko.unwrap(dropDownListSettings.dataItem)[dropDownListSettings.dataValueField]
 					  + ' -' : '')} ${ko.unwrap(dropDownListSettings.dataItem)[dropDownListSettings.dataTextField]}`"></span>
 				<!-- /ko -->
 				<!-- /ko -->
@@ -282,6 +282,18 @@
 			</span>
 			<!-- ko if: typeof(clearFunction) != 'undefined' -->
 			<a class="stretched-link" href="javascript:;" data-bind="click: clearFunction">
+				<button type="button" class="btn-close"></button>
+			</a>
+			<!-- /ko -->
+		</li>
+		<!-- /ko -->
+		<!-- ko if: typeof($parent.selectedPod) != 'undefined' && $parent.selectedPod() -->
+		<li class="filter-pill relative">
+			<span data-bind="with: $parent.selectedPod">
+				<span data-bind="text: `Dashboard Selection = ${Heading}`"></span>
+			</span>
+			<!-- ko if: typeof($parent.clearSelectedPod) != 'undefined' -->
+			<a class="stretched-link" href="javascript:;" data-bind="click: clearSelectedPod">
 				<button type="button" class="btn-close"></button>
 			</a>
 			<!-- /ko -->

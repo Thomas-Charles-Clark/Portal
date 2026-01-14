@@ -25,7 +25,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 using SharedEFClasses.Models.IncomingEmail;
-using SharedEFClasses.Models.Paying;
+using SharedEFClasses.Models.Payment;
 
 namespace SharedEFClasses.Models
 {

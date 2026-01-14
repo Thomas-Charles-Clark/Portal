@@ -44,6 +44,11 @@ const creditControlViewModel = (() => {
 
     self.selectedPod = ko.observable();
 
+    self.clearSelectedPod = () => {
+        self.selectedPod(undefined);
+        self.refresh();
+    }
+
     self.filters = creditControlFiltersViewModel({
         params: {},
         parent: self
@@ -1125,13 +1130,11 @@ const creditControlViewModel = (() => {
     self.dashboardClick = (data, event) => {
         console.log('dashboardClick', data);
 
-        self.selectedPod(data);
-
-        let searchParams = Object.assign({
-            selectedPod: self.selectedPod().PodHandle,
-            page: (self.gridParams.widget() && self.gridParams.widget().dataSource.page()) ?? 1,
-            pageSize: (self.gridParams.widget() && self.gridParams.widget().dataSource.pageSize()) ?? 0,
-        }, self.filters.getData());
+        if (self.selectedPod() == null || (self.selectedPod().PodHandle != data.PodHandle)) {
+            self.selectedPod(data);
+        } else {
+            self.selectedPod(undefined);
+        }
 
         self.gridParams.widget().dataSource.query({
             page: self.gridParams.widget().dataSource.page() ?? 1,

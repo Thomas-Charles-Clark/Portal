@@ -32,7 +32,7 @@ using SharedEFClasses.Models.Advertisers;
 using SharedEFClasses.Models.Documents;
 using System.Net.Http.Headers;
 using SharedEFClasses.Models.CreditControl;
-using SharedEFClasses.Models.Paying;
+using SharedEFClasses.Models.Payment;
 
 namespace Portal
 {
@@ -152,6 +152,7 @@ namespace Portal
             odataBuilder.EntitySet<DebtFunder>("DebtFunders");
             odataBuilder.EntitySet<Company>("Companies");
             odataBuilder.EntitySet<PaymentRequestStatus>("PaymentRequestStatuses");
+			odataBuilder.EntitySet<PaymentRequest>("PaymentRequests");
 
 			// This because it's not mapped to SQL and has the [NotMapped] attribute
 			odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));

@@ -20,7 +20,7 @@ using SharedEFClasses.Models.Mertexer;
 using SharedEFClasses.Models.OrderBook;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Parcel;
-using SharedEFClasses.Models.Paying;
+using SharedEFClasses.Models.Payment;
 using SharedEFClasses.Models.Press;
 using SharedEFClasses.Models.Pricing;
 using SharedEFClasses.Models.Products;

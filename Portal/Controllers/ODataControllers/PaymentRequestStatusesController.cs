@@ -11,7 +11,7 @@ using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.General;
 using Microsoft.AspNet.OData;
-using SharedEFClasses.Models.Paying;
+using SharedEFClasses.Models.Payment;
 
 namespace Portal.Controllers
 {

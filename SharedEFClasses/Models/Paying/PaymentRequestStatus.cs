@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharedEFClasses.Models.Paying
+namespace SharedEFClasses.Models.Payment
 {
 	[Table("PaymentRequestStatus", Schema = "payment")]
 	public class PaymentRequestStatus

@@ -4,7 +4,7 @@ using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Orders;
-using SharedEFClasses.Models.Paying;
+using SharedEFClasses.Models.Payment;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Samples;
 using SharedEFClasses.Models.TradeAccounts;

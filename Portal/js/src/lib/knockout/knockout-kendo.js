@@ -769,7 +769,7 @@ createBinding({
             ko.kendo.setDataSource(this, value, options);
         }
     },
-    templates: ["rowTemplate", "altRowTemplate", "detailTemplate", "groupHeaderTemplate", "groupFooterTemplate"]
+    templates: ["rowTemplate", "altRowTemplate", "detailTemplate", "groupHeaderTemplate", "groupFooterTemplate", "editTemplate"]
 });
 
 createBinding({

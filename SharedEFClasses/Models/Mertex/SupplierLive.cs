@@ -2,7 +2,7 @@
 
 using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Mertex;
-using SharedEFClasses.Models.Paying;
+using SharedEFClasses.Models.Payment;
 
 using System;
 using System.Collections.Generic;

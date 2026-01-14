@@ -6,7 +6,9 @@
     parent: {}
 }) => {
     let self = {
-        refreshParent: parent.refresh
+        refreshParent: parent.refresh,
+        selectedPod: parent.selectedPod,
+        clearSelectedPod: parent.clearSelectedPod
     };
 
     //#region Properties
@@ -1045,6 +1047,8 @@
                 f.clearFunction();
             }
         });
+
+        self.clearSelectedPod();
 
         window.setTimeout(() => {
             self.tradeAccountStatusId(true);

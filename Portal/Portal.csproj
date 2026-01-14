@@ -686,6 +686,7 @@
     <Compile Include="Controllers\ODataControllers\SupplierPaymentTermsController.cs" />
     <Compile Include="Controllers\ODataControllers\SupplierTypesController.cs" />
     <Compile Include="Controllers\ODataControllers\TradeAccountTypeGroupsController.cs" />
+    <Compile Include="Controllers\ODataControllers\PaymentRequestsController.cs" />
     <Compile Include="Controllers\ODataControllers\VATCodesController.cs" />
     <Compile Include="Controllers\ODataControllers\GeneralLedgerCodesController.cs" />
     <Compile Include="Controllers\ODataControllers\BudgetHoldersController.cs" />

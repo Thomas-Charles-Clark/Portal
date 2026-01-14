@@ -63,12 +63,13 @@
 }
 
 <script type="text/html" id="grid-row-template">
+	<!-- ko ifnot: $parent.isGridEditing() -->
 	<tr>
 		<td>
 			<span data-bind="text: moment(CreatedDT).format('DD/MM/YYYY HH:mm')"></span>
 		</td>
 		<td>
-			<span data-bind="text: `${Currency.Symbol}` - ${Currency.Code}`"></span>
+			<span data-bind="text: `${Currency.Symbol} - ${Currency.Code}`"></span>
 		</td>
 		<td>
 			<span data-bind="text: `${Supplier.Code} - ${Supplier.Name}`"></span>
@@ -81,7 +82,6 @@
 		</td>
 		<td class="purchase-orders">
 			<span data-bind="html: purchaseOrdersLabel, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></span>
-			@*<div class="cell shipped" data-bind="actualBootstrapPopover: { details: bootstrapPopoverDetails }, event: { keydown: keydown }" tabindex="0"></div>*@
 		</td>
 		<td>
 			<span data-bind="text: ProformaNumber"></span>
@@ -93,6 +93,12 @@
 			<span data-bind="html: Comments"></span>
 		</td>
 	</tr>
+	<!-- /ko -->
+	<!-- ko if: $parent.isGridEditing() -->
+	<tr>
+		<td colspan="50">BOO</td>
+	</tr>
+	<!-- /ko -->
 </script>
 
 <div class="blocker" data-bind="flexFadeVisible: busy">
@@ -155,35 +161,32 @@
 	</sidebar>
 	<main id="supplier-payment-requests-main">
 		@*<div class="dashboard" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
-				<div class="dashboard-pod card" data-bind="css: { 'selected-pod': $parent.selectedPod() == $data }">
-					<div class="card-body" data-bind="class: Classes">
-						<h4 data-bind="html: Heading"></h4>
-						<div data-bind="html: Stats"></div>
-						<a href="#" class="stretched-link" data-bind="click: $parent.dashboardClick"></a>
-					</div>
+			<div class="dashboard-pod card" data-bind="css: { 'selected-pod': $parent.selectedPod() == $data }">
+				<div class="card-body" data-bind="class: Classes">
+					<h4 data-bind="html: Heading"></h4>
+					<div data-bind="html: Stats"></div>
+					<a href="#" class="stretched-link" data-bind="click: $parent.dashboardClick"></a>
 				</div>
 			</div>
-			<div id="selected-filter-pills">
-				<!-- ko template: { name: 'filter-pills-template', data: filters } --><!-- /ko -->
-				<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
-					<a class="btn btn-secondary dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
-						<i class="bi bi-list-check"></i>
-					</a>
-					<!-- ko template: { name: 'credit-control-quantity-value-dropdown-container', data: filters } --><!-- /ko -->
-				</div>
-			</div>*@
-		<div id="supplier-payment-requests-grid-container" data-bind="kendoGrid: gridParams"></div>
+		</div>
+		<div id="selected-filter-pills">
+			<!-- ko template: { name: 'filter-pills-template', data: filters } --><!-- /ko -->
+			<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
+				<a class="btn btn-secondary dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
+					<i class="bi bi-list-check"></i>
+				</a>
+				<!-- ko template: { name: 'credit-control-quantity-value-dropdown-container', data: filters } --><!-- /ko -->
+			</div>
+		</div>*@
+		<div id="supplier-payment-requests-grid-container" data-bind="kendoGrid: gridParams" class="mb-3"></div>
+		<p class="notes">
+			Finish grid, CR(U?), build totals display (all currencies all the time TOTAL totals, not totals from the current state of the grid);
+		</p>
+		<p class="notes">
+			Create popover for purchase order ids where multiple have been selected, on hover/focus of "Various"
+		</p>
+		<p class="notes">
+			Create roles for this: contributor (certain people TBA) and decision maker (just Sarah, presently)
+		</p>
 	</main>
 </div>
-
-<i class="notes my-3">
-	Finish grid, CR(U?), build totals display (all currencies all the time TOTAL totals, not totals from the current state of the grid);
-</i>
-
-<i class="notes">
-	Create popover for purchase order ids where multiple have been selected, on hover/focus of "Various"
-</i>
-
-<i class="notes">
-	Create roles for this: contributor (certain people TBA) and decision maker (just Sarah, presently)
-</i>

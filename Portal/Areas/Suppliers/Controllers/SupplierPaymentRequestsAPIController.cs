@@ -31,12 +31,12 @@ using Microsoft.AspNet.SignalR;
 namespace Portal.Areas.Suppliers.Controllers
 {
 	[System.Web.Http.Authorize]
-	public class PaymentRequestsAPIController : ApiController
+	public class SupplierPaymentRequestsAPIController : ApiController
 	{
 		private PortalDbContext PortalDb { get; set; }
 		private readonly ApplicationUserManager UserManager;
 
-		public PaymentRequestsAPIController(PortalDbContext portalDbContext, ApplicationUserManager userManager)
+		public SupplierPaymentRequestsAPIController(PortalDbContext portalDbContext, ApplicationUserManager userManager)
 		{
 			this.UserManager = userManager;
 			this.PortalDb = portalDbContext;
