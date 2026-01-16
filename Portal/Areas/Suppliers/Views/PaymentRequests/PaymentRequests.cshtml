@@ -18,6 +18,12 @@
 	@Scripts.Render("~/bundles/js/tempus-dominus")
 
 	<script type="text/javascript">
+		window.canApprove = () => {
+			return @(Model.CanUserMakePaymentDecisions.ToString().ToLowerInvariant());
+		}
+	</script>
+
+	<script type="text/javascript">
 
 		var viewModel = supplierPaymentRequestsViewModel();
 
@@ -35,6 +41,15 @@
 
 		window.self = viewModel;
 
+		if (getUserId() != 8) {
+			addEventListener('beforeunload', (event) => {
+				if (viewModel.paymentPlanGridWidget().dataSource.hasChanges() ||
+					viewModel.otherStatusesGridWidget().dataSource.hasChanges()) {
+					event.preventDefault();
+				}
+				return false;
+			})
+		}
 	</script>
 
 	<script type="text/html" id="conversion-control">
@@ -63,42 +78,35 @@
 }
 
 <script type="text/html" id="grid-row-template">
-	<!-- ko ifnot: $parent.isGridEditing() -->
-	<tr>
+	<tr data-bind="attr: { 'data-uid': uid }">
 		<td>
-			<span data-bind="text: moment(CreatedDT).format('DD/MM/YYYY HH:mm')"></span>
+			<div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: createdDateParams }"></div>
 		</td>
 		<td>
-			<span data-bind="text: `${Currency.Symbol} - ${Currency.Code}`"></span>
+			<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
 		</td>
 		<td>
-			<span data-bind="text: `${Supplier.Code} - ${Supplier.Name}`"></span>
+			<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyParams }"></div>
 		</td>
 		<td>
-			<span data-bind="text: PaymentRequestStatus.Name"></span>
+			<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentRequestStatusParams }"></div>
 		</td>
 		<td>
-			<span data-bind="text: RequestedByMember.FullName"></span>
+			<span data-bind="text: ko.unwrap(self.requestedByMember)?.FullName"></span>
 		</td>
 		<td class="purchase-orders">
-			<span data-bind="html: purchaseOrdersLabel, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></span>
+			@*<span data-bind="html: purchaseOrdersLabel, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></span>*@
 		</td>
 		<td>
-			<span data-bind="text: ProformaNumber"></span>
+			@*<span data-bind="text: ProformaNumber"></span>*@
 		</td>
 		<td>
 			<div data-bind="component: { name: 'conversion-control', params: amountParams }"></div>
 		</td>
 		<td>
-			<span data-bind="html: Comments"></span>
+			@*<span data-bind="html: Comments"></span>*@
 		</td>
 	</tr>
-	<!-- /ko -->
-	<!-- ko if: $parent.isGridEditing() -->
-	<tr>
-		<td colspan="50">BOO</td>
-	</tr>
-	<!-- /ko -->
 </script>
 
 <div class="blocker" data-bind="flexFadeVisible: busy">
@@ -160,6 +168,177 @@
 		</div>
 	</sidebar>
 	<main id="supplier-payment-requests-main">
+		<div id="totals-wrapper">
+			<div class="card">
+				<div class="card-body">
+					<table id="totals-requested-approved" class="table">
+						<colgroup>
+							<col />
+							<col />
+							<col />
+							<col style="width: 160px;" />
+							<col />
+							<col />
+						</colgroup>
+						<thead>
+							<tr>
+								<th colspan="6" class="text-center fs-5 mb-0 p-2">
+									Requested
+								</th>
+							</tr>
+							<tr>
+								<th>
+									Total Requested
+								</th>
+								<th>
+									Currency
+								</th>
+								<th>
+									Sterling
+								</th>
+								<th>
+									Total Approved
+								</th>
+								<th>
+									Currency
+								</th>
+								<th>
+									Sterling
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									Euro (€)
+								</td>
+								<td>
+									<span data-bind="text: formatCurrency(5000, 2, 'fr-FR', 'EUR')"></span>
+								</td>
+								<td>
+									<span data-bind="text: formatCurrency(4000, 2, 'en-GB', 'GBP')"></span>
+								</td>
+								<td></td> @* Total Approved Heading Spacer *@
+								<td>
+									<span data-bind="text: formatCurrency(3000, 2, 'fr-FR', 'EUR')"></span>
+								</td>
+								<td>
+									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									US Dollar ($)
+								</td>
+								<td>
+									<span data-bind="text: formatCurrency(1000, 2, 'en-US', 'USD')"></span>
+								</td>
+								<td>
+									<span data-bind="text: formatCurrency(800, 2, 'en-GB', 'GBP')"></span>
+								</td>
+								<td></td> @* Total Approved Heading Spacer *@
+								<td>
+									<span data-bind="text: formatCurrency(1000, 2, 'en-US', 'USD')"></span>
+								</td>
+								<td>
+									<span data-bind="text: formatCurrency(800, 2, 'en-GB', 'GBP')"></span>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									Sterling (£)
+								</td>
+								<td>
+									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
+								</td>
+								<td>
+									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
+								</td>
+								<td></td> @* Total Approved Heading Spacer *@
+								<td>
+									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
+								</td>
+								<td>
+									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
+								</td>
+							</tr>
+							<tr>
+								@* Sterling Total Column *@
+								<td></td>
+								<td></td>
+								<td>
+									<span class="bold" data-bind="text: formatCurrency(6800, 2, 'en-GB', 'GBP')"></span>
+								</td>
+								<td></td>
+								<td></td>
+								<td>
+									<span class="bold" data-bind="text: formatCurrency(4800, 2, 'en-GB', 'GBP')"></span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="card">
+				<div class="card-body">
+					<table id="weekly-table" class="table">
+						<colgroup>
+							<col />
+							<col />
+						</colgroup>
+						<thead>
+							<tr>
+								<th colspan="2" class="text-center fs-5 mb-0 p-2">
+									Approved
+								</th>
+							</tr>
+							<tr>
+								<th>
+									Week Commencing
+								</th>
+								<td>
+									12/01/2025
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th>
+									Available for Approval
+								</th>
+								<td>
+									<span data-bind="text: formatCurrency(10000, 2, 'en-GB', 'GBP')"></span>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									Target Spend
+								</th>
+								<td>
+									<span data-bind="text: formatCurrency(5000, 2, 'en-GB', 'GBP')"></span>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									Spent
+								</th>
+								<td>
+									<span data-bind="text: formatCurrency(6800, 2, 'en-GB', 'GBP')"></span>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									Remaining
+								</th>
+								<td>
+									<span data-bind="text: formatCurrency(3200, 2, 'en-GB', 'GBP')"></span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
 		@*<div class="dashboard" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
 			<div class="dashboard-pod card" data-bind="css: { 'selected-pod': $parent.selectedPod() == $data }">
 				<div class="card-body" data-bind="class: Classes">
@@ -178,15 +357,20 @@
 				<!-- ko template: { name: 'credit-control-quantity-value-dropdown-container', data: filters } --><!-- /ko -->
 			</div>
 		</div>*@
-		<div id="supplier-payment-requests-grid-container" data-bind="kendoGrid: gridParams" class="mb-3"></div>
-		<p class="notes">
-			Finish grid, CR(U?), build totals display (all currencies all the time TOTAL totals, not totals from the current state of the grid);
-		</p>
-		<p class="notes">
-			Create popover for purchase order ids where multiple have been selected, on hover/focus of "Various"
-		</p>
-		<p class="notes">
-			Create roles for this: contributor (certain people TBA) and decision maker (just Sarah, presently)
-		</p>
+		<div class="supplier-payment-requests-grid-container" data-bind="kendoGrid: paymentPlanGridParams" class="mb-3 z-2"></div>
+		<div class="supplier-payment-requests-grid-container" data-bind="kendoGrid: otherPaymentRequestStatusesGridParams" class="mb-3 z-1"></div>
+		<div id="notes-container" class="card">
+			<div class="card-body">
+				<p class="notes">
+					Finish grid functionality, build logic to calculate totals display (all currencies TOTAL totals, not totals from the current state of the grid display).
+				</p>
+				<p class="notes">
+					Investigate Purchase Order IDs multiselect misbehaviour - firing the valueMapper function sometimes with the wrong number of items!?
+				</p>
+				<p class="notes">
+					Create roles for this: contributor (certain people TBA) and decision maker (just Super Admin presently)
+				</p>
+			</div>
+		</div>
 	</main>
 </div>

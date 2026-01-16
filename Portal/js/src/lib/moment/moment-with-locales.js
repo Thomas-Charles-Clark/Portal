@@ -9789,3 +9789,8 @@
         makeGlobal();
     }
 }).call(this);
+
+moment.fn.weekdayWithStartWeekday = function (targetWeekday, startDayOfWeek) {
+    var weekday = (this.day() + 7 - startDayOfWeek) % 7;
+    return this.add(targetWeekday - weekday, "d");
+}

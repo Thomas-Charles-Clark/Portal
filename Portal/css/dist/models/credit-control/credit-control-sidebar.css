@@ -199,6 +199,20 @@
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls > div {
   color: #fff;
   text-shadow: 0 1px 0 #000;
+  opacity: 0.55;
+  transition: opacity 150ms ease-in-out;
+}
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls:hover > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls:focus > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls:focus-within > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls:hover > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls:focus > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls:focus-within > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls:hover > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls:focus > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls:focus-within > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls:hover > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls:focus > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls:focus-within > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls:hover > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls:focus > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls:focus-within > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls:hover > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls:focus > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls:focus-within > div {
+  opacity: 0.9;
 }
 .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .mdc-notched-outline__notch, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .mdc-notched-outline__notch, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .mdc-notched-outline__notch,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .mdc-notched-outline__notch,

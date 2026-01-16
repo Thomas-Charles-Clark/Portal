@@ -35,7 +35,11 @@ namespace SharedEFClasses.Models.Payment
 
 		public decimal ExchangeRate { get; set; }
 
-		public string Comments { get; set; }
+		public string RequesterComments { get; set; }
+
+		public string DeciderComments { get; set; }
+
+		public DateTime PaymentDueDT { get; set; }
 
 		public DateTime CreatedDT { get; set; }
 
@@ -57,5 +61,8 @@ namespace SharedEFClasses.Models.Payment
 
 		[ForeignKey("SupplierCode")]
 		public virtual SupplierLive Supplier { get; set; }
+
+		[NotMapped]
+		public decimal? AmountApprovedInCurrency { get; set; }
 	}
 }

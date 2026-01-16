@@ -45,12 +45,15 @@
 	@RenderSection("styles", required: false)
 	@RenderSection("earlyScripts", required: false)
 
-	<script type="text/javascript">
+<script type="text/javascript">
         function getUserId() {
             return @(User.Identity.GetUserId<int>());
         }
         function getUserEmail() {
             return '@User.Identity.GetEmail()';
+        }
+        function getUserName() {
+            return '@User.Identity.GetFullName()';
         }
 
         window.fetchHeaders = {
@@ -150,7 +153,7 @@
                 }
             });
         }
-	</script>
+</script>
 </head>
 <body style="padding-top: 0; @(ViewBag.Partial == true ? "padding-bottom: 0" : "")">
 	@Html.Partial("~/Views/Shared/_Common.cshtml")

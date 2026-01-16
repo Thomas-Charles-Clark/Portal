@@ -153,6 +153,7 @@ namespace Portal
             odataBuilder.EntitySet<Company>("Companies");
             odataBuilder.EntitySet<PaymentRequestStatus>("PaymentRequestStatuses");
 			odataBuilder.EntitySet<PaymentRequest>("PaymentRequests");
+			odataBuilder.EntitySet<PurchaseOrderHead>("PurchaseOrderHeads");
 
 			// This because it's not mapped to SQL and has the [NotMapped] attribute
 			odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
@@ -178,6 +179,15 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(OrderTaker)).AddProperty(typeof(OrderTaker).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_DeliveryType)).AddProperty(typeof(Mertex_DeliveryType).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SupplierLive)).AddProperty(typeof(SupplierLive).GetProperty("AddressDisplaySingleLine"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(PaymentRequest)).AddProperty(typeof(PaymentRequest).GetProperty("AmountApprovedInCurrency"));
+
+			var purchaseOrderHeadValueMapperFunction = odataBuilder.EntityType<PurchaseOrderHead>()
+				.Collection
+				.Function("PurchaseOrderHeadValueMapper")
+				.ReturnsCollectionFromEntitySet<PurchaseOrderHead>("PurchaseOrderHeads");
+
+			purchaseOrderHeadValueMapperFunction.Parameter<string>("purchaseOrderHeadIds");
+
 
 			var paymentRequestStatusValueMapperFunction = odataBuilder.EntityType<PaymentRequestStatus>()
 				.Collection

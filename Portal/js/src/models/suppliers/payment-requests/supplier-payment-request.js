@@ -3,9 +3,85 @@
 } = {
     rec: {}
 }) => {
-    let self = Object.assign({
-
-    }, rec);
+    let self = {
+        id: 'PaymentRequestID',
+        fields: {
+            PaymentRequestID: { type: 'number', editable: false, nullable: true },
+            RequestedByMemberID: {
+                type: 'number',
+                nullable: true,
+                editable: false
+            },
+            RequestedByMember: {
+                RequestedByMemberID: { type: 'number' },
+                FullName: { type: 'string' },
+                Email: { type: 'string' }
+            },
+            PaymentRequestStatusID: {
+                type: 'number',
+                nullable: true,
+                validation: {
+                    required: {
+                        message: 'You must specify a Status'
+                    }
+                }
+            },
+            PaymentRequestStatus: {
+                type: 'object',
+                fields: [{
+                    PaymentRequestStatusID: { type: 'number' },
+                    Name: { type: 'string' }
+                }]
+            },
+            CurrencyID: {
+                type: 'number',
+                nullable: true,
+                editable: false
+            },
+            Currency: {
+                type: 'object',
+                editable: false,
+                fields: [{
+                    CurrencyID: { type: 'number' },
+                    Code: { type: 'string' },
+                    Name: { type: 'string' },
+                    Symbol: { type: 'string' }
+                }]
+            },
+            SupplierCode: {
+                type: 'string',
+                nullable: false,
+                validation: {
+                    required: {
+                        message: 'You must specify a Supplier'
+                    }
+                }
+            },
+            Supplier: {
+                type: 'object',
+                fields: {
+                    Code: { type: 'string', editable: false },
+                    Name: { type: 'string', editable: false }
+                }
+            },
+            PurchaseOrderHeadIDs: { type: 'string' },
+            ProformaNumber: { type: 'string' },
+            AmountInCurrency: {
+                type: 'number',
+                nullable: true,
+                required: {
+                    message: 'You must specify an Amount'
+                }
+            },
+            ExchangeRate: { type: 'number' },
+            AmountInSterling: { type: 'number' },
+            Comments: { type: 'string' },
+            CreatedDT: { type: 'date' },
+            ModifiedDT: { type: 'date' },
+            DeletedDT: { type: 'date' },
+            Deleted: { type: 'boolran' }
+        }
+    }
 
     //#region Properties
 
@@ -15,7 +91,21 @@
 
     self.readOnly = ko.observable(true);
 
-    self.purchaseOrderIds = ko.observableArray(self.PurchaseOrderHeadIDs == null ? [] : self.PurchaseOrderHeadIDs)
+    self.createdDate = ko.observable(rec.CreatedDT ? new Date(rec.CreatedDT) : new Date());
+
+    self.supplierCode = ko.observable(rec.SupplierCode);
+    self.supplier = ko.observable(rec.Supplier);
+
+    self.currencyId = ko.observable(rec.CurrencyID);
+    self.currency = ko.observable(rec.Currency);
+
+    self.paymentRequestStatusId = ko.observable(rec.PaymentRequestStatusID);
+    self.paymentRequestStatus = ko.observable(rec.PaymentRequestStatus);
+
+    self.requestedByMemberId = ko.observable(rec.RequestedByMemberID);
+    self.requestedByMember = ko.observable(rec.RequestedByMember);
+
+    self.purchaseOrderIds = ko.observableArray(rec.PurchaseOrderHeadIDs == null ? [] : rec.PurchaseOrderHeadIDs)
 
     self.bootstrapPopoverDetails = {
         title: "Purchase Order IDs",
@@ -47,24 +137,22 @@
         }
     }
 
-    self.supplierCurrency = ko.observable(self.Supplier.Currency);
+    self.exchangeRate = ko.observable(rec.ExchangeRate);
 
-    self.exchangeRate = ko.observable(self.ExchangeRate);
+    self.amountInCurrency = ko.observable(rec.AmountInCurrency);
 
-    self.amountCurrency = ko.observable(self.AmountInCurrency);
-
-    self.amountSterling = ko.observable(self.AmountInSterling);
+    self.amountInSterling = ko.observable(rec.AmountInSterling);
 
     self.forexParams = {
         buttons: false,
         label: ko.computed(() => {
-            if (self.supplierCurrency())
-                return `FX Rate ${(self.supplierCurrency() && self.supplierCurrency().Code)} to GBP`;
+            if (self.currency())
+                return `FX Rate ${(self.currency() && self.currency().Code)} to GBP`;
             else
                 return '';
         }, self),
         observable: ko.computed(() => {
-            if (self.supplierCurrency() && self.exchangeRate()) {
+            if (self.currency() && self.exchangeRate()) {
                 return formatNumber(self.exchangeRate(), 4, 'en-GB', 'GBP');
             }
         }, self),
@@ -89,11 +177,192 @@
 
     //#region Components
 
+    self.createdDateParams = {
+        label: "Date",
+        observable: self.createdDate,
+        originalValue: self.createdDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'months',
+                cellSize: '3rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false
+        },
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.createdDate(undefined);
+            self.createdDateParams.observable.tempusDominus.clear();
+            self.createdDateParams.observable.tempusDominus.updateOptions({
+                display: {
+                    viewMode: 'months'
+                }
+            })
+        },
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.createdDate.observable(self.createdDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+    };
+
+    self.supplierTemplate = (e) => {
+        if (e.Code && e.Name) {
+            return `<span title="${e.Code} - ${e.Name}">${e.Code} - ${e.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.supplierParams = kendoMDCDropDownList({
+        label: 'Supplier',
+        odata: true,
+        endPoint: '/odata/MertexLiveSuppliers',
+        textField: 'Name',
+        valueField: 'Code',
+        template: self.supplierTemplate,
+        valueTemplate: self.supplierTemplate,
+        idObservable: self.supplierCode,
+        objObservable: self.supplier,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Supplier.Name'
+        },
+        ignoreCase: false,
+        select: (e) => {
+            console.log('supplierParams.select', e);
+            self.currencyId(e.Currency?.CurrencyID);
+            self.currencyParams.widget().trigger('change');
+        },
+        clearFunction: (e) => {
+            self.supplierCode('');
+            self.supplierParams.widget().trigger('change');
+        }
+    });
+
+    self.currencyTemplate = (e) => {
+        if (e.Currency && e.Currency.CurrencyID && e.Currency.Name) {
+            return `<span title="${e.Currency.Name}">${e.Currency.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.currencyParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Currency',
+        odata: true,
+        endPoint: '/odata/Currencies',
+        textField: 'Name',
+        valueField: 'CurrencyID',
+        template: self.currencyTemplate,
+        valueTemplate: self.currencyTemplate,
+        idObservable: self.currencyId,
+        objObservable: self.currency,
+        complexObjectName: 'Currency',
+        complexObjectTextField: 'Name',
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Currency.Name'
+        },
+        select: function (e) {
+            console.log('currency select', e);
+        },
+        clearFunction: () => {
+            self.currencyId('');
+            self.currencyParams.widget().trigger('change');
+        }
+    });
+
+    self.paymentRequestStatusTemplate = (e) => {
+        if (e.PaymentRequestStatusID && e.Name) {
+            return `<span title="${e.Name}">${e.Name}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    self.paymentRequestStatusParams = kendoMDCDropDownList({
+        label: 'Payment Request Status',
+        odata: true,
+        endPoint: '/odata/PaymentRequestStatuses',
+        textField: 'Name',
+        valueField: 'PaymentRequestStatusID',
+        template: self.paymentRequestStatusTemplate,
+        valueTemplate: self.paymentRequestStatusTemplate,
+        idObservable: self.paymentRequestStatusId,
+        objObservable: self.paymentRequestStatus,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'SortOrder'
+        },
+        ignoreCase: false,
+        select: (e) => {
+            console.log('paymentRequestStatus.select', e);
+        },
+        clearFunction: (e) => {
+            self.paymentRequestStatusId('');
+            self.paymentRequestStatusParams.widget().trigger('change');
+        }
+    });
+
     self.amountInCurrencyParams = {
         label: 'Amount in Currency',
         buttons: false,
-        observable: self.amountCurrency,
-        originalValue: self.amountCurrency(),
+        observable: self.amountInCurrency,
+        originalValue: self.amountInCurrency(),
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
@@ -121,8 +390,8 @@
     self.amountInSterlingParams = {
         label: 'Amount in Sterling',
         buttons: false,
-        observable: self.amountSterling,
-        originalValue: self.amountSterling(),
+        observable: self.amountInSterling,
+        originalValue: self.amountInSterling(),
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
@@ -140,18 +409,22 @@
         maxValue: null,
         step: null,
         clearFunction: () => {
-            self.amountSterling(undefined);
+            self.amountInSterling(undefined);
         },
         revertFunction: () => {
-            self.amountSterling(self.amountSterlingParams.originalValue);
+            self.amountInSterling(self.amountInSterlingParams.originalValue);
         }
     }
 
     self.amountInSterlingFormatted = ko.computed(() => {
-        return formatCurrency(self.AmountInSterling(), 2, 'en-GB', 'GBP');
+        if (self.amountInSterling() != null) {
+            return formatCurrency(self.amountInSterling(), 2, 'en-GB', 'GBP');
+        } else {
+            return '';
+        }
     }, self);
 
-    self.amountParmas = {
+    self.amountParams = {
         highlightOnNull: ko.observable(true),
         inputParams: self.amountInCurrencyParams,
         forexParams: self.forexParams,

@@ -45,7 +45,10 @@ namespace Portal.Areas.Stock.Controllers
 
 			var role = user.Roles.FirstOrDefault(r => r.Role.Id == 107);
 
+			var canUserMakePaymentDecisions = UserManager.IsInRole(user.Id, "Super Admin") || UserManager.IsInRole(user.Id, "Supplier Payment Decider");
+
 			var model = new SupplierPaymentRequestViewModel(
+				canUserMakePaymentDecisions,
 				properties: user.GetActiveRoleProperties(),
 				applicationHeading: application.Heading,
 				applicationSubHeading: application.SubHeading);

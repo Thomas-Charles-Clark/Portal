@@ -177,7 +177,8 @@
   transition: opacity 150ms ease-in-out;
   transition-behavior: allow-discrete;
 }
-.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .k-dropdown-wrap.k-state-default, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .k-dropdown-wrap.k-state-default,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .k-dropdown-wrap.k-state-default, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .k-dropdown-wrap.k-state-default, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .k-dropdown-wrap.k-state-default,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .k-dropdown-wrap.k-state-default,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .k-dropdown-wrap.k-state-default,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .k-dropdown-wrap.k-state-default {
   position: relative;
@@ -186,18 +187,35 @@
   color: #fff;
   border-radius: 0.375rem;
 }
-.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .k-dropdown-wrap.k-state-default .k-input, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .k-dropdown-wrap.k-state-default .k-input,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .k-dropdown-wrap.k-state-default .k-input, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .k-dropdown-wrap.k-state-default .k-input, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .k-dropdown-wrap.k-state-default .k-input,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .k-dropdown-wrap.k-state-default .k-input,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .k-dropdown-wrap.k-state-default .k-input,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .k-dropdown-wrap.k-state-default .k-input {
   color: #fff;
 }
-.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls > div,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls > div,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls > div,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls > div {
   color: #fff;
   text-shadow: 0 1px 0 #000;
+  opacity: 0.55;
+  transition: opacity 150ms ease-in-out;
 }
-.mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .mdc-notched-outline__notch, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .mdc-notched-outline__notch,
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls:hover > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls:focus > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls:focus-within > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls:hover > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls:focus > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls:focus-within > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls:hover > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls:focus > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls:focus-within > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls:hover > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls:focus > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls:focus-within > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls:hover > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls:focus > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls:focus-within > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls:hover > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls:focus > div,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls:focus-within > div {
+  opacity: 0.9;
+}
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .mdc-notched-outline__notch, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .mdc-notched-outline__notch, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .mdc-notched-outline__notch,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .mdc-notched-outline__notch,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .mdc-notched-outline__notch,
 .mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .mdc-notched-outline__notch {
   opacity: 0;
@@ -3811,7 +3829,7 @@ svg.mdc-button__icon {
   background-color: var(--mdc-theme-secondary, #6ebe2c);
 }
 
-@keyframes mdc-checkbox-fade-in-background-ufodew6 {
+@keyframes mdc-checkbox-fade-in-background-uxwy0lm {
   0% {
     border-color: rgba(0, 0, 0, 0.54);
     background-color: transparent;
@@ -3825,7 +3843,7 @@ svg.mdc-button__icon {
     background-color: var(--mdc-theme-secondary, #6ebe2c);
   }
 }
-@keyframes mdc-checkbox-fade-out-background-ufodew6 {
+@keyframes mdc-checkbox-fade-out-background-uxwy0lm {
   0%, 80% {
     border-color: #6ebe2c;
     /* @alternate */
@@ -3840,10 +3858,10 @@ svg.mdc-button__icon {
   }
 }
 .mdc-checkbox--anim-unchecked-checked .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background, .mdc-checkbox--anim-unchecked-indeterminate .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background {
-  animation-name: mdc-checkbox-fade-in-background-ufodew6;
+  animation-name: mdc-checkbox-fade-in-background-uxwy0lm;
 }
 .mdc-checkbox--anim-checked-unchecked .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background, .mdc-checkbox--anim-indeterminate-unchecked .mdc-checkbox__native-control:enabled ~ .mdc-checkbox__background {
-  animation-name: mdc-checkbox-fade-out-background-ufodew6;
+  animation-name: mdc-checkbox-fade-out-background-uxwy0lm;
 }
 
 .mdc-checkbox__checkmark {
