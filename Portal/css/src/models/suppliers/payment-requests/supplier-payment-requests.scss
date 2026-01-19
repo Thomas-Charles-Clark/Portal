@@ -131,25 +131,58 @@ html {
 .dropdown-container-cell {
 	overflow: visible !important;
 	position: relative;
+	&.k-edit-cell {
+		z-index: 100000;
+	}
 }
 
 .k-grid {
-	table {
-		/*position: relative;
-		z-index: 1;*/
+	&.supplier-payment-requests-grid-container {
+		position: relative;
+		z-index: 1;
 
-		.k-edit-cell {
-			&.relative {
-				overflow: visible;
-				position: relative;
-			}
+		&.payment-plans {
+			z-index: 2;
 		}
 
-		thead {
-			&.k-grid-header {
-				.k-header {
-					font-weight: bold;
+		table {
+			.k-edit-cell {
+				&.relative {
+					overflow: visible;
+					position: relative;
 				}
+			}
+
+			thead {
+				&.k-grid-header {
+					.k-header {
+						font-weight: bold;
+						white-space: normal;
+						text-overflow: unset;
+					}
+				}
+			}
+		}
+	}
+
+	.command-column {
+		display: flex;
+		flex-direction: column;
+		gap: $m-gutter;
+
+		.k-button {
+			display: block;
+		}
+
+		.k-grid-Reject {
+			background-color: $red-100;
+			border-color: $red-800;
+			color: $red-500;
+
+			&:hover,
+			&:focus,
+			&:focus-within {
+				border-color: $red-800;
 			}
 		}
 	}
@@ -176,16 +209,17 @@ html {
 	.field-validation-error {
 		&.k-tooltip-validation {
 			display: flex;
-			justify-content: space-between;
+			justify-content: center;
 			align-items: center;
 			gap: $sm-gutter;
 			padding: $m-gutter;
-			margin: 0;
+			margin: 0 !important;
+			position: absolute;
+			top: 34px;
 
 			.k-i-warning {
 				font-size: 1.75rem;
 				margin: 0;
-				width: 2em;
 
 				&::before {
 					margin: 0;
@@ -198,6 +232,11 @@ html {
 
 
 td {
+	&.readonly {
+		background-color: tint-color($gray-600, 15%);
+		color: $white;
+	}
+
 	> .k-widget {
 		line-height: normal;
 		border: 0;
@@ -206,6 +245,12 @@ td {
 
 		.k-picker-wrap {
 			border-bottom: 0;
+		}
+
+		&.k-dropdown {
+			&.k-header {
+				position: relative;
+			}
 		}
 
 		.k-dropdown-wrap {
@@ -306,5 +351,11 @@ td {
 	}
 	.k-input {
 		padding: 0;
+	}
+}
+
+.k-animation-container {
+	.k-list-container.k-popup {
+		width: 420px !important;
 	}
 }

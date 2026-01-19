@@ -39,7 +39,6 @@
             },
             batch: true,
             type: "odata-v4",
-            content: 'json',
             transport: {
                 read: {
                     url: '/odata/PaymentRequests?$expand=Supplier,Currency'
@@ -49,28 +48,60 @@
                         return `/odata/PaymentRequests(${item.PaymentRequestID})?$expand=Supplier,Currency`
                     }
                 },//self.gridDataSourceUpdate,
-                batch: {
-                    url: function () {
-                        return '/odata/$batch'
-                    }
-                },
                 create: {
-                    url: function (item) {
-                        delete item.PaymentRequestID;
-                        return `/odata/PaymentRequests?$expand=Supplier,Currency`
+                    url: function (request) {
+
+
+                        return '/odata/PaymentRequests?$expand=Supplier,Currency'
+
                     }
                 },
+                batch: {
+                    url: '/odata/$batch'
+                },
+                //create: {
+                //    url: function (item) {
+                //        delete item.PaymentRequestID;
+                //        return `/odata/PaymentRequests?$expand=Supplier,Currency`
+                //    }
+                //},
                 destroy: {
                     url: function (item) {
                         return `/odata/PaymentRequests(${item.PaymentRequestID})?$expand=Supplier,Currency`
                     }
+                },
+                parameterMap: function (data, type) {
+
+                    if (type === "create") {
+
+                        data.models.forEach(item => {
+
+                            item.CurrencyID = item.Currency.CurrencyID;
+
+                            delete item.PaymentRequestID;
+                            delete item.Currency;
+                            delete item.Supplier;
+                            delete item.PaymentRequestStatus;
+                            delete item.RequestedByMember;
+                            delete item.Supplier;
+
+                        });
+                    }
+
+
+                    var result = kendo.data.transports["odata-v4"].parameterMap(data, type);
+
+                    console.log(type, data);
+
+                    return result;
                 }
             },
-            schema: $.extend({}, kendo.data.schemas.webapi, {
-                data: "Data",
-                total: "Total",
-                errors: "Errors",
-                aggregates: "Aggregates",
+            schema: $.extend({}, kendo.data.schemas['odata-v4'], {
+                //data: "Data",
+                //total: "Total",
+                //errors: "Errors",
+                //aggregates: "Aggregates",
+                errors: 'error',
                 model: {
                     id: 'PaymentRequestID',
                     fields: {
@@ -90,9 +121,6 @@
                             validation: {
                                 required: {
                                     message: 'You must specify a Status'
-                                },
-                                valid: {
-                                    message: 'Invalid Date'
                                 }
                             }
                         },
@@ -114,7 +142,6 @@
                         PaymentDueDT: {
                             type: 'date',
                             nullable: false,
-                            defaultValue: null,
                             validation: {
                                 required: {
                                     message: 'You must specify a Pay Date'
@@ -286,6 +313,9 @@
             field: 'WeekCommencing',
             title: 'Week Comm.',
             editable: false,
+            attributes: {
+                "class": "readonly"
+            },
             template: (e) => {
                 if (e.PaymentDueDT) {
                     return moment(e.PaymentDueDT).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY')
@@ -297,6 +327,9 @@
             field: 'RequestedByMemberID',
             title: 'Requested By',
             editable: false,
+            attributes: {
+                "class": "readonly"
+            },
             template: (e) => {
                 if (e.RequestedByMember) {
                     return e.RequestedByMember.FullName;
@@ -316,6 +349,9 @@
             title: 'Date Requested',
             width: 180,
             editable: false,
+            attributes: {
+                "class": "readonly"
+            },
             template: (e) => {
                 if (e.CreatedDT) {
                     return moment(e.CreatedDT).format('DD/MM/YYYY')
@@ -331,7 +367,9 @@
             title: 'Pay Date',
             width: 180,
             attributes: {
-                "class": "relative"
+                "class": "relative",
+                "required": true,
+                validationMessage: "You must specify a Pay Date"
             },
             template: (e) => {
                 if (e.PaymentDueDT) {
@@ -468,8 +506,9 @@
             field: 'CurrencyID',
             title: 'Currency',
             width: 100,
+            editable: false,
             attributes: {
-                "class": "dropdown-container-cell"
+                "class": "readonly"
             },
             template: (e) => {
                 if (e.Currency) {
@@ -519,9 +558,9 @@
             }
         }, {
             field: 'AmountInCurrency',
-            title: 'Amount (in Currency)',
+            title: 'Amount (Currency)',
             attributes: {
-                "class": "text-end"
+                /*"class": "text-end"*/ // This is not the way. So sayeth Sarah, 16/01/2026.
             },
             template: (e) => {
                 if (e.AmountInCurrency) {
@@ -538,8 +577,9 @@
             field: 'ExchangeRate',
             title: 'Ex. Rate',
             attributes: {
-                "class": "text-center"
+                "class": "text-center readonly",
             },
+            editable: false,
             template: (e) => {
                 if (e.Currency) {
                     if (e.Currency.SterlingExchangeRate == 1) {
@@ -553,9 +593,9 @@
             }
         }, {
             field: 'AmountInSterling',
-            title: 'Amount (in Sterling)',
+            title: 'Amount (Sterling)',
             attributes: {
-                "class": "text-end"
+                /*"class": "text-end"*/ // This is not the way. So sayeth Sarah, 16/01/2026.
             },
             template: (e) => {
                 if (e.AmountInCurrency) {
@@ -628,7 +668,7 @@
         }, {
             field: 'PurchaseOrderHeadIDs',
             title: 'Purchase Order(s)',
-            width: 360,
+            width: 200,
             attributes: {
                 "class": "relative"
             },
@@ -676,7 +716,7 @@
             //    }
             //},
             editor: (container, options) => {
-                $(`<input type="text" name='${options.field}' />`)
+                $(`<textarea type="text" name='${options.field}'></textarea>`)
                     .appendTo(container)
                     .kendoMultiSelect({
                         autoBind: true,
@@ -708,13 +748,30 @@
                             serverFiltering: true,
                             serverSorting: true,
                             serverPaging: true,
-                            sort: [{
-                                field: "CreatedDT", dir: "desc"
-                            }],
                             page: 1,
-                            pageSize: 10,
+                            pageSize: 40,
+                            sort: {
+                                field: 'CreatedDT',
+                                dir: 'desc'
+                            },
                             transport: {
-                                read: '/odata/PurchaseOrderHeads',
+                                read: {
+                                    url: '/odata/PurchaseOrderHeads',
+                                    //data: function () {
+                                    //    let identifier = paymentRequestStatusLockedTo.length == 1 && paymentRequestStatusLockedTo[0] == 7
+                                    //        ? ".payment-plans .k-multiselect input[data-role=multiselect]"
+                                    //        : ".other-statuses .k-multiselect input[data-role=multiselect]";
+
+                                    //    var ms = $(identifier).data("kendoMultiSelect");
+
+                                    //    return {
+                                    //        selectedIds: ms ? ms.value().length == 1
+                                    //            ? ms.value()[0].PurchaseOrderHeadID
+                                    //            : ms.value().join(",")
+                                    //            : ""
+                                    //    };
+                                    //},
+                                },
                                 parameterMap: (data, operation) => {
 
                                     //Generate parameters in odata v4 format
@@ -819,12 +876,12 @@
             }
         }, {
             title: " ",
-            width: "180px",
+            width: "100px",
             hidden: !window.canApprove(),
             attributes: {
-                "class": "text-center"
+                "class": "text-center command-column"
             },
-            command: {
+            command: [{
                 text: "Approve",
                 click: (event, sender) => {
                     let grid = $(event.delegateTarget).data("kendoGrid");
@@ -839,11 +896,20 @@
                         $(event.delegateTarget).find("td:eq(15)").find('input').select();
                     }, 0);
                 }
-            }
+            }, {
+                text: "Reject",
+                click: (event, sender) => {
+                    let grid = $(event.delegateTarget).data("kendoGrid");
+
+                    let dataItem = grid.dataItem(event.target.closest("tr"));
+
+                    dataItem.set('Rejected', true);
+                }
+            }]
         }, {
             hidden: !window.canApprove(),
             field: 'AmountApprovedInCurrency',
-            title: 'Amount Approved (in Currency)',
+            title: 'Amount Approved (Currency)',
             attributes: {
                 "class": "text-end"
             },
@@ -877,10 +943,11 @@
         }]
     };
 
-    self.createGridDefinition = (widget, paymentRequestStatusLockedTo = []) => {
+    self.createGridDefinition = (name, widget, paymentRequestStatusLockedTo = []) => {
         return {
             autoBind: true,
             widget: widget,
+            identifier: name,
             columns: self.createGridColumns(paymentRequestStatusLockedTo),
             data: self.createGridDataSource(paymentRequestStatusLockedTo?.length == 1 ? paymentRequestStatusLockedTo[0] : null),
             toolbar: self.gridToolbar,
@@ -900,30 +967,29 @@
             editable: true,
             edit: function (e) {
                 window.setTimeout(() => {
-                    let dropdown = e.container.find("[data-role=dropdownlist]").data("kendoDropDownList");
+
+                    let dropdown = $(e.container).find("[data-role=dropdownlist]").data("kendoDropDownList");
 
                     if (dropdown) {
                         dropdown.open();
                         return;
                     }
-                    
-                    let multiselect = e.container.find("[data-role=multiselect]").data("kendoMultiSelect");
 
-                    if (multiselect) {
-                        multiselect.open();
-                        return;
-                    }
+                    //let multiselect = $(e.container).find("[data-role=multiselect]").data("kendoMultiSelect");
+
+                    //if (multiselect) {
+                    //    multiselect.open();
+                    //    return;
+                    //}
+
 
                     let datePicker = e.container.find("[data-role=datepicker]").data("kendoDatePicker");
 
                     if (datePicker) {
                         datePicker.setOptions({
-                            //change: (event) => {
-                            //    e.sender.editCell($(event.container).closest('tr').find("td:eq(4)"));
-                            //},
                             close: (event) => {
-                                let grid = e.container.closest('.k-grid').data('kendoGrid');
-                                grid.editCell($(e.container).closest('tr').find("td:eq(4)"));
+                                console.log('close fired', event);
+                                e.sender.editCell($(e.container).closest('tr').find("td:eq(4)"));
                             }
                         });
 
@@ -936,15 +1002,32 @@
             },
             save: (data) => {
                 console.log('save', data);
+                if (Object.hasOwn(data.values, 'PaymentDueDT')) {
+                    window.setTimeout(() => {
+                        data.sender.editCell($(data.sender.table).find('td:eq(4)'));
+                    }, 0);
+                } else if (Object.hasOwn(data.values, 'SupplierCode')) {
+                    window.setTimeout(() => {
+                        data.sender.editCell($(data.sender.table).find('td:eq(6)'));
+                    })
+                } else if (Object.hasOwn(data.values, 'AmountInCurrency')) {
+                    window.setTimeout(() => {
+                        if (data.sender.options.identifier == 'paymentPlanGrid') {
+                            data.sender.editCell($(data.sender.table).find('td:eq(10)'));
+                        } else {
+                            data.sender.editCell($(data.sender.table).find('td:eq(9)'));
+                        }
+                    })
+                }
             }
-        }
+        };
     }
 
-    self.paymentPlanGridParams = self.createGridDefinition(self.paymentPlanGridWidget, [7]);
+    self.paymentPlanGridParams = self.createGridDefinition('paymentPlanGrid', self.paymentPlanGridWidget, [7]);
 
     self.paymentPlanGridParams.columns[9].filterable = false;
 
-    self.otherPaymentRequestStatusesGridParams = self.createGridDefinition(self.otherPaymentRequestStatusesGridWidget, [1, 2, 3, 4, 5, 6]);
+    self.otherPaymentRequestStatusesGridParams = self.createGridDefinition('otherPaymentRequestStatusesGrid', self.otherPaymentRequestStatusesGridWidget, [1, 2, 3, 4, 5, 6]);
 
     self.errors = new ko.validation.group([
 

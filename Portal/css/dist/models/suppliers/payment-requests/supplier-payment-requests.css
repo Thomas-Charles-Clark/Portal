@@ -389,17 +389,41 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   overflow: visible !important;
   position: relative;
 }
-
-.k-grid table {
-  /*position: relative;
-  z-index: 1;*/
+.dropdown-container-cell.k-edit-cell {
+  z-index: 100000;
 }
-.k-grid table .k-edit-cell.relative {
+
+.k-grid.supplier-payment-requests-grid-container {
+  position: relative;
+  z-index: 1;
+}
+.k-grid.supplier-payment-requests-grid-container.payment-plans {
+  z-index: 2;
+}
+.k-grid.supplier-payment-requests-grid-container table .k-edit-cell.relative {
   overflow: visible;
   position: relative;
 }
-.k-grid table thead.k-grid-header .k-header {
+.k-grid.supplier-payment-requests-grid-container table thead.k-grid-header .k-header {
   font-weight: bold;
+  white-space: normal;
+  text-overflow: unset;
+}
+.k-grid .command-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.k-grid .command-column .k-button {
+  display: block;
+}
+.k-grid .command-column .k-grid-Reject {
+  background-color: #f8d7da;
+  border-color: #58151c;
+  color: #dc3545;
+}
+.k-grid .command-column .k-grid-Reject:hover, .k-grid .command-column .k-grid-Reject:focus, .k-grid .command-column .k-grid-Reject:focus-within {
+  border-color: #58151c;
 }
 
 .k-grid-pager {
@@ -422,22 +446,27 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 
 .k-grid .field-validation-error.k-tooltip-validation {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem;
-  margin: 0;
+  margin: 0 !important;
+  position: absolute;
+  top: 34px;
 }
 .k-grid .field-validation-error.k-tooltip-validation .k-i-warning {
   font-size: 1.75rem;
   margin: 0;
-  width: 2em;
 }
 .k-grid .field-validation-error.k-tooltip-validation .k-i-warning::before {
   margin: 0;
   display: block;
 }
 
+td.readonly {
+  background-color: #828a91;
+  color: #fff;
+}
 td > .k-widget {
   line-height: normal;
   border: 0;
@@ -446,6 +475,9 @@ td > .k-widget {
 }
 td > .k-widget .k-picker-wrap {
   border-bottom: 0;
+}
+td > .k-widget.k-dropdown.k-header {
+  position: relative;
 }
 td > .k-widget .k-dropdown-wrap {
   border: 0;
@@ -514,5 +546,9 @@ td > .k-widget.k-multiselect .k-multiselect-wrap > .k-i-close {
 }
 .k-multiselect-clearable .k-input {
   padding: 0;
+}
+
+.k-animation-container .k-list-container.k-popup {
+  width: 420px !important;
 }
 /*# sourceMappingURL=supplier-payment-requests.css.map */

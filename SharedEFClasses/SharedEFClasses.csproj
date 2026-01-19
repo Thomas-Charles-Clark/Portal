@@ -675,12 +675,13 @@
     <Compile Include="Models\Parcel\ParcelDeliveryServiceSurcharge.cs" />
     <Compile Include="Models\PassGiftVoucher.cs" />
     <Compile Include="Models\PassMertexCurrencyCode.cs" />
-    <Compile Include="Models\Paying\PaymentDecision.cs" />
-    <Compile Include="Models\Paying\PaymentDecision_PaymentRequest.cs" />
-    <Compile Include="Models\Paying\PaymentRequest.cs" />
-    <Compile Include="Models\Paying\PaymentRequestStatus.cs" />
+    <Compile Include="Models\Payment\PaymentDecision.cs" />
+    <Compile Include="Models\Payment\PaymentDecision_PaymentRequest.cs" />
+    <Compile Include="Models\Payment\PaymentRequest.cs" />
+    <Compile Include="Models\Payment\PaymentRequestStatus.cs" />
     <Compile Include="Models\PaymentTerms.cs" />
     <Compile Include="Models\PaymentTermsType.cs" />
+    <Compile Include="Models\Payment\PaymentRequestUpdateDTO.cs" />
     <Compile Include="Models\Press\PressContact.cs" />
     <Compile Include="Models\Pricing\Price.cs" />
     <Compile Include="Models\ProductFilterGroup\ProductFilterGroup.cs" />

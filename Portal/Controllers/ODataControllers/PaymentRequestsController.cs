@@ -18,6 +18,8 @@ using Newtonsoft.Json;
 using Microsoft.AspNet.OData;
 using SharedEFClasses;
 using SharedEFClasses.Models.Payment;
+using Microsoft.AspNet.OData.Batch;
+using Unity.Interception.Utilities;
 
 namespace Portal.Controllers
 {
@@ -26,27 +28,14 @@ namespace Portal.Controllers
     {
         public PaymentRequestsController(PortalDbContext portalDb) : base(portalDb) { }
 
-        // GET: odata/TradeAccounts
-        [EnableQuery]
+		// GET: odata/PaymentRequests
+		[EnableQuery]
         public IQueryable<PaymentRequest> Get()
         {
             return PortalDb.PaymentRequests.AsQueryable();
         }
 
-        public async Task<IHttpActionResult> Post([FromBody]PaymentRequest entity)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            PortalDb.PaymentRequests.Add(entity);
-
-            await PortalDb.SaveChangesAsync();
-
-            return Created(entity);
-        }
-
+        [HttpPut]
         [EnableQuery]
         public async Task<IHttpActionResult> Put([FromODataUri] int key, [FromBody]PaymentRequest entity)
         {
@@ -75,7 +64,25 @@ namespace Portal.Controllers
             return Updated(entity);
         }
 
-        [AcceptVerbs("PATCH", "MERGE")]
+		[HttpPost]
+		[EnableQuery]
+		public async Task<IHttpActionResult> Post([FromBody]PaymentRequest entity)
+		{
+            var batchId = Request.GetODataBatchId();
+
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+            PortalDb.PaymentRequests.Add(entity);
+
+			await PortalDb.SaveChangesAsync();
+
+			return Created(entity);
+		}
+
+		[AcceptVerbs("PATCH", "MERGE")]
         public async Task<IHttpActionResult> Patch([FromODataUri] int key, Delta<PaymentRequest> patch)
         {
             object id;
@@ -104,7 +111,7 @@ namespace Portal.Controllers
             return Updated(originalEntity);
         }
 
-
+        [HttpDelete]
         [EnableQuery]
         public async Task<IHttpActionResult> Delete([FromODataUri] int key)
         {

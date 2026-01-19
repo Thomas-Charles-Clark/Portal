@@ -39,7 +39,7 @@ namespace Portal.Controllers
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
         public IQueryable<PurchaseOrderHead> GetPurchaseOrderHeads()
         {
-            return PortalDb.PurchaseOrderHeads.AsQueryable();
+                return PortalDb.PurchaseOrderHeads.AsQueryable();
         }
 
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
