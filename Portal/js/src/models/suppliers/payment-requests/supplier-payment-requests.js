@@ -41,74 +41,66 @@
             type: "odata-v4",
             transport: {
                 read: {
-                    url: '/odata/PaymentRequests?$expand=Supplier,Currency'
-                },//self.gridDataSourceRead,
+                    url: '/odata/PaymentRequests'
+                },
                 update: {
                     url: function (item) {
-                        return `/odata/PaymentRequests(${item.PaymentRequestID})?$expand=Supplier,Currency`
+                        return `/odata/PaymentRequests(${item.PaymentRequestID})`
                     }
-                },//self.gridDataSourceUpdate,
+                },
                 create: {
-                    url: function (request) {
-
-
-                        return '/odata/PaymentRequests?$expand=Supplier,Currency'
-
-                    }
+                    url: '/odata/PaymentRequests'
                 },
                 batch: {
-                    url: '/odata/$batch'
+                    url: '/odata/$batch',
+                    contentType: "multipart/mixed"
                 },
-                //create: {
-                //    url: function (item) {
-                //        delete item.PaymentRequestID;
-                //        return `/odata/PaymentRequests?$expand=Supplier,Currency`
-                //    }
-                //},
                 destroy: {
                     url: function (item) {
-                        return `/odata/PaymentRequests(${item.PaymentRequestID})?$expand=Supplier,Currency`
+                        return `/odata/PaymentRequests(${item.PaymentRequestID})`
                     }
                 },
-                parameterMap: function (data, type) {
+                parameterMap: function (options, type) {
 
-                    if (type === "create") {
+                    console.log(type, options);
 
-                        data.models.forEach(item => {
+                    //if (type != "read") {
 
-                            item.CurrencyID = item.Currency.CurrencyID;
+                    //    for (var i = 0; i < options.models.length; i++) {
+                    //        var item = options.models[i].length;
+                    //        item.CurrencyID = item.Currency.CurrencyID;
+                    //        item.RequestedByMemberID = item.RequestedByMember.RequestedByMemberID;
 
-                            delete item.PaymentRequestID;
-                            delete item.Currency;
-                            delete item.Supplier;
-                            delete item.PaymentRequestStatus;
-                            delete item.RequestedByMember;
-                            delete item.Supplier;
+                    //        delete item.PaymentRequestStatus;
+                    //        delete item.Currency;
+                    //        delete item.RequestedByMember;
+                    //        delete item.Supplier;
+                    //        delete item.PaymentRequestID;
+                    //    }
 
-                        });
-                    }
+                    //}
 
+                    //var result = kendo.data.transports["odata-v4"].parameterMap(options, type);
 
-                    var result = kendo.data.transports["odata-v4"].parameterMap(data, type);
-
-                    console.log(type, data);
-
-                    return result;
+                    return options;
                 }
             },
-            schema: $.extend({}, kendo.data.schemas['odata-v4'], {
-                //data: "Data",
-                //total: "Total",
-                //errors: "Errors",
-                //aggregates: "Aggregates",
-                errors: 'error',
+            error: (e) => {
+                console.error(e);
+            },
+            schema: {
+                error: 'error',
                 model: {
                     id: 'PaymentRequestID',
+                    hasChildren: 'PaymentRequestPurchaseOrderHeads',
+                    children: 'PaymentRequestPurchaseOrderHeads',
                     fields: {
-                        WeekCommencing: {
+                        WeekCommencingDate: {
                             type: 'date',
                             nullable: true,
                             editable: false,
+                            format: 'dd/MM/yyyy',
+                            defaultValue: moment(new Date()).weekdayWithStartWeekday(0, 1).toDate()
                         },
                         PaymentRequestID: {
                             type: 'number'
@@ -116,7 +108,6 @@
                         PaymentRequestStatusID: {
                             type: 'number',
                             nullable: true,
-                            editable: defaultPaymentRequestStatusId == null ? true : false,
                             defaultValue: defaultPaymentRequestStatusId,
                             validation: {
                                 required: {
@@ -126,21 +117,16 @@
                         },
                         PaymentRequestStatus: {
                             type: 'object',
-                            fields: {
-                                PaymentRequestStatusID: {
-                                    type: 'number'
-                                },
-                                Name: {
-                                    type: 'string'
-                                }
-                            },
-                            defaultValue: defaultPaymentRequestStatusId == null ? null : {
-                                PaymentRequestStatusID: 7,
-                                Name: 'Payment Plan'
+                            defaultValue: {
+                                PaymentRequestStatusID: defaultPaymentRequestStatusId ? defaultPaymentRequestStatusId : undefined,
+                                Name: defaultPaymentRequestStatusId ? "Payment Plan" : undefined
                             }
                         },
                         PaymentDueDT: {
                             type: 'date',
+                            format: 'dd/MM/yyyy',
+                            parseFormats: ["dd/MM/yyyy", "dd/MM/yy"],
+                            autoCorrectParts: true,
                             nullable: false,
                             validation: {
                                 required: {
@@ -151,32 +137,17 @@
                         RequestedByMemberID: {
                             type: 'number',
                             nullable: true,
-                            editable: false
+                            editable: false,
+                            defaultValue: getUserId()
                         },
-                        RequestedByMember: {
-                            type: 'object',
-                            fields: {
-                                RequestedByMemberID: {
-                                    type: 'number'
-                                },
-                                FullName: {
-                                    type: 'string',
-                                    defaultValue: getUserName()
-                                },
-                                Email: {
-                                    type: 'string'
-                                }
-                            },
-                            defaultValue: {
-                                RequestedByMemberID: getUserId(),
-                                FullName: getUserName(),
-                                Email: getUserEmail()
-                            }
+                        RequestedByMemberFullName: {
+                            type: 'string',
+                            editable: false,
+                            defaultValue: getUserName()
                         },
                         CurrencyID: {
                             type: 'number',
-                            nullable: true,
-                            editable: false,
+                            nullable: false,
                             validation: {
                                 required: {
                                     message: 'You must specify a Currency'
@@ -187,18 +158,20 @@
                             type: 'object',
                             fields: {
                                 CurrencyID: {
-                                    type: 'number'
-                                },
-                                Code: {
-                                    type: 'string'
+                                    type: 'number',
+                                    editable: false
                                 },
                                 Name: {
-                                    type: 'string'
-                                },
-                                Symbol: {
-                                    type: 'string'
+                                    type: 'string',
+                                    editable: false
                                 }
+                            },
+                            defaultValue: {
+
                             }
+                        },
+                        CurrencyName: {
+                            from: "Currency.Name"
                         },
                         SupplierCode: {
                             type: 'string',
@@ -212,18 +185,23 @@
                         Supplier: {
                             type: 'object',
                             fields: {
-                                Code: {
-                                    type: 'string',
-                                    editable: false
-                                },
-                                Name: {
-                                    type: 'string',
-                                    editable: false
-                                }
+                                Code: { type: 'string', editable: false },
+                                Name: { type: 'string', editable: false }
                             }
                         },
-                        PurchaseOrderHeadIDs: { type: 'object' },
-                        ProformaNumber: { type: 'string' },
+                        SupplierName: {
+                            from: "Supplier.Name"
+                        },
+                        PaymentRequestPurchaseOrderHeads: {
+                            defaultValue: [],
+                            fields: {
+                                PaymentRequestID: { type: 'number', editable: false },
+                                PurchaseOrderHeadID: { type: 'string', editable: false }
+                            }
+                        },
+                        ProformaNumber: {
+                            type: 'string'
+                        },
                         AmountInCurrency: {
                             type: 'number',
                             nullable: true,
@@ -231,30 +209,55 @@
                                 message: 'You must specify an Amount'
                             }
                         },
-                        AmountInSterling: { type: 'number' },
-                        ExchangeRate: {
+                        AmountInSterling: {
                             type: 'number',
                             editable: false
+                        },
+                        ExchangeRate: {
+                            type: 'number'
                         },
                         RequesterComments: { type: 'string' },
                         DeciderComments: { type: 'string' },
                         CreatedDT: {
                             type: 'date',
                             defaultValue: new Date(),
-                            editable: false
+                            editable: false,
+                            format: 'dd/MM/yyyy'
                         },
-                        ModifiedDT: { type: 'date' },
-                        DeletedDT: { type: 'date' },
+                        ModifiedDT: {
+                            type: 'date',
+                            format: 'dd/MM/yyyy'
+                        },
+                        DeletedDT: {
+                            type: 'date',
+                            format: 'dd/MM/yyyy'
+                        },
                         Deleted: { type: 'boolean' },
                         AmountApprovedInCurrency: {
                             type: 'number'
                         }
-                    }
+                    },
                 }
-            }),
+            },
+            errors: function (e) {
+                console.log(e);
+
+                // e.xhr contains the full response from the server
+                var response = JSON.parse(e.xhr.responseText);
+
+                var message = JSON.stringify(response.error, null, '\t');
+
+                self.busy(false);
+
+                window.showInfo('Errors', PR.prettyPrintOne(message));
+
+                // Revert changes in the grid if necessary
+                self.paymentPlanGridWidget().cancelChanges();
+                self.otherPaymentRequestStatusesGridWidget().cancelChanges();
+            },
             requestStart: (e) => {
-                self.busy(true);
-                if (e.type != 'create') {
+                //self.busy(true);
+                if (e.type != 'submit') {
                     if (e.sender.hasChanges()) {
                         e.preventDefault();
                         self.busy(false);
@@ -272,8 +275,11 @@
                     let model = e.items[0];
                     switch (e.field) {
                         case "Supplier":
-                            model.set("CurrencyID", model.Supplier.CurrencyID);
                             model.set("Currency", model.Supplier.Currency);
+                            break;
+                        case "Currency":
+                            model.set("CurrencyID", model.Currency.CurrencyID);
+                            model.set("ExchangeRate", model.Currency.SterlingExchangeRate);
                             break;
                         default: break;
                     }
@@ -285,7 +291,7 @@
                 }
             },
             requestEnd: (e) => {
-
+                console.log('requestEnd', e);
                 window.setTimeout(() => {
                     document.addEventListener("click", (e) => {
                         if (e.target.closest('.purchase-orders-popover') == null) {
@@ -310,7 +316,7 @@
 
     self.createGridColumns = (paymentRequestStatusLockedTo = []) => {
         return [{
-            field: 'WeekCommencing',
+            field: 'WeekCommencingDate',
             title: 'Week Comm.',
             editable: false,
             attributes: {
@@ -318,7 +324,14 @@
             },
             template: (e) => {
                 if (e.PaymentDueDT) {
-                    return moment(e.PaymentDueDT).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY')
+                    return moment(e.PaymentDueDT).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
+                } else {
+                    return '';
+                }
+            },
+            valueTemplate: (e) => {
+                if (e.PaymentDueDT) {
+                    return moment(e.PaymentDueDT).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
                 } else {
                     return '';
                 }
@@ -331,23 +344,23 @@
                 "class": "readonly"
             },
             template: (e) => {
-                if (e.RequestedByMember) {
-                    return e.RequestedByMember.FullName;
+                if (e.RequestedByMemberFullName) {
+                    return e.RequestedByMemberFullName;
                 } else {
                     return '';
                 }
             },
             valueTemplate: (e) => {
-                if (e.RequestedByMember) {
-                    return e.RequestedByMember.FullName;
+                if (e.RequestedByMemberFullName) {
+                    return e.RequestedByMemberFullName;
                 } else {
                     return '';
                 }
             }
         }, {
             field: 'CreatedDT',
-            title: 'Date Requested',
-            width: 180,
+            title: 'Created',
+            width: 130,
             editable: false,
             attributes: {
                 "class": "readonly"
@@ -365,7 +378,10 @@
         }, {
             field: 'PaymentDueDT',
             title: 'Pay Date',
-            width: 180,
+            width: 190,
+            format: 'dd/MM/yyyy',
+            parseFormats: ["dd/MM/yyyy", "dd/MM/yy"],
+            autoCorrectParts: true,
             attributes: {
                 "class": "relative",
                 "required": true,
@@ -505,56 +521,23 @@
         }, {
             field: 'CurrencyID',
             title: 'Currency',
-            width: 100,
             editable: false,
+            width: 100,
             attributes: {
                 "class": "readonly"
             },
             template: (e) => {
-                if (e.Currency) {
+                if (e.Currency.Code) {
                     return `${e.Currency.Name} (${e.Currency.Symbol})`;
                 } else {
                     return '';
                 }
             },
             editor: (container, options) => {
-                $(`<input type="text" required name='${options.field}' validationMessage="You must specify a Currency" />`)
-                    .appendTo(container)
-                    .kendoDropDownList({
-                        autoBind: true,
-                        autoWidth: true,
-                        value: options.model.CurrencyID,
-                        dataTextField: 'Name',
-                        dataValueField: 'CurrencyID',
-                        dataSource: new kendo.data.DataSource({
-                            type: 'odata-v4',
-                            sort: {
-                                field: "Name", dir: "asc"
-                            },
-                            transport: {
-                                read: '/odata/Currencies'
-                            }
-                        }),
-                        change: (e) => {
-                            let dataItem = e.sender.dataItem();
-                            options.model.set('CurrencyID', dataItem.CurrencyID);
-                            options.model.set('Currency', dataItem);
-                        },
-                        template: (e) => {
-                            if (e.CurrencyID) {
-                                return `${e.Name} (${e.Symbol})`;
-                            } else {
-                                return '';
-                            }
-                        },
-                        valueTemplate: (e) => {
-                            if (e.CurrencyID) {
-                                return `${e.Name} (${e.Symbol})`;
-                            } else {
-                                return '';
-                            }
-                        }
-                    });
+                $(`<span>${(options.model.Currency
+                    ? `${options.model.Currency.Name} (${options.model.Currency.Symbol})`
+                    : '')}</span>`)
+                    .appendTo(container);
             }
         }, {
             field: 'AmountInCurrency',
@@ -579,17 +562,15 @@
             attributes: {
                 "class": "text-center readonly",
             },
-            editable: false,
             template: (e) => {
-                if (e.Currency) {
-                    if (e.Currency.SterlingExchangeRate == 1) {
-                        return '1';
-                    } else {
-                        return formatNumber(e.Currency.SterlingExchangeRate, 6, 'en-GB')
-                    }
+                if (e.ExchangeRate) {
+                    return formatNumber(e.Currency.SterlingExchangeRate, 6, 'en-GB')
                 } else {
                     return '';
                 }
+            },
+            editor: (container, options) => {
+                $(`<span>${(options.model.ExchangeRate ? formatNumber(options.model.ExchangeRate, 6, 'en-GB') : '')}</span>`)
             }
         }, {
             field: 'AmountInSterling',
@@ -613,115 +594,81 @@
             title: 'Status',
             width: 220,
             attributes: {
-                "class": "dropdown-container-cell"
+                "class": `dropdown-container-cell ${(paymentRequestStatusLockedTo.length == 1 ? 'readonly' : '')}`
             },
             template: (e) => {
-                if (e.PaymentRequestStatus) {
+                if (e.PaymentRequestStatus.PaymentRequestStatusID) {
                     return `${e.PaymentRequestStatus.Name}`;
                 } else {
                     return '';
                 }
             },
             editor: (container, options) => {
-                $(`<input type="text" required name='${options.field}' validationMessage="You must specify a Status" />`)
-                    .appendTo(container)
-                    .kendoDropDownList({
-                        autoBind: true,
-                        autoWidth: true,
-                        value: options.model.PaymentRequestStatusID,
-                        dataTextField: 'Name',
-                        dataValueField: 'PaymentRequestStatusID',
-                        dataSource: new kendo.data.DataSource({
-                            type: 'odata-v4',
-                            sort: {
-                                field: "SortOrder", dir: "asc"
+                if (paymentRequestStatusLockedTo.length == 1) {
+                    $(`<span>${(options.model.PaymentRequestStatus ? options.model.PaymentRequestStatus.Name : '')}</span>`)
+                        .appendTo(container);
+                } else {
+                    $(`<input type="text" required name='${options.field}' validationMessage="You must specify a Status" />`)
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            autoBind: true,
+                            autoWidth: true,
+                            value: options.model.PaymentRequestStatusID,
+                            dataTextField: 'Name',
+                            dataValueField: 'PaymentRequestStatusID',
+                            dataSource: new kendo.data.DataSource({
+                                type: 'odata-v4',
+                                sort: {
+                                    field: "SortOrder", dir: "asc"
+                                },
+                                transport: {
+                                    read: paymentRequestStatusLockedTo?.length ?
+                                        `/odata/PaymentRequestStatuses?$filter=(${paymentRequestStatusLockedTo.map(p => {
+                                            return "PaymentRequestStatusID eq " + p.toString()
+                                        }).join(' or ')})`
+                                        : '/odata/PaymentRequestStatuses'
+                                }
+                            }),
+                            change: (e) => {
+                                let dataItem = e.sender.dataItem();
+                                options.model.set('PaymentRequestStatusID', dataItem.PaymentRequestStatusID);
+                                options.model.set('PaymentRequestStatus', dataItem);
                             },
-                            transport: {
-                                read: paymentRequestStatusLockedTo?.length ? 
-                                    `/odata/PaymentRequestStatuses?$filter=(${paymentRequestStatusLockedTo.map(p => {
-                                        return "PaymentRequestStatusID eq " + p.toString()
-                                    }).join(' or ')})`
-                                    : '/odata/PaymentRequestStatuses'
+                            template: (e) => {
+                                if (e.PaymentRequestStatusID) {
+                                    return e.Name;
+                                } else {
+                                    return '';
+                                }
+                            },
+                            valueTemplate: (e) => {
+                                if (e.PaymentRequestStatusID) {
+                                    return e.Name;
+                                } else {
+                                    return '';
+                                }
                             }
-                        }),
-                        change: (e) => {
-                            let dataItem = e.sender.dataItem();
-                            options.model.set('PaymentRequestStatusID', dataItem.PaymentRequestStatusID);
-                            options.model.set('PaymentRequestStatus', dataItem);
-                        },
-                        template: (e) => {
-                            if (e.PaymentRequestStatusID) {
-                                return e.Name;
-                            } else {
-                                return '';
-                            }
-                        },
-                        valueTemplate: (e) => {
-                            if (e.PaymentRequestStatusID) {
-                                return e.Name;
-                            } else {
-                                return '';
-                            }
-                        }
-                    });
+                        });
+                }
             }
         }, {
-            field: 'PurchaseOrderHeadIDs',
+            field: 'PaymentRequestPurchaseOrderHeads',
             title: 'Purchase Order(s)',
             width: 200,
             attributes: {
                 "class": "relative"
             },
             template: (e) => {
-                if (e.PurchaseOrderHeadIDs) {
-                    let list = e.PurchaseOrderHeadIDs.map(i => i.PurchaseOrderHeadID);
-                    return list.join(', ');
-                } else {
-                    return '';
-                }
+                return e.PaymentRequestPurchaseOrderHeads.map(p => p.PurchaseOrderHeadID).join(", ");
             },
-            //template: (e) => {
-            //    if (e.PurchaseOrderHeadIDs) {
-            //        let list = document.createElement('ul');
-            //        list.setAttribute('role', 'listbox');
-            //        list.setAttribute('deselectable', 'on');
-            //        list.classList.add('k-reset');
-            //        e.PurchaseOrderHeadIDs.forEach(p => {
-            //            let li = document.createElement('li');
-
-            //            li.classList.add('k-button');
-
-            //            let s1 = document.createElement('span');
-            //            s1.setAttribute('deselectable', 'on');
-            //            s1.innerHTML = p.PurchaseOrderHeadID;
-
-            //            let s2 = document.createElement('span');
-            //            s2.setAttribute('unselectable', 'on');
-            //            s2.setAttribute('aria-label', 'delete');
-            //            s2.classList.add('k-select');
-
-            //            let s3 = document.createElement('span');
-            //            s3.classList.add('k-icon');
-            //            s3.classList.add('k-i-close');
-
-            //            li.appendChild(s1);
-            //            li.appendChild(s2);
-            //            s2.appendChild(s3);
-
-            //            list.appendChild(li);
-            //        });
-            //        return list.outerHTML;
-            //    } else {
-            //        return '';
-            //    }
-            //},
             editor: (container, options) => {
                 $(`<textarea type="text" name='${options.field}'></textarea>`)
                     .appendTo(container)
                     .kendoMultiSelect({
                         autoBind: true,
                         autoWidth: true,
-                        value: options.model.PurchaseOrderHeadIDs ?? [],
+                        valuePrimitive: false,
+                        value: options.model.PaymentRequestPurchaseOrderHeads,
                         dataTextField: 'PurchaseOrderHeadID',
                         dataValueField: 'PurchaseOrderHeadID',
                         filter: 'startswith',
@@ -730,9 +677,9 @@
                             itemHeight: 34,
                             mapValueTo: 'dataItem',
                             valueMapper: (options) => {
-                                if (options.value) {
+                                if (options.value && options.value.length && options.value[0] != '') {
                                     $.ajax({
-                                        url: `/odata/PurchaseOrderHeads/Default.PurchaseOrderHeadValueMapper(purchaseOrderHeadIds='${options.value || "null"}')`,
+                                        url: `/odata/PurchaseOrderHeads/Default.PurchaseOrderHeadValueMapper(purchaseOrderHeadIds='${options.value.join(',') || "null"}')`,
                                         type: 'GET',
                                         success: function (data) {
                                             options.success(data.value);
@@ -753,6 +700,22 @@
                             sort: {
                                 field: 'CreatedDT',
                                 dir: 'desc'
+                            },
+                            dataTextField: 'PurchaseOrderHeadID',
+                            dataValueField: 'PurchaseOrderHeadID',
+                            schema: {
+                                parse: (response) => {
+                                    let items = [];
+                                    for (var i = 0; i < response.value.length; i++) {
+                                        var item = {
+                                            PaymentRequestID: options.model.PaymentRequestID,
+                                            PurchaseOrderHeadID: response.value[i].PurchaseOrderHeadID
+                                        };
+                                        items.push(item);
+                                    }
+                                    response.value = items;
+                                    return response;
+                                }
                             },
                             transport: {
                                 read: {
@@ -791,7 +754,7 @@
                             },
                         }),
                         change: function (e) {
-
+                            console.log('change', e);
                         },
                         template: (e) => {
                             if (e.PurchaseOrderHeadID) {
@@ -898,6 +861,7 @@
                 }
             }, {
                 text: "Reject",
+                "class": 'btn btn-danger',
                 click: (event, sender) => {
                     let grid = $(event.delegateTarget).data("kendoGrid");
 
@@ -998,11 +962,12 @@
                 }, 0);
             },
             dataBound: (e) => {
-
+                console.log('dataBound', e);
             },
             save: (data) => {
                 console.log('save', data);
                 if (Object.hasOwn(data.values, 'PaymentDueDT')) {
+                    
                     window.setTimeout(() => {
                         data.sender.editCell($(data.sender.table).find('td:eq(4)'));
                     }, 0);

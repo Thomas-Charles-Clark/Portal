@@ -1769,6 +1769,7 @@
     <Content Include="js\src\lib\kendo\kendo.2018.3.1017.all.js" />
     <Content Include="js\src\lib\kendo\kendo.2023.1.314.all.js" />
     <Content Include="js\src\lib\kendo\kendo.aspnetmvc.js" />
+    <Content Include="js\src\lib\kendo\telerik-license-2025.js" />
     <Content Include="js\src\lib\knockout\knockout-3.5.0.js" />
     <Content Include="js\src\lib\knockout\knockout-extensions.js" />
     <Content Include="js\src\lib\knockout\knockout-fast-foreach.js" />
@@ -6505,6 +6506,7 @@
     <Content Include="Views\Shared\Components\_MenuNotifications.cshtml" />
     <Content Include="Views\Shared\Modals\_ImageModalNew.cshtml" />
     <Content Include="Views\Shared\_Common.cshtml" />
+    <Content Include="Views\Shared\_Layout-New-2026.cshtml" />
     <None Include="Web References\EU_EORI_Lookup\validation.wsdl" />
     <None Include="Web References\EU_EORI_Lookup\validation.xsd">
       <SubType>Designer</SubType>

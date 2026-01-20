@@ -678,10 +678,12 @@
     <Compile Include="Models\Payment\PaymentDecision.cs" />
     <Compile Include="Models\Payment\PaymentDecision_PaymentRequest.cs" />
     <Compile Include="Models\Payment\PaymentRequest.cs" />
+    <Compile Include="Models\Payment\PaymentCreationRequestDTO.cs" />
     <Compile Include="Models\Payment\PaymentRequestStatus.cs" />
     <Compile Include="Models\PaymentTerms.cs" />
     <Compile Include="Models\PaymentTermsType.cs" />
     <Compile Include="Models\Payment\PaymentRequestUpdateDTO.cs" />
+    <Compile Include="Models\Payment\PaymentRequest_PurchaseOrderHead.cs" />
     <Compile Include="Models\Press\PressContact.cs" />
     <Compile Include="Models\Pricing\Price.cs" />
     <Compile Include="Models\ProductFilterGroup\ProductFilterGroup.cs" />

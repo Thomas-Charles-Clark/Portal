@@ -275,9 +275,9 @@ namespace SharedEFClasses.Models.General
         [InverseProperty("Currency")]
 		public virtual ICollection<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSetRecords { get; set; }
 
-		[JsonIgnore]
-		[InverseProperty("Currency")]
-		public virtual ICollection<PaymentRequest> PaymentRequests { get; set; }
+		//[JsonIgnore]
+		//[InverseProperty("Currency")]
+		//public virtual ICollection<PaymentRequest> PaymentRequests { get; set; }
 	}
 
     public class Language

@@ -20,6 +20,8 @@ using SharedEFClasses;
 using SharedEFClasses.Models.Payment;
 using Microsoft.AspNet.OData.Batch;
 using Unity.Interception.Utilities;
+using System.Web.Http.Results;
+using System.Web.DynamicData;
 
 namespace Portal.Controllers
 {
@@ -70,16 +72,16 @@ namespace Portal.Controllers
 		{
             var batchId = Request.GetODataBatchId();
 
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            PortalDb.PaymentRequests.Add(entity);
+            var creationResult = PortalDb.PaymentRequests.Add(entity);
 
 			await PortalDb.SaveChangesAsync();
 
-			return Created(entity);
+			return Created(creationResult);
 		}
 
 		[AcceptVerbs("PATCH", "MERGE")]

@@ -3,7 +3,6 @@
 	ViewBag.Title = "Supplier Payment Requests";
 }
 @section styles {
-	@Styles.Render("~/bundles/css/kendo-custom")
 	@Styles.Render("~/bundles/css/generic-forms")
 	@Styles.Render("~/bundles/css/supplier-payment-requests")
 	@Styles.Render("~/bundles/css/tempus-dominus")
@@ -357,8 +356,22 @@
 				<!-- ko template: { name: 'credit-control-quantity-value-dropdown-container', data: filters } --><!-- /ko -->
 			</div>
 		</div>*@
-		<div class="supplier-payment-requests-grid-container payment-plans" data-bind="kendoGrid: paymentPlanGridParams" class="mb-3 z-2"></div>
-		<div class="supplier-payment-requests-grid-container other-statuses" data-bind="kendoGrid: otherPaymentRequestStatusesGridParams" class="mb-3 z-1"></div>
+		<div class="card mx-3">
+			<div class="card-body">
+				<h4 class="my-0 mb-3">
+					Payment Plans
+				</h4>
+				<div class="supplier-payment-requests-grid-container payment-plans" data-bind="kendoGrid: paymentPlanGridParams" class="mb-3 z-2"></div>
+			</div>
+		</div>
+		<div class="card m-3">
+			<div class="card-body">
+				<h4 class="my-0 mb-3">
+					Other Payments
+				</h4>
+				<div class="supplier-payment-requests-grid-container other-statuses" data-bind="kendoGrid: otherPaymentRequestStatusesGridParams" class="mb-3 z-1"></div>
+			</div>
+		</div>
 		<div id="notes-container" class="card">
 			<div class="card-body">
 				<p class="notes">

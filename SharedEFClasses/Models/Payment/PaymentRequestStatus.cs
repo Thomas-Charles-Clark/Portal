@@ -29,6 +29,7 @@ namespace SharedEFClasses.Models.Payment
 		[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
 		public bool Deleted { get; set; }
 
+		[NotMapped]
 		[JsonIgnore]
 		public virtual ICollection<PaymentRequest> PaymentRequests { get; set; }
 	}

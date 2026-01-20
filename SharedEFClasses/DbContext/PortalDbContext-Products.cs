@@ -901,7 +901,43 @@ namespace SharedEFClasses.Models
 
             results.AddRange(standardResults);
 
-            cmd.CommandText = "[portal].[Product_Search_DiscontinuedHint]";
+			cmd.CommandText = "[portal].[Product_Search_ReplacementProductHint]";
+
+			cmd.Parameters.Clear();
+
+			cmd.Parameters.Add(new SqlParameter("@SearchTerm", objSearch.searchTerm ?? (object)DBNull.Value));
+
+			var replacementResults = new List<ProductSearchKeyword>();
+
+			try
+			{
+				this.Database.Connection.Open();
+				// Run the sproc 
+				var reader = cmd.ExecuteReader();
+
+                replacementResults = ((IObjectContextAdapter)this)
+					.ObjectContext
+					.Translate<ProductSearchKeyword>(reader).ToList();
+			}
+			catch (SqlException e)
+			{
+				PortalFramework.LogErrorToDatabase(e);
+				throw e;
+			}
+			finally
+			{
+				this.Database.Connection.Close();
+			}
+
+			replacementResults.ForEach(c =>
+			{
+				c.Type = "Replacement";
+				c.Suggestion = $"{c.Suggestion}";
+			});
+
+			results.AddRange(replacementResults);
+
+			cmd.CommandText = "[portal].[Product_Search_DiscontinuedHint]";
 
             cmd.Parameters.Clear();
 

@@ -142,8 +142,8 @@ namespace SharedEFClasses.Models.Mertex
             }
 		}
 
-		[JsonIgnore]
-		[InverseProperty("Supplier")]
-		public virtual ICollection<PaymentRequest> PaymentRequests { get; set; }
+		//[JsonIgnore]
+		//[InverseProperty("Supplier")]
+		//public virtual ICollection<PaymentRequest> PaymentRequests { get; set; }
 	}
 }

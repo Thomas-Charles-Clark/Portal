@@ -653,6 +653,7 @@ namespace SharedEFClasses.Models
         public virtual DbSet<PaymentDecision_PaymentRequest> PaymentDecision_PaymentRequests { get; set; }
         public virtual DbSet<PaymentRequest> PaymentRequests { get; set; }
         public virtual DbSet<PaymentRequestStatus> PaymentRequestStatuses { get; set; }
+        public virtual DbSet<PaymentRequest_PurchaseOrderHead> PaymentRequest_PurchaseOrderHeads { get; set; }
 
         #endregion
 

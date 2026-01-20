@@ -153,6 +153,9 @@ namespace Portal
             odataBuilder.EntitySet<Company>("Companies");
             odataBuilder.EntitySet<PaymentRequestStatus>("PaymentRequestStatuses");
 			odataBuilder.EntitySet<PaymentRequest>("PaymentRequests");
+
+            var paymentRequests = odataBuilder.EntityType<PaymentRequest>();
+
 			odataBuilder.EntitySet<PurchaseOrderHead>("PurchaseOrderHeads");
 
 			// This because it's not mapped to SQL and has the [NotMapped] attribute
@@ -180,8 +183,12 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_DeliveryType)).AddProperty(typeof(Mertex_DeliveryType).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SupplierLive)).AddProperty(typeof(SupplierLive).GetProperty("AddressDisplaySingleLine"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(PaymentRequest)).AddProperty(typeof(PaymentRequest).GetProperty("AmountApprovedInCurrency"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(PaymentRequest)).AddProperty(typeof(PaymentRequest).GetProperty("PaymentRequestStatusName"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(PaymentRequest)).AddProperty(typeof(PaymentRequest).GetProperty("RequestedByMemberFullName"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(PaymentRequest)).AddProperty(typeof(PaymentRequest).GetProperty("SupplierName"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(PaymentRequest)).AddProperty(typeof(PaymentRequest).GetProperty("CurrencyName"));
 
-			var purchaseOrderHeadValueMapperFunction = odataBuilder.EntityType<PurchaseOrderHead>()
+            var purchaseOrderHeadValueMapperFunction = odataBuilder.EntityType<PurchaseOrderHead>()
 				.Collection
 				.Function("PurchaseOrderHeadValueMapper")
 				.ReturnsCollectionFromEntitySet<PurchaseOrderHead>("PurchaseOrderHeads");
@@ -1037,7 +1044,7 @@ namespace Portal
 
             config.MapODataServiceRoute(routeName: "OData", routePrefix: "odata", model: odataBuilder.GetEdmModel(), odataBatchHandler);
 
-            config.Select().Expand().Filter().OrderBy().MaxTop(500).Count();
+            config.Select().Expand().Filter().OrderBy().MaxTop(null).Count();
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",

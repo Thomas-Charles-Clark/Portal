@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using SharedEFClasses.Models.Payment;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -93,5 +97,9 @@ namespace SharedEFClasses.Models.Mertex
 
         [Column("EmailedToMylandsDT")]
         public DateTime? EmailedToMylandsDT { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("PurchaseOrderHead")]
+        public virtual ICollection<PaymentRequest_PurchaseOrderHead> PaymentRequests { get; set; }
     }
 }

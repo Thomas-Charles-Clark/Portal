@@ -416,14 +416,20 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 }
 .k-grid .command-column .k-button {
   display: block;
+  width: 100%;
+  line-height: 2em;
+}
+.k-grid .command-column .k-button span {
+  position: relative;
+  top: -1px;
 }
 .k-grid .command-column .k-grid-Reject {
   background-color: #f8d7da;
-  border-color: #58151c;
+  border-color: #f8d7da;
   color: #dc3545;
 }
 .k-grid .command-column .k-grid-Reject:hover, .k-grid .command-column .k-grid-Reject:focus, .k-grid .command-column .k-grid-Reject:focus-within {
-  border-color: #58151c;
+  background-color: #f1d1d3;
 }
 
 .k-grid-pager {
@@ -437,8 +443,7 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 }
 
 #notes-container {
-  width: 98%;
-  margin: 0 auto;
+  margin: 0 1em;
 }
 #notes-container p:last-of-type {
   margin-bottom: 0;
@@ -536,9 +541,8 @@ td > .k-widget.k-multiselect .k-multiselect-wrap > .k-i-close {
 
 .supplier-payment-requests-grid-container {
   border: 1px solid #ced4da;
-  width: calc(100% - 2em);
+  width: 100%;
   margin: 0 auto;
-  margin-bottom: 1rem;
 }
 
 .k-multiselect-clearable.k-multiselect {

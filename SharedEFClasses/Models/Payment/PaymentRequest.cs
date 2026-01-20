@@ -1,4 +1,6 @@
-﻿using SharedEFClasses.Models.General;
+﻿using Newtonsoft.Json;
+
+using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Mertex;
 
 using System;
@@ -41,6 +43,8 @@ namespace SharedEFClasses.Models.Payment
 
 		public DateTime PaymentDueDT { get; set; }
 
+		public DateTime WeekCommencingDate { get; set; }
+
 		public DateTime CreatedDT { get; set; }
 
 		public DateTime? ModifiedDT { get; set; }
@@ -50,19 +54,42 @@ namespace SharedEFClasses.Models.Payment
 		[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
 		public bool Deleted { get; set; }
 
+		[JsonIgnore]
+		[NotMapped]
 		[ForeignKey("PaymentRequestStatusID")]
 		public virtual PaymentRequestStatus PaymentRequestStatus { get; set; }
 
-		[ForeignKey("RequestedByMemberID")]
-		public virtual Member RequestedByMember { get; set; }
+		//[JsonIgnore]
+		//[NotMapped]
+		//[ForeignKey("RequestedByMemberID")]
+		//public virtual Member RequestedByMember { get; set; }
 
-		[ForeignKey("CurrencyID")]
-		public virtual Currency Currency { get; set; }
+		//[JsonIgnore]
+		//[NotMapped]
+		//[ForeignKey("CurrencyID")]
+		//public virtual Currency Currency { get; set; }
 
-		[ForeignKey("SupplierCode")]
-		public virtual SupplierLive Supplier { get; set; }
+		//[JsonIgnore]
+		//[NotMapped]
+		//[ForeignKey("SupplierCode")]
+		//public virtual SupplierLive Supplier { get; set; }
+
+		[InverseProperty("PaymentRequest")]
+		public virtual ICollection<PaymentRequest_PurchaseOrderHead> PaymentRequestPurchaseOrderHeads { get; set; }
 
 		[NotMapped]
 		public decimal? AmountApprovedInCurrency { get; set; }
+
+		[NotMapped]
+		public string PaymentRequestStatusName { get; set; }
+
+		[NotMapped]
+		public string RequestedByMemberFullName { get; set; }
+
+		[NotMapped]
+		public string SupplierName { get; set; }
+
+		[NotMapped]
+		public string CurrencyName { get; set; }
 	}
 }

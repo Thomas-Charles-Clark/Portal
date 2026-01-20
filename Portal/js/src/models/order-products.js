@@ -2869,6 +2869,12 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                         li.addClass('list-group-item-success li-search');
                         break;
 
+                    case 'Replacement':
+                        li = $("<li style='pointer-events: none;'>");
+                        div = li.append(`<div class='ui-menu-item-wrapper'>${item.label}<span class='type'>${item.extraLabel}</span></div>`);
+                        li.addClass('list-group-item-warning li-search');
+                        break;
+
                     case 'Disallowed':
                         li = $("<li style='pointer-events: none;'>");
                         div = li.append(`<div class='ui-menu-item-wrapper'>${item.label}<span class='type'>${item.extraLabel}</span></div>`);

@@ -476,6 +476,10 @@ namespace Portal
 					  $"{jsPrefix}/lib/kendo/kendo.2023.1.314.all{jsSuffix}"
 				));
 
+			bundles.Add(new ScriptBundle("~/bundles/js/telerik-license").Include(
+					  $"{jsPrefix}/lib/kendo/telerik-license-2025{jsSuffix}"
+				));
+
 			bundles.Add(new ScriptBundle("~/bundles/js/popper").Include(
                       $"{jsPrefix}/lib/popper-2.11.6/popper-2.11.6{jsSuffix}"
                 ));
