@@ -194,7 +194,8 @@ namespace Portal
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/translations").Include(
-                        $"{cssPrefix}/models/translations{cssSuffix}"
+                        $"{cssPrefix}/models/translations/translations-dashboard{cssSuffix}",
+                        $"{cssPrefix}/models/translations/translations{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/marketing-messages").Include(
@@ -445,6 +446,11 @@ namespace Portal
 			bundles.Add(new StyleBundle("~/bundles/css/supplier-payment-requests").Include(
                     $"{cssPrefix}/models/full-width-app{cssSuffix}",
                     $"{cssPrefix}/models/suppliers/payment-requests/supplier-payment-requests{cssSuffix}"
+			));
+
+			bundles.Add(new StyleBundle("~/bundles/css/supplier-payment-approvals").Include(
+					$"{cssPrefix}/models/full-width-app{cssSuffix}",
+					$"{cssPrefix}/models/suppliers/payment-approvals/supplier-payment-approvals{cssSuffix}"
 			));
 
 			//  
@@ -712,7 +718,8 @@ namespace Portal
 
             bundles.Add(new ScriptBundle("~/bundles/js/translations").Include(
                     $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                    $"{jsPrefix}/models/translations-base{jsSuffix}"
+                    $"{jsPrefix}/models/translations/translations-dashboard-pod{jsSuffix}",
+                    $"{jsPrefix}/models/translations/translations{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/product-delivery").Include(
@@ -1048,8 +1055,16 @@ namespace Portal
 						$"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payment-requests/supplier-payment-requests{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payment-requests/supplier-payment-requests-filters{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payment-requests/supplier-payment-request{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payment-requests/supplier-payment-decision{jsSuffix}"
+						$"{jsPrefix}/models/suppliers/payment-requests/supplier-payment-request{jsSuffix}"
+				));
+
+			bundles.Add(new ScriptBundle("~/bundles/js/supplier-payment-approvals").Include(
+						$"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payment-approvals/supplier-payment-approvals{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payment-approvals/supplier-payment-approvals-filters{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payment-approvals/supplier-payment-approval{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payment-approvals/supplier-payment-approvals-basket{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payment-approvals/supplier-payment-decision{jsSuffix}"
 				));
 
 			foreach (var b in BundleTable.Bundles)

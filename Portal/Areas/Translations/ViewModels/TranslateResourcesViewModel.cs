@@ -4,6 +4,7 @@ using Portal.Models;
 using Portal.ViewModels;
 using SharedEFClasses;
 using SharedEFClasses.Models;
+using SharedEFClasses.Models.Translations;
 using SharedEFClasses.Models.General;
 
 using System;
@@ -17,6 +18,8 @@ namespace Portal.Areas.Translations.ViewModels
         public string LanguageCode { get; set; }
         public byte? LanguageID { get; set; }
         public bool? Approval { get; set; }
+
+        public IEnumerable<Translation_DashboardResult> DashboardPods { get; set; }
 
         public TranslateResourcesViewModel(
             string languageCode,
@@ -37,6 +40,11 @@ namespace Portal.Areas.Translations.ViewModels
 				{
                     LanguageID = db.Languages.FirstOrDefault(l => l.Deleted == false && l.Code == languageCode)?.LanguageID;
 				}
+
+                DashboardPods = db.Translation_Dashboard_Select(new PassTranslationDashboardDTO()
+                {
+                    LanguageID = LanguageID
+                });
             }
         }
     }

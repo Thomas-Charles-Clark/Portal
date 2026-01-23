@@ -17,8 +17,8 @@
 	@Scripts.Render("~/bundles/js/tempus-dominus")
 
 	<script type="text/javascript">
-		window.canApprove = () => {
-			return @(Model.CanUserMakePaymentDecisions.ToString().ToLowerInvariant());
+		window.getDashboard = () => {
+			return @Html.Raw(JsonConvert.SerializeObject(Model.Dashboard));
 		}
 	</script>
 
@@ -50,20 +50,6 @@
 			})
 		}
 	</script>
-
-	<script type="text/html" id="conversion-control">
-		<div class="converting-component">
-			<div data-bind="highlightNullField: highlightOnNull, component: { name: 'mdc-text-field-numeric-component', params: inputParams }"></div>
-			<div data-bind="component: { name: 'mdc-text-field-component', params: forexParams }"></div>
-			<div data-bind="component: { name: 'mdc-text-field-component', params: convertedParams }"></div>
-		</div>
-	</script>
-
-	<script type="text/javascript">
-		ko.components.register('conversion-control', {
-			template: { element: document.getElementById('conversion-control') }
-		});
-	</script>
 }
 @section modals {
 
@@ -75,38 +61,6 @@
 		</span>
 	</h2>
 }
-
-<script type="text/html" id="grid-row-template">
-	<tr data-bind="attr: { 'data-uid': uid }">
-		<td>
-			<div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: createdDateParams }"></div>
-		</td>
-		<td>
-			<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: supplierParams }"></div>
-		</td>
-		<td>
-			<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyParams }"></div>
-		</td>
-		<td>
-			<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentRequestStatusParams }"></div>
-		</td>
-		<td>
-			<span data-bind="text: ko.unwrap(self.requestedByMember)?.FullName"></span>
-		</td>
-		<td class="purchase-orders">
-			@*<span data-bind="html: purchaseOrdersLabel, actualBootstrapPopover: { details: bootstrapPopoverDetails }"></span>*@
-		</td>
-		<td>
-			@*<span data-bind="text: ProformaNumber"></span>*@
-		</td>
-		<td>
-			<div data-bind="component: { name: 'conversion-control', params: amountParams }"></div>
-		</td>
-		<td>
-			@*<span data-bind="html: Comments"></span>*@
-		</td>
-	</tr>
-</script>
 
 <div class="blocker" data-bind="flexFadeVisible: busy">
 	<div class="loading-spinner"></div>
@@ -167,222 +121,40 @@
 		</div>
 	</sidebar>
 	<main id="supplier-payment-requests-main">
-		<div id="totals-wrapper">
-			<div class="card">
-				<div class="card-body">
-					<table id="totals-requested-approved" class="table">
-						<colgroup>
-							<col />
-							<col />
-							<col />
-							<col style="width: 160px;" />
-							<col />
-							<col />
-						</colgroup>
-						<thead>
-							<tr>
-								<th colspan="6" class="text-center fs-5 mb-0 p-2">
-									Requested
-								</th>
-							</tr>
-							<tr>
-								<th>
-									Total Requested
-								</th>
-								<th>
-									Currency
-								</th>
-								<th>
-									Sterling
-								</th>
-								<th>
-									Total Approved
-								</th>
-								<th>
-									Currency
-								</th>
-								<th>
-									Sterling
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>
-									Euro (€)
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(5000, 2, 'fr-FR', 'EUR')"></span>
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(4000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-								<td></td> @* Total Approved Heading Spacer *@
-								<td>
-									<span data-bind="text: formatCurrency(3000, 2, 'fr-FR', 'EUR')"></span>
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									US Dollar ($)
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(1000, 2, 'en-US', 'USD')"></span>
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(800, 2, 'en-GB', 'GBP')"></span>
-								</td>
-								<td></td> @* Total Approved Heading Spacer *@
-								<td>
-									<span data-bind="text: formatCurrency(1000, 2, 'en-US', 'USD')"></span>
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(800, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									Sterling (£)
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-								<td></td> @* Total Approved Heading Spacer *@
-								<td>
-									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-							<tr>
-								@* Sterling Total Column *@
-								<td></td>
-								<td></td>
-								<td>
-									<span class="bold" data-bind="text: formatCurrency(6800, 2, 'en-GB', 'GBP')"></span>
-								</td>
-								<td></td>
-								<td></td>
-								<td>
-									<span class="bold" data-bind="text: formatCurrency(4800, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<div class="card">
-				<div class="card-body">
-					<table id="weekly-table" class="table">
-						<colgroup>
-							<col />
-							<col />
-						</colgroup>
-						<thead>
-							<tr>
-								<th colspan="2" class="text-center fs-5 mb-0 p-2">
-									Approved
-								</th>
-							</tr>
-							<tr>
-								<th>
-									Week Commencing
-								</th>
-								<td>
-									12/01/2025
-								</td>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<th>
-									Available for Approval
-								</th>
-								<td>
-									<span data-bind="text: formatCurrency(10000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-							<tr>
-								<th>
-									Target Spend
-								</th>
-								<td>
-									<span data-bind="text: formatCurrency(5000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-							<tr>
-								<th>
-									Spent
-								</th>
-								<td>
-									<span data-bind="text: formatCurrency(6800, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-							<tr>
-								<th>
-									Remaining
-								</th>
-								<td>
-									<span data-bind="text: formatCurrency(3200, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+		<div id="notes-container" class="card">
+			<div class="card-body">
+				<p>
+					Confirm with Sarah that the Totals don't really belong here: this page is now just for requesters to register their requests. Separation of Concerns is a core principle in software; the separation here is so clear-cut that having a separate page for approvals is the more cogent approach.
+				</p>
+				<p>
+					Should rows be editable by any requester? At the moment that is the case. Might we perhaps need to restrict editing - or even viewing - to only those requests which the currently-viewing user has created? That would seem to make sense, but then... possibly not. Might be the case that departments <i>should</i> see what other departments are requesting.
+				</p>
+				<p>
+					A further argument against having the approvals information displayed here: interdepartmental rivalry: "Why do Product Development always get their payments made in a timely fashion but Facilities don't?" sort of thing.
+				</p>
+				<p>
+					Experiment with background &amp; foreground colouring for one of the grids - probably Payment Plans, as it's the more important...? Colouring just the card elements, not the grids within them.
+				</p>
 			</div>
 		</div>
-		@*<div class="dashboard" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
-			<div class="dashboard-pod card" data-bind="css: { 'selected-pod': $parent.selectedPod() == $data }">
-				<div class="card-body" data-bind="class: Classes">
-					<h4 data-bind="html: Heading"></h4>
-					<div data-bind="html: Stats"></div>
-					<a href="#" class="stretched-link" data-bind="click: $parent.dashboardClick"></a>
-				</div>
-			</div>
-		</div>
-		<div id="selected-filter-pills">
-			<!-- ko template: { name: 'filter-pills-template', data: filters } --><!-- /ko -->
-			<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
-				<a class="btn btn-secondary dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
-					<i class="bi bi-list-check"></i>
-				</a>
-				<!-- ko template: { name: 'credit-control-quantity-value-dropdown-container', data: filters } --><!-- /ko -->
-			</div>
-		</div>*@
 		<div class="card mx-3">
 			<div class="card-body">
-				<h4 class="my-0 mb-3">
+				<h4 class="my-0">
 					Payment Plans
 				</h4>
-				<div class="supplier-payment-requests-grid-container payment-plans" data-bind="kendoGrid: paymentPlanGridParams" class="mb-3 z-2"></div>
+				<div style="display: none" 
+					 class="supplier-payment-requests-grid-container payment-plans mt-3 z-2" 
+					 data-bind="visible: true, kendoGrid: paymentPlanGridParams"></div>
 			</div>
 		</div>
 		<div class="card m-3">
 			<div class="card-body">
-				<h4 class="my-0 mb-3">
+				<h4 class="my-0">
 					Other Payments
 				</h4>
-				<div class="supplier-payment-requests-grid-container other-statuses" data-bind="kendoGrid: otherPaymentRequestStatusesGridParams" class="mb-3 z-1"></div>
-			</div>
-		</div>
-		<div id="notes-container" class="card">
-			<div class="card-body">
-				<p class="notes">
-					Finish grid functionality, build logic to calculate totals display (all currencies TOTAL totals, not totals from the current state of the grid display).
-				</p>
-				<p class="notes">
-					Investigate Purchase Order IDs multiselect misbehaviour - firing the valueMapper function sometimes with the wrong number of items!?
-				</p>
-				<p class="notes">
-					Create roles for this: contributor (certain people TBA) and decision maker (just Super Admin presently)
-				</p>
+				<div style="display: none" 
+					 class="supplier-payment-requests-grid-container other-statuses mt-3 z-1" 
+					 data-bind="visible: true, kendoGrid: otherPaymentRequestStatusesGridParams"></div>
 			</div>
 		</div>
 	</main>

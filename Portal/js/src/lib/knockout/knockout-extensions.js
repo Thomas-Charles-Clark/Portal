@@ -2308,6 +2308,7 @@ ko.bindingHandlers.mdcCheckboxComponent = {
         params.observable.formField = new mdc.formField.MDCFormField($(element).parent()[0]);
         params.observable.formField.input = params.observable.mdcCheckbox;
 
+
         if (params.useNativeValidation == false) {
             if (!params.observable.hasOwnProperty('isValid')) {
                 //console.warn('mdcTextFieldComponent observable has no isValid - did you forget some validation?', element);

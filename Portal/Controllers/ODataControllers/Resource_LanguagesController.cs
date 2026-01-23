@@ -13,6 +13,7 @@ using SharedEFClasses.Models.General;
 using Microsoft.AspNet.OData;
 using SharedEFClasses;
 using SharedEFClasses.Models.Resources;
+using System.Text.RegularExpressions;
 
 namespace Portal.Controllers
 {
@@ -38,7 +39,7 @@ namespace Portal.Controllers
         [EnableQuery]
         public IQueryable<Resource_Language> GetResource_Languages()
         {
-            return PortalDb.Resource_Languages.Where(p => p.LanguageID != 1).AsQueryable();
+            return PortalDb.Resource_Languages.Where(p => p.Resource.Deleted == false && p.LanguageID != 1).AsQueryable();
         }
 
         public IHttpActionResult Post([FromBody]Resource_Language entity)
@@ -95,7 +96,9 @@ namespace Portal.Controllers
 
                 dbrec.MemberID = entity.MemberID;
 
-				dbrec.Value = entity.Value;
+                dbrec.Value = Regex.Unescape(entity.Value);
+
+                dbrec.ModifiedDT = DateTime.Now;
 
                 await PortalDb.SaveChangesAsync();
             }
@@ -129,6 +132,15 @@ namespace Portal.Controllers
             }
             else
             {
+                patch.TryGetPropertyValue("Value", out object value);
+
+                if (value != null)
+                {
+                    var unescaped = Regex.Unescape((string)value);
+					patch.TrySetPropertyValue("Value", unescaped);
+				}
+
+                patch.TrySetPropertyValue("ModifiedDT", DateTime.Now);
                 patch.Patch(originalEntity);
                 await PortalDb.SaveChangesAsync();
             }

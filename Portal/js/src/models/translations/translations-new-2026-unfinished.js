@@ -1,7 +1,11 @@
-﻿var translationBaseViewModel = function () {
-    var self = this;
+﻿const translationsViewModel = ({
+
+} = {}) => {
+    var self = {};
 
     //#region Properties
+
+    self.ready = ko.observable(false);
 
     self.busy = ko.observable(false);
 
@@ -10,6 +14,61 @@
     self.unsavedChanges = ko.observable(false);
 
     self.data = ko.observableArray([]);
+
+    self.dashboardPods = ko.observableArray(window.getDashboardPods().map(d => translationsDashboardPodViewModel({
+        rec: d
+    })));
+
+    self.selectedPod = ko.observable(self.dashboardPods().length == 1 ? self.dashboardPods()[0] : undefined);
+
+    self.clearSelectedPod = () => {
+        self.selectedPod(undefined);
+        self.refresh();
+    }
+
+    self.testParams = {
+        observable: ko.observable(false),
+        checkboxId: `test-checkbox`,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    //#endregion
+
+    //#region Lifted methods
+
+    self.preventDashboardAnchorTagClickPropagation = () => {
+        document.querySelectorAll('.dashboard-pod a').forEach(a => {
+            a.addEventListener('click', (e) => {
+                e.stopPropagation();
+            })
+        });
+    }
+
+    self.refreshDashboard = () => {
+        fetch('/api/translateResources/refreshDashboard', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                languageId: self.languageId()
+            })
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                self.dashboardPods(data);
+                if (self.selectedPod()) {
+                    self.selectedPod(self.dashboardPods().find(dp => dp.LanguageID == self.selectedPod().LanguageID));
+                }
+                //window.setTimeout(() => {
+                //    self.preventDashboardAnchorTagClickPropagation();
+                //}, 0);
+            })
+            .catch(window.catchFetchError)
+    }
 
     //#endregion
 
@@ -64,24 +123,84 @@
 
     self.languageId.subscribe(function (newValue) {
         if (newValue) {
-            self.resourceGridSettings.widget().dataSource.query({
-                page: 1,
-                pageSize: self.resourceGridSettings.widget().dataSource.pageSize(),
-                filter: {
-                    field: 'LanguageID',
-                    operator: 'eq',
-                    value: newValue
-                }
-            });
+            if (self.selectedPod()) {
+                self.resourceGridSettings.widget().dataSource.query({
+                    page: 1,
+                    pageSize: self.resourceGridSettings.widget().dataSource.pageSize(),
+                    filter: {
+                        operator: 'and',
+                        filters: [{
+                            field: 'LanguageID',
+                            operator: 'eq',
+                            value: newValue
+                        }, {
+                            field: 'ApprovedByHuman',
+                            operator: 'eq',
+                            value: false
+                        }]
+                    }
+                });
+                self.resourceGridSettings.widget().setOptions({
+                    columns: self.resourceGridColumns(newValue)
+                });
+            } else {
+                self.resourceGridSettings.widget().dataSource.query({
+                    page: 1,
+                    pageSize: self.resourceGridSettings.widget().dataSource.pageSize(),
+                    filter: {
+                        field: 'LanguageID',
+                        operator: 'eq',
+                        value: newValue
+                    }
+                });
+                self.resourceGridSettings.widget().setOptions({
+                    columns: self.resourceGridColumns(null)
+                });
+            }
         }
     });
 
     self.translationEditor = function (container, options) {
-        $(`<div class="grow-wrap" data-replicated-value="${options.model.Translation}"><textarea data-bind="value: ${options.field}" maxlength="4000" onInput="this.parentNode.dataset.replicatedValue = this.value"></textarea></div>`).appendTo(container);
+        $(`<div class="grow-wrap" data-replicated-value="${dataItem.Translation}"><textarea data-bind="value: Translation" maxlength="4000" onInput="this.parentNode.dataset.replicatedValue = this.value"></textarea></div>`).appendTo($(`tr[data-uid="${dataItem.uid}"] td:nth-of-type(3)`));
     }
 
-    self.checkboxEditor = function (container, options) {
-        $(`<input type="checkbox" data-role="checkbox" class="k-checkbox k-checkbox-md k-rounded-md" checked="checked" />`).appendTo(container);
+    self.checkboxTemplate = function (dataItem) {
+
+        window.setTimeout(() => {
+            var mdcCheckbox = new mdc.checkbox.MDCCheckbox(document.querySelector(`#resource-${dataItem.ResourceID}-checkbox-wrapper`));
+        }, 100);
+
+        return $(`<div class="mdc-form-field">
+            <div id="resource-${dataItem.ResourceID}-checkbox-wrapper" class="mdc-checkbox">
+                <input class="mdc-checkbox__native-control" data-role="checkbox" class="mdc-checkbox__native-control" name="MemberID" checked="${dataItem.ApprovedByHuman ? 'checked' : ''}" />
+                <div class="mdc-checkbox__background">
+				    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+					    <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+				    </svg>
+				    <div class="mdc-checkbox__mixedmark"></div>
+			    </div>
+			    <div class="mdc-checkbox__ripple"></div>
+            </div>
+        </div>`).html();
+
+    }
+
+    self.checkboxEditor = (container, options) => {
+        $(`<div class="mdc-form-field">
+                <div id="resource-${options.model.ResourceID}-checkbox-wrapper" class="mdc-checkbox">
+                    <input class="mdc-checkbox__native-control" data-role="checkbox" class="mdc-checkbox__native-control" name="MemberID" checked="${options.model.ApprovedByHuman ? 'checked' : ''}" />
+                    <div class="mdc-checkbox__background">
+				        <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+					        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+				        </svg>
+				        <div class="mdc-checkbox__mixedmark"></div>
+			        </div>
+			        <div class="mdc-checkbox__ripple"></div>
+                </div>
+            </div>`).appendTo(container);
+        window.setTimeout(() => {
+            var mdcCheckbox = new mdc.checkbox.MDCCheckbox(document.querySelector(`#resource-${options.model.ResourceID}-checkbox-wrapper`));
+        }, 1);
     }
 
     self.resourceGridColumns = (language) => {
@@ -100,25 +219,38 @@
         }, {
             field: 'Resource.Value',
             title: 'English',
-            template: '#= Resource  ? Resource.Value : ""#', 
-            editable: () => language == null ? true : false,
+            template: (e) => {
+                if (e.Resource) {
+                    return e.Resource.Value ?? '';
+                } else {
+                    return '';
+                }
+            },
+            editable: () => false,
             sortable: language != null,
             filterable: language != null
         }, {
             field: 'Translation',
             title: (() => { return language ? language.Name : 'Translation' })(),
-            template: '#= Translation == null translationEditor? "<i>NULL</i>" : Translation #',
-            editable: () => language == null ? false : true,
-            type: 'string',
+            template: (e) => {
+                if (e.Translation) {
+                    return e.Translation;
+                } else {
+                    return '';
+                }
+            },
+            editor: (container, options) => {
+
+            },
             nullable: true,
             sortable: language != null,
             filterable: language != null
         }, {
-            field: 'MemberID',
+            field: 'ApprovedByHuman',
             title: ' ',
-            width: 50,
+            width: 56,
             editor: self.checkboxEditor,
-            template: '#= ModifiedBy ? `<i class="approval-check material-icons">check_box</i>` : `<i class="material-icons approval-check pending">check_box_outline_blank</i>` #',
+            template: self.checkboxTemplate,
             headerAttributes: {
                 'class': 'approved-filter'
             },
@@ -131,19 +263,21 @@
             filterable: language == null ? false : {
                 extra: false,
                 messages: {
-                    isTrue: '✔',
-                    isFalse: '✖'
+                    isTrue: '✔: Approved',
+                    isFalse: '✖: Not Yet Approved'
                 }
             }
         }]
     };
 
+    //self.readRequestBarrier = false; 
+
     self.resourceGridSettings = {
         autoBind: false,
         widget: ko.observable(),
         columns: self.resourceGridColumns(null),
-        useKOTemplates: true,
-        rowTemplate: 'translation-row-template',
+        //useKOTemplates: true,
+        //rowTemplate: 'translation-row-template',
         editable: "incell",
         toolbar: window.getToolbarOptions(), // "create"
         edit: function (e) {
@@ -205,24 +339,12 @@
                 },
                 destroy: {
                     url: function (data) {
-                        return '/odata/Resource_Languages(resourceId=' + data.resourceId + ',languageId=' + data.LanguageIdw + ')?$expand=Resource,ModifiedBy'
+                        return '/odata/Resource_Languages(resourceId=' + data.resourceId + ',languageId=' + data.languageId + ')?$expand=Resource,ModifiedBy'
                     }
                 },
                 parameterMap: function (data, type) {
+
                     var result = kendo.data.transports["odata-v4"].parameterMap(data, type);
-
-                    if (type === "update") {
-                        if (data.Value == "")
-                            data.Value = null;
-                        console.log('updating', data);
-                        self.resourceGridSettings.widget().one("dataBound", function (e) {
-                            self.resourceGridSettings.widget().dataSource.read();
-                        });
-                    }
-
-                    //if (result.$filter) {
-                    //    result.$filter = result.$filter.replace('datetime', 'datetimeoffset');
-                    //}
 
                     return result;
                 }
@@ -243,24 +365,11 @@
                         },
                         Resource: {
                             type: 'object',
-                            editable: true,
-                            validation: {
-                                required: true,
-                                nullable: false
-                            },
-                            defaultValue: {
-                                ResourceID: 0,
-                                Name: '',
-                                Value: ''
+                            editable: false,
+                            fields: {
+                                Value: { type: 'string', editable: false }
                             }
                         },
-                        //Resource: {
-                        //    type: 'object',
-                        //    validation: {
-                        //        required: true
-                        //    },
-                        //    editable: false
-                        //},
                         Language: {
                             type: 'object',
                             validation: {
@@ -294,67 +403,97 @@
                                 MemberID: { type: 'number', editable: false },
                                 FullName: { type: 'string', editable: false }
                             }]
+                        },
+                        ApprovedByHuman: {
+                            type: 'boolean'
                         }
                     }
                 }
             },
             requestStart: function (e) {
                 console.log('requestStart', e);
+
+                //if (e.type == "read") {
+
+                //    if (self.readRequestBarrier) {
+                //        self.readRequestBarrier = false;
+                //        return;
+                //    }
+
+                //    e.preventDefault();
+
+                //    var queryOptions = {
+                //        aggregate: e.sender.aggregate(),
+                //        group: e.sender.group(),
+                //        sort: e.sender.sort(),
+                //        filter: e.sender.filter(),
+                //        page: e.sender.page(),
+                //        pageSize: e.sender.pageSize(),
+                //    };
+
+                //    if (self.selectedPod()) {
+                //        if (queryOptions.filter.filters) {
+                            
+                //        }
+                //        queryOptions.filter.filters.push({
+                //            logic: 'or',
+                //            filters: [{
+                //                field: 'MemberID',
+                //                operator: 'eq',
+                //                value: null
+                //            }, {
+                //                field: 'MemberID',
+                //                operator: 'eq',
+                //                value: 0
+                //            }]
+                //        })
+                //    }
+
+                //    self.readRequestBarrier = true;
+
+                //    e.sender.query(queryOptions);
+
+                //}
+
                 self.busy(true);
             },
             requestEnd: (e) => {
                 console.log('requestEnd', e);
 
-                if (Object.hasOwn(e, 'response') && typeof e.response != 'undefined') {
-                    self.data(e.response.value.map(r => translationRecord({
-                        record: r
-                    })));
+                //if (Object.hasOwn(e, 'response') && typeof e.response != 'undefined') {
+                //    self.data(e.response.value.map(r => translationRecord({
+                //        record: r
+                //    })));
 
-                    e.response.value = self.data();
-                }
+                //    e.response.value = self.data();
+                //}
                 self.busy(false);
                 self.unsavedChanges(false);
-
             },
             filter: (() => {
                 let languageId = self.languageId();
                 let prefilter = window.getApproval();
 
-                var filters = [];
+                var filter = {
+                    operator: 'and',
+                    filters: []
+                };
 
                 if (languageId) {
-                    filters.push({
+                    filter.filters.push({
                         field: 'LanguageID',
                         operator: 'eq',
                         value: languageId
                     });
                 }
 
-                switch (prefilter) {
-                    case true:
-                    case false:
-                        filters.push({
-                            field: 'MemberID',
-                            operator: prefilter ? 'neq' : 'eq',
-                            value: 0
-                        }, {
-                            field: 'MemberID',
-                            operator: 'isnotnull'
-                        });
-                        //[
-
-                        //    {
-                        //    field: 'MemberID',
-                        //    operator: prefilter ? 'neq' : 'eq',
-                        //    value: 0
-                        //},
-                        
-                        //];
-                    default:
-                        break;
+                if (prefilter != null) {
+                    filter.filters.push({
+                        field: 'ApprovedByHuman',
+                        operator: 'eq',
+                        value: prefilter
+                    })
                 }
-
-                return filters;
             })(),
             //requestEnd: function (e) {
             //    if (e.type == "create") {
@@ -384,12 +523,48 @@
             pageSizes: [10, 20, 50, 100, 200]
         },
         filterMenuInit: (e) => {
-            if (e.field === "MemberID") {
+            if (e.field === "ApprovedByHuman") {
                 // Find and replace specific elements in the filter menu
                 e.container[0].setAttribute('title', 'Filter for Approval Status');
                 e.container.find(".k-filter-help-text").text("Approval Status:");
             }
-        }
+        },
+        dataBinding: (e) => {
+            console.log('dataBinding', e);
+        },
+        dataBound: (e) => {
+            console.log('dataBound', e);
+
+            //e.sender.dataSource.data().forEach(dataItem => {
+            //    let item = self.data().find(da => da.ResourceID == dataItem.ResourceID);
+            //    item.dataItem = dataItem;
+            //});
+
+            if (self.ready()) {
+                self.refreshDashboard();
+            }
+        },
+        saveChanges: (e) => {
+            console.log('saveChanges', e);
+
+            let models = self.data();
+
+            let data = e.sender.dataSource.data();
+
+            models.forEach(tr => {
+                let dataItem = data.find(d => d.ResourceID == tr.ResourceID);
+
+                if (tr.translation() == '') {
+                    tr.translation(null);
+                }
+
+                if (tr.dirty()) {
+                    dataItem.dirty = true;
+                    dataItem.set('Approval', tr.approval());
+                    dataItem.set('Translation', tr.translation());
+                }
+            });
+        },
     };
 
     //#endregion
@@ -397,9 +572,9 @@
     //#region Subscriptions
 
     self.language.subscribe(nv => {
-        self.resourceGridSettings.widget().setOptions({
-            columns: self.resourceGridColumns(nv)
-        });
+        //self.resourceGridSettings.widget().setOptions({
+        //    columns: self.resourceGridColumns(nv)
+        //});
     });
 
     self.unsavedChanges.subscribe(nv => {
@@ -409,6 +584,10 @@
             window.removeEventListener('beforeunload', window.onBeforeUnloadPreventDefault);
         }
     });
+
+    //self.ready.subscribe(() => {
+    //    self.preventDashboardAnchorTagClickPropagation();
+    //});
 
     //#endregion
 
@@ -423,10 +602,41 @@
     //#region Functions
 
     self.reset = function () {
-        console.log('translationBaseViewModel reset called', self);
+        console.log('translationsViewModel reset called', self);
         self.errors.showAllMessages(false);
         self.busy(false);
     }
+
+    self.dashboardClick = (data, event) => {
+        console.log('dashboardClick', data);
+
+        if (self.selectedPod() == null || (self.selectedPod().LanguageID != data.LanguageID)) {
+
+            self.selectedPod(data);
+
+            self.languageId(data.LanguageID);
+
+        } else {
+
+            self.selectedPod(undefined);
+
+            self.languageId(null);
+
+            self.resourceGridSettings.widget().dataSource.query({
+                page: 1,
+                pageSize: self.resourceGridSettings.widget().dataSource.pageSize(),
+                filter: {
+                    operator: 'and',
+                    filters: [{
+                        field: 'LanguageID',
+                        operator: 'eq',
+                        value: -1
+                    }]
+                }
+            });
+        }
+
+    };
 
     //#endregion
 
@@ -434,6 +644,8 @@
 
 
     //#endregion
+
+    return self;
 }
 
 const translationRecord = ({
@@ -552,10 +764,14 @@ const translationRecord = ({
     })
 
     self.approvalTitle = ko.computed(() => {
-        if (self.ModifiedBy?.MemberID != null) {
-            return `${self.ModifiedBy.FullName} - ${moment(self.ModifiedDT).format('DD/MM/YYYY HH:mm')}`
+        let dtSuffix = '';
+        if (self.ModifiedDT) {
+            dtSuffix = ` - ${moment(self.ModifiedDT).format('DD/MM/YYYY HH:mm')}`;
+        }
+        if (self.ModifiedBy?.Id != null) {
+            return `${self.ModifiedBy.FullName}${dtSuffix}`
         } else {
-            return `Google Neural Machine Translation (NMT) - ${moment(self.ModifiedDT).format('DD/MM/YYYY HH:mm')}`
+            return `Google Neural Machine Translation (NMT)${dtSuffix}`
         }
     });
 
@@ -569,21 +785,21 @@ const translationRecord = ({
     //    //}, 0);
     //});
 
-    self.dirty.subscribe(nv => {
-        let item = viewModel.resourceGridSettings.widget().dataItem(self.element.DOMElement);
+    //self.dirty.subscribe(nv => {
+    //    let item = self.dataItem;
 
-        if (self.originalTranslation != self.translation()) {
-            item.set('Translation', self.translation());
-        } else {
-            item.set('Translation', self.originalTranslation);
-        }
+    //    if (self.originalTranslation != self.translation()) {
+    //        item.set('Translation', self.translation());
+    //    } else {
+    //        item.set('Translation', self.originalTranslation);
+    //    }
 
-        if (self.approval()) {
-            item.set('MemberID', getUserId());
-        } else {
-            item.set('MemberID', undefined);
-        }
-    });
+    //    if (self.approval()) {
+    //        item.set('MemberID', getUserId());
+    //    } else {
+    //        item.set('MemberID', undefined);
+    //    }
+    //});
 
     self.toJSON = () => {
         return {
@@ -598,6 +814,9 @@ const translationRecord = ({
     //#region Events
 
     self.translatorCellClick = (data, event) => {
+
+        console.log('translatorCellClick', data, event);
+
         if (event.target.type === 'textarea')
             return;
         else if (event.target.querySelector('textarea'))

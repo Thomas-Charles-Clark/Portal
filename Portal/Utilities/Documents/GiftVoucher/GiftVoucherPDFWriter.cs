@@ -1193,7 +1193,7 @@ namespace Portal.Utilities.Documents.GiftVoucher
             {
                 canvas.AddImage(img);
             }
-            catch (DocumentException ex)
+            catch (DocumentException)
             {
                 // do nothing
             }

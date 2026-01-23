@@ -14,7 +14,6 @@ using SharedEFClasses.Models.Products;
 using SharedEFClasses;
 using Microsoft.AspNet.OData.Query;
 using SharedEFClasses.Models.Mertex;
-using SharedEFClasses.Models.Mertex;
 
 namespace Portal.Controllers
 {

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,6 +16,8 @@ namespace SharedEFClasses.Models.Payment
 		[Key]
 		public int PaymentDecisionID { get; set; }
 
+		public int PaymentRequestID { get; set; }
+
 		public int DecidedByMemberID { get; set; }
 
 		public DateTime CreatedDT { get; set; }
@@ -27,5 +31,9 @@ namespace SharedEFClasses.Models.Payment
 
 		[ForeignKey("DecidedByMemberID")]
 		public virtual Member DecidedBy { get; set; }
+
+		[JsonIgnore]
+		[ForeignKey("PaymentRequestID")]
+		public virtual PaymentRequest PaymentRequest { get; set; }
 	}
 }

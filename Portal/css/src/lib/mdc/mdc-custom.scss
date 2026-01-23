@@ -405,6 +405,10 @@ label.mdc-floating-label {
     border-color: rgba(0, 0, 0, 0.24);
 }*/
 
+.mdc-form-field {
+    position: relative;
+}
+
 .mdc-form-field label {
     margin-bottom: 0;
     cursor: pointer;
@@ -413,7 +417,7 @@ label.mdc-floating-label {
     .mdc-form-field label.checkbox-label-disabled {
         color: #808080;
     }
-
+    
 .mdc-checkbox.mdc-checkbox-error::before,
 .mdc-checkbox.mdc-checkbox-error::after {
     background-color: $mdc-theme-error;

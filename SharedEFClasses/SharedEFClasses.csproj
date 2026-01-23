@@ -355,6 +355,9 @@
     <Compile Include="DbContext\Dapper\PortalDbContext-Documents.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-ContractPricing.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-DotDigital.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-SupplierPaymentApprovals.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-SupplierPaymentRequests.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-Translations.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-NeimanMarcus.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Fenwick.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Baskets.cs" />
@@ -675,6 +678,7 @@
     <Compile Include="Models\Parcel\ParcelDeliveryServiceSurcharge.cs" />
     <Compile Include="Models\PassGiftVoucher.cs" />
     <Compile Include="Models\PassMertexCurrencyCode.cs" />
+    <Compile Include="Models\Payment\Funding.cs" />
     <Compile Include="Models\Payment\PaymentDecision.cs" />
     <Compile Include="Models\Payment\PaymentDecision_PaymentRequest.cs" />
     <Compile Include="Models\Payment\PaymentRequest.cs" />
@@ -741,6 +745,16 @@
     <Compile Include="Models\StockManagement\StockManagementProductFetchDto.cs" />
     <Compile Include="Models\StockManagement\StockManagementProductSearchResponse.cs" />
     <Compile Include="Models\StockManagement\SupplierInfoResult.cs" />
+    <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApprovalDashboard_ApprovedTotal.cs" />
+    <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApprovalDashboard_RequestedTotal.cs" />
+    <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApprovalDashboard_WeekCommencingRecord.cs" />
+    <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApproval_Dashboard_SelectDTO.cs" />
+    <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApproval_Dashboard_SelectResult.cs" />
+    <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequestDashboard_ApprovedTotal.cs" />
+    <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequestDashboard_RequestedTotal.cs" />
+    <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequestDashboard_WeekCommencingRecord.cs" />
+    <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequest_Dashboard_SelectDTO.cs" />
+    <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequest_Dashboard_SelectResult.cs" />
     <Compile Include="Models\SupplierType.cs" />
     <Compile Include="Models\Supplier.cs" />
     <Compile Include="Models\TradeAccountCreationEmail.cs" />
@@ -757,6 +771,8 @@
     <Compile Include="Models\TradeAccounts\TradeAccountMaintenance_TradeAccount_Search_DTO.cs" />
     <Compile Include="Models\TradeAccounts\TradeAccountMaintenance_TradeAccount_Search_Result.cs" />
     <Compile Include="Models\TransactionType.cs" />
+    <Compile Include="Models\Translations\PassTranslationDashboardDTO.cs" />
+    <Compile Include="Models\Translations\Translation_DashboardResult.cs" />
     <Compile Include="Models\TuffnellsModels.cs" />
     <Compile Include="Models\UPSModels.cs" />
     <Compile Include="Models\ZipTask.cs" />
@@ -815,6 +831,9 @@
     <Compile Include="Utilities\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="App.config" />
     <None Include="App.Debug.config">
       <DependentUpon>App.config</DependentUpon>

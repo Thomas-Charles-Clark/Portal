@@ -27,8 +27,6 @@ namespace SharedEFClasses.Models.Payment
 
 		public byte CurrencyID { get; set; }
 
-		public string PurchaseOrderHeadIDs { get; set; }
-
 		public string ProformaNumber { get; set; }
 
 		public decimal AmountInCurrency { get; set; }
@@ -55,24 +53,20 @@ namespace SharedEFClasses.Models.Payment
 		public bool Deleted { get; set; }
 
 		[JsonIgnore]
-		[NotMapped]
 		[ForeignKey("PaymentRequestStatusID")]
 		public virtual PaymentRequestStatus PaymentRequestStatus { get; set; }
 
-		//[JsonIgnore]
-		//[NotMapped]
-		//[ForeignKey("RequestedByMemberID")]
-		//public virtual Member RequestedByMember { get; set; }
+		[JsonIgnore]
+		[ForeignKey("RequestedByMemberID")]
+		public virtual Member RequestedByMember { get; set; }
 
-		//[JsonIgnore]
-		//[NotMapped]
-		//[ForeignKey("CurrencyID")]
-		//public virtual Currency Currency { get; set; }
+		[JsonIgnore]
+		[ForeignKey("CurrencyID")]
+		public virtual Currency Currency { get; set; }
 
-		//[JsonIgnore]
-		//[NotMapped]
-		//[ForeignKey("SupplierCode")]
-		//public virtual SupplierLive Supplier { get; set; }
+		[JsonIgnore]
+		[ForeignKey("SupplierCode")]
+		public virtual SupplierLive Supplier { get; set; }
 
 		[InverseProperty("PaymentRequest")]
 		public virtual ICollection<PaymentRequest_PurchaseOrderHead> PaymentRequestPurchaseOrderHeads { get; set; }
@@ -80,16 +74,7 @@ namespace SharedEFClasses.Models.Payment
 		[NotMapped]
 		public decimal? AmountApprovedInCurrency { get; set; }
 
-		[NotMapped]
-		public string PaymentRequestStatusName { get; set; }
-
-		[NotMapped]
-		public string RequestedByMemberFullName { get; set; }
-
-		[NotMapped]
-		public string SupplierName { get; set; }
-
-		[NotMapped]
-		public string CurrencyName { get; set; }
+		[InverseProperty("PaymentRequest")]
+		public virtual ICollection<PaymentDecision> PaymentDecisions { get; set; }
 	}
 }

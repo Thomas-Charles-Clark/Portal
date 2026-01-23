@@ -26,30 +26,41 @@ using System.Net.Http.Headers;
 using SharedEFClasses.SignalR.Hubs;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNet.SignalR;
+using SharedEFClasses.Models.Suppliers.PaymentRequest;
 
 
 namespace Portal.Areas.Suppliers.Controllers
 {
 	[System.Web.Http.Authorize]
-	public class SupplierPaymentRequestsAPIController : ApiController
+	public class SupplierPaymentRequestsController : ApiController
 	{
 		private PortalDbContext PortalDb { get; set; }
 		private readonly ApplicationUserManager UserManager;
 
-		public SupplierPaymentRequestsAPIController(PortalDbContext portalDbContext, ApplicationUserManager userManager)
+		public SupplierPaymentRequestsController(PortalDbContext portalDbContext, ApplicationUserManager userManager)
 		{
 			this.UserManager = userManager;
 			this.PortalDb = portalDbContext;
 		}
 
-		[HttpGet]
-		public IHttpActionResult GridRead([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
-		{
-			var results = PortalDb.PaymentRequests.AsQueryable();
+		//[HttpGet]
+		//public IHttpActionResult GridRead([ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request)
+		//{
+		//	var results = PortalDb.PaymentRequests.AsQueryable();
 
-			return Ok(new {
-				kendoResult = results.ToDataSourceResult(request) 
-			});
+		//	return Ok(new {
+		//		kendoResult = results.ToDataSourceResult(request) 
+		//	});
+		//}
+
+		[HttpPost]
+		public IHttpActionResult DashboardSelect(SupplierPaymentRequest_Dashboard_SelectDTO dto)
+		{
+			dto.MemberID = User.Identity.GetUserId<int>();
+
+			var result = PortalDb.SupplierPaymentRequest_Dashboard_Select(dto);
+
+			return Ok(result);
 		}
 	}
 }

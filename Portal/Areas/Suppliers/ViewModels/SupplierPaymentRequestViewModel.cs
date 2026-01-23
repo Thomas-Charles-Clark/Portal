@@ -2,6 +2,7 @@
 
 using SharedEFClasses;
 using SharedEFClasses.Models;
+using SharedEFClasses.Models.Suppliers.PaymentRequest;
 
 using System;
 using System.Collections.Generic;
@@ -14,26 +15,34 @@ namespace Portal.Areas.Suppliers.ViewModels
 {
 	public class SupplierPaymentRequestViewModel : BaseViewModel
 	{
-		public bool CanUserMakePaymentDecisions { get; set; }
+		public SupplierPaymentRequest_Dashboard_SelectResult Dashboard { get; set; }
 
-		public SupplierPaymentRequestViewModel(bool canUserMakePaymentDecisions, RoleProperties properties, string applicationHeading, string applicationSubHeading)
+		public SupplierPaymentRequestViewModel(
+			SupplierPaymentRequest_Dashboard_SelectResult dashboard,
+			RoleProperties properties,
+			string applicationHeading, 
+			string applicationSubHeading)
 			: base(properties,
 				   applicationHeading,
 				   applicationSubHeading)
 		{
-			CanUserMakePaymentDecisions = canUserMakePaymentDecisions;
+			Dashboard = dashboard;
 		}
 
 		public static async Task<SupplierPaymentRequestViewModel> CreateAsync(
 			int memberId,
-			bool canUserApprove,
 			RoleProperties properties,
 			string applicationHeading,
 			string applicationSubHeading)
 		{
 			var portalDb = new PortalDbContext();
 
-			var result = new SupplierPaymentRequestViewModel(canUserApprove, properties, applicationHeading, applicationSubHeading);
+			var dashboard = portalDb.SupplierPaymentRequest_Dashboard_Select(new SupplierPaymentRequest_Dashboard_SelectDTO()
+			{
+				MemberID = memberId
+			});
+
+			var result = new SupplierPaymentRequestViewModel(dashboard, properties, applicationHeading, applicationSubHeading);
 
 			return result;
 		}

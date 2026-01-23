@@ -1,0 +1,169 @@
+﻿@import "../common.scss";
+
+#navbarSupportedContent {
+	h1, h2, h3, h4, h5, h6 {
+		font-family: "Trixie", "Open Sans", Arial;
+		font-weight: 800;
+
+		span {
+			font-family: "Trixie", "Open Sans", Arial;
+			font-weight: 800;
+		}
+	}
+
+	.nav.navbar-nav {
+		flex-wrap: nowrap;
+
+		.app-title {
+			h2 {
+				flex-wrap: nowrap;
+
+				span {
+					white-space: nowrap;
+				}
+			}
+
+			.dropdown-toggle {
+				vertical-align: top;
+			}
+		}
+	}
+
+	ul.dropdown-menu {
+		overflow-y: auto;
+
+		li:not(.app-title) {
+			padding: 0;
+
+			.dropdown-item {
+				padding: $m-gutter $l-gutter;
+			}
+		}
+	}
+}
+
+.dashboard {
+	margin: 0 0 $l-gutter 0;
+	display: flex;
+	gap: 1rem;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+
+	.dashboard-pod {
+		text-align: center;
+		align-self: stretch;
+		cursor: pointer;
+		will-change: background-color;
+		background-color: $white;
+		color: $body-color;
+		border-color: $gray-500;
+		transition: background-color 150ms ease-in-out, color 150ms ease-in-out, border-color 150ms ease-in-out;
+
+		a {
+			color: $primary;
+		}
+
+		&:hover, &:focus, &:focus-within {
+			.card-body {
+				h4, h5 {
+					text-decoration: underline;
+				}
+			}
+		}
+
+		&.warning {
+			background-color: $red-600;
+			color: $white;
+			border-color: tint-color($red-600, 5%);
+
+			.btn {
+				color: $white;
+			}
+		}
+
+		&.active {
+			/*text-decoration: underline;*/
+
+			&.warning {
+				background-color: shade-color($red-600, 5%);
+				color: $white;
+			}
+
+			&:not(.warning) {
+				background-color: $blue-700;
+				color: $white;
+
+				a {
+					color: $white;
+				}
+			}
+		}
+
+
+		.card-body {
+
+			&.alert {
+				margin-bottom: 0;
+				border: 0;
+				border-radius: $alert-border-radius;
+			}
+
+			h4 {
+				font-weight: bold;
+				font-size: 1.55rem;
+				margin-bottom: $m-gutter;
+			}
+
+			h5 {
+				font-size: 1.15rem;
+			}
+
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+
+			h4,
+			h5 {
+				text-decoration: none;
+				line-height: 1.75rem;
+			}
+		}
+	}
+
+	.selected-pod {
+
+		.alert-primary {
+			background-color: shade-color($blue-600, 5%);
+			color: $white;
+		}
+
+		.alert-danger {
+			background-color: shade-color($red-600, 5%);
+			color: $white;
+
+			a {
+				color: $white;
+			}
+		}
+
+		.alert-warning {
+			background-color: tint-color($orange-500, 40%);
+			color: $orange-800;
+
+			a {
+				color: $blue-600;
+			}
+		}
+
+		.alert-success {
+			background-color: shade-color($green-500, 12.5%);
+			color: $white;
+
+			a {
+				color: $white;
+			}
+		}
+	}
+}

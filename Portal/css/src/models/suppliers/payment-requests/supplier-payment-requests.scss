@@ -159,21 +159,29 @@ html {
 						font-weight: bold;
 						white-space: normal;
 						text-overflow: unset;
+						.k-column-title {
+							white-space: normal;
+						}
 					}
 				}
 			}
 		}
 	}
 
+	.k-table-td {
+		padding: $sm-gutter;
+	}
+
 	.command-column {
 		display: flex;
 		flex-direction: column;
-		gap: $m-gutter;
+		gap: $sm-gutter;
 
 		.k-button {
 			display: block;
 			width: 100%;
 			line-height: 2em;
+
 			span {
 				position: relative;
 				top: -1px;
@@ -204,7 +212,7 @@ html {
 	}
 }
 #notes-container {
-	margin: 0 1em;
+	margin: $l-gutter;
 
 	p:last-of-type {
 		margin-bottom: 0;
@@ -239,8 +247,15 @@ html {
 
 td {
 	&.readonly {
-		background-color: tint-color($gray-600, 15%);
-		color: $white;
+		background-color: tint-color($gray-600, 75%);
+		text-shadow: 0 1px rgb(255, 255, 255, 0.5);
+	}
+
+	&.command-column {
+		&.readonly {
+			background-color: $gray-100;
+			cursor: not-allowed;
+		}
 	}
 
 	> .k-widget {
@@ -345,9 +360,18 @@ td {
 }
 
 .supplier-payment-requests-grid-container {
+	border-radius: $border-radius;
 	border: 1px solid $gray-400;
 	width: 100%;
 	margin: 0 auto;
+
+	.k-grid-toolbar {
+		border-radius: $border-radius $border-radius 0 0;
+	}
+
+	.k-pager {
+		border-radius: 0 0 $border-radius $border-radius;
+	}
 }
 
 .k-multiselect-clearable {

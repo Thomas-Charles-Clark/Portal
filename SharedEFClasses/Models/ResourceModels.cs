@@ -59,7 +59,10 @@ namespace SharedEFClasses.Models
 
         public DateTime? ModifiedDT { get; set; }
 
-        [JsonIgnore]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+		public bool ApprovedByHuman { get; set; }
+
+		[JsonIgnore]
         [AutoExpand]
         [ForeignKey("ResourceID")]
         public virtual Resource Resource { get; set; }

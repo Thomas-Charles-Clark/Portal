@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 
 
-namespace Portal.Areas.Stock.Controllers
+namespace Portal.Areas.Suppliers.Controllers
 {
 	[DynamicRoleAuthorise]
 	[RouteArea("suppliers")]
@@ -37,21 +37,17 @@ namespace Portal.Areas.Stock.Controllers
 		}
 
 		// GET: Stock/Management
-		public ActionResult Index()
+		public async Task<ActionResult> Index()
 		{
-			var application = PortalDb.Applications.Where(p => p.ControllerName == "payment-requests" && p.AreaName == "suppliers" && p.ActionName == "index").Single();
+			var application = PortalDb.Applications.Where(p => p.ControllerName == "paymentrequests" && p.AreaName == "suppliers" && p.ActionName == "index").Single();
 
 			var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
-			var role = user.Roles.FirstOrDefault(r => r.Role.Id == 107);
-
-			var canUserMakePaymentDecisions = UserManager.IsInRole(user.Id, "Super Admin") || UserManager.IsInRole(user.Id, "Supplier Payment Decider");
-
-			var model = new SupplierPaymentRequestViewModel(
-				canUserMakePaymentDecisions,
-				properties: user.GetActiveRoleProperties(),
-				applicationHeading: application.Heading,
-				applicationSubHeading: application.SubHeading);
+			var model = await SupplierPaymentRequestViewModel.CreateAsync(
+				user.Id, 
+				user.GetActiveRoleProperties(), 
+				application.Heading,
+				application.SubHeading);
 
 			return View("PaymentRequests", model);
 		}

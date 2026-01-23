@@ -9,7 +9,6 @@ using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Leads;
 using SharedEFClasses.Models.Mertex;
-using SharedEFClasses.Models.Mertex;
 using SharedEFClasses.Models.Orders;
 using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Retail;
@@ -24,7 +23,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-using SharedEFClasses.Models.IncomingEmail;
 using SharedEFClasses.Models.Payment;
 
 namespace SharedEFClasses.Models
@@ -318,6 +316,10 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("MemberRecord")]
         public virtual ICollection<CreditControllerLive> CreditControllers { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty("CreatedByMember")]
+        public virtual ICollection<Funding> WeeklyFundingRecordsCreated { get; set; }
 
 		//[JsonIgnore]
 		//[InverseProperty("RequestedByMember")]

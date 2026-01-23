@@ -1,7 +1,7 @@
 ﻿@model Portal.Areas.Translations.ViewModels.TranslateResourcesViewModel
 @{
 	ViewBag.Title = "Translation Maintenance";
-	Layout = "~/Views/Shared/_Layout-New.cshtml";
+	Layout = "~/Views/Shared/_Layout-New-2026.cshtml";
 }
 @section styles {
 	@Styles.Render("~/bundles/css/components")
@@ -35,11 +35,14 @@
 		window.getApproval = () => {
 			return @(Model.Approval.HasValue ? $"{Model.Approval.Value.ToString().ToLower()}" : "");
 		}
+		window.getDashboardPods = () => {
+			return @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.DashboardPods));
+		}
 	</script>
 
 	<script type="text/javascript">
 
-		var viewModel = new translationBaseViewModel();
+		var viewModel = translationsViewModel({});
 
 		var vm = viewModel;
 
@@ -57,6 +60,7 @@
 				if (window.getLanguageId()) {
 					viewModel.resourceGridSettings.widget().dataSource.page(1);
 				}
+				viewModel.ready(true);
 			}, 0);
 		});
 
@@ -66,29 +70,25 @@
 
 	</script>
 }
+@section navbarTitle {
+	<h2 class="d-flex gap-3 align-items-center">
+		<span>
+			@(ViewBag.Title)
+		</span>
+	</h2>
+}
 
-<div class="page-heading-wrapper">
-	<div class="page-heading-logo">
-		<div></div>
-	</div>
-	<div class="page-heading text-right">
-		@if (!String.IsNullOrEmpty(Model.ApplicationHeading))
-		{
-			<h1 class="main-heading mb-3">
-				@(Model.ApplicationHeading)
-			</h1>
-		}
-		@if (!String.IsNullOrEmpty(Model.ApplicationSubHeading))
-		{
-			<h4 class="sub-heading">
-				<span class="margin-bottom-15">@(Model.ApplicationSubHeading)</span>
-			</h4>
-		}
+<div class="dashboard" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
+	<div class="dashboard-pod card pointer" data-bind="css: { 'selected-pod': $parent.selectedPod() == $data }, click: $parent.dashboardClick">
+		<div class="card-body" data-bind="class: Classes">
+			<h4 data-bind="html: Heading"></h4>
+			<div data-bind="html: Stats"></div>
+		</div>
 	</div>
 </div>
 
 <script id="translation-row-template" type="text/html">
-	<tr data-bind="keepElement: element, css: { 'dirty': dirty }">
+	<tr data-bind="keepElement: element, css: { 'dirty': dirty }, click: (data, event) => { event.stopPropagation(); return true; }, clickBubble: false">
 		<td class="id-column">
 			<span data-bind="text: ResourceID, attr: { title: Resource.Name }"></span>
 		</td>
@@ -97,12 +97,12 @@
 		</td>
 		<td class="translator-cell" data-bind="click: translatorCellClick">
 			@*<div class="grow-wrap" data-bind="attr: { 'data-replicated-value': translation }">
-				<textarea data-bind="value: translation"></textarea>
-			</div>*@
+					<textarea data-bind="value: translation"></textarea>
+				</div>*@
 			<div data-bind="component: { name: 'mdc-kendo-html-editor-component-inline-no-outline', params: translationParams }"></div>
 		</td>
-		<td class="approval-cell" data-bind="attr: { title: approvalTitle }">
-			<div data-bind="component: { name: 'mdc-checkbox-component', params: approvalParams },attr: { title: approvalTitle }"></div>
+		<td class="approval-cell relative" data-bind="attr: { title: approvalTitle }">
+			<div data-bind="component: { name: 'mdc-checkbox-component', params: approvalParams }, attr: { title: approvalTitle }"></div>
 		</td>
 	</tr>
 </script>

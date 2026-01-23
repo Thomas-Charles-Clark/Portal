@@ -9,6 +9,10 @@
 
     self.busyMessage = ko.observable('Please Wait');
 
+    self.weekCommencingOverride = ko.observable();
+
+    self.dashboard = ko.observable(window.getDashboard());
+
     self.filters = supplierPaymentRequestsFiltersViewModel({
         params: {},
         parent: self
@@ -32,6 +36,7 @@
             serverGrouping: true,
             serverFiltering: true,
             serverPaging: true,
+            page: 1,
             pageSize: 10,
             pageable: {
                 pageSize: 10,
@@ -41,23 +46,25 @@
             type: "odata-v4",
             transport: {
                 read: {
-                    url: '/odata/PaymentRequests'
+                    url: defaultPaymentRequestStatusId != null
+                        ? `/odata/PaymentRequests?$apply=filter(PaymentRequestStatusID eq ${defaultPaymentRequestStatusId})&$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads`
+                        : `/odata/PaymentRequests?$apply=filter(PaymentRequestStatusID ne 7)&$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads`
                 },
                 update: {
                     url: function (item) {
-                        return `/odata/PaymentRequests(${item.PaymentRequestID})`
+                        return `/odata/PaymentRequests(${item.PaymentRequestID})?$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads`
                     }
                 },
                 create: {
-                    url: '/odata/PaymentRequests'
+                    url: '/odata/PaymentRequests?$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads'
                 },
                 batch: {
-                    url: '/odata/$batch',
+                    url: '/odata/$batch?$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads',
                     contentType: "multipart/mixed"
                 },
                 destroy: {
                     url: function (item) {
-                        return `/odata/PaymentRequests(${item.PaymentRequestID})`
+                        return `/odata/PaymentRequests(${item.PaymentRequestID})?$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads`
                     }
                 },
                 parameterMap: function (options, type) {
@@ -80,9 +87,9 @@
 
                     //}
 
-                    //var result = kendo.data.transports["odata-v4"].parameterMap(options, type);
+                    var result = kendo.data.transports["odata-v4"].parameterMap(options, type);
 
-                    return options;
+                    return result;
                 }
             },
             error: (e) => {
@@ -92,8 +99,6 @@
                 error: 'error',
                 model: {
                     id: 'PaymentRequestID',
-                    hasChildren: 'PaymentRequestPurchaseOrderHeads',
-                    children: 'PaymentRequestPurchaseOrderHeads',
                     fields: {
                         WeekCommencingDate: {
                             type: 'date',
@@ -138,12 +143,24 @@
                             type: 'number',
                             nullable: true,
                             editable: false,
-                            defaultValue: getUserId()
+                            defaultValue: window.getUserId()
                         },
-                        RequestedByMemberFullName: {
-                            type: 'string',
-                            editable: false,
-                            defaultValue: getUserName()
+                        RequestedByMember: {
+                            type: 'object',
+                            fields: {
+                                MemberID: {
+                                    type: 'number',
+                                    editable: false
+                                },
+                                FullName: {
+                                    type: 'string',
+                                    editable: false
+                                }
+                            },
+                            defaultValue: {
+                                MemberID: window.getUserId(),
+                                FullName: window.getUserName()
+                            }
                         },
                         CurrencyID: {
                             type: 'number',
@@ -170,9 +187,6 @@
 
                             }
                         },
-                        CurrencyName: {
-                            from: "Currency.Name"
-                        },
                         SupplierCode: {
                             type: 'string',
                             nullable: false,
@@ -188,9 +202,6 @@
                                 Code: { type: 'string', editable: false },
                                 Name: { type: 'string', editable: false }
                             }
-                        },
-                        SupplierName: {
-                            from: "Supplier.Name"
                         },
                         PaymentRequestPurchaseOrderHeads: {
                             defaultValue: [],
@@ -211,13 +222,15 @@
                         },
                         AmountInSterling: {
                             type: 'number',
-                            editable: false
                         },
                         ExchangeRate: {
                             type: 'number'
                         },
                         RequesterComments: { type: 'string' },
-                        DeciderComments: { type: 'string' },
+                        DeciderComments: {
+                            type: 'string',
+                            editable: false
+                        },
                         CreatedDT: {
                             type: 'date',
                             defaultValue: new Date(),
@@ -234,7 +247,8 @@
                         },
                         Deleted: { type: 'boolean' },
                         AmountApprovedInCurrency: {
-                            type: 'number'
+                            type: 'number',
+                            editable: false
                         }
                     },
                 }
@@ -257,12 +271,21 @@
             },
             requestStart: (e) => {
                 //self.busy(true);
+
+                console.log('requestStart', e);
+
                 if (e.type != 'submit') {
                     if (e.sender.hasChanges()) {
                         e.preventDefault();
                         self.busy(false);
                         window.showInfo('Unsaved Changes', 'You have unsaved changes. Please cancel or save them before performing any other action.');
                     }
+                }
+
+                // Avoid extraneous call to fetchDashboard if ready == false; the call is made when building 
+                // the server-side viewModel.
+                if (self.ready()) {
+                    self.refreshDashboard();
                 }
             },
             sort: {
@@ -344,15 +367,15 @@
                 "class": "readonly"
             },
             template: (e) => {
-                if (e.RequestedByMemberFullName) {
-                    return e.RequestedByMemberFullName;
+                if (e.RequestedByMember) {
+                    return e.RequestedByMember.FullName;
                 } else {
                     return '';
                 }
             },
             valueTemplate: (e) => {
-                if (e.RequestedByMemberFullName) {
-                    return e.RequestedByMemberFullName;
+                if (e.RequestedByMember) {
+                    return e.RequestedByMember.FullName;
                 } else {
                     return '';
                 }
@@ -555,6 +578,21 @@
                 } else {
                     return '';
                 }
+            },
+            editor: (container, options) => {
+                $('<input data-bind="value:' + options.field + '" name="' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoNumericTextBox({
+                        format: "n2",
+                        decimals: 2,
+                        selectOnFocus: true,
+                        change: (e) => {
+                            console.log('AmountInCurreny change', e);
+                            if (options.model.ExchangeRate) {
+                                options.model.set('AmountInSterling', e.sender.value() / options.model.ExchangeRate);
+                            }
+                        }
+                    });
             }
         }, {
             field: 'ExchangeRate',
@@ -571,6 +609,7 @@
             },
             editor: (container, options) => {
                 $(`<span>${(options.model.ExchangeRate ? formatNumber(options.model.ExchangeRate, 6, 'en-GB') : '')}</span>`)
+                    .appendTo(container);
             }
         }, {
             field: 'AmountInSterling',
@@ -579,15 +618,19 @@
                 /*"class": "text-end"*/ // This is not the way. So sayeth Sarah, 16/01/2026.
             },
             template: (e) => {
-                if (e.AmountInCurrency) {
+                if (e.AmountInSterling) {
                     if (e.Currency) {
-                        return formatCurrency(e.AmountInCurrency / e.Currency.SterlingExchangeRate, 2, 'en-GB', 'GBP');
+                        return formatCurrency(e.AmountInSterling, 2, 'en-GB', 'GBP');
                     } else {
                         return '';
                     }
                 } else {
                     return '';
                 }
+            },
+            editor: (container, options) => {
+                $(`<span>${(options.model.AmountInSterling ? formatCurrency(options.model.AmountInSterling, 2, 'en-GB', 'GBP') : '')}</span>`)
+                    .appendTo(container);
             }
         }, {
             field: 'PaymentRequestStatusID',
@@ -659,7 +702,11 @@
                 "class": "relative"
             },
             template: (e) => {
-                return e.PaymentRequestPurchaseOrderHeads.map(p => p.PurchaseOrderHeadID).join(", ");
+                if (e.PaymentRequestPurchaseOrderHeads) {
+                    return e.PaymentRequestPurchaseOrderHeads.map(p => p.PurchaseOrderHeadID).join(", ");
+                } else {
+                    return '';
+                }
             },
             editor: (container, options) => {
                 $(`<textarea type="text" name='${options.field}'></textarea>`)
@@ -720,20 +767,6 @@
                             transport: {
                                 read: {
                                     url: '/odata/PurchaseOrderHeads',
-                                    //data: function () {
-                                    //    let identifier = paymentRequestStatusLockedTo.length == 1 && paymentRequestStatusLockedTo[0] == 7
-                                    //        ? ".payment-plans .k-multiselect input[data-role=multiselect]"
-                                    //        : ".other-statuses .k-multiselect input[data-role=multiselect]";
-
-                                    //    var ms = $(identifier).data("kendoMultiSelect");
-
-                                    //    return {
-                                    //        selectedIds: ms ? ms.value().length == 1
-                                    //            ? ms.value()[0].PurchaseOrderHeadID
-                                    //            : ms.value().join(",")
-                                    //            : ""
-                                    //    };
-                                    //},
                                 },
                                 parameterMap: (data, operation) => {
 
@@ -809,8 +842,44 @@
                 }
             }
         }, {
+            field: 'AmountApprovedInCurrency',
+            title: 'Amount Approved (Currency)',
+            attributes: {
+                "class": "text-end"
+            },
+            template: (e) => {
+                if (e.AmountApprovedInCurrency) {
+                    if (e.AmountApprovedInCurrency == null) {
+                        if (e.AmountInCurrency != null) {
+                            if (e.Currency) {
+                                return formatCurrency(e.AmountInCurrency, 2, e.Currency.FormattingCulture, e.Currency.Code);
+                            } else {
+                                return e.AmountInCurrency;
+                            }
+                        } else {
+                            if (e.Currency) {
+                                return formatCurrency(e.AmountApprovedInCurrency, 2, e.Currency.FormattingCulture, e.Currency.Code);
+                            } else {
+                                return '';
+                            }
+                        }
+                    } else {
+                        if (e.Currency) {
+                            return formatCurrency(e.AmountApprovedInCurrency, 2, e.Currency.FormattingCulture, e.Currency.Code);
+                        } else {
+                            return e.AmountApprovedInCurrency;
+                        }
+                    }
+                } else {
+                    return '';
+                }
+            }
+        }, {
             field: 'DeciderComments',
             title: 'Approver Comments',
+            attributes: {
+                "class": 'readonly',
+            },
             editor: (container, options) => {
                 let textarea = document.createElement('textarea');
 
@@ -837,77 +906,24 @@
                     return '';
                 }
             }
-        }, {
-            title: " ",
-            width: "100px",
-            hidden: !window.canApprove(),
-            attributes: {
-                "class": "text-center command-column"
-            },
-            command: [{
-                text: "Approve",
-                click: (event, sender) => {
-                    let grid = $(event.delegateTarget).data("kendoGrid");
-
-                    let dataItem = grid.dataItem(event.target.closest("tr"));
-
-                    dataItem.set('AmountApprovedInCurrency', dataItem.AmountInCurrency);
-
-                    grid.editCell($(event.delegateTarget).find("td:eq(15)"));
-
-                    window.setTimeout(() => {
-                        $(event.delegateTarget).find("td:eq(15)").find('input').select();
-                    }, 0);
-                }
-            }, {
-                text: "Reject",
-                "class": 'btn btn-danger',
-                click: (event, sender) => {
-                    let grid = $(event.delegateTarget).data("kendoGrid");
-
-                    let dataItem = grid.dataItem(event.target.closest("tr"));
-
-                    dataItem.set('Rejected', true);
-                }
-            }]
-        }, {
-            hidden: !window.canApprove(),
-            field: 'AmountApprovedInCurrency',
-            title: 'Amount Approved (Currency)',
-            attributes: {
-                "class": "text-end"
-            },
-            template: (e) => {
-                if (window.canApprove() && e.AmountApprovedInCurrency) {
-                    if (e.AmountApprovedInCurrency == null) {
-                        if (e.AmountInCurrency != null) {
-                            if (e.Currency) {
-                                return formatCurrency(e.AmountInCurrency, 2, e.Currency.FormattingCulture, e.Currency.Code);
-                            } else {
-                                return e.AmountInCurrency;
-                            }
-                        } else {
-                            if (e.Currency) {
-                                return formatCurrency(e.AmountApprovedInCurrency, 2, e.Currency.FormattingCulture, e.Currency.Code);
-                            } else {
-                                return '';
-                            }
-                        }
-                    } else {
-                        if (e.Currency) {
-                            return formatCurrency(e.AmountApprovedInCurrency, 2, e.Currency.FormattingCulture, e.Currency.Code);
-                        } else {
-                            return e.AmountApprovedInCurrency;
-                        }
-                    }
-                } else {
-                    return '';
-                }
-            }
         }]
+        //    , {
+        //    title: " ",
+        //    width: "100px",
+        //    attributes: {
+        //        "class": `text-center command-column readonly`
+        //    }
+        //}]
     };
 
-    self.createGridDefinition = (name, widget, paymentRequestStatusLockedTo = []) => {
+    /**
+     * }, 
+        }]
+     * 
+     * 
+     */
+
+    self.createGridDefinition = (name, widget, paymentRequestStatusLockedTo = [], className = null) => {
         return {
             autoBind: true,
             widget: widget,
@@ -962,7 +978,40 @@
                 }, 0);
             },
             dataBound: (e) => {
-                console.log('dataBound', e);
+
+            },
+            saveChanges: (e) => {
+                console.log('saveChanges', e);
+
+                let data = e.sender.dataSource.data();
+
+                for (let i = 0; i < data.length; i++) {
+
+                    let item = data[i];
+
+                    if (item.isNew() || item.dirty) {
+
+                        if (item.ProformaNumber == '')
+                            item.ProformaNumber = null;
+
+                        if (item.RequesterComments == '')
+                            item.RequesterComments = null;
+
+                        if (item.DeciderComments == '')
+                            item.DeciderComments = null;
+
+                        delete item.PaymentRequestStatus;
+                        delete item.RequestedByMember;
+                        delete item.Currency;
+                        delete item.Supplier;
+                        
+                        item.PaymentRequestPurchaseOrderHeads.forEach(po => {
+                            delete po.PaymentRequest;
+                            delete po.PurchaseOrderHead;
+                        });
+
+                    }
+                }
             },
             save: (data) => {
                 console.log('save', data);
@@ -979,20 +1028,23 @@
                     window.setTimeout(() => {
                         if (data.sender.options.identifier == 'paymentPlanGrid') {
                             data.sender.editCell($(data.sender.table).find('td:eq(10)'));
-                        } else {
+                        } else {            
                             data.sender.editCell($(data.sender.table).find('td:eq(9)'));
                         }
                     })
                 }
+
+                $(`${className} .k-button.k-grid-save-changes`).show();
+                $(`${className} .k-button.k-grid-cancel-changes`).show();
             }
         };
     }
 
-    self.paymentPlanGridParams = self.createGridDefinition('paymentPlanGrid', self.paymentPlanGridWidget, [7]);
+    self.paymentPlanGridParams = self.createGridDefinition('paymentPlanGrid', self.paymentPlanGridWidget, [7], '.supplier-payment-requests-grid-container.payment-plans');
 
     self.paymentPlanGridParams.columns[9].filterable = false;
 
-    self.otherPaymentRequestStatusesGridParams = self.createGridDefinition('otherPaymentRequestStatusesGrid', self.otherPaymentRequestStatusesGridWidget, [1, 2, 3, 4, 5, 6]);
+    self.otherPaymentRequestStatusesGridParams = self.createGridDefinition('otherPaymentRequestStatusesGrid', self.otherPaymentRequestStatusesGridWidget, [1, 2, 3, 4, 5, 6], '.supplier-payment-requests-grid-container.other-statuses');
 
     self.errors = new ko.validation.group([
 
@@ -1020,7 +1072,26 @@
 
     //#region Methods
 
-
+    self.refreshDashboard = () => {
+        self.busy(true);
+        fetch('/api/SupplierPaymentRequests/DashboardSelect', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                weekCommencingOverride: self.weekCommencingOverride()
+            })
+        }).then(window.handleFetchResponse)
+            .then(data => {
+                self.dashboard(data);
+                self.busy(false);
+            })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            })
+    }
 
     //#endregion
 

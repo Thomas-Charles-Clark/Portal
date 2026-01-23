@@ -22,6 +22,8 @@ using Microsoft.AspNet.OData.Batch;
 using Unity.Interception.Utilities;
 using System.Web.Http.Results;
 using System.Web.DynamicData;
+using AngleSharp.Dom;
+using System.Data.Entity.Core.Metadata.Edm;
 
 namespace Portal.Controllers
 {
@@ -58,10 +60,44 @@ namespace Portal.Controllers
             }
             else
             {
-
                 PortalDb.Entry(original).CurrentValues.SetValues(entity);
-                await PortalDb.SaveChangesAsync();
-            }
+
+				await PortalDb.SaveChangesAsync();
+
+				var extantPOHeads = PortalDb.PaymentRequest_PurchaseOrderHeads.Where(p => p.PaymentRequestID == key).ToList();
+
+                if (extantPOHeads.Any())
+				{
+					PortalDb.PaymentRequest_PurchaseOrderHeads.RemoveRange(extantPOHeads);
+
+                    await PortalDb.SaveChangesAsync();
+				}
+
+				if (entity.PaymentRequestPurchaseOrderHeads != null && entity.PaymentRequestPurchaseOrderHeads.Any())
+				{
+                    var poLinks = entity.PaymentRequestPurchaseOrderHeads
+                        .Select(p => new PaymentRequest_PurchaseOrderHead()
+                        {
+                            PaymentRequestID = key,
+                            PurchaseOrderHeadID = p.PurchaseOrderHeadID
+                        }).ToList();
+
+
+					PortalDb.PaymentRequest_PurchaseOrderHeads.AddRange(poLinks);
+
+					await PortalDb.SaveChangesAsync();
+				}
+			}
+
+			entity.PaymentRequestPurchaseOrderHeads = PortalDb.PaymentRequest_PurchaseOrderHeads.Where(p => p.PaymentRequestID == entity.PaymentRequestID).ToList();
+
+			entity.PaymentRequestStatus = PortalDb.PaymentRequestStatuses.SingleOrDefault(prs => prs.PaymentRequestStatusID == entity.PaymentRequestStatusID);
+
+            entity.RequestedByMember = PortalDb.Users.SingleOrDefault(u => u.Id == entity.RequestedByMemberID);
+
+            entity.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == entity.CurrencyID);
+
+            entity.Supplier = PortalDb.Suppliers_Live.SingleOrDefault(s => s.Code == entity.SupplierCode);
 
             return Updated(entity);
         }
@@ -105,12 +141,43 @@ namespace Portal.Controllers
                 return NotFound();
             }
             else
-            {
-                patch.Patch(originalEntity);
-                await PortalDb.SaveChangesAsync();
-            }
+			{
+				patch.Patch(originalEntity);
 
-            return Updated(originalEntity);
+				var extantPOHeads = PortalDb.PaymentRequest_PurchaseOrderHeads.Where(p => p.PaymentRequestID == key).ToList();
+
+				if (extantPOHeads.Any())
+				{
+					PortalDb.PaymentRequest_PurchaseOrderHeads.RemoveRange(extantPOHeads);
+
+					await PortalDb.SaveChangesAsync();
+				}
+
+				if (patch.TryGetPropertyValue("PaymentRequestPurchaseOrderHeads", out object purchaseOrderHeads))
+				{
+					PortalDb.PaymentRequest_PurchaseOrderHeads.AddRange(patch.GetInstance().PaymentRequestPurchaseOrderHeads
+						.Select(p => new PaymentRequest_PurchaseOrderHead()
+						{
+							PaymentRequestID = key,
+							PurchaseOrderHeadID = p.PurchaseOrderHeadID
+						}));
+				}
+
+                await PortalDb.SaveChangesAsync();
+
+				originalEntity.PaymentRequestPurchaseOrderHeads = PortalDb.PaymentRequest_PurchaseOrderHeads.Where(p => p.PaymentRequestID == originalEntity.PaymentRequestID).ToList();
+
+				originalEntity.PaymentRequestStatus = PortalDb.PaymentRequestStatuses.SingleOrDefault(prs => prs.PaymentRequestStatusID == originalEntity.PaymentRequestStatusID);
+
+				originalEntity.RequestedByMember = PortalDb.Users.SingleOrDefault(u => u.Id == originalEntity.RequestedByMemberID);
+
+				originalEntity.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == originalEntity.CurrencyID);
+
+				originalEntity.Supplier = PortalDb.Suppliers_Live.SingleOrDefault(s => s.Code == originalEntity.SupplierCode);
+
+			}
+
+			return Updated(originalEntity);
         }
 
         [HttpDelete]

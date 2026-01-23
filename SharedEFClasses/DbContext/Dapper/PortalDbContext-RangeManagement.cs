@@ -33,9 +33,6 @@ namespace SharedEFClasses.Models
 
         public async Task<RangeManagementProductSearchResponse> RangeManagementProductSearch(RangeManagementProductFetchDto dto)
         {
-            var sql = @"EXEC [portal].[RangeManagement_Product_Select] @BranchID, @ProductFilterGroupID, @ProductFilterID, @LaunchID, @BrandID, @StatusGroupID, @StockStatus, @SearchTerm, @SaleStatus;
-                EXEC [portal].[RangeManagement_ProductFilterTotals_Select] @BranchID;";
-
             var searchResults = await this.Database.Connection.QueryAsync<RangeManagementProductSearchRecord>("[portal].[RangeManagement_Product_Select]", new
             {
                 dto.BranchID,

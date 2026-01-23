@@ -183,10 +183,6 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_DeliveryType)).AddProperty(typeof(Mertex_DeliveryType).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SupplierLive)).AddProperty(typeof(SupplierLive).GetProperty("AddressDisplaySingleLine"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(PaymentRequest)).AddProperty(typeof(PaymentRequest).GetProperty("AmountApprovedInCurrency"));
-            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(PaymentRequest)).AddProperty(typeof(PaymentRequest).GetProperty("PaymentRequestStatusName"));
-            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(PaymentRequest)).AddProperty(typeof(PaymentRequest).GetProperty("RequestedByMemberFullName"));
-            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(PaymentRequest)).AddProperty(typeof(PaymentRequest).GetProperty("SupplierName"));
-            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(PaymentRequest)).AddProperty(typeof(PaymentRequest).GetProperty("CurrencyName"));
 
             var purchaseOrderHeadValueMapperFunction = odataBuilder.EntityType<PurchaseOrderHead>()
 				.Collection
