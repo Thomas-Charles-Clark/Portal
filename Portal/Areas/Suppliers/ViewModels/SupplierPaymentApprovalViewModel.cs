@@ -3,6 +3,7 @@
 using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Suppliers.PaymentApproval;
+using SharedEFClasses.Utilities;
 
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,8 @@ namespace Portal.Areas.Suppliers.ViewModels
 
 			var dashboard = portalDb.SupplierPaymentApproval_Dashboard_Select(new SupplierPaymentApproval_Dashboard_SelectDTO()
 			{
-				MemberID = memberId
+				MemberID = memberId,
+				WeekCommencing = DateTime.Now.StartOfWeek(DayOfWeek.Monday),
 			});
 
 			var result = new SupplierPaymentApprovalViewModel(dashboard, properties, applicationHeading, applicationSubHeading);

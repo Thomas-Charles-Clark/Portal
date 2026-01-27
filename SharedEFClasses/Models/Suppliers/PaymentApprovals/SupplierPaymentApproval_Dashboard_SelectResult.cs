@@ -8,8 +8,7 @@ namespace SharedEFClasses.Models.Suppliers.PaymentApproval
 {
 	public class SupplierPaymentApproval_Dashboard_SelectResult
 	{
-		public SupplierPaymentApprovalDashboard_WeekCommencingRecord WeekCommencingRecord { get; set; }
-		public IEnumerable<SupplierPaymentApprovalDashboard_RequestedTotal> RequestedTotals { get; set; }
-		public IEnumerable<SupplierPaymentApprovalDashboard_ApprovedTotal> ApprovedTotals { get; set; }
+		public IEnumerable<SupplierPaymentApprovalDashboard_SupplierSummaryRecord> SupplierSummaryRecords { get; set; }
+		public IEnumerable<SupplierPaymentApprovalDashboard_SupplierDetailRecord> SupplierDetailRecords { get; set; }
 	}
 }

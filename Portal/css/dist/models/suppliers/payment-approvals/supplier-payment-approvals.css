@@ -316,6 +316,7 @@ html > body .container.body-content {
   flex: 1 1 100%;
   width: 100% !important;
   display: flex;
+  flex-direction: column;
 }
 html > body > nav.navbar-default .container #navbarSupportedContent h1, html > body > nav.navbar-default .container #navbarSupportedContent h2, html > body > nav.navbar-default .container #navbarSupportedContent h3, html > body > nav.navbar-default .container #navbarSupportedContent h4, html > body > nav.navbar-default .container #navbarSupportedContent h5, html > body > nav.navbar-default .container #navbarSupportedContent h6 {
   font-family: "Trixie", "Open Sans", Arial;

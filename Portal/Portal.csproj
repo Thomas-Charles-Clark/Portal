@@ -3180,6 +3180,7 @@
     <Content Include="css\src\models\translations\translations-dashboard.scss" />
     <Content Include="css\src\models\suppliers\payment-approvals\supplier-payment-approvals-sidebar.scss" />
     <Content Include="css\src\models\suppliers\payment-approvals\supplier-payment-approvals.scss" />
+    <Content Include="css\src\models\suppliers\payment-approvals\supplier-payment-approvals-basket.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -680,7 +680,6 @@
     <Compile Include="Models\PassMertexCurrencyCode.cs" />
     <Compile Include="Models\Payment\Funding.cs" />
     <Compile Include="Models\Payment\PaymentDecision.cs" />
-    <Compile Include="Models\Payment\PaymentDecision_PaymentRequest.cs" />
     <Compile Include="Models\Payment\PaymentRequest.cs" />
     <Compile Include="Models\Payment\PaymentCreationRequestDTO.cs" />
     <Compile Include="Models\Payment\PaymentRequestStatus.cs" />
@@ -745,8 +744,10 @@
     <Compile Include="Models\StockManagement\StockManagementProductFetchDto.cs" />
     <Compile Include="Models\StockManagement\StockManagementProductSearchResponse.cs" />
     <Compile Include="Models\StockManagement\SupplierInfoResult.cs" />
-    <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApprovalDashboard_ApprovedTotal.cs" />
-    <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApprovalDashboard_RequestedTotal.cs" />
+    <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApprovalBasketDTO.cs" />
+    <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApprovalBasketItemDTO.cs" />
+    <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApprovalDashboard_SupplierDetailRecord.cs" />
+    <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApprovalDashboard_SupplierSummaryRecord.cs" />
     <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApprovalDashboard_WeekCommencingRecord.cs" />
     <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApproval_Dashboard_SelectDTO.cs" />
     <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApproval_Dashboard_SelectResult.cs" />
@@ -819,6 +820,7 @@
     <Compile Include="Models\TradeOrderModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SignalR\Hubs\TaskAlertHub.cs" />
+    <Compile Include="Utilities\DateTimeExtensions.cs" />
     <Compile Include="Utilities\dgCrypto.cs" />
     <Compile Include="Utilities\EntityUtils.cs" />
     <Compile Include="Utilities\Framework.cs" />

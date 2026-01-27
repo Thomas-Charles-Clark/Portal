@@ -450,7 +450,9 @@ namespace Portal
 
 			bundles.Add(new StyleBundle("~/bundles/css/supplier-payment-approvals").Include(
 					$"{cssPrefix}/models/full-width-app{cssSuffix}",
-					$"{cssPrefix}/models/suppliers/payment-approvals/supplier-payment-approvals{cssSuffix}"
+					$"{cssPrefix}/models/suppliers/payment-approvals/supplier-payment-approvals{cssSuffix}",
+					$"{cssPrefix}/models/suppliers/payment-approvals/supplier-payment-approvals-sidebar{cssSuffix}",
+					$"{cssPrefix}/models/suppliers/payment-approvals/supplier-payment-approvals-basket{cssSuffix}"
 			));
 
 			//  

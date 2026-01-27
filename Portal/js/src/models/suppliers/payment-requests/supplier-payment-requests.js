@@ -28,7 +28,7 @@
 
     //#region Components
     
-    self.createGridDataSource = (defaultPaymentRequestStatusId = null) => {
+    self.createGridDataSource = (name, defaultPaymentRequestStatusId = null) => {
         var ds = new kendo.data.DataSource({
             sortable: true,
             filterable: true,
@@ -71,29 +71,13 @@
 
                     console.log(type, options);
 
-                    //if (type != "read") {
-
-                    //    for (var i = 0; i < options.models.length; i++) {
-                    //        var item = options.models[i].length;
-                    //        item.CurrencyID = item.Currency.CurrencyID;
-                    //        item.RequestedByMemberID = item.RequestedByMember.RequestedByMemberID;
-
-                    //        delete item.PaymentRequestStatus;
-                    //        delete item.Currency;
-                    //        delete item.RequestedByMember;
-                    //        delete item.Supplier;
-                    //        delete item.PaymentRequestID;
-                    //    }
-
-                    //}
-
                     var result = kendo.data.transports["odata-v4"].parameterMap(options, type);
 
                     return result;
                 }
             },
             error: (e) => {
-                console.error(e);
+                console.error(`${name} error`, e);
             },
             schema: {
                 error: 'error',
@@ -254,7 +238,7 @@
                 }
             },
             errors: function (e) {
-                console.log(e);
+                console.error(`${name} errors`, e);
 
                 // e.xhr contains the full response from the server
                 var response = JSON.parse(e.xhr.responseText);
@@ -271,8 +255,7 @@
             },
             requestStart: (e) => {
                 //self.busy(true);
-
-                console.log('requestStart', e);
+                console.log(`${name} requestStart`, e);
 
                 if (e.type != 'submit') {
                     if (e.sender.hasChanges()) {
@@ -294,6 +277,8 @@
             },
             noDataTemplate: 'Nothing to display',
             change: (e) => {
+                console.log(`${name} change`, e);
+
                 if (e.action === "itemchange") {
                     let model = e.items[0];
                     switch (e.field) {
@@ -314,7 +299,8 @@
                 }
             },
             requestEnd: (e) => {
-                console.log('requestEnd', e);
+                console.log(`${name} requestEnd`, e);
+
                 window.setTimeout(() => {
                     document.addEventListener("click", (e) => {
                         if (e.target.closest('.purchase-orders-popover') == null) {
@@ -929,7 +915,7 @@
             widget: widget,
             identifier: name,
             columns: self.createGridColumns(paymentRequestStatusLockedTo),
-            data: self.createGridDataSource(paymentRequestStatusLockedTo?.length == 1 ? paymentRequestStatusLockedTo[0] : null),
+            data: self.createGridDataSource(name, paymentRequestStatusLockedTo?.length == 1 ? paymentRequestStatusLockedTo[0] : null),
             toolbar: self.gridToolbar,
             //useKOTemplates: true,
             //rowTemplate: 'grid-row-template',

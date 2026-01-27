@@ -1,7 +1,7 @@
-﻿@import '../common.scss';
+﻿@import '../../common.scss';
 
 #filters-sidebar {
-	display: flex;
+	display: none; // flex
 	align-self: stretch;
 	position: relative;
 	z-index: 0;
@@ -131,7 +131,7 @@
 		}
 	}
 
-	.filters-count {
+	.basket-count {
 		position: absolute;
 		top: 60px;
 		right: 12px;
@@ -162,7 +162,7 @@
 	&.pinned {
 		width: 575px;
 
-		.filters-count {
+		.basket-count {
 			opacity: 0;
 		}
 

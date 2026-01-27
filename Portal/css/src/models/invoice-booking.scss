@@ -13,8 +13,6 @@ body {
     }
 }
 
-$light-blue-highlight: tint-color($blue-100, 75%);
-
 @mixin attachment-styling {
     display: flex;
     align-items: center;
@@ -1291,85 +1289,6 @@ $light-blue-highlight: tint-color($blue-100, 75%);
 
                     .d-flex {
                         > .attachment-property {
-                        }
-                    }
-
-                    .converting-component-wrapper {
-                        margin-top: $l-gutter;
-                        flex: 1;
-                        gap: 0;
-                        justify-content: space-evenly;
-
-                        .converting-component {
-
-                            > div {
-                                flex: 1;
-
-                                &:first-of-type {
-                                    .mdc-validating-field {
-                                        .mdc-notched-outline {
-                                            .mdc-notched-outline__trailing {
-                                                border-radius: 0;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                &:nth-of-type(2) {
-                                    flex: 0 1 140px;
-
-                                    .mdc-validating-field {
-
-                                        .mdc-notched-outline {
-                                            .mdc-notched-outline__leading {
-                                                border-radius: 0;
-                                                border-right: 0;
-                                                border-left: 0;
-                                            }
-
-                                            .mdc-notched-outline__trailing {
-                                                border-radius: 0;
-                                                border-right: 0;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                &:nth-of-type(3) {
-                                    .mdc-validating-field {
-                                        .mdc-notched-outline {
-                                            .mdc-notched-outline__leading {
-                                                border-radius: 0;
-                                                border-left: 1px solid $gray-400;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            .alert-info {
-                                .mdc-numeric-field:not(.mdc-text-field--disabled),
-                                .mdc-text-field:not(.mdc-text-field--disabled) {
-                                    background-color: $light-blue-highlight;
-                                }
-
-                                .mdc-text-field__numeric {
-                                    text-align: left !important;
-                                }
-                            }
-                        }
-
-                        .mdc-validating-field {
-                            width: 100%;
-                        }
-                    }
-
-                    .converting-component {
-                        display: flex;
-                        gap: 0;
-
-                        > div:first-of-type {
-                            flex: 0 1 calc(50% - $sm-gutter);
                         }
                     }
 

@@ -20,6 +20,14 @@ namespace SharedEFClasses.Models.Payment
 
 		public int DecidedByMemberID { get; set; }
 
+		public decimal AmountInCurrency { get; set; }
+
+		public decimal AmountInSterling { get; set; }
+
+		public decimal ExchangeRate { get; set; }
+
+		public DateTime? FinalisedDT { get; set; }
+
 		public DateTime CreatedDT { get; set; }
 
 		public DateTime? ModifiedDT { get; set; }

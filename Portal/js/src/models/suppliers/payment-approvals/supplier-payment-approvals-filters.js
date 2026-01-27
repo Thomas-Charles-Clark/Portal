@@ -22,11 +22,57 @@ const supplierPaymentApprovalsFiltersViewModel = ({
 
     self.displayMode = ko.observable();
 
+    self.sidebarElement = document.querySelector('#filters-sidebar');
+
+    self.weekCommencingDate = ko.observable(moment(new Date()).weekdayWithStartWeekday(0, 1).toDate());
+
     //#endregion
 
 
 
     //#region Components
+
+    self.weekCommencingDateParams = {
+        label: "Week Commencing",
+        observable: self.weekCommencingDate,
+        originalValue: self.weekCommencingDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'months',
+                cellSize: '3rem'
+            },
+            restrictions: {
+                daysOfTheWeekDisabled: [1, 2, 3, 4, 5, 6]
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: false,
+            debug: false
+        },
+        clearable: ko.observable(false),
+        revertible: ko.observable(true),
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+    };
 
     self.errorables = [
 
@@ -54,7 +100,10 @@ const supplierPaymentApprovalsFiltersViewModel = ({
 
     //#region Methods
 
-
+    self.togglePinning = (data, event) => {
+        self.sidebarElement.classList.toggle('pinned');
+        event && event.target.closest('button') && event.target.closest('button').blur();
+    }
 
     //#endregion
 

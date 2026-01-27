@@ -20,17 +20,16 @@ namespace SharedEFClasses.Models
     {
         public SupplierPaymentApproval_Dashboard_SelectResult SupplierPaymentApproval_Dashboard_Select(SupplierPaymentApproval_Dashboard_SelectDTO dto)
         {
-            var results = this.Database.Connection.QueryMultiple("[payment].[Dashboard_Select]", new
+            var results = this.Database.Connection.QueryMultiple("[payment].[Approval_Dashboard_Select]", new
             {
                 dto.MemberID,
-                WeekcommencingOverride = dto.WeekCommencingOverride
+                dto.WeekCommencing
             }, null, null, System.Data.CommandType.StoredProcedure);
 
             return new SupplierPaymentApproval_Dashboard_SelectResult()
             {
-                WeekCommencingRecord = results.ReadSingle<SupplierPaymentApprovalDashboard_WeekCommencingRecord>(),
-                RequestedTotals = results.Read<SupplierPaymentApprovalDashboard_RequestedTotal>().ToList(),
-                ApprovedTotals = results.Read<SupplierPaymentApprovalDashboard_ApprovedTotal>().ToList()
+                SupplierSummaryRecords = results.Read<SupplierPaymentApprovalDashboard_SupplierSummaryRecord>().ToList(),
+                SupplierDetailRecords = results.Read<SupplierPaymentApprovalDashboard_SupplierDetailRecord>().ToList()
             };
         }
     }

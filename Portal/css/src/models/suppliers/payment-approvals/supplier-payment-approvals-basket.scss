@@ -1,0 +1,266 @@
+﻿@import '../../common.scss';
+
+#basket-sidebar {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	align-self: stretch;
+	z-index: 3;
+	flex: 0 0 auto;
+	will-change: height;
+	transition: height 150ms linear;
+	/*transition-delay: 150ms;*/
+	height: 68px;
+	border-top: 1px solid $gray-300;
+
+	.sidebar-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding-bottom: 0;
+		padding: $l-gutter;
+		z-index: 2;
+		position: sticky;
+		top: 0;
+	}
+
+	.sidebar-header,
+	.sidebar-body {
+		padding: $l-gutter;
+	}
+
+	.sidebar-heading {
+		display: inline-flex;
+		align-items: center;
+		margin-bottom: 0;
+		gap: $m-gutter;
+		flex: 1;
+		cursor: pointer;
+
+		&:hover,
+		&:focus,
+		&:focus-within {
+
+			.basket-toggle-btn {
+				color: var(--bs-btn-hover-color);
+				background-color: var(--bs-btn-hover-bg);
+				border-color: var(--bs-btn-hover-border-color);
+			}
+		}
+	}
+
+	.sidebar-inner {
+		flex-grow: 1;
+		overflow: hidden;
+	}
+
+	.btn-reset,
+	.btn-refresh {
+		width: 0;
+		opacity: 0;
+		padding-left: 0;
+		padding-right: 0;
+		border-width: 0;
+		will-change: width, opacity, padding;
+		transition: all 150ms ease-in-out;
+	}
+
+	#basket-collapse {
+		opacity: 0;
+		transition: opacity 150ms ease-in-out;
+		position: relative;
+		z-index: 1;
+		display: flex;
+
+		#basket {
+			flex: 1;
+		}
+	}
+
+	.mdc-validating-field {
+		flex: 1;
+	}
+
+	.dropdown-toggle {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.basket-count {
+		position: absolute;
+		top: 60px;
+		right: 12px;
+		writing-mode: vertical-rl;
+		width: auto;
+		height: 200px;
+		font-weight: bold;
+		font-size: 1.25rem;
+		opacity: 1;
+		will-change: opacity;
+		transition: opacity 150ms ease-in-out;
+		pointer-events: none;
+	}
+
+	.sidebar-body {
+		padding-top: 0;
+	}
+
+	.bi-pin-angle-fill {
+		&::before {
+			will-change: transform;
+			transition: transform 50ms linear;
+		}
+	}
+
+	&:hover,
+	&:focus-within,
+	&.pinned {
+		height: calc(100vh - 50px);
+
+		.basket-count {
+			opacity: 0;
+		}
+
+		.basket-header {
+			position: static;
+		}
+
+		#basket-collapse {
+			opacity: 1;
+		}
+
+		.btn-reset,
+		.btn-refresh {
+			width: 545px;
+			padding-left: $btn-padding-x;
+			padding-right: $btn-padding-x;
+			opacity: 1;
+			border-width: 1px;
+		}
+
+		.dropdown-toggle {
+			display: flex;
+		}
+
+		.basket-inner {
+			overflow-y: auto;
+		}
+	}
+
+	&.pinned {
+		.bi-pin-angle-fill {
+			&::before {
+				transform: rotate(-45deg);
+			}
+		}
+	}
+
+	.sidebar-inner {
+		background-color: ghostwhite;
+		display: flex;
+		flex-direction: column;
+		gap: $l-gutter;
+	}
+
+	.sidebar-body {
+		flex-grow: 1;
+	}
+
+	.mdc-text-field:not(.mdc-text-field--textarea),
+	.mdc-select,
+	.mdc-text-field:not(.mdc-text-field--textarea) {
+		height: 28px;
+		line-height: 28px;
+	}
+
+	.mdc-floating-label {
+		font-size: $font-size-sm;
+		top: 4px;
+	}
+
+	.k-dropdown-wrap {
+		&.k-state-default {
+
+			span.k-input {
+				font-size: $font-size-sm;
+				position: relative;
+				top: -1px;
+			}
+		}
+	}
+
+	.mdc-select--selected {
+		.k-dropdown-wrap {
+			&.k-state-default {
+				&.k-state-hover {
+					background-color: $blue-700;
+				}
+			}
+
+			&.k-state-border-down {
+				background-color: $blue-700;
+			}
+		}
+	}
+
+
+	.k-dropdown-wrap {
+		&.k-state-hover,
+		&.k-state-active,
+		&.k-state-border-down {
+			background-color: $white;
+		}
+	}
+
+	#approval-basket-contents {
+		display: flex;
+		gap: $l-gutter;
+		justify-contents: center;
+
+		.table {
+			colgroup {
+				col:nth-of-type(1) {
+					width: 160px;
+					overflow-x: hidden;
+
+					label {
+						white-space: nowrap;
+						text-overflow: 'ellipsis';
+					}
+				}
+
+				col:nth-of-type(2) {
+					width: 300px;
+				}
+
+				thead {
+					tr {
+						th {
+						}
+					}
+				}
+
+				tbody {
+					tr {
+						td {
+							padding: $m-gutter $sm-gutter;
+						}
+					}
+				}
+			}
+
+			#payment-plans {
+			}
+
+			#other-payments {
+			}
+
+			.converting-component-wrapper {
+				margin-top: 0;
+			}
+		}
+	}
+}

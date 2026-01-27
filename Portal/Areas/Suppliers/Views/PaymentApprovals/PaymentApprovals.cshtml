@@ -50,6 +50,20 @@
 			})
 		}
 	</script>
+
+	<script type="text/html" id="conversion-control">
+		<div class="converting-component">
+			<div data-bind="component: { name: 'mdc-text-field-numeric-component', params: inputParams }"></div>
+			<div data-bind="component: { name: 'mdc-text-field-component', params: forexParams }"></div>
+			<div data-bind="component: { name: 'mdc-text-field-component', params: convertedParams }"></div>
+		</div>
+	</script>
+
+	<script type="text/javascript">
+		ko.components.register('conversion-control', {
+			template: { element: document.getElementById('conversion-control') }
+		});
+	</script>
 }
 @section modals {
 
@@ -61,6 +75,46 @@
 		</span>
 	</h2>
 }
+
+<script type="text/html" id="approval-basket-row">
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+</script>
+
+<script type="text/html" id="approval-item-row">
+	<tr>
+		<td>
+			<div data-bind="html: supplierLabel"></div>
+		</td>
+		<td>
+			<div class="converting-component-wrapper" data-bind="component: { name: 'conversion-control', params: amountParams }"></div>
+		</td>
+		<td>
+			<div class="form-control requester-comments" data-bind="html: RequesterComments"></div>
+		</td>
+		<td>
+			@*<div class="converting-component-wrapper" data-bind="component: { name: 'conversion-control', params: approvedAmountInCurrencyParams }"></div>*@
+		</td>
+		<td>
+			@*<div data-bind="component: { name: 'mdc-text-area-component', params: deciderCommentsParams }"></div>*@
+		</td>
+		<td>
+			<button type="button" class="btn btn-secondary">
+				<i class="bi bi-x-lg" data-bind="click: $parent.removeBasketItem"></i>
+			</button>
+		</td>
+	</tr>
+</script>
+
+<script type="text/html" id="supplier-detail-template">
+	<div class="detailTabstrip"></div>
+</script>
 
 <div class="blocker" data-bind="flexFadeVisible: busy">
 	<div class="loading-spinner"></div>
@@ -90,7 +144,7 @@
 </div>
 
 <div id="main-supplier-payments-container" class="d-flex align-items-start w-100 opacity-100" data-bind="flexFadeVisible: true">
-	<sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top">
+	<sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top show">
 		<div class="sidebar-inner">
 			<div class="sidebar-header" data-bind="click: filters.togglePinning">
 				<button type="button" class="btn btn-light" title="Toggle Pinning">
@@ -121,176 +175,139 @@
 		</div>
 	</sidebar>
 	<main id="supplier-payment-approvals-main">
-		<div id="totals-wrapper">
-			<div class="card">
+		<div id="prefilters">
+			<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: filters.weekCommencingDateParams }"></div>
+		</div>
+		<div id="grid-container">
+			<div class="card mx-3">
 				<div class="card-body">
-					<table id="totals-requested-approved" class="table">
-						<colgroup>
-							<col />
-							<col />
-							<col />
-							<col style="width: 160px;" />
-							<col />
-							<col />
-						</colgroup>
-						<thead>
-							<tr>
-								<th colspan="6" class="text-center fs-5 mb-0 p-2">
-									Requested
-								</th>
-							</tr>
-							<tr>
-								<th>
-									Total Requested
-								</th>
-								<th>
-									Currency
-								</th>
-								<th>
-									Sterling
-								</th>
-								<th>
-									Total Approved
-								</th>
-								<th>
-									Currency
-								</th>
-								<th>
-									Sterling
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>
-									Euro (€)
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(5000, 2, 'fr-FR', 'EUR')"></span>
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(4000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-								<td></td> @* Total Approved Heading Spacer *@
-								<td>
-									<span data-bind="text: formatCurrency(3000, 2, 'fr-FR', 'EUR')"></span>
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									US Dollar ($)
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(1000, 2, 'en-US', 'USD')"></span>
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(800, 2, 'en-GB', 'GBP')"></span>
-								</td>
-								<td></td> @* Total Approved Heading Spacer *@
-								<td>
-									<span data-bind="text: formatCurrency(1000, 2, 'en-US', 'USD')"></span>
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(800, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									Sterling (£)
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-								<td></td> @* Total Approved Heading Spacer *@
-								<td>
-									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-								<td>
-									<span data-bind="text: formatCurrency(2000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-							<tr>
-								@* Sterling Total Column *@
-								<td></td>
-								<td></td>
-								<td>
-									<span class="bold" data-bind="text: formatCurrency(6800, 2, 'en-GB', 'GBP')"></span>
-								</td>
-								<td></td>
-								<td></td>
-								<td>
-									<span class="bold" data-bind="text: formatCurrency(4800, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<h4 class="my-0">
+						Payment Plans
+					</h4>
+					<div style="display: none"
+						 class="supplier-payment-requests-grid-container payment-plans mt-3 z-2"
+						 data-bind="visible: true, kendoGrid: paymentPlanGridParams"></div>
 				</div>
 			</div>
-			<div class="card">
+			<div class="card m-3">
 				<div class="card-body">
-					<table id="weekly-table" class="table">
-						<colgroup>
-							<col />
-							<col />
-						</colgroup>
-						<thead>
-							<tr>
-								<th colspan="2" class="text-center fs-5 mb-0 p-2">
-									Approved
-								</th>
-							</tr>
-							<tr>
-								<th>
-									Week Commencing
-								</th>
-								<td>
-									12/01/2025
-								</td>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<th>
-									Available for Approval
-								</th>
-								<td>
-									<span data-bind="text: formatCurrency(10000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-							<tr>
-								<th>
-									Target Spend
-								</th>
-								<td>
-									<span data-bind="text: formatCurrency(5000, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-							<tr>
-								<th>
-									Spent
-								</th>
-								<td>
-									<span data-bind="text: formatCurrency(6800, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-							<tr>
-								<th>
-									Remaining
-								</th>
-								<td>
-									<span data-bind="text: formatCurrency(3200, 2, 'en-GB', 'GBP')"></span>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<h4 class="my-0">
+						Other Payments
+					</h4>
+					<div style="display: none"
+						 class="supplier-payment-requests-grid-container other-statuses mt-3 z-1"
+						 data-bind="visible: true, kendoGrid: otherPaymentRequestStatusesGridParams"></div>
 				</div>
 			</div>
 		</div>
 	</main>
 </div>
+
+<sidebar id="basket-sidebar" class="collapse collapse-horizontal sidebar sticky-bottom show">
+	<div class="sidebar-inner">
+		<div class="sidebar-header">
+			<h5 class="sidebar-heading" data-bind="click: basket.togglePinning">
+				<i class="bi bi-basket"></i>
+				<span>
+					Approvals Basket
+					<label class="count" data-bind="html: basket.countDisplay"></label>
+				</span>
+				<button type="button" class="btn btn-light basket-toggle-btn" title="Toggle Pinning">
+					<i class="bi bi-pin-angle-fill fs-5"></i>
+				</button>
+			</h5>
+			<div class="d-flex justify-content-center gap-3">
+				<button type="button" class="btn btn-secondary gap-3" data-bind="enable: basket.canClearBasket, click: basket.clear, clickBubble: false">
+					Empty Basket
+					<i class="bi bi-arrow-counterclockwise"></i>
+				</button>
+			</div>
+		</div>
+		<div id="basket-collapse" class="sidebar-body">
+			<form id="basket" data-bind="with: basket" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
+				<div id="approval-basket-contents" style="display: none" data-bind="flexFadeVisible: items().length > 0">
+					<table id="payment-plans" class="table">
+						<colgroup>
+							<col />
+							<col />
+							<col />
+							<col />
+							<col />
+							<col />
+						</colgroup>
+						<thead>
+							<tr>
+								<th colspan="6">
+									<h4 class="mb-0">
+										Payment Plans
+									</h4>
+								</th>
+							</tr>
+							<tr>
+								<th>
+									Supplier
+								</th>
+								<th>
+									Amount Requested
+								</th>
+								<th>
+									Requester Comments
+								</th>
+								<th>
+									Amount Approved
+								</th>
+								<th>
+									Approval Comments
+								</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody data-bind="foreach: paymentPlans">
+							<!-- ko template: { name: 'approval-item-row', data: $data } --><!-- /ko -->
+						</tbody>
+					</table>
+					<table id="other-payments" class="table">
+						<colgroup>
+							<col />
+							<col />
+							<col />
+							<col />
+							<col />
+							<col />
+						</colgroup>
+						<thead>
+							<tr>
+								<th colspan="6">
+									<h4 class="mb-0">
+										Other Payments
+									</h4>
+								</th>
+							</tr>
+							<tr>
+								<th>
+									Supplier
+								</th>
+								<th>
+									Amount Requested
+								</th>
+								<th>
+									Requester Comments
+								</th>
+								<th>
+									Amount Approved
+								</th>
+								<th>
+									Approval Comments
+								</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody data-bind="foreach: otherPayments">
+							<!-- ko template: { name: 'approval-item-row', data: $data } --><!-- /ko -->
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+	</div>
+</sidebar>

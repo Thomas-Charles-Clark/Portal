@@ -47,7 +47,7 @@ namespace SharedEFClasses.Utilities
             return DateTime.ParseExact("31/12/1967", "dd/MM/yyyy", new System.Globalization.CultureInfo("en-GB")).AddDays(val);
         }
 
-        public static string GetDaySuffix(int day)
+		public static string GetDaySuffix(int day)
         {
             switch (day)
             {

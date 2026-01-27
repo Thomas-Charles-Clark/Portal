@@ -3,9 +3,9 @@
 } = {
     rec: {}
 }) => {
-    let self = {
+    let self = Object.assign({
 
-    };
+    }, rec);
 
     //#region Properties
 
@@ -65,7 +65,24 @@
 
     self.amountInCurrency = ko.observable(rec.AmountInCurrency);
 
+    self.approvedAmountInCurrency = ko.observable(rec.ApprovedAmountInCurrency);
+
     self.amountInSterling = ko.observable(rec.AmountInSterling);
+
+    self.approvedAmountInSterling = ko.computed(() => {
+        if (self.approvedAmountInCurrency() && self.exchangeRate()) {
+            return Math.round((self.approvedAmountInCurrency() / self.exchangeRate()) / 100) * 100;
+        }
+    }, self);
+
+    self.approvedAmountInSterlingFormatted = ko.computed(() => {
+        let aais = self.approvedAmountInSterling();
+
+        if (aais)
+            return window.formatCurrency(self.approvedAmountInSterling())
+        else
+            return ''
+    }, self);
 
     self.forexParams = {
         buttons: false,
@@ -94,6 +111,8 @@
         maxValue: null,
         step: 1
     }
+
+    self.deciderComments = ko.observable(rec.DeciderComments);
 
     //#endregion
 
@@ -353,7 +372,7 @@
         inputParams: self.amountInCurrencyParams,
         forexParams: self.forexParams,
         convertedParams: {
-            label: 'Amount in Currency',
+            label: 'Amount in Sterling',
             buttons: false,
             observable: self.amountInSterlingFormatted,
             useNativeValidation: false,
@@ -371,6 +390,65 @@
             step: 1
         }
     }
+
+    self.approvedAmountInCurrencyParams = {
+        highlightOnNull: ko.observable(true),
+        inputParams: self.approvedAmountInCurrency,
+        forexParams: self.forexParams,
+        convertedParams: {
+            label: 'Amount in Sterling',
+            buttons: false,
+            observable: self.approvedAmountInSterlingFormatted,
+            useNativeValidation: false,
+            decorateInputElement: false,
+            insertValidationMessages: false,
+            enable: ko.observable(false),
+            disable: ko.observable(true),
+            locked: ko.observable(true),
+            clearable: ko.observable(false),
+            revertible: ko.observable(false),
+            busy: ko.observable(false),
+            inputType: 'text',
+            minValue: 0.01,
+            maxValue: null,
+            step: 1
+        }
+    }
+
+    self.deciderCommentsParams = {
+        label: 'Comments',
+        originalValue: ko.observable(ko.unwrap(self.deciderComments())),
+        observable: self.deciderComments,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        rows: 3,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        permitRevert: true,
+        charsRemainingOptions: {
+            maxLength: 1000
+        },
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(true),
+        visible: ko.observable(true),
+        clearFunction: () => {
+            var self = this;
+            self.observable(undefined);
+
+        },
+        revertFunction: () => {
+            var self = this;
+            self.observable(self.originalValue());
+        }
+    };
 
     self.errors = new ko.validation.group([
 
@@ -397,6 +475,15 @@
             return 'Various'
         }
     });
+
+    self.supplierLabel = ko.computed(() => {
+        let s = self.supplier();
+        if (s) {
+            return `${s.Code} - ${s.Name}`
+        } else {
+            return "";
+        }
+    })
 
     //#endregion
 
