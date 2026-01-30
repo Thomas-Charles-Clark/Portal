@@ -355,6 +355,7 @@
     <Compile Include="DbContext\Dapper\PortalDbContext-Documents.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-ContractPricing.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-DotDigital.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-Suppliers.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-SupplierPaymentApprovals.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-SupplierPaymentRequests.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Translations.cs" />
@@ -756,6 +757,12 @@
     <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequestDashboard_WeekCommencingRecord.cs" />
     <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequest_Dashboard_SelectDTO.cs" />
     <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequest_Dashboard_SelectResult.cs" />
+    <Compile Include="Models\Suppliers\Payments\SupplierPayments_Overview_Dashboard_SelectRecord.cs" />
+    <Compile Include="Models\Suppliers\Payments\SupplierPayments_Overview_Dashboard_SelectResult.cs" />
+    <Compile Include="Models\Suppliers\Payments\SupplierPayments_Overview_Dashboard_SelectDTO.cs" />
+    <Compile Include="Models\Suppliers\Payments\SupplierPayments_ApprovedTotal.cs" />
+    <Compile Include="Models\Suppliers\Payments\SupplierPayments_Dashboard_SelectDTO.cs" />
+    <Compile Include="Models\Suppliers\Payments\SupplierPayments_Dashboard_SelectResult.cs" />
     <Compile Include="Models\SupplierType.cs" />
     <Compile Include="Models\Supplier.cs" />
     <Compile Include="Models\TradeAccountCreationEmail.cs" />

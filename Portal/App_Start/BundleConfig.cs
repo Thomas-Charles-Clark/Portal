@@ -443,16 +443,11 @@ namespace Portal
 					$"{cssPrefix}/models/trade-account-contacts-widener{cssSuffix}"
 			));
 
-			bundles.Add(new StyleBundle("~/bundles/css/supplier-payment-requests").Include(
+			bundles.Add(new StyleBundle("~/bundles/css/supplier-payments").Include(
                     $"{cssPrefix}/models/full-width-app{cssSuffix}",
-                    $"{cssPrefix}/models/suppliers/payment-requests/supplier-payment-requests{cssSuffix}"
-			));
-
-			bundles.Add(new StyleBundle("~/bundles/css/supplier-payment-approvals").Include(
-					$"{cssPrefix}/models/full-width-app{cssSuffix}",
-					$"{cssPrefix}/models/suppliers/payment-approvals/supplier-payment-approvals{cssSuffix}",
-					$"{cssPrefix}/models/suppliers/payment-approvals/supplier-payment-approvals-sidebar{cssSuffix}",
-					$"{cssPrefix}/models/suppliers/payment-approvals/supplier-payment-approvals-basket{cssSuffix}"
+                    $"{cssPrefix}/models/suppliers/payments/supplier-payments{cssSuffix}",
+                    $"{cssPrefix}/models/suppliers/payments/supplier-payments-sidebar{cssSuffix}",
+					$"{cssPrefix}/models/suppliers/payments/supplier-payments-approvals-basket{cssSuffix}"
 			));
 
 			//  
@@ -1053,20 +1048,17 @@ namespace Portal
 						$"{jsPrefix}/models/trade-accounts/trade-account-contact{jsSuffix}"
 				));
 
-			bundles.Add(new ScriptBundle("~/bundles/js/supplier-payment-requests").Include(
+			bundles.Add(new ScriptBundle("~/bundles/js/supplier-payments").Include(
 						$"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payment-requests/supplier-payment-requests{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payment-requests/supplier-payment-requests-filters{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payment-requests/supplier-payment-request{jsSuffix}"
-				));
-
-			bundles.Add(new ScriptBundle("~/bundles/js/supplier-payment-approvals").Include(
-						$"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payment-approvals/supplier-payment-approvals{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payment-approvals/supplier-payment-approvals-filters{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payment-approvals/supplier-payment-approval{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payment-approvals/supplier-payment-approvals-basket{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payment-approvals/supplier-payment-decision{jsSuffix}"
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-dashboard{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-filters{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-requests{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-request{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-approvals{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-approval{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-approvals-basket{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-decision{jsSuffix}"
 				));
 
 			foreach (var b in BundleTable.Bundles)

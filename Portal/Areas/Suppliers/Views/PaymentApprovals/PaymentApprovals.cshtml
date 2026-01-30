@@ -17,12 +17,6 @@
 	@Scripts.Render("~/bundles/js/tempus-dominus")
 
 	<script type="text/javascript">
-		window.getDashboard = () => {
-			return @Html.Raw(JsonConvert.SerializeObject(Model.Dashboard));
-		}
-	</script>
-
-	<script type="text/javascript">
 
 		var viewModel = supplierPaymentApprovalsViewModel();
 
@@ -153,7 +147,7 @@
 				<label class="filters-count" data-bind="html: filters.countDisplay"></label>
 			</div>
 			<div id="sidebar-collapse" class="sidebar-body">
-				<form id="prefilters" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
+				<form id="sidebar-prefilters" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
 					<div class="prefilter-group">
 						<h5 class="sidebar-heading">
 							Suppliers
@@ -174,29 +168,25 @@
 			</div>
 		</div>
 	</sidebar>
-	<main id="supplier-payment-approvals-main">
-		<div id="prefilters">
-			<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: filters.weekCommencingDateParams }"></div>
-		</div>
-		<div id="grid-container">
-			<div class="card mx-3">
-				<div class="card-body">
-					<h4 class="my-0">
-						Payment Plans
-					</h4>
-					<div style="display: none"
-						 class="supplier-payment-requests-grid-container payment-plans mt-3 z-2"
-						 data-bind="visible: true, kendoGrid: paymentPlanGridParams"></div>
+	<main id="supplier-payment-approvals-main" class="d-none" data-bind="flexFadeVisible: true">
+		<div id="prefilters" class="card">
+			<div class="card-body">
+				<div class="d-flex gap-3 justify-content-center align-items-end">
+					<div class="prefilter d-flex align-items-center gap-3">
+						<label class="form-label m-0">
+							Week Commencing:
+						</label>
+						<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: filters.weekCommencingDateParams }"></div>
+					</div>
+					<div class="prefilter">
+						<div data-bind="component: { name: 'mdc-checkbox-component', params: filters.onlyIncludeSuppliersWithPaymentRequestsParams }"></div>
+					</div>
 				</div>
 			</div>
-			<div class="card m-3">
+		</div>
+		<div id="grid-container">
 				<div class="card-body">
-					<h4 class="my-0">
-						Other Payments
-					</h4>
-					<div style="display: none"
-						 class="supplier-payment-requests-grid-container other-statuses mt-3 z-1"
-						 data-bind="visible: true, kendoGrid: otherPaymentRequestStatusesGridParams"></div>
+					<div class="z-1" data-bind="visible: true, kendoGrid: gridParams"></div>
 				</div>
 			</div>
 		</div>

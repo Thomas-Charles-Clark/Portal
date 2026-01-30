@@ -16,10 +16,7 @@ namespace Portal.Areas.Suppliers.ViewModels
 {
 	public class SupplierPaymentApprovalViewModel : BaseViewModel
 	{
-		public SupplierPaymentApproval_Dashboard_SelectResult Dashboard { get; set; }
-
 		public SupplierPaymentApprovalViewModel(
-			SupplierPaymentApproval_Dashboard_SelectResult dashboard,
 			RoleProperties properties,
 			string applicationHeading, 
 			string applicationSubHeading)
@@ -27,7 +24,7 @@ namespace Portal.Areas.Suppliers.ViewModels
 				   applicationHeading,
 				   applicationSubHeading)
 		{
-			Dashboard = dashboard;
+
 		}
 
 		public static async Task<SupplierPaymentApprovalViewModel> CreateAsync(
@@ -38,13 +35,7 @@ namespace Portal.Areas.Suppliers.ViewModels
 		{
 			var portalDb = new PortalDbContext();
 
-			var dashboard = portalDb.SupplierPaymentApproval_Dashboard_Select(new SupplierPaymentApproval_Dashboard_SelectDTO()
-			{
-				MemberID = memberId,
-				WeekCommencing = DateTime.Now.StartOfWeek(DayOfWeek.Monday),
-			});
-
-			var result = new SupplierPaymentApprovalViewModel(dashboard, properties, applicationHeading, applicationSubHeading);
+			var result = new SupplierPaymentApprovalViewModel(properties, applicationHeading, applicationSubHeading);
 
 			return result;
 		}

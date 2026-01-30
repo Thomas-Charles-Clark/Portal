@@ -23,7 +23,8 @@ namespace SharedEFClasses.Models
             var results = this.Database.Connection.QueryMultiple("[payment].[Approval_Dashboard_Select]", new
             {
                 dto.MemberID,
-                dto.WeekCommencing
+                dto.WeekCommencing,
+                dto.OnlyShowSuppliersWithPaymentRequests
             }, null, null, System.Data.CommandType.StoredProcedure);
 
             return new SupplierPaymentApproval_Dashboard_SelectResult()

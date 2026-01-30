@@ -11,5 +11,7 @@ namespace SharedEFClasses.Models.Suppliers.PaymentApproval
 		public int MemberID { get; set; }
 
 		public DateTime WeekCommencing { get; set; }
+	
+		public bool OnlyShowSuppliersWithPaymentRequests { get; set; }
 	}
 }

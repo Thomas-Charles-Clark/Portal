@@ -356,7 +356,7 @@
   flex: 0 0 auto;
   will-change: height;
   transition: height 150ms linear;
-  /*transition-delay: 150ms;*/
+  transition-delay: 150ms;
   height: 68px;
   border-top: 1px solid #dee2e6;
 }

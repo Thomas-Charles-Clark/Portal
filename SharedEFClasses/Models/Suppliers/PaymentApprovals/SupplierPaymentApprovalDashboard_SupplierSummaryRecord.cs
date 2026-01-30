@@ -12,6 +12,7 @@ namespace SharedEFClasses.Models.Suppliers.PaymentApproval
 		public string SupplierCode { get; set; }
 		public string SupplierName { get; set; }
 		public string SupplierCurrencyCode { get; set; }
+		public string SupplierCurrencyFormattingCulture { get; set; }
 		public decimal? PaymentRequestPaymentPlanTotal { get; set; }
 		public decimal? PaymentRequestOtherTotal { get; set; }
 		public decimal TotalValueGBP { get; set; }

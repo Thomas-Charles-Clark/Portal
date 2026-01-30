@@ -559,11 +559,14 @@
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentApprovalsAPIController.cs" />
+    <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentsAPIController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentRequestsAPIController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentApprovalsController.cs" />
+    <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentsController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentRequestsController.cs" />
     <Compile Include="Areas\Suppliers\SuppliersAreaRegistration.cs" />
     <Compile Include="Areas\Suppliers\ViewModels\SupplierPaymentApprovalViewModel.cs" />
+    <Compile Include="Areas\Suppliers\ViewModels\SupplierPaymentsViewModel.cs" />
     <Compile Include="Areas\Suppliers\ViewModels\SupplierPaymentRequestViewModel.cs" />
     <Compile Include="Areas\Trade-Accounts\Controllers\TradeAccountContactsAPIController.cs" />
     <Compile Include="Areas\Trade-Accounts\Controllers\TradeAccountContactsController.cs" />
@@ -1744,8 +1747,6 @@
     <Content Include="css\src\models\trade-account-creation-email-maintenance.scss" />
     <Content Include="css\src\models\translations\translations.scss" />
     <Content Include="css\src\models\virtual-scrolling-deferred-data.scss" />
-    <Content Include="css\src\models\visit-booker.scss" />
-    <Content Include="css\src\models\visit-search.scss" />
     <Content Include="css\src\fonts\bootstrap-icons.css" />
     <Content Include="css\src\fonts\bootstrap-icons.min.css" />
     <Content Include="css\src\fonts\font-awesome.css" />
@@ -1882,14 +1883,15 @@
     <Content Include="js\src\models\pager.js" />
     <Content Include="js\src\models\credit-control\credit-control.js" />
     <Content Include="js\src\models\stock-check-request.js" />
-    <Content Include="js\src\models\suppliers\payment-approvals\supplier-payment-approvals-basket.js" />
-    <Content Include="js\src\models\suppliers\payment-approvals\supplier-payment-decision.js" />
-    <Content Include="js\src\models\suppliers\payment-approvals\supplier-payment-approval.js" />
-    <Content Include="js\src\models\suppliers\payment-approvals\supplier-payment-approvals-filters.js" />
-    <Content Include="js\src\models\suppliers\payment-approvals\supplier-payment-approvals.js" />
-    <Content Include="js\src\models\suppliers\payment-requests\supplier-payment-request.js" />
-    <Content Include="js\src\models\suppliers\payment-requests\supplier-payment-requests-filters.js" />
-    <Content Include="js\src\models\suppliers\payment-requests\supplier-payment-requests.js" />
+    <Content Include="js\src\models\suppliers\payments\supplier-payments-approvals-basket.js" />
+    <Content Include="js\src\models\suppliers\payments\supplier-payments-decision.js" />
+    <Content Include="js\src\models\suppliers\payments\supplier-payments-approval.js" />
+    <Content Include="js\src\models\suppliers\payments\supplier-payments-approvals.js" />
+    <Content Include="js\src\models\suppliers\payments\supplier-payments-request.js" />
+    <Content Include="js\src\models\suppliers\payments\supplier-payments-filters.js" />
+    <Content Include="js\src\models\suppliers\payments\supplier-payments-requests.js" />
+    <Content Include="js\src\models\suppliers\payments\supplier-payments-dashboard.js" />
+    <Content Include="js\src\models\suppliers\payments\supplier-payments.js" />
     <Content Include="js\src\models\trade-accounts\trade-account-contacts-dashboard-pod.js" />
     <Content Include="js\src\models\trade-accounts\trade-account-contact.js" />
     <Content Include="js\src\models\trade-accounts\trade-account-contacts-filters.js" />
@@ -2735,6 +2737,7 @@
     <Content Include="Areas\Suppliers\Views\web.config" />
     <Content Include="Areas\Suppliers\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Suppliers\Views\PaymentApprovals\PaymentApprovals.cshtml" />
+    <Content Include="Areas\Suppliers\Views\Payments\Payments.cshtml" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -2754,7 +2757,6 @@
     <Content Include="css\src\models\fenwick-invoicing.scss" />
     <Content Include="css\src\models\range-management.scss" />
     <Content Include="css\src\models\contract-pricing.scss" />
-    <Content Include="css\src\models\virtual-scrolling-deferred-data.scss" />
     <Content Include="css\src\models\press-contacts.scss" />
     <Content Include="css\src\models\full-width-app.scss" />
     <Content Include="css\src\fonts\bootstrap-icons.min.css.map" />
@@ -3175,12 +3177,12 @@
     <Content Include="css\src\models\trade-account-contacts.scss" />
     <Content Include="css\src\models\trade-account-contacts-widener.scss" />
     <Content Include="css\src\models\credit-control\credit-control-sidebar.scss" />
-    <Content Include="css\src\models\suppliers\payment-requests\supplier-payment-requests.scss" />
-    <Content Include="css\src\models\suppliers\payment-requests\supplier-payment-requests-sidebar.scss" />
     <Content Include="css\src\models\translations\translations-dashboard.scss" />
-    <Content Include="css\src\models\suppliers\payment-approvals\supplier-payment-approvals-sidebar.scss" />
-    <Content Include="css\src\models\suppliers\payment-approvals\supplier-payment-approvals.scss" />
-    <Content Include="css\src\models\suppliers\payment-approvals\supplier-payment-approvals-basket.scss" />
+    <Content Include="css\src\models\suppliers\payments\supplier-payments-approvals-basket.scss" />
+    <Content Include="css\src\models\visit-booker.scss" />
+    <Content Include="css\src\models\visit-search.scss" />
+    <Content Include="css\src\models\suppliers\payments\supplier-payments.scss" />
+    <Content Include="css\src\models\suppliers\payments\supplier-payments-sidebar.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

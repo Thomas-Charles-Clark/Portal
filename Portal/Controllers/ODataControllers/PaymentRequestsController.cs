@@ -24,6 +24,7 @@ using System.Web.Http.Results;
 using System.Web.DynamicData;
 using AngleSharp.Dom;
 using System.Data.Entity.Core.Metadata.Edm;
+using System.Web.UI;
 
 namespace Portal.Controllers
 {
@@ -36,7 +37,7 @@ namespace Portal.Controllers
 		[EnableQuery]
         public IQueryable<PaymentRequest> Get()
         {
-            return PortalDb.PaymentRequests.AsQueryable();
+            return PortalDb.PaymentRequests.Where(pr => pr.Deleted == false).AsQueryable();
         }
 
         [HttpPut]
@@ -54,7 +55,7 @@ namespace Portal.Controllers
 
             var original = await PortalDb.PaymentRequests.FindAsync(key);
 
-            if (original == null)
+            if (original == null || original.Deleted)
             {
                 return NotFound();
             }
@@ -117,6 +118,16 @@ namespace Portal.Controllers
 
 			await PortalDb.SaveChangesAsync();
 
+			creationResult.PaymentRequestPurchaseOrderHeads = PortalDb.PaymentRequest_PurchaseOrderHeads.Where(p => p.PaymentRequestID == entity.PaymentRequestID).ToList();
+
+			creationResult.PaymentRequestStatus = PortalDb.PaymentRequestStatuses.SingleOrDefault(prs => prs.PaymentRequestStatusID == entity.PaymentRequestStatusID);
+
+			creationResult.RequestedByMember = PortalDb.Users.SingleOrDefault(u => u.Id == entity.RequestedByMemberID);
+
+			creationResult.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == entity.CurrencyID);
+
+			creationResult.Supplier = PortalDb.Suppliers_Live.SingleOrDefault(s => s.Code == entity.SupplierCode);
+
 			return Created(creationResult);
 		}
 
@@ -136,7 +147,7 @@ namespace Portal.Controllers
 
             var originalEntity = await PortalDb.PaymentRequests.FindAsync(key);
 
-            if (originalEntity == null)
+            if (originalEntity == null || originalEntity.Deleted)
             {
                 return NotFound();
             }
