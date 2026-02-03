@@ -202,16 +202,16 @@
   opacity: 0.55;
   transition: opacity 150ms ease-in-out;
 }
-.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls:hover > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls:focus > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls:focus-within > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls:hover > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls:focus > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls:focus-within > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls:hover > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls:focus > div, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls:focus-within > div,
-.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls:hover > div,
-.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls:focus > div,
-.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls:focus-within > div,
-.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls:hover > div,
-.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls:focus > div,
-.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls:focus-within > div,
-.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls:hover > div,
-.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls:focus > div,
-.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls:focus-within > div {
+.mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls > div:hover, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls > div:focus, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .controls > div:focus-within, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls > div:hover, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls > div:focus, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .controls > div:focus-within, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls > div:hover, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls > div:focus, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .controls > div:focus-within,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls > div:hover,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls > div:focus,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-text-field--selected .controls > div:focus-within,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls > div:hover,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls > div:focus,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).date-select--selected .controls > div:focus-within,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls > div:hover,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls > div:focus,
+.mdc-validating-field .mdc-text-field:not(.mdc-bootstrap-multiselect).mdc-select--selected .controls > div:focus-within {
   opacity: 0.9;
 }
 .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-text-field--selected .mdc-notched-outline__notch, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).date-select--selected .mdc-notched-outline__notch, .mdc-validating-field .mdc-select:not(.mdc-select--disabled).mdc-select--selected .mdc-notched-outline__notch,
@@ -403,6 +403,53 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #tabs-container #tabs-list .nav-item {
   margin-bottom: 0;
 }
+#tabs-container #tabs-list .mdc-select {
+  height: 35px;
+}
+#tabs-container #tabs-list .mdc-select .k-input-inner {
+  padding-right: 42px;
+}
+#tabs-container #tabs-list .mdc-select .controls {
+  max-height: 37px;
+}
+
+.mdc-select--selected:not(.mdc-select--disabled) .k-picker-solid {
+  background-color: #084298;
+  color: #fff;
+}
+.mdc-select--selected:not(.mdc-select--disabled) button.k-input-button {
+  border-color: #084298;
+  color: #fff;
+  background-color: #084298 !important;
+  opacity: 0.5;
+}
+.mdc-select--selected:not(.mdc-select--disabled) .k-picker.k-hover .k-input-button {
+  opacity: 1 !important;
+}
+.mdc-select--selected.mdc-select--disabled .k-picker-solid {
+  background-color: #ced4da;
+  color: #212529;
+}
+.mdc-select--selected.mdc-select--disabled button.k-input-button {
+  border-color: #adb5bd;
+  color: #212529;
+  border: 0;
+  background-color: #ced4da;
+}
+.mdc-select--selected.mdc-select--disabled button.k-input-button .k-svg-icon svg {
+  fill: #6c757d;
+}
+.mdc-select--selected button.k-input-button {
+  border: none !important;
+}
+.mdc-select--selected .controls {
+  right: 26px !important;
+}
+
+#payment-period-prefilter {
+  min-width: 240px;
+  position: relative;
+}
 
 #totals-table {
   display: inline-table;
@@ -495,11 +542,6 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   flex-direction: row;
   gap: 0.5rem;
 }
-.k-grid .k-command-cell .k-button {
-  display: block;
-  width: 100%;
-  line-height: 2em;
-}
 .k-grid .k-command-cell .k-button span {
   position: relative;
   top: -1px;
@@ -511,6 +553,17 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 }
 .k-grid .k-command-cell .k-grid-Reject:hover, .k-grid .k-command-cell .k-grid-Reject:focus, .k-grid .k-command-cell .k-grid-Reject:focus-within {
   background-color: #f1d1d3;
+}
+.k-grid .k-table-td a.mailto-link {
+  color: #0d6efd;
+  text-decoration: none;
+}
+.k-grid .k-table-td a.mailto-link:hover, .k-grid .k-table-td a.mailto-link:focus, .k-grid .k-table-td a.mailto-link:focus-within {
+  text-decoration: underline;
+}
+
+.k-grid.budget-grid .k-command-cell {
+  display: table-cell;
 }
 
 .k-grid-pager {
@@ -635,28 +688,11 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   top: 8px;
 }
 
-.supplier-payment-approvals-grid-container {
-  border-radius: 0.375rem;
-  border: 1px solid #ced4da;
-  width: 100%;
-  margin: 0 auto;
-}
-.supplier-payment-approvals-grid-container .k-grid-toolbar {
-  border-radius: 0.375rem 0.375rem 0 0;
-}
-.supplier-payment-approvals-grid-container .k-pager {
-  border-radius: 0 0 0.375rem 0.375rem;
-}
-
 .k-multiselect-clearable.k-multiselect {
   line-height: inherit;
 }
 .k-multiselect-clearable .k-input {
   padding: 0;
-}
-
-.k-animation-container .k-list-container.k-popup {
-  width: 420px !important;
 }
 
 .k-loading-mask {
@@ -884,6 +920,6 @@ td > .k-widget.k-multiselect .k-multiselect-wrap > .k-i-close {
 }
 
 .k-animation-container .k-list-container.k-popup {
-  width: 420px !important;
+  min-width: 240px;
 }
 /*# sourceMappingURL=supplier-payments.css.map */

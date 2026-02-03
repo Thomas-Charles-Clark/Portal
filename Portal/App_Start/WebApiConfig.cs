@@ -153,8 +153,10 @@ namespace Portal
             odataBuilder.EntitySet<Company>("Companies");
             odataBuilder.EntitySet<PaymentRequestStatus>("PaymentRequestStatuses");
 			odataBuilder.EntitySet<PaymentRequest>("PaymentRequests");
+			odataBuilder.EntitySet<PaymentPeriod>("PaymentPeriods");
+			odataBuilder.EntitySet<PaymentBudget>("PaymentBudgets");
 
-            var paymentRequests = odataBuilder.EntityType<PaymentRequest>();
+			var paymentRequests = odataBuilder.EntityType<PaymentRequest>();
 
 			odataBuilder.EntitySet<PurchaseOrderHead>("PurchaseOrderHeads");
 
@@ -184,7 +186,26 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SupplierLive)).AddProperty(typeof(SupplierLive).GetProperty("AddressDisplaySingleLine"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(PaymentRequest)).AddProperty(typeof(PaymentRequest).GetProperty("AmountApprovedInCurrency"));
 
-            var purchaseOrderHeadValueMapperFunction = odataBuilder.EntityType<PurchaseOrderHead>()
+
+			var paymentBudgetValueMapperFunction = odataBuilder.EntityType<PaymentBudget>()
+				.Collection
+				.Function("PaymentBudgetValueMapper")
+				.ReturnsCollectionFromEntitySet<PaymentBudget>("PaymentBudgets");
+
+			paymentBudgetValueMapperFunction.Parameter<int>("budgetId");
+
+
+
+			var paymentPeriodValueMapperFunction = odataBuilder.EntityType<PaymentPeriod>()
+				.Collection
+				.Function("PaymentPeriodValueMapper")
+				.ReturnsCollectionFromEntitySet<PaymentPeriod>("PaymentPeriods");
+
+			paymentPeriodValueMapperFunction.Parameter<int>("periodId");
+
+
+
+			var purchaseOrderHeadValueMapperFunction = odataBuilder.EntityType<PurchaseOrderHead>()
 				.Collection
 				.Function("PurchaseOrderHeadValueMapper")
 				.ReturnsCollectionFromEntitySet<PurchaseOrderHead>("PurchaseOrderHeads");

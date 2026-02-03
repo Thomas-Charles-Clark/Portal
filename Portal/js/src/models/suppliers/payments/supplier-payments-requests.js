@@ -2,25 +2,26 @@
     ready,
     busy,
     busyMessage,
-    filters
+    filters,
+    refreshDashboard
 } = {
     ready: ko.observable(false),
     busy: ko.observable(false),
     busyMessage: ko.observable('Please Wait'),
-    filters: {}
+    filters: {},
+    refreshDashboard: () => { }
 }) => {
 
-    let self = {};
+    let self = {
+        ready,
+        busy: ko.observable(false),
+        parentBusy: busy,
+        busyMessage,
+        filters,
+        refreshDashboard
+    };
 
     //#region Properties
-
-    self.ready = ready;
-
-    self.busy = busy;
-
-    self.busyMessage = busyMessage;
-
-    self.filters = filters;
 
     self.paymentPlanGridWidget = ko.observable();
 
@@ -50,9 +51,15 @@
             type: "odata-v4",
             transport: {
                 read: {
-                    url: defaultPaymentRequestStatusId != null
-                        ? `/odata/PaymentRequests?$apply=filter(PaymentRequestStatusID eq ${defaultPaymentRequestStatusId})&$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads`
-                        : `/odata/PaymentRequests?$apply=filter(PaymentRequestStatusID ne 7)&$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads`
+                    url: "/odata/PaymentRequests?$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads"
+                        //self.filters.userId()
+                        //    ? defaultPaymentRequestStatusId != null
+                        //        ? `/odata/PaymentRequests?$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads`
+                        //        : `/odata/PaymentRequests?$apply=filter((PaymentRequestStatusID ne 7) and (RequestedByMemberID eq ${self.filters.userId()}))&$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads`
+                        //    : defaultPaymentRequestStatusId != null
+                        //        ? `/odata/PaymentRequests?$apply=filter(PaymentRequestStatusID eq ${defaultPaymentRequestStatusId})&$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads`
+                        //        : `/odata/PaymentRequests?$apply=filter(PaymentRequestStatusID ne 7)&$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads`,
+                        
                 },
                 update: {
                     url: function (item) {
@@ -76,6 +83,24 @@
                     console.log(type, options);
 
                     var result = kendo.data.transports["odata-v4"].parameterMap(options, type);
+
+                    let filters = [];
+
+                    if (defaultPaymentRequestStatusId != null) {
+                        filters.push(`(PaymentRequestStatusID eq ${defaultPaymentRequestStatusId})`);
+                    } else {
+                        filters.push(`(PaymentRequestStatusID ne ${defaultPaymentRequestStatusId})`);
+                    }
+
+                    let userId = self.filters.userId();
+
+                    if (userId != null) {
+                        filters.push(`(RequestedByMemberID eq ${userId})`);
+                    }
+
+                    let filtersString = filters.join(" and ");
+
+                    result.$filter = `(${filtersString})`;// `(PaymentRequestStatusID eq ${defaultPaymentRequestStatusId}) and (RequestedByMemberID eq ${self.filters.userId()})`;
 
                     return result;
                 }

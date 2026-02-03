@@ -1051,14 +1051,17 @@ namespace Portal
 			bundles.Add(new ScriptBundle("~/bundles/js/supplier-payments").Include(
 						$"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payments/supplier-payments-dashboard{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payments/supplier-payments-filters{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payments/supplier-payments-requests{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payments/supplier-payments-request{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payments/supplier-payments-approvals{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments-approval{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-approvals{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments-approvals-basket{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payments/supplier-payments-decision{jsSuffix}"
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-budgets{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-dashboard{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-decision{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-history-summary{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-history-detail{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-filters{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-request{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-requests{jsSuffix}"
 				));
 
 			foreach (var b in BundleTable.Bundles)

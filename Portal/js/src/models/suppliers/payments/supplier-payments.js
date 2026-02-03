@@ -39,14 +39,40 @@
         ready: self.ready,
         busy: self.busy,
         busyMessage: self.busyMessage,
-        filters: self.filters
+        filters: self.filters,
+        refreshDashboard: self.dashboard.refresh
     });
 
     self.approvals = supplierPaymentsApprovalsViewModel({
         ready: self.ready,
         busy: self.busy,
         busyMessage: self.busyMessage,
-        filters: self.filters
+        filters: self.filters,
+        refreshDashboard: self.dashboard.refresh
+    });
+
+    self.budgets = supplierPaymentsBudgetsViewModel({
+        ready: self.ready,
+        busy: self.busy,
+        busyMessage: self.busyMessage,
+        filters: self.filters,
+        refreshDashboard: self.dashboard.refresh
+    });
+
+    self.historySummary = supplierPaymentsHistorySummaryViewModel({
+        ready: self.ready,
+        busy: self.busy,
+        busyMessage: self.busyMessage,
+        filters: self.filters,
+        refreshDashboard: self.dashboard.refresh
+    });
+
+    self.historyDetails = supplierPaymentsHistoryDetailViewModel({
+        ready: self.ready,
+        busy: self.busy,
+        busyMessage: self.busyMessage,
+        filters: self.filters,
+        refreshDashboard: self.dashboard.refresh
     });
 
     //#endregion

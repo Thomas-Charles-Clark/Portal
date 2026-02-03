@@ -558,16 +558,10 @@
     <Compile Include="Areas\Credit-Control\ViewModels\StatementsViewModel.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceController.cs" />
-    <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentApprovalsAPIController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentsAPIController.cs" />
-    <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentRequestsAPIController.cs" />
-    <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentApprovalsController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentsController.cs" />
-    <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentRequestsController.cs" />
     <Compile Include="Areas\Suppliers\SuppliersAreaRegistration.cs" />
-    <Compile Include="Areas\Suppliers\ViewModels\SupplierPaymentApprovalViewModel.cs" />
     <Compile Include="Areas\Suppliers\ViewModels\SupplierPaymentsViewModel.cs" />
-    <Compile Include="Areas\Suppliers\ViewModels\SupplierPaymentRequestViewModel.cs" />
     <Compile Include="Areas\Trade-Accounts\Controllers\TradeAccountContactsAPIController.cs" />
     <Compile Include="Areas\Trade-Accounts\Controllers\TradeAccountContactsController.cs" />
     <Compile Include="Areas\Customers\Controllers\GiftVouchersAPIController.cs" />
@@ -681,6 +675,8 @@
     <Compile Include="Areas\Trade-Accounts\ViewModels\TradeAccountContactsViewModel.cs" />
     <Compile Include="Areas\Translations\Controllers\TranslateResourcesApiController.cs" />
     <Compile Include="Controllers\IncomingEmailAttachmentController.cs" />
+    <Compile Include="Controllers\ODataControllers\PaymentPeriodsController.cs" />
+    <Compile Include="Controllers\ODataControllers\PaymentBudgetsController.cs" />
     <Compile Include="Controllers\ODataControllers\PurchaseOrderHeadsController.cs" />
     <Compile Include="Controllers\ODataControllers\PaymentRequestStatusesController.cs" />
     <Compile Include="Controllers\ODataControllers\CompaniesController.cs" />
@@ -1020,7 +1016,6 @@
     <Content Include="Areas\Downloads\WindowsDownloaderBase\publish\setup.exe" />
     <Content Include="Areas\Invoices\Views\Booking\InvoiceBooking.cshtml" />
     <Content Include="Areas\Products\Views\Enquiry\SampleRequestOld.txt" />
-    <Content Include="Areas\Suppliers\Views\PaymentRequests\PaymentRequests.cshtml" />
     <Content Include="Content\bootstrap-switch.css" />
     <Content Include="Content\bootstrap-switch.min.css">
       <DependentUpon>bootstrap-switch.css</DependentUpon>
@@ -1884,14 +1879,17 @@
     <Content Include="js\src\models\credit-control\credit-control.js" />
     <Content Include="js\src\models\stock-check-request.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-approvals-basket.js" />
+    <Content Include="js\src\models\suppliers\payments\supplier-payments-budgets.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-decision.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-approval.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-approvals.js" />
+    <Content Include="js\src\models\suppliers\payments\supplier-payments-history-summary.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-request.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-filters.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-requests.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-dashboard.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments.js" />
+    <Content Include="js\src\models\suppliers\payments\supplier-payments-history-detail.js" />
     <Content Include="js\src\models\trade-accounts\trade-account-contacts-dashboard-pod.js" />
     <Content Include="js\src\models\trade-accounts\trade-account-contact.js" />
     <Content Include="js\src\models\trade-accounts\trade-account-contacts-filters.js" />
@@ -2736,7 +2734,6 @@
     <Content Include="Areas\Trade-Accounts\Views\TradeAccountContacts\TradeAccountContacts.cshtml" />
     <Content Include="Areas\Suppliers\Views\web.config" />
     <Content Include="Areas\Suppliers\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Suppliers\Views\PaymentApprovals\PaymentApprovals.cshtml" />
     <Content Include="Areas\Suppliers\Views\Payments\Payments.cshtml" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">

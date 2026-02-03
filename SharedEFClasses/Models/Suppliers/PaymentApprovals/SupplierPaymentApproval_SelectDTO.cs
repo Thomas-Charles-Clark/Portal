@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.Suppliers.PaymentApproval
 {
-	public class SupplierPaymentApproval_Dashboard_SelectDTO
+	public class SupplierPaymentApproval_SelectDTO
 	{
 		public int MemberID { get; set; }
 

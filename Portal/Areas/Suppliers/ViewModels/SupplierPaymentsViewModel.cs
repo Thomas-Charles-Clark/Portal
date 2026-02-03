@@ -18,9 +18,12 @@ namespace Portal.Areas.Suppliers.ViewModels
 {
 	public class SupplierPaymentsViewModel : BaseViewModel
 	{
+		public bool UserMayAdministrate { get; set; }
+
 		public SupplierPayments_Overview_Dashboard_SelectResult Dashboard { get; set; }
 
 		public SupplierPaymentsViewModel(
+			bool userMayAdministrate,
 			RoleProperties properties,
 			string applicationHeading, 
 			string applicationSubHeading)
@@ -28,16 +31,17 @@ namespace Portal.Areas.Suppliers.ViewModels
 				   applicationHeading,
 				   applicationSubHeading)
 		{
-
+			UserMayAdministrate = userMayAdministrate;
 		}
 
 		public static async Task<SupplierPaymentsViewModel> CreateAsync(
 			int userId,
+			bool userMayAdministrate,
 			RoleProperties properties,
 			string applicationHeading,
 			string applicationSubHeading)
 		{
-			var result = new SupplierPaymentsViewModel(properties, applicationHeading, applicationSubHeading);
+			var result = new SupplierPaymentsViewModel(userMayAdministrate, properties, applicationHeading, applicationSubHeading);
 
 			var dto = new SupplierPayments_Dashboard_SelectDTO() 
 			{ 

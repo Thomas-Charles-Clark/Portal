@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.Suppliers.PaymentApproval
 {
-	public class SupplierPaymentApprovalDashboard_SupplierSummaryRecord
+	public class SupplierPaymentApproval_SupplierSummaryRecord
 	{
 		public string SupplierCode { get; set; }
 		public string SupplierName { get; set; }
@@ -25,6 +25,6 @@ namespace SharedEFClasses.Models.Suppliers.PaymentApproval
 		public decimal Debt120DayValue { get; set; }
 
 		[NotMapped]
-		public IEnumerable<SupplierPaymentApprovalDashboard_SupplierDetailRecord> Details { get; set; }
+		public IEnumerable<SupplierPaymentApproval_SupplierDetailRecord> Details { get; set; }
 	}
 }

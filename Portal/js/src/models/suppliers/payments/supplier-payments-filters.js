@@ -3,10 +3,10 @@
     busy,
     busyMessage
 } = {
-    ready: ko.observable(false),
-    busy: ko.observable(false),
-    busyMessage: ko.observable('Please Wait')
-}) => {
+        ready: ko.observable(false),
+        busy: ko.observable(false),
+        busyMessage: ko.observable('Please Wait')
+    }) => {
 
     let self = {};
 
@@ -26,9 +26,17 @@
 
     self.weekCommencingDate = ko.observable(moment(new Date()).weekdayWithStartWeekday(0, 1).toDate());
 
+    self.paymentPeriodId = ko.observable(+moment(new Date()).weekdayWithStartWeekday(0, 1).format('YYYYMMDD'));
+
+    self.paymentPeriod = ko.observable();
+
     self.onlyIncludeSuppliersWithPaymentRequests = ko.observable(true);
 
     self.onlyShowSuppliersWithOutstandingInvoices = ko.observable(false);
+
+    self.userId = ko.observable(getUserId());
+
+    self.user = ko.observable();
 
     //#endregion
 
@@ -82,6 +90,119 @@
         decorateInputElement: true,
     };
 
+    self.paymentPeriodParams = kendoMDCDropDownList({
+        skipCascade: true,
+        odata: true,
+        endPoint: '/odata/PaymentPeriods',
+        textField: 'Label',
+        valueField: 'PeriodID',
+        idObservable: self.paymentPeriodId,
+        objObservable: self.paymentPeriod,
+        originalValue: ko.unwrap(self.paymentPeriodId),
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(false),
+        revertible: ko.observable(true),
+        revertFunction: function () {
+            let self = this;
+            self.idObservable(self.originalValue);
+            self.dropDownListSettings.widget().trigger('change');
+        },
+        readOnly: false,
+        filter: false,
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'PeriodID'
+        },
+        select: function (e) {
+            console.log('paymentPeriodParams select', e);
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.getElementById('payment-period-prefilter')
+        }
+    });
+
+    self.userSelectorParams = kendoMDCDropDownList({
+        odata: true,
+        endPoint: '/odata/Members/Default.MemberFilter(searchTerm=null)',
+        textField: 'FullName',
+        valueField: 'Id',
+        virtual: true,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                $.ajax({
+                    url: `/odata/Members/Default.MemberValueMapper(id=${options.value || "null"})`,
+                    type: 'GET',
+                    success: function (data) {
+                        options.success(data.value);
+                    }
+                });
+            }
+        },
+        idObservable: self.userId,
+        objObservable: self.user,
+        height: 340,
+        template: '#: FullName # - #: Email #',
+        valueTemplate: '#: FullName # - #: Email #',
+        optionLabel: {
+            FullName: 'No User Selected',
+            Email: 'no user selected'
+        },
+        autoBind: true,
+        height: 340,
+        filtering: function (ev) {
+            var filterValue = ev.filter != undefined ? ev.filter.value : "";
+            ev.preventDefault();
+
+            this.dataSource.filter({
+                logic: "or",
+                filters: [
+                    {
+                        field: "Email",
+                        operator: "startswith",
+                        value: filterValue
+                    },
+                    {
+                        field: "FullName",
+                        operator: "contains",
+                        value: filterValue
+                    }
+                ]
+            });
+        },
+        showClear: false,
+        clearFunction: null,
+        permitRevert: true,
+        enable: ko.observable(window.getCanUserAdministrate()),
+        disable: ko.observable(!window.getCanUserAdministrate()),
+        clearable: ko.observable(window.getCanUserAdministrate()),
+        clearFunction: function () {
+            self.userId('')
+            self.userSelectorParams.dropDownListSettings.widget().value(-1);
+        },
+        revertible: ko.observable(true),
+        popupSettings: {
+            appendTo: document.querySelector('#user-selector')
+        }
+    });
+
     self.onlyIncludeSuppliersWithPaymentRequestsParams = {
         checkboxId: "only-with-requests",
         label: "Only Display Suppliers with Outstanding Payment Requests",
@@ -133,7 +254,8 @@
 
     self.toJS = () => {
         return {
-            weekCommencing: moment(self.weekCommencingDate()).format('YYYY/MM/DD'),
+            weekCommencing: moment(self.paymentPeriodId(), 'YYYYMMDD').format('YYYY/MM/DD'),
+            memberId: self.userId(),
             onlyShowSuppliersWithPaymentRequests: self.onlyIncludeSuppliersWithPaymentRequests(),
             onlyShowSuppliersWithOutstandingInvoices: self.onlyShowSuppliersWithOutstandingInvoices()
         }

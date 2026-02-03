@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.Suppliers.PaymentApproval
 {
-	public class SupplierPaymentApprovalDashboard_SupplierDetailRecord
+	public class SupplierPaymentApproval_SupplierDetailRecord
 	{
 		public string SupplierCode { get; set; }
 

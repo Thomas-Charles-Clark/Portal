@@ -43,8 +43,11 @@ namespace Portal.Areas.Suppliers.Controllers
 
 			var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
+			var userMayAdministrate = User.IsInRole("Super Admin") || User.IsInRole("Supplier Payment Decider");
+
 			var model = await SupplierPaymentsViewModel.CreateAsync(
 				user.Id, 
+				userMayAdministrate,
 				user.GetActiveRoleProperties(), 
 				application.Heading,
 				application.SubHeading);

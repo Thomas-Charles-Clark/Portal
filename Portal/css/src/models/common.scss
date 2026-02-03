@@ -323,12 +323,10 @@ $readonly-background: repeating-linear-gradient(-45deg, rgb(0 0 0 / 5%), transpa
                     text-shadow: 0 1px 0 $black;
                     opacity: 0.55;
                     transition: opacity 150ms ease-in-out;
-                }
 
-                &:hover,
+                    &:hover,
                     &:focus,
                     &:focus-within {
-                    > div {
                         opacity: 0.9;
                     }
                 }

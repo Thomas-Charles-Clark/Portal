@@ -2,19 +2,23 @@
     ready,
     busy,
     busyMessage,
-    filters
+    filters,
+    refreshDashboard
 } = {
     ready: ko.observable(false),
     busy: ko.observable(false),
     busyMessage: ko.observable('Please Wait'),
-    filters: {}
+    filters: {},
+        refreshDashboard: () => { }
 }) => {
 
     let self = {
         ready,
-        busy,
+        busy: ko.observable(false),
+        parentBusy: busy,
         busyMessage,
-        filters
+        filters,
+        refreshDashboard
     };
 
     //#region Properties
@@ -196,117 +200,123 @@
     });
 
     self.gridColumns = [{
-        field: 'SupplierCode',
-        title: 'Supplier',
-        width: 420,
-        attributes: {
-            "class": "text-end"
-        },
-        filterable: {
-            extra: false
-        },
-        template: (e) => {
-            return `${e.SupplierName} (${e.SupplierCode})`
-        }
-    }, {
-        field: 'PaymentRequestPaymentPlanTotal',
-        title: 'Payment Plan Requests',
-        width: 180,
-        template: (e) => {
-            if (e.PaymentRequestPaymentPlanTotal != null) {
-                return formatCurrency(e.PaymentRequestPaymentPlanTotal, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
-            } else {
-                return '';
+        title: 'Payment Requests',
+        fields: [{
+            field: 'SupplierCode',
+            title: 'Supplier',
+            width: 420,
+            attributes: {
+                "class": "text-end"
+            },
+            filterable: {
+                extra: false
+            },
+            template: (e) => {
+                return `${e.SupplierName} (${e.SupplierCode})`
             }
-        }
-    }, {
-        field: 'PaymentRequestOtherTotal',
-        title: 'Other Requests',
-        width: 180,
-        template: (e) => {
-            if (e.PaymentRequestOtherTotal != null) {
-                return formatCurrency(e.PaymentRequestOtherTotal, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
-            } else {
-                return '';
+        }, {
+            field: 'PaymentRequestPaymentPlanTotal',
+            title: 'Payment Plan Requests',
+            width: 180,
+            template: (e) => {
+                if (e.PaymentRequestPaymentPlanTotal != null) {
+                    return formatCurrency(e.PaymentRequestPaymentPlanTotal, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                } else {
+                    return '';
+                }
             }
-        }
+        }]
     }, {
-        field: 'TotalValue',
-        title: 'Total Due',
-        width: 180,
-        template: (e) => {
-            if (e.TotalValue != null) {
-                return formatCurrency(e.TotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
-            } else {
-                return '';
+        title: 'Supplier Invoices',
+        fields: [{
+            field: 'PaymentRequestOtherTotal',
+            title: 'Other Requests',
+            width: 180,
+            template: (e) => {
+                if (e.PaymentRequestOtherTotal != null) {
+                    return formatCurrency(e.PaymentRequestOtherTotal, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                } else {
+                    return '';
+                }
             }
-        }
-    }, {
-        field: 'TotalValue',
-        title: 'Not Due',
-        width: 180,
-        template: (e) => {
-            if (e.TotalValue != null) {
-                return formatCurrency(e.NotDueTotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
-            } else {
-                return '';
+        }, {
+            field: 'TotalValue',
+            title: 'Total Due',
+            width: 180,
+            template: (e) => {
+                if (e.TotalValue != null) {
+                    return formatCurrency(e.TotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                } else {
+                    return '';
+                }
             }
-        }
-    }, {
-        field: 'OverdueTotalValue',
-        title: 'Overdue',
-        width: 180,
-        template: (e) => {
-            if (e.OverdueTotalValue != null) {
-                return formatCurrency(e.OverdueTotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
-            } else {
-                return '';
+        }, {
+            field: 'TotalValue',
+            title: 'Not Due',
+            width: 180,
+            template: (e) => {
+                if (e.TotalValue != null) {
+                    return formatCurrency(e.NotDueTotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                } else {
+                    return '';
+                }
             }
-        }
-    }, {
-        field: 'Debt30DayValue',
-        title: '30 day',
-        width: 180,
-        template: (e) => {
-            if (e.Debt30DayValue != null) {
-                return formatCurrency(e.Debt30DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
-            } else {
-                return '';
+        }, {
+            field: 'OverdueTotalValue',
+            title: 'Overdue',
+            width: 180,
+            template: (e) => {
+                if (e.OverdueTotalValue != null) {
+                    return formatCurrency(e.OverdueTotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                } else {
+                    return '';
+                }
             }
-        }
-    }, {
-        field: 'Debt60DayValue',
-        title: '60 day',
-        width: 180,
-        template: (e) => {
-            if (e.Debt60DayValue != null) {
-                return formatCurrency(e.Debt60DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
-            } else {
-                return '';
+        }, {
+            field: 'Debt30DayValue',
+            title: '30 day',
+            width: 180,
+            template: (e) => {
+                if (e.Debt30DayValue != null) {
+                    return formatCurrency(e.Debt30DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                } else {
+                    return '';
+                }
             }
-        }
-    }, {
-        field: 'Debt90DayValue',
-        title: '90 day',
-        width: 180,
-        template: (e) => {
-            if (e.Debt90DayValue != null) {
-                return formatCurrency(e.Debt90DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
-            } else {
-                return '';
+        }, {
+            field: 'Debt60DayValue',
+            title: '60 day',
+            width: 180,
+            template: (e) => {
+                if (e.Debt60DayValue != null) {
+                    return formatCurrency(e.Debt60DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                } else {
+                    return '';
+                }
             }
-        }
-    }, {
-        field: 'Debt120DayValue',
-        title: '120 day',
-        width: 180,
-        template: (e) => {
-            if (e.Debt120DayValue != null) {
-                return formatCurrency(e.Debt120DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
-            } else {
-                return '';
+        }, {
+            field: 'Debt90DayValue',
+            title: '90 day',
+            width: 180,
+            template: (e) => {
+                if (e.Debt90DayValue != null) {
+                    return formatCurrency(e.Debt90DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                } else {
+                    return '';
+                }
             }
-        }
+        }, {
+            field: 'Debt120DayValue',
+            title: '120 day',
+            width: 180,
+            template: (e) => {
+                if (e.Debt120DayValue != null) {
+                    return formatCurrency(e.Debt120DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                } else {
+                    return '';
+                }
+            }
+        }]
     }];
 
     self.gridParams = {

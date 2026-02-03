@@ -497,7 +497,7 @@ textarea.mdc-text-field__input {
                 }
             }
         }
-
+/*
         a,
         button {
             &.active {
@@ -510,7 +510,19 @@ textarea.mdc-text-field__input {
                 border: 1px solid #7f97c1;
                 background-color: white;
             }
-        }
+        }*/
+/*
+        a:not(.active),
+        button:not(.active) {
+            .mdc-text-field--disabled,
+            .mdc-select--disabled {
+                .k-input-button {
+                    border: 1px solid $gray-400;
+                    background-color: $gray-100;
+                    color: $body-color;
+                }
+            }
+        }*/
     }
 }
 

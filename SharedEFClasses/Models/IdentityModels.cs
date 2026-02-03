@@ -318,8 +318,8 @@ namespace SharedEFClasses.Models
         public virtual ICollection<CreditControllerLive> CreditControllers { get; set; }
 
         [JsonIgnore]
-        [InverseProperty("CreatedByMember")]
-        public virtual ICollection<Funding> WeeklyFundingRecordsCreated { get; set; }
+        [InverseProperty("FinalisedByMember")]
+        public virtual ICollection<PaymentPeriod> FinalisedPaymentPeriods { get; set; }
 
 		//[JsonIgnore]
 		//[InverseProperty("RequestedByMember")]

@@ -202,7 +202,7 @@ namespace Portal.Controllers
                 return NotFound();
             }
 
-            PortalDb.PaymentRequests.Remove(entry);
+            entry.DeletedDT = DateTime.Now;
 
             await PortalDb.SaveChangesAsync();
 

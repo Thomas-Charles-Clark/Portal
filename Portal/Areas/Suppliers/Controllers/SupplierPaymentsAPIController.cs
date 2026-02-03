@@ -29,6 +29,7 @@ using Microsoft.AspNet.SignalR;
 using SharedEFClasses.Models.Suppliers.Payments;
 using SharedEFClasses.Models.Suppliers.PaymentApprovals;
 using SharedEFClasses.Models.Suppliers.PaymentApproval;
+using SharedEFClasses.Models.Payment;
 
 
 namespace Portal.Areas.Suppliers.Controllers
@@ -53,8 +54,6 @@ namespace Portal.Areas.Suppliers.Controllers
 		[HttpPost]
 		public async Task<IHttpActionResult> DashboardSelect(SupplierPayments_Dashboard_SelectDTO dto)
 		{
-			dto.MemberID = User.Identity.GetUserId<int>();
-
 			var result = await PortalDb.SupplierPayments_Dashboard_Select(dto);
 
 			return Ok(result);
@@ -79,16 +78,27 @@ namespace Portal.Areas.Suppliers.Controllers
 		[HttpGet]
 		public IHttpActionResult ApprovalsGridRead(
 			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
-			[FromUri]SupplierPaymentApproval_Dashboard_SelectDTO dto)
+			[FromUri]SupplierPaymentApproval_SelectDTO dto)
 		{
-			dto.MemberID = User.Identity.GetUserId<int>();
-
-			var result = PortalDb.SupplierPaymentApproval_Dashboard_Select(dto);
+			var result = PortalDb.SupplierPayment_Approval_Select(dto);
 
 			return Ok(new
 			{
 				kendoGridResult = result.SupplierSummaryRecords.AsQueryable().ToDataSourceResult(request),
 				detailResult = result.SupplierDetailRecords
+			});
+		}
+
+		[HttpGet]
+		public IHttpActionResult HistoryDetailGridRead(
+			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+			[FromUri] SupplierPayments_History_Detail_SelectDTO dto)
+		{
+			var result = PortalDb.SupplierPayment_History_Detail_Select(dto);
+
+			return Ok(new
+			{
+				kendoGridResult = result.Records.AsQueryable().ToDataSourceResult(request)
 			});
 		}
 

@@ -649,8 +649,9 @@ namespace SharedEFClasses.Models
 
         #region Paying
 
-        public virtual DbSet<Funding> WeeklyFundings { get; set; }
-        public virtual DbSet<PaymentDecision> PaymentDecisions { get; set; }
+        public virtual DbSet<PaymentPeriod> PaymentPeriods { get; set; }
+        public virtual DbSet<PaymentBudget> PaymentBudgets { get; set; }
+		public virtual DbSet<PaymentDecision> PaymentDecisions { get; set; }
         public virtual DbSet<PaymentRequest> PaymentRequests { get; set; }
         public virtual DbSet<PaymentRequestStatus> PaymentRequestStatuses { get; set; }
         public virtual DbSet<PaymentRequest_PurchaseOrderHead> PaymentRequest_PurchaseOrderHeads { get; set; }
