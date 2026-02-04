@@ -37,11 +37,17 @@ namespace SharedEFClasses.Models.Payment
 		[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
 		public bool Deleted { get; set; }
 
+		public int? FinalisedPeriodID { get; set; }
+
 		[ForeignKey("DecidedByMemberID")]
 		public virtual Member DecidedBy { get; set; }
 
 		[JsonIgnore]
 		[ForeignKey("PaymentRequestID")]
 		public virtual PaymentRequest PaymentRequest { get; set; }
+
+		[JsonIgnore]
+		[ForeignKey("FinalisedPeriodID")]
+		public virtual PaymentPeriod FinalisedPeriod { get; set; }
 	}
 }

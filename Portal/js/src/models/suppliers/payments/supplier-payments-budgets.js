@@ -532,7 +532,14 @@
 
     //#region Methods
 
-
+    self.refresh = () => {
+        self.gridWidget().dataSource.query({
+            page: self.gridWidget().dataSource.page(),
+            pageSize: self.gridWidget().dataSource.pageSize(),
+            filter: self.gridWidget().dataSource.filter(),
+            sort: self.gridWidget().dataSource.sort()
+        });
+    }
 
     //#endregion
 

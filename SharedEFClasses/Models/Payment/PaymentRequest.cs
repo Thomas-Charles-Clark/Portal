@@ -23,9 +23,9 @@ namespace SharedEFClasses.Models.Payment
 
 		public int RequestedByMemberID { get; set; }
 
-		public string SupplierCode { get; set; }
-
 		public byte CurrencyID { get; set; }
+
+		public string SupplierCode { get; set; }
 
 		public string ProformaNumber { get; set; }
 
@@ -39,9 +39,9 @@ namespace SharedEFClasses.Models.Payment
 
 		public string DeciderComments { get; set; }
 
-		public DateTime PaymentDueDT { get; set; }
+		public int PeriodID { get; set; }
 
-		public DateTime WeekCommencingDate { get; set; }
+		public DateTime PaymentDueDT { get; set; }
 
 		public DateTime CreatedDT { get; set; }
 
@@ -76,5 +76,8 @@ namespace SharedEFClasses.Models.Payment
 
 		[InverseProperty("PaymentRequest")]
 		public virtual ICollection<PaymentDecision> PaymentDecisions { get; set; }
+
+		[ForeignKey("PeriodID")]
+		public virtual PaymentPeriod PaymentPeriod { get; set; }
 	}
 }

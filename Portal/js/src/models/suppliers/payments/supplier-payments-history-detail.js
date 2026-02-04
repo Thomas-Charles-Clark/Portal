@@ -51,7 +51,7 @@
 
                 let mapped = webapi.parameterMap(options.data);
 
-                let data = self.filters.toJS();
+                let data = {}; // self.filters.toJS(); // Matt removed all parameters to this procedure 02/02/2026
 
                 for (var propertyName in mapped) {
                     data[propertyName] = mapped[propertyName];
@@ -261,7 +261,14 @@
 
     //#region Methods
 
-
+    self.refresh = () => {
+        self.gridWidget().dataSource.query({
+            page: self.gridWidget().dataSource.page(),
+            pageSize: self.gridWidget().dataSource.pageSize(),
+            filter: self.gridWidget().dataSource.filter(),
+            sort: self.gridWidget().dataSource.sort()
+        });
+    }
 
     //#endregion
 

@@ -20,24 +20,19 @@ namespace SharedEFClasses.Models
 {
     public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
 	{
-		public async Task<SupplierPayments_Overview_Dashboard_SelectResult> SupplierPayments_Dashboard_Select(SupplierPayments_Dashboard_SelectDTO dto)
+		public async Task<SupplierPayments_Dashboard_SelectResult> SupplierPayments_Dashboard_Select(SupplierPayments_Dashboard_SelectDTO dto)
 		{
-			var results = await this.Database.Connection.QueryMultipleAsync("[payment].[Overview_Dashboard_Select]", dto, null, null, System.Data.CommandType.StoredProcedure);
+			var results = await this.Database.Connection.QueryMultipleAsync("[payment].[Dashboard_Select]", dto, null, null, System.Data.CommandType.StoredProcedure);
 
-			return new SupplierPayments_Overview_Dashboard_SelectResult()
+			return new SupplierPayments_Dashboard_SelectResult()
 			{
-				Records = await results.ReadAsync<SupplierPayments_Overview_Dashboard_SelectRecord>(),
+				Records = await results.ReadAsync<SupplierPayments_Dashboard_SelectRecord>(),
 			};
 		}
 
 		public SupplierPaymentApproval_SelectResult SupplierPayment_Approval_Select(SupplierPaymentApproval_SelectDTO dto)
 		{
-			var results = this.Database.Connection.QueryMultiple("[payment].[Approval_Select]", new
-			{
-				dto.MemberID,
-				dto.WeekCommencing,
-				dto.OnlyShowSuppliersWithPaymentRequests
-			}, null, null, System.Data.CommandType.StoredProcedure);
+			var results = this.Database.Connection.QueryMultiple("[payment].[Approval_Select]", dto, null, null, System.Data.CommandType.StoredProcedure);
 
 			return new SupplierPaymentApproval_SelectResult()
 			{
@@ -54,6 +49,24 @@ namespace SharedEFClasses.Models
 			{
 				Records = results.Read<SupplierPayments_History_DetailRecord>().ToList()
 			};
+		}
+
+		public SupplierPayments_History_SummaryResult SupplierPayment_History_Summary_Select(SupplierPayments_History_Summary_SelectDTO dto)
+		{
+			var results = this.Database.Connection.QueryMultiple("[payment].[History_Summary_Select]", dto, null, null, System.Data.CommandType.StoredProcedure);
+
+			return new SupplierPayments_History_SummaryResult()
+			{
+				Records = results.Read<SupplierPayments_History_SummaryRecord>().ToList()
+			};
+		}
+
+		public bool SupplierPayment_Period_Initialise(SupplierPayments_Period_InitialiseDTO dto)
+		{
+			var results = this.Database.Connection.Query("payment.Period_Initialise", dto,
+				null, true, 30, CommandType.StoredProcedure);
+
+			return true;
 		}
 	}
 }

@@ -309,12 +309,12 @@
 							</button>
 						</li>
 						<li class="nav-item" role="presentation">
-							<button class="nav-link" id="history-summary-tab-btn" data-bs-toggle="tab" data-bs-target="#history-summary-tab-pane" type="button" role="tab" aria-controls="history-summary-tab-pane" aria-selected="false">
+							<button class="nav-link active" id="history-summary-tab-btn" data-bs-toggle="tab" data-bs-target="#history-summary-tab-pane" type="button" role="tab" aria-controls="history-summary-tab-pane" aria-selected="false">
 								History Summary
 							</button>
 						</li>
 						<li class="nav-item" role="presentation">
-							<button class="nav-link active" id="history-detail-tab-btn" data-bs-toggle="tab" data-bs-target="#history-detail-tab-pane" type="button" role="tab" aria-controls="history-detail-tab-pane" aria-selected="false">
+							<button class="nav-link" id="history-detail-tab-btn" data-bs-toggle="tab" data-bs-target="#history-detail-tab-pane" type="button" role="tab" aria-controls="history-detail-tab-pane" aria-selected="false">
 								History Details
 							</button>
 						</li>
@@ -339,7 +339,7 @@
 			</div>
 		</div>
 		<div class="tab-content">
-			<div id="payment-requests-tab-pane" class="tab-pane fade">
+			<div id="payment-requests-tab-pane" class="tab-pane fade @(!Model.UserMayAdministrate ? " show active" : "")">
 				<div class="card mb-3" data-bind="with: requests">
 					<div class="card-body">
 						<h4 class="my-0">
@@ -372,7 +372,7 @@
 					</div>
 				</div>
 			</div>
-			<div id="approvals-tab-pane" class="tab-pane fade">
+			<div id="approvals-tab-pane" class="tab-pane fade @(Model.UserMayAdministrate ? " show active" : "")">
 				<div class="card">
 					<div class="card-body">
 						<div class="d-flex align-items-center gap-3" data-bind="with: filters">
@@ -397,10 +397,12 @@
 						<h4 class="mb-0">
 							History Summary
 						</h4>
+						<div style="display: none" class="supplier-payments-grid-container mt-3 z-1"
+							 data-bind="visible: true, kendoGrid: historySummary.gridParams"></div>
 					</div>
 				</div>
 			</div>
-			<div id="history-detail-tab-pane" class="tab-pane fade show active">
+			<div id="history-detail-tab-pane" class="tab-pane fade">
 				<div class="card">
 					<div class="card-body">
 						<h4 class="mb-0">

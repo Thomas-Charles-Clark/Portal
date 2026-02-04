@@ -25,6 +25,7 @@ using System.Web.DynamicData;
 using AngleSharp.Dom;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Web.UI;
+using SharedEFClasses.Models.Suppliers.Payments;
 
 namespace Portal.Controllers
 {
@@ -51,6 +52,17 @@ namespace Portal.Controllers
             else if (key != entity.PaymentRequestID)
             {
                 return BadRequest("The key from the url must match the key of the entity in the body");
+            }
+
+            var period = await PortalDb.PaymentPeriods.FirstOrDefaultAsync(p => p.PeriodID == key);
+
+            if (period == null)
+            {
+                var periodCreationDTO = new SupplierPayments_Period_InitialiseDTO(entity.PaymentDueDT, 1);
+
+				PortalDb.SupplierPayment_Period_Initialise(periodCreationDTO);
+
+                await PortalDb.SaveChangesAsync();
             }
 
             var original = await PortalDb.PaymentRequests.FindAsync(key);
@@ -114,7 +126,18 @@ namespace Portal.Controllers
                 return BadRequest(ModelState);
             }
 
-            var creationResult = PortalDb.PaymentRequests.Add(entity);
+			//var period = await PortalDb.PaymentPeriods.FirstOrDefaultAsync(p => p.PeriodID == entity.PeriodID);
+
+			//if (period == null)
+			//{
+			//	var periodCreationDTO = new SupplierPayments_Period_InitialiseDTO(entity.PaymentDueDT, 1);
+
+			//	PortalDb.SupplierPayment_Period_Initialise(periodCreationDTO);
+
+			//	await PortalDb.SaveChangesAsync();
+			//}
+
+			var creationResult = PortalDb.PaymentRequests.Add(entity);
 
 			await PortalDb.SaveChangesAsync();
 

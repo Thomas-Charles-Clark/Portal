@@ -523,17 +523,21 @@
 
                 console.warn('must re-query with current parameters as properties of options obj: page, pageSize, filter, sort');
 
-                self.gridWidget().dataSource.query({
-                    page: self.gridWidget().dataSource.page(),
-                    pageSize: self.gridWidget().dataSource.pageSize(),
-                    filter: self.gridWidget().dataSource.filter(),
-                    sort: self.gridWidget().dataSource.sort()
-                }); 
+                self.refresh();
             })
             .catch(err => {
                 self.busy(false);
                 window.catchFetchError(err);
             })
+    }
+
+    self.refresh = () => {
+        self.gridWidget().dataSource.query({
+            page: self.gridWidget().dataSource.page(),
+            pageSize: self.gridWidget().dataSource.pageSize(),
+            filter: self.gridWidget().dataSource.filter(),
+            sort: self.gridWidget().dataSource.sort()
+        }); 
     }
 
     //#endregion

@@ -11,7 +11,7 @@
 	flex: 0 0 auto;
 	will-change: width;
 	transition: width 150ms linear;
-	/*transition-delay: 150ms;*/
+	transition-delay: 150ms;
 	width: 50px;
 	border-right: 1px solid $gray-300;
 
@@ -74,11 +74,13 @@
 		border-width: 0;
 		will-change: width, opacity, padding;
 		transition: all 150ms ease-in-out;
+		transition-delay: 150ms;
 	}
 
 	#sidebar-collapse {
 		opacity: 0;
 		transition: opacity 150ms ease-in-out;
+		transition-delay: 150ms;
 		margin-top: -42px;
 		position: relative;
 		z-index: 1;
@@ -147,6 +149,7 @@
 		opacity: 1;
 		will-change: opacity;
 		transition: opacity 150ms ease-in-out;
+		transition-delay: 150ms;
 		pointer-events: none;
 	}
 

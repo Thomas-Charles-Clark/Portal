@@ -70,8 +70,7 @@
                     url: '/odata/PaymentRequests?$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads'
                 },
                 batch: {
-                    url: '/odata/$batch?$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads',
-                    contentType: "multipart/mixed"
+                    url: '/odata/$batch?$expand=PaymentRequestStatus,RequestedByMember,Currency,Supplier,PaymentRequestPurchaseOrderHeads'
                 },
                 destroy: {
                     url: function (item) {
@@ -89,7 +88,7 @@
                     if (defaultPaymentRequestStatusId != null) {
                         filters.push(`(PaymentRequestStatusID eq ${defaultPaymentRequestStatusId})`);
                     } else {
-                        filters.push(`(PaymentRequestStatusID ne ${defaultPaymentRequestStatusId})`);
+                        filters.push(`(PaymentRequestStatusID ne 7)`); // hooray, magic numbers! 7 == "Payment Plan", a special case
                     }
 
                     let userId = self.filters.userId();
@@ -105,23 +104,44 @@
                     return result;
                 }
             },
-            error: (e) => {
-                console.error(`${name} error`, e);
-            },
+            //error: (e) => {
+            //    console.error(`${name} error`, e);
+
+            //    if (e.errors) {
+            //        window.showError(e.errors.message);
+            //    }
+
+
+            //},
             schema: {
-                error: 'error',
+                errors: function (response) {
+                    if (response && response.responses) {
+                        var errors = [];
+                        response.responses.forEach(function (r) {
+                            if (r.status < 200 || r.status >= 300) {
+                                // Extract the message from the body
+                                errors.push(r.body && r.body.error ? r.body.error.message : "Unknown Error");
+                            }
+                        });
+                        if (errors.length > 0) return errors.join(", ");
+                    }
+                    return null;
+                },
+                // 2. Ensure data returns an array even if segments failed
+                data: function (response) {
+                    // If the parser failed to populate 'collections', 
+                    // you may need to return an empty array to prevent a crash
+                    return response.value || (response.responses ? [] : response);
+                },
                 model: {
                     id: 'PaymentRequestID',
                     fields: {
-                        WeekCommencingDate: {
-                            type: 'date',
-                            nullable: true,
-                            editable: false,
-                            format: 'dd/MM/yyyy',
-                            defaultValue: moment(new Date()).weekdayWithStartWeekday(0, 1).toDate()
-                        },
                         PaymentRequestID: {
                             type: 'number'
+                        },
+                        PeriodID: {
+                            type: 'number',
+                            required: true
                         },
                         PaymentRequestStatusID: {
                             type: 'number',
@@ -268,21 +288,28 @@
                     },
                 }
             },
-            errors: function (e) {
-                console.error(`${name} errors`, e);
+            error: function (e) {
+                //console.error(`${name} errors`, e);
 
-                // e.xhr contains the full response from the server
-                var response = JSON.parse(e.xhr.responseText);
+                //// e.xhr contains the full response from the server
+                //var response = JSON.parse(e.xhr.responseText);
 
-                var message = JSON.stringify(response.error, null, '\t');
+                //var message = JSON.stringify(response.error, null, '\t');
 
-                self.busy(false);
+                //self.busy(false);
 
-                window.showInfo('Errors', PR.prettyPrintOne(message));
+                //window.showInfo('Errors', PR.prettyPrintOne(message));
 
-                // Revert changes in the grid if necessary
-                self.paymentPlanGridWidget().cancelChanges();
-                self.otherPaymentRequestStatusesGridWidget().cancelChanges();
+                // This will now fire because schema.errors returned a string
+                window.showError("Batch Update Failed: " + e.errors);
+
+                // Prevent the grid from thinking the sync was successful
+                //$("#grid").data("kendoGrid").cancelChanges();
+
+                // Revert changes in the grid if necessary - we don't really want to do this!
+
+                //self.paymentPlanGridWidget().cancelChanges();
+                //self.otherPaymentRequestStatusesGridWidget().cancelChanges();
             },
             requestStart: (e) => {
                 //self.busy(true);
@@ -302,6 +329,11 @@
                     self.refreshDashboard();
                 }
             },
+            requestEnd: (e) => {
+                console.log(`${name} requestEnd`, e);
+
+                self.busy(false);
+            },
             sort: {
                 field: 'CreatedDT',
                 dir: 'desc'
@@ -320,6 +352,10 @@
                             model.set("CurrencyID", model.Currency.CurrencyID);
                             model.set("ExchangeRate", model.Currency.SterlingExchangeRate);
                             break;
+                        //case "PaymentDueDT":
+                        //    let periodId = moment(model.PaymentDueDT).weekdayWithStartWeekday(0, 1).format('YYYYMMDD');
+                        //    model.set('PeriodID', +periodId);
+                        //    break;
                         default: break;
                     }
                     if (defaultPaymentRequestStatusId == 7) {
@@ -328,24 +364,6 @@
                         self.otherPaymentRequestStatusesGridWidget().refresh();
                     }
                 }
-            },
-            requestEnd: (e) => {
-                console.log(`${name} requestEnd`, e);
-
-                window.setTimeout(() => {
-                    document.addEventListener("click", (e) => {
-                        if (e.target.closest('.purchase-orders-popover') == null) {
-                            document.querySelectorAll('[data-bind*="actualBootstrapPopover"]').forEach(e => {
-                                let p = bootstrap.Popover.getInstance(e);
-                                if (p) {
-                                    p.hide();
-                                }
-                            });
-                        }
-                    });
-                }, 0);
-
-                self.busy(false);
             }
         });
 
@@ -356,24 +374,47 @@
 
     self.createGridColumns = (paymentRequestStatusLockedTo = []) => {
         return [{
-            field: 'WeekCommencingDate',
-            title: 'Week Comm.',
-            editable: false,
+            field: 'PeriodID',
+            title: 'Period',
             attributes: {
                 "class": "readonly"
             },
             template: (e) => {
-                if (e.PaymentDueDT) {
-                    return moment(e.PaymentDueDT).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
+                if (e.PeriodID) {
+                    let arraySplit = e.PeriodID.toString().match(/(\d\d\d?\d?)(\d\d)(\d\d)/);
+                    let dateString = `${arraySplit[1]}/${arraySplit[2]}/${arraySplit[3]}`;
+                    return moment(Date.parse(dateString)).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
+                } else {
+                    let momentFormatted = '';
+
+                    if (e.PaymentDueDT) {
+                        momentFormatted = moment(e.PaymentDueDT).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
+                    }
+                     
+                    return momentFormatted;
+                }
+            },
+            valueTemplate: (e) => {
+                if (e.PeriodID) {
+                    let arraySplit = e.PeriodID.toString().match(/(\d\d\d?\d?)(\d\d)(\d\d)/);
+                    let dateString = `${arraySplit[1]}/${arraySplit[2]}/${arraySplit[3]}`;
+                    return moment(Date.parse(dateString)).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
                 } else {
                     return '';
                 }
             },
-            valueTemplate: (e) => {
-                if (e.PaymentDueDT) {
-                    return moment(e.PaymentDueDT).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
+            editor: (container, options) => {
+                let momentFormatted = '';
+                if (options.model.PeriodID) {
+                    let arraySplit = options.model.PeriodID.toString().match(/(\d\d\d?\d?)(\d\d)(\d\d)/);
+                    let dateString = `${arraySplit[1]}/${arraySplit[2]}/${arraySplit[3]}`;
+                    momentFormatted = moment(Date.parse(dateString)).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
+                    $(`<span>${momentFormatted}</span>`).appendTo(container);
+                } else if (options.model.PaymentDueDT) {
+                    momentFormatted = moment(options.model.PaymentDueDT).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
+                    $(`<span>${momentFormatted}</span>`).appendTo(container);
                 } else {
-                    return '';
+                    return momentFormatted;
                 }
             }
         }, {
@@ -606,7 +647,7 @@
                 }
             },
             editor: (container, options) => {
-                $('<input data-bind="value:' + options.field + '" name="' + options.field + '"/>')
+                $('<input required data-bind="value:' + options.field + '" name="' + options.field + '" validationMessage="You must specify an Amount"/>')
                     .appendTo(container)
                     .kendoNumericTextBox({
                         format: "n2",
@@ -933,21 +974,9 @@
                 }
             }
         }]
-        //    , {
-        //    title: " ",
-        //    width: "100px",
-        //    attributes: {
-        //        "class": `text-center command-column readonly`
-        //    }
-        //}]
     };
 
-    /**
-     * }, 
-        }]
-     * 
-     * 
-     */
+    self.skipEditEvent = true;
 
     self.createGridDefinition = (name, widget, paymentRequestStatusLockedTo = [], className = null) => {
         return {
@@ -972,36 +1001,44 @@
             selectable: false,
             editable: true,
             edit: function (e) {
-                window.setTimeout(() => {
 
-                    let dropdown = $(e.container).find("[data-role=dropdownlist]").data("kendoDropDownList");
+                if (e.model.isNew() && self.skipEditEvent) {
 
-                    if (dropdown) {
-                        dropdown.open();
-                        return;
-                    }
+                    e.preventDefault();
 
-                    //let multiselect = $(e.container).find("[data-role=multiselect]").data("kendoMultiSelect");
+                    self.skipEditEvent = false;
 
-                    //if (multiselect) {
-                    //    multiselect.open();
-                    //    return;
-                    //}
+                    e.sender.editCell($(e.sender.element.find('tr.k-grid-edit-row td:eq(3)')));
 
+                    return;
+                } else {
 
-                    let datePicker = e.container.find("[data-role=datepicker]").data("kendoDatePicker");
+                    window.setTimeout(() => {
 
-                    if (datePicker) {
-                        datePicker.setOptions({
-                            close: (event) => {
-                                console.log('close fired', event);
-                                e.sender.editCell($(e.container).closest('tr').find("td:eq(4)"));
-                            }
-                        });
+                        let dropdown = e.container.find("[data-role=dropdownlist]").data("kendoDropDownList");
 
-                        datePicker.open();
-                    }
-                }, 0);
+                        if (dropdown) {
+                            dropdown.open();
+                            return;
+                        }
+
+                        let datePicker = e.container.find("[data-role=datepicker]").data("kendoDatePicker");
+
+                        if (datePicker) {
+                            datePicker.setOptions({
+                                close: (event) => {
+                                    console.log('close fired', event);
+                                    e.sender.editCell($(e.container).closest('tr').find("td:eq(4)"));
+                                }
+                            });
+
+                            datePicker.open();
+                        }
+
+                        self.skipEditEvent = false;
+
+                    }, 0);
+                }
             },
             dataBound: (e) => {
 
@@ -1016,6 +1053,10 @@
                     let item = data[i];
 
                     if (item.isNew() || item.dirty) {
+
+                        if (item.PaymentDueDT) {
+                            item.PeriodID = moment(item.PaymentDueDT).weekdayWithStartWeekday(0, 1).format('YYYYMMDD');
+                        }
 
                         if (item.ProformaNumber == '')
                             item.ProformaNumber = null;
@@ -1039,11 +1080,12 @@
                         });
                     }
                 }
+
+                self.skipEditEvent = true;
             },
             save: (data) => {
                 console.log('save', data);
                 if (Object.hasOwn(data.values, 'PaymentDueDT')) {
-                    
                     window.setTimeout(() => {
                         data.sender.editCell($(data.sender.table).find('td:eq(4)'));
                     }, 0);
@@ -1063,7 +1105,23 @@
 
                 $(`${className} .k-button.k-grid-save-changes`).show();
                 $(`${className} .k-button.k-grid-cancel-changes`).show();
-            }
+            },
+            error: function (e) {
+                console.error(`${name} errors`, e);
+
+                // e.xhr contains the full response from the server
+                var response = JSON.parse(e.xhr.responseText);
+
+                var message = JSON.stringify(response.error, null, '\t');
+
+                self.busy(false);
+
+                window.showInfo('Errors', PR.prettyPrintOne(message));
+
+                // Revert changes in the grid if necessary
+                self.paymentPlanGridWidget().cancelChanges();
+                self.otherPaymentRequestStatusesGridWidget().cancelChanges();
+            },
         };
     }
 
@@ -1099,7 +1157,21 @@
 
     //#region Methods
 
+    self.refresh = () => {
+        self.paymentPlanGridWidget() && self.paymentPlanGridWidget().dataSource.query({
+            page: self.paymentPlanGridWidget().dataSource.page(),
+            pageSize: self.paymentPlanGridWidget().dataSource.pageSize(),
+            filter: self.paymentPlanGridWidget().dataSource.filter(),
+            sort: self.paymentPlanGridWidget().dataSource.sort()
+        });
 
+        self.otherPaymentRequestStatusesGridWidget() && self.otherPaymentRequestStatusesGridWidget().dataSource.query({
+            page: self.otherPaymentRequestStatusesGridWidget().dataSource.page(),
+            pageSize: self.otherPaymentRequestStatusesGridWidget().dataSource.pageSize(),
+            filter: self.otherPaymentRequestStatusesGridWidget().dataSource.filter(),
+            sort: self.otherPaymentRequestStatusesGridWidget().dataSource.sort()
+        });
+    }
 
     //#endregion
 

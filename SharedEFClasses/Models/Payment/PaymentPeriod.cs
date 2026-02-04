@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -31,5 +33,16 @@ namespace SharedEFClasses.Models.Payment
 		[InverseProperty("FinalisedPaymentPeriods")]
 		[ForeignKey("FinalisedMemberID")]
 		public virtual Member FinalisedByMember { get; set; }
+
+		[InverseProperty("PaymentPeriod")]
+		[JsonIgnore]
+		public virtual ICollection<PaymentPeriod_Currency> PaymentPeriod_CurrencyRecords { get; set; }
+
+		[InverseProperty("FinalisedPeriod")]
+		public virtual ICollection<PaymentDecision> PaymentDecisionsFinalised { get; set; }
+
+		[InverseProperty("PaymentPeriod")]
+		[JsonIgnore]
+		public virtual ICollection<PaymentRequest> PaymentRequests { get; set; }
 	}
 }

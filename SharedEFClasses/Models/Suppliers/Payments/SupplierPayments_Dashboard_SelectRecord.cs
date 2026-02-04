@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.Suppliers.Payments
 {
-	public class SupplierPayments_Overview_Dashboard_SelectRecord
+	public class SupplierPayments_Dashboard_SelectRecord
 	{
+		public bool IsTotal { get; set; }
+
 		public string RowLabel { get; set; }
 
 		public string CurrencyCode { get; set; }
@@ -29,7 +31,5 @@ namespace SharedEFClasses.Models.Suppliers.Payments
 		public decimal? ApprovedTotal { get; set; }
 
 		public decimal? GBPFXRate { get; set; }
-
-		public bool IsTotal { get; set; }
 	}
 }

@@ -102,6 +102,19 @@ namespace Portal.Areas.Suppliers.Controllers
 			});
 		}
 
+		[HttpGet]
+		public IHttpActionResult HistorySummaryGridRead(
+			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+			[FromUri] SupplierPayments_History_Summary_SelectDTO dto)
+		{
+			var result = PortalDb.SupplierPayment_History_Summary_Select(dto);
+
+			return Ok(new
+			{
+				kendoGridResult = result.Records.AsQueryable().ToDataSourceResult(request)
+			});
+		}
+
 		[HttpPost]
 		public async Task<IHttpActionResult> AddBasketItem([FromBody] SupplierPaymentApprovalBasketItemDTO dto)
 		{

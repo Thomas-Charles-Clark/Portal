@@ -1,22 +1,23 @@
 ﻿const supplierPaymentsFiltersViewModel = ({
     ready,
     busy,
-    busyMessage
+    busyMessage,
+    refreshParent
 } = {
         ready: ko.observable(false),
         busy: ko.observable(false),
-        busyMessage: ko.observable('Please Wait')
+        busyMessage: ko.observable('Please Wait'),
+        refreshParent: () => { }
     }) => {
 
-    let self = {};
+    let self = {
+        ready,
+        busy,
+        busyMessage,
+        refreshParent
+    };
 
     //#region Properties
-
-    self.ready = ready;
-
-    self.busy = busy;
-
-    self.busyMessage = busyMessage;
 
     self.countDisplay = ko.observable(undefined);
 
@@ -37,6 +38,8 @@
     self.userId = ko.observable(getUserId());
 
     self.user = ko.observable();
+
+    self.refreshDashboard = null;
 
     //#endregion
 
@@ -239,7 +242,13 @@
 
     //#region Subscriptions
 
+    self.paymentPeriodId.subscribe(nv => {
+        self.refreshParent();
+    });
 
+    self.userId.subscribe(nv => {
+        self.refreshParent();
+    })
 
     //#endregion
 
@@ -254,7 +263,7 @@
 
     self.toJS = () => {
         return {
-            weekCommencing: moment(self.paymentPeriodId(), 'YYYYMMDD').format('YYYY/MM/DD'),
+            periodId: self.paymentPeriodId(),
             memberId: self.userId(),
             onlyShowSuppliersWithPaymentRequests: self.onlyIncludeSuppliersWithPaymentRequests(),
             onlyShowSuppliersWithOutstandingInvoices: self.onlyShowSuppliersWithOutstandingInvoices()

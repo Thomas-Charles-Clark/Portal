@@ -20,7 +20,7 @@ namespace Portal.Areas.Suppliers.ViewModels
 	{
 		public bool UserMayAdministrate { get; set; }
 
-		public SupplierPayments_Overview_Dashboard_SelectResult Dashboard { get; set; }
+		public SupplierPayments_Dashboard_SelectResult Dashboard { get; set; }
 
 		public SupplierPaymentsViewModel(
 			bool userMayAdministrate,
@@ -43,10 +43,16 @@ namespace Portal.Areas.Suppliers.ViewModels
 		{
 			var result = new SupplierPaymentsViewModel(userMayAdministrate, properties, applicationHeading, applicationSubHeading);
 
+			var now = DateTime.Now;
+
+			var startOfWeek = now.StartOfWeek(DayOfWeek.Monday);
+
+			var periodId = Convert.ToInt32($"{startOfWeek:yyyyMMdd}");
+
 			var dto = new SupplierPayments_Dashboard_SelectDTO() 
 			{ 
 				MemberID = userId,
-				WeekCommencing = DateTime.Now.StartOfWeek(DayOfWeek.Monday)
+				PeriodID = periodId
 			};
 
 			result.Dashboard = await new PortalDbContext().SupplierPayments_Dashboard_Select(dto);

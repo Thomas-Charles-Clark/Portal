@@ -19,13 +19,27 @@
     //#endregion
 
 
+    //#region Lifted Methods
+
+    self.refresh = () => {
+        self.dashboard.refresh();
+        self.requests.refresh();
+        self.approvals.refresh();
+        self.budgets.refresh();
+        self.historySummary.refresh();
+        self.historyDetails.refresh();
+    }
+
+    //#endregion
+
 
     //#region Components
 
     self.filters = supplierPaymentsFiltersViewModel({
         ready: self.ready,
         busy: self.busy,
-        busyMessage: self.busyMessage
+        busyMessage: self.busyMessage,
+        refreshParent: self.refresh
     });
 
     self.dashboard = supplierPaymentsDashboardViewModel({

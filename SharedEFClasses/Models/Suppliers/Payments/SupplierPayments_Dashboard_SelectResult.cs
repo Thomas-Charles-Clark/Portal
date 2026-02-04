@@ -8,6 +8,6 @@ namespace SharedEFClasses.Models.Suppliers.Payments
 {
 	public class SupplierPayments_Dashboard_SelectResult
 	{
-		public IEnumerable<SupplierPayments_Overview_Dashboard_SelectRecord> Records { get; set; }
+		public IEnumerable<SupplierPayments_Dashboard_SelectRecord> Records { get; set; }
 	}
 }
