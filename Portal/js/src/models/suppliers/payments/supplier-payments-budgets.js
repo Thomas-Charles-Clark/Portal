@@ -186,8 +186,8 @@
             }
         },
         sort: {
-            field: 'CreatedDT',
-            dir: 'desc'
+            field: 'PeriodID',
+            dir: 'asc'
         },
         noDataTemplate: 'Nothing to display',
         change: (e) => {
@@ -214,104 +214,104 @@
         editor: (container, options) => {
             (options.model.PaymentPeriod && options.model.PaymentPeriod.Finalised)
                 ? $(`<span>${options.model.PaymentPeriod.Label}</span>`).appendTo(container)
-                : $(`<input type="text" required name="${options.field}" validationMessage="You must specify a Period" />`)
+                : $(`<input type="text" required name="${options.field}" value="${options.model.PeriodID}" validationMessage="You must specify a Period" />`)
                 .appendTo(container)
-                .kendoDropDownList({
-                    dataTextField: 'Label',
-                    dataValueField: 'PeriodID',
-                    value: options.model.PeriodID,
-                    autoWidth: true,
-                    filter: 'startswith',
-                    template: (e) => {
-                        if (e.Label) {
-                            return e.Label
-                        } else {
-                            return ''
-                        }
-                    },
-                    valueTemplate: (e) => {
-                        if (e.Label) {
-                            return e.Label
-                        } else {
-                            return ''
-                        }
-                    },
-                    dataSource: new kendo.data.DataSource({
-                        type: 'odata-v4',
-                        serverFiltering: true,
-                        serverSorting: true,
-                        serverPaging: true,
-                        sort: [{
-                            field: "PeriodID", dir: "desc"
-                        }],
-                        page: 1,
-                        pageSize: 10,
-                        transport: {
-                            read: '/odata/PaymentPeriods',
-                            parameterMap: (data, operation) => {
-
-                                let filters = [];
-
-                                let apply = '';
-
-                                filters.push({
-                                    field: 'Finalised',
-                                    operator: 'eq',
-                                    value: false
-                                });
-
-                                if (options.model.CurrencyID) {
-                                    apply = `filter(PaymentBudgets/all(b: b/CurrencyID ne ${options.model.CurrencyID}))`;
-                                } //DistributionSetDetails/all(d: d/DistributionCode eq 'VISA')
-
-                                if (data.filter && data.filter.filters.length) {
-
-                                    data.filter.filters.forEach(f => {
-                                        filters.push(f);
-                                    });
-                                }
-
-                                //Generate parameters in odata v4 format
-                                let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-                                if (apply) {
-                                    d.$apply = apply;
-                                }
-
-                                delete d.$inlinecount; // <-- remove inlinecount
-                                delete d.$format; // <-- remove format
-                                delete d.$callback; // <-- remove callback
-
-                                d.$count = true;
-
-                                return d;
-
+                    .kendoDropDownList({
+                        dataTextField: 'Label',
+                        dataValueField: 'PeriodID',
+                        value: {
+                            Label: options.model.Period?.Label,
+                            PeriodID: options.model.PeriodID
+                        },
+                        autoWidth: true,
+                        filter: 'startswith',
+                        template: (e) => {
+                            if (e.Label) {
+                                return e.Label
+                            } else {
+                                return ''
                             }
-                        }
-                    }),
-                    dataBound: function (e) {
-                        //if (this.select() === -1) {
-                        //    this.select(0);
-                        //    this.trigger("change");
-                        //}
-                    },
-                    change: (e) => {
-                        let dataItem = e.sender.dataItem();
+                        },
+                        valueTemplate: (e) => {
+                            if (e.Label) {
+                                return e.Label
+                            } else {
+                                return ''
+                            }
+                        },
+                        dataSource: new kendo.data.DataSource({
+                            type: 'odata-v4',
+                            serverFiltering: true,
+                            serverSorting: true,
+                            serverPaging: true,
+                            sort: [{
+                                field: "PeriodID", dir: "asc"
+                            }],
+                            page: 1,
+                            pageSize: 10,
+                            transport: {
+                                read: '/odata/PaymentPeriods',
+                                parameterMap: (data, operation) => {
 
-                        console.log('change', e, dataItem);
+                                    let filters = [];
 
-                        if (dataItem && dataItem.PeriodID) {
-                            options.model.set('PeriodID', dataItem.PeriodID);
-                        } else {
-                            options.model.set('PeriodID', null);
-                        }
+                                    let apply = '';
 
-                        window.setTimeout(() => {
-                            document.querySelector('td[data-container-for="Budget"] .k-numerictextbox input:first-of-type').focus();
-                        }, 0);
-                    },
-                    height: 340
-                });
+                                    filters.push({
+                                        field: 'Finalised',
+                                        operator: 'eq',
+                                        value: false
+                                    });
+
+                                    if (options.model.CurrencyID) {
+                                        apply = `filter(PaymentBudgets/all(b: b/CurrencyID ne ${options.model.CurrencyID}))`;
+                                    } //DistributionSetDetails/all(d: d/DistributionCode eq 'VISA')
+
+                                    if (data.filter && data.filter.filters.length) {
+
+                                        data.filter.filters.forEach(f => {
+                                            filters.push(f);
+                                        });
+                                    }
+
+                                    //Generate parameters in odata v4 format
+                                    let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+                                    if (apply) {
+                                        d.$apply = apply;
+                                    }
+
+                                    delete d.$inlinecount; // <-- remove inlinecount
+                                    delete d.$format; // <-- remove format
+                                    delete d.$callback; // <-- remove callback
+
+                                    d.$count = true;
+
+                                    return d;
+
+                                }
+                            }
+                        }),
+                        dataBound: function (e) {
+                            console.log('budget periodId dropDownList dataBound', e);
+                        },
+                        change: (e) => {
+                            let dataItem = e.sender.dataItem();
+
+                            console.log('change', e, dataItem);
+
+                            if (dataItem && dataItem.PeriodID) {
+                                options.model.set('PeriodID', dataItem.PeriodID);
+                            } else {
+                                options.model.set('PeriodID', null);
+                            }
+
+                            window.setTimeout(() => {
+                                document.querySelector('td[data-container-for="Budget"] .k-numerictextbox input:first-of-type').focus();
+                            }, 0);
+                        },
+                        height: 340
+            });
         },
         template: (e) => {
             if (e.PaymentPeriod && e.PaymentPeriod.Label) {
@@ -496,9 +496,24 @@
             console.log(`budgetGrid change`, e);
         },
         dataBound: (e) => {
-            console.log(`budgetGrid dataBound`, e);
+            console.log('budget grid dataBound', e);
+
+            const currentPeriodString = moment(new Date()).weekdayWithStartWeekday(0, 1).format('YYYYMMDD');
+
+            let rows = e.sender.tbody.children();
+
+            for (let i = 0; i < rows.length; i++) {
+
+                let row = $(rows[i]);
+
+                let dataItem = e.sender.dataItem(row);
+
+                if (dataItem.PeriodID?.toString() == currentPeriodString) {
+                    row.addClass("current-period-row");
+                };
+            }
         },
-        save: (data) => {
+        save: (e) => {
             console.log(`budgetGrid save`, e);
         },
         saveChanges: (e) => {

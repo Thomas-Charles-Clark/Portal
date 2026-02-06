@@ -165,13 +165,7 @@
 	.mdc-text-field:not(.mdc-text-field--textarea),
 	.mdc-select,
 	.mdc-text-field:not(.mdc-text-field--textarea) {
-		height: 28px;
-		line-height: 28px;
-	}
 
-	.mdc-floating-label {
-		font-size: $font-size-sm;
-		top: 4px;
 	}
 
 	.k-dropdown-wrap {
@@ -211,7 +205,14 @@
 	#approval-basket-contents {
 		display: flex;
 		gap: $l-gutter;
-		justify-contents: center;
+		justify-content: center;
+
+		> .card {
+			flex: 1;
+			> .card-body {
+				padding-top: $sm-gutter;
+			}
+		}
 
 		.table {
 			colgroup {

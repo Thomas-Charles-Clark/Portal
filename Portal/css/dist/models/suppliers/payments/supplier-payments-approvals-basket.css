@@ -345,6 +345,12 @@
   flex: 0 1 calc(50% - 0.5rem);
 }
 
+.open-sans-inflated-dollar-glyph {
+  font-size: 111%;
+  position: relative;
+  top: 1px;
+}
+
 #basket-sidebar {
   will-change: height;
   transition: height 150ms linear;
@@ -473,16 +479,6 @@
 #basket-sidebar .sidebar-body {
   flex-grow: 1;
 }
-#basket-sidebar .mdc-text-field:not(.mdc-text-field--textarea),
-#basket-sidebar .mdc-select,
-#basket-sidebar .mdc-text-field:not(.mdc-text-field--textarea) {
-  height: 28px;
-  line-height: 28px;
-}
-#basket-sidebar .mdc-floating-label {
-  font-size: 0.875rem;
-  top: 4px;
-}
 #basket-sidebar .k-dropdown-wrap.k-state-default span.k-input {
   font-size: 0.875rem;
   position: relative;
@@ -500,7 +496,13 @@
 #basket-sidebar #approval-basket-contents {
   display: flex;
   gap: 1rem;
-  justify-contents: center;
+  justify-content: center;
+}
+#basket-sidebar #approval-basket-contents > .card {
+  flex: 1;
+}
+#basket-sidebar #approval-basket-contents > .card > .card-body {
+  padding-top: 0.5rem;
 }
 #basket-sidebar #approval-basket-contents .table colgroup col:nth-of-type(1) {
   width: 160px;

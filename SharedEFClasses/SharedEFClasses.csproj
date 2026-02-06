@@ -678,6 +678,9 @@
     <Compile Include="Models\PassGiftVoucher.cs" />
     <Compile Include="Models\PassMertexCurrencyCode.cs" />
     <Compile Include="Models\Payment\PaymentPeriod_Currency.cs" />
+    <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequest_SelectDTO.cs" />
+    <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequest_SelectRecord.cs" />
+    <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequest_SelectResult.cs" />
     <Compile Include="Models\Suppliers\Payments\SupplierPayments_FinaliseBudgetPeriodDTO.cs" />
     <Compile Include="Models\Payment\PaymentBudget.cs" />
     <Compile Include="Models\Payment\PaymentDecision.cs" />

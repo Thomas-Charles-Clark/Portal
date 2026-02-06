@@ -24,7 +24,9 @@
     //#region Properties
 
     self.basket = supplierPaymentsApprovalsBasketViewModel({
-        rec: {}
+        ready: self.ready,
+        busy: self.busy,
+        busyMessage: self.busyMessage
     });
 
     self.gridWidget = ko.observable();
@@ -56,6 +58,8 @@
                 let mapped = webapi.parameterMap(options.data);
 
                 let data = self.filters.toJS();
+
+                delete data.memberId;
 
                 for (var propertyName in mapped) {
                     data[propertyName] = mapped[propertyName];
@@ -164,6 +168,44 @@
                         }]
                     }
                 }
+            },
+            parse: function (response) {
+
+                console.log('approvals schema.parse called with', response);
+
+                for (let i = 0; i < response.Data.length; i++) {
+                    let items = [];
+
+                    for (let j = 0; j < response.Data[i].Details.length; j++) {
+
+                        response.Data[i].Details[j].CurrencyCode = response.Data[i].SupplierCurrencyCode;
+
+                        response.Data[i].Details[j].Currency = {
+                            Code: response.Data[i].SupplierCurrencyCode,
+                            FormattingCulture: response.Data[i].SupplierCurrencyFormattingCulture
+                        }
+
+                        response.Data[i].Details[j].Supplier = {
+                            Code: response.Data[i].SupplierCode,
+                            Name: response.Data[i].SupplierName
+                        }
+
+                        response.Data[i].Details[j].RequestedByMember = {
+                            MemberID: response.Data[i].Details[j].RequestedByMemberID,
+                            FullName: response.Data[i].Details[j].RequestedbyMemberName,
+                        }
+
+                        items.push(supplierPaymentsApprovalViewModel({
+                            rec: response.Data[i].Details[j]
+                        }));
+                    }
+
+                    response.Data[i].Details = items;
+                }
+
+                console.log('approvals schema.parse returning', response);
+
+                return response;
             }
         }),
         errors: function (e) {
@@ -201,10 +243,10 @@
 
     self.gridColumns = [{
         title: 'Payment Requests',
-        fields: [{
+        columns: [{
             field: 'SupplierCode',
             title: 'Supplier',
-            width: 420,
+            width: 240,
             attributes: {
                 "class": "text-end"
             },
@@ -228,7 +270,7 @@
         }]
     }, {
         title: 'Supplier Invoices',
-        fields: [{
+        columns: [{
             field: 'PaymentRequestOtherTotal',
             title: 'Other Requests',
             width: 180,
@@ -344,6 +386,14 @@
                     title: "Payment Request ID",
                     hidden: true
                 }, {
+                    field: 'RequesterComments',
+                    title: 'Requester Comments',
+                    hidden: true
+                }, {
+                    field: 'DeciderComments',
+                    title: 'Decider Comments',
+                    hidden: true
+                }, {
                     field: "PaymentRequestStatusName",
                     title: "Status"
                 }, {
@@ -389,11 +439,11 @@
                 }, {
                     command: [{
                         name: 'Approve',
-                        click: (e) => {
+                        click: function (e) {
                             console.log('approve', e);
                             e.preventDefault();
                             let tr = $(e.target).closest("tr");
-                            let data = this.dataItem(data);
+                            let data = this.dataItem(tr);
                             self.basket.addBasketItem(data);
                         }
                     }, {
@@ -427,18 +477,18 @@
         change: (e) => {
             console.log(`change`, e);
 
-            let selectedRows = e.sender.select();
+            //let selectedRows = e.sender.select();
 
-            let dataItems = [];
+            //let dataItems = [];
 
-            for (let i = 0; i < selectedRows.length; i++) {
-                let r = selectedRows[i];
-                dataItems.push(e.sender.dataItem(r));
-            }
+            //for (let i = 0; i < selectedRows.length; i++) {
+            //    let r = selectedRows[i];
+            //    dataItems.push(e.sender.dataItem(r));
+            //}
 
-            self.basket.items(self.basket.items().concat(dataItems.map(r => supplierPaymentsApprovalViewModel({
-                rec: r
-            }))));
+            //self.basket.items(self.basket.items().concat(dataItems.map(r => supplierPaymentsApprovalViewModel({
+            //    rec: r
+            //}))));
         },
         dataBound: (e) => {
             console.log(`dataBound`, e);
@@ -493,7 +543,9 @@
 
     //#region Subscriptions
 
-
+    self.filters.approvalFilters.subscribe(nv => {
+        self.refresh();
+    });
 
     //#endregion
 

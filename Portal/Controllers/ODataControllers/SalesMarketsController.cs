@@ -49,7 +49,7 @@ namespace Portal.Controllers
         public IQueryable<SalesMarket> SalesMarketsForCustomerAdvertisers()
         {
             // trade account
-            return PortalDb.SalesMarkets.Where(s => s.TradeAccounts.Any(ta => ta.AdvertiserClassID != null)).AsQueryable();
+            return PortalDb.SalesMarkets.Where(s => s.TradeAccounts.Any(ta => ta.Deleted == false && ta.Status == "O" && ta.AdvertiserClassID != null)).AsQueryable();
         }
 
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]

@@ -5,6 +5,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Suppliers.PaymentApproval;
 using SharedEFClasses.Models.Suppliers.PaymentRequest;
+using SharedEFClasses.Models.Suppliers.PaymentRequests;
 using SharedEFClasses.Models.Suppliers.Payments;
 using SharedEFClasses.Models.Translations;
 
@@ -20,6 +21,16 @@ namespace SharedEFClasses.Models
 {
     public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
 	{
+		public async Task<SupplierPaymentRequest_SelectResult> SupplierPayment_Request_Select(SupplierPaymentRequest_SelectDTO dto)
+		{
+			var results = await this.Database.Connection.QueryMultipleAsync("[payment].[Request_Select]", dto, null, null, System.Data.CommandType.StoredProcedure);
+
+			return new SupplierPaymentRequest_SelectResult()
+			{
+				Records = await results.ReadAsync<SupplierPaymentRequest_SelectRecord>(),
+			};
+		}
+
 		public async Task<SupplierPayments_Dashboard_SelectResult> SupplierPayments_Dashboard_Select(SupplierPayments_Dashboard_SelectDTO dto)
 		{
 			var results = await this.Database.Connection.QueryMultipleAsync("[payment].[Dashboard_Select]", dto, null, null, System.Data.CommandType.StoredProcedure);

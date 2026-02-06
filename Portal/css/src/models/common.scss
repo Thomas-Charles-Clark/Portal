@@ -517,3 +517,9 @@ $readonly-background: repeating-linear-gradient(-45deg, rgb(0 0 0 / 5%), transpa
         flex: 0 1 calc(50% - $sm-gutter);
     }
 }
+
+.open-sans-inflated-dollar-glyph {
+    font-size: 111%;
+    position: relative;
+    top: 1px;
+}

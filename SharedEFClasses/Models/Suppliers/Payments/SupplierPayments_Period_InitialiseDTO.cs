@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SharedEFClasses.Utilities;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +19,7 @@ namespace SharedEFClasses.Models.Suppliers.Payments
 			int? numberOfWeeks
 			)
 		{
-			StartDate = startDate;
+			StartDate = startDate?.StartOfWeek(DayOfWeek.Monday);
 			NumberOfWeeks = numberOfWeeks;
 		}
 	}

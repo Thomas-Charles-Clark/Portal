@@ -345,6 +345,12 @@
   flex: 0 1 calc(50% - 0.5rem);
 }
 
+.open-sans-inflated-dollar-glyph {
+  font-size: 111%;
+  position: relative;
+  top: 1px;
+}
+
 html {
   min-height: 100%;
   display: flex;
@@ -451,6 +457,17 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   position: relative;
 }
 
+.prefilters #user-selector-prefilter {
+  max-width: 600px;
+}
+
+#approvals-tab-pane .prefilters {
+  margin-bottom: 1rem;
+}
+#approvals-tab-pane .prefilters h4 {
+  margin-bottom: 0;
+}
+
 #totals-table {
   display: inline-table;
   width: auto;
@@ -515,11 +532,14 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   z-index: 100000;
 }
 
+.k-grid .k-table-row {
+  height: 44px;
+}
 .k-grid.supplier-detail-grid {
   position: relative;
   z-index: 1;
 }
-.k-grid.supplier-detail-grid.payment-plans {
+.k-grid.supplier-detail-grid.payment-requests {
   z-index: 2;
 }
 .k-grid.supplier-detail-grid table .k-edit-cell.relative {
@@ -562,7 +582,7 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   text-decoration: underline;
 }
 
-.k-grid.budget-grid .k-command-cell {
+.k-grid .k-command-cell {
   display: table-cell;
 }
 
@@ -914,6 +934,14 @@ td > .k-widget.k-multiselect .k-multiselect-wrap > .k-i-close {
 .supplier-payments-grid-container .k-pager {
   border-radius: 0 0 0.375rem 0.375rem;
 }
+.supplier-payments-grid-container .total-row,
+.supplier-payments-grid-container .current-period-row {
+  background-color: #cfe2ff;
+}
+.supplier-payments-grid-container .total-row:hover,
+.supplier-payments-grid-container .current-period-row:hover {
+  background-color: #c5d7f2 !important;
+}
 
 .k-multiselect-clearable.k-multiselect {
   line-height: inherit;
@@ -924,5 +952,21 @@ td > .k-widget.k-multiselect .k-multiselect-wrap > .k-i-close {
 
 .k-animation-container .k-list-container.k-popup {
   min-width: 240px;
+}
+
+.tab-content .tab-pane .card-body > h4 {
+  margin-bottom: 1rem;
+}
+
+.btn-export {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+#budget-tab-pane .k-grid .k-table-row {
+  height: 48.5px;
 }
 /*# sourceMappingURL=supplier-payments.css.map */

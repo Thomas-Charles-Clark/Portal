@@ -101,30 +101,12 @@
     //#region Components (Knockout-specific)
 
     self.salesMarketParams = kendoMDCDropDownList({
+        skipCascade: false,
         label: 'Market',
         odata: true,
         endPoint: '/odata/SalesMarkets/Default.SalesMarketsForCustomerAdvertisers()',
         textField: 'Label',
         valueField: 'SalesMarketID',
-        virtual: true,
-        pageSize: 40,
-        virtualOptions: {
-            itemHeight: 34,
-            mapValueTo: 'dataItem',
-            valueMapper: function (options) {
-                if (options.value) {
-                    $.ajax({
-                        url: `/odata/SalesMarkets/Default.SalesMarketValueMapper(salesMarketId=${options.value})`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success(data.value);
-                        }
-                    });
-                } else {
-                    options.success();
-                }
-            }
-        },
         idObservable: self.salesMarketId,
         objObservable: self.salesMarket,
         enable: ko.observable(true),
@@ -144,6 +126,7 @@
             self.salesMarketId('');
             self.salesMarket(undefined);
             self.salesMarketParams.dropDownListSettings.widget().trigger('change');
+            self.advertiserClassParams.widget().select(-1);
         },
         dataBound: function (e) {
             console.log('salesMarketParams dataBound', e);
@@ -810,6 +793,11 @@
         console.log('salesMarketId', nv);
         self.advertiserClassGridParams.widget().dataSource.read();
     });
+
+    self.advertiserClassId.subscribe(nv => {
+        console.log('advertiserClassId', nv);
+        self.advertiserClassGridParams.widget().dataSource.read();
+    })
 
     self.searchingTradeAccountId.subscribe(nv => {
         if (nv) {

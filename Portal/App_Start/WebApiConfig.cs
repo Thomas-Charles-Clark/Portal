@@ -33,6 +33,7 @@ using SharedEFClasses.Models.Documents;
 using System.Net.Http.Headers;
 using SharedEFClasses.Models.CreditControl;
 using SharedEFClasses.Models.Payment;
+using SharedEFClasses.Models.Suppliers.PaymentRequests;
 
 namespace Portal
 {
@@ -55,7 +56,9 @@ namespace Portal
 
             config.MapODataServiceRoute("pricing", "pricing-odata", GetPricingModel());
 
-            config.AddODataQueryFilter();
+			config.MapODataServiceRoute(routeName: "supplierPayments", "supplier-payments-odata", GetSupplierPaymentsODataModel());
+
+			config.AddODataQueryFilter();
 
             var odataBuilder = new ODataConventionModelBuilder();
 
@@ -220,6 +223,15 @@ namespace Portal
 
 			paymentRequestStatusValueMapperFunction.Parameter<byte?>(name: "paymentStatusRequestId");
 
+
+			var paymentRequestSupplierPaymentsGridRead = odataBuilder.EntityType<SupplierPaymentRequest_SelectRecord>()
+				.Collection
+				.Function("SupplierPaymentsGridRead")
+				.ReturnsCollectionFromEntitySet<SupplierPaymentRequest_SelectRecord>("SupplierPaymentRequest_SelectRecords");
+
+			paymentRequestStatusValueMapperFunction.Parameter<byte?>(name: "paymentStatusRequestId");
+
+
 			var companyValueMapperFunction = odataBuilder.EntityType<DebtFunder>()
 				.Collection
 				.Function("CompanyValueMapper")
@@ -302,7 +314,7 @@ namespace Portal
                 .Function("AdvertiserClassValueMapper")
                 .ReturnsCollectionFromEntitySet<AdvertiserClass>("AdvertiserClasses");
 
-            holdReasonValueMapperFunction.Parameter<short?>("holdReasonId");
+			advertiserClassValueMapperFunction.Parameter<byte?>("advertiserClassId");
 
             var transactionTypeValueMapperFunction = odataBuilder.EntityType<TransactionType>()
                 .Collection
@@ -638,7 +650,15 @@ namespace Portal
 
 
 
-            var memberFilterFunction = odataBuilder.EntityType<Member>()
+
+			var membersForSupplierPaymentsFilterFunction = odataBuilder.EntityType<Member>()
+				.Collection
+				.Function("MembersForSupplierPaymentsFilterFunction")
+				.ReturnsCollectionFromEntitySet<Member>("Members");
+
+			membersForSupplierPaymentsFilterFunction.Parameter<string>("searchTerm");
+
+			var memberFilterFunction = odataBuilder.EntityType<Member>()
                 .Collection
                 .Function("MemberFilter")
                 .ReturnsCollectionFromEntitySet<Member>("Members");
@@ -1199,5 +1219,21 @@ namespace Portal
 
             return builder.GetEdmModel();
         }
-    }
+
+
+		private static IEdmModel GetSupplierPaymentsODataModel()
+		{
+			ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
+
+			builder.EntitySet<SupplierPaymentRequest_SelectRecord>("SupplierPaymentRequest_SelectRecords");
+
+			builder.Namespace = "SupplierPayments";
+
+			var requestSelect = builder.EntityType<SupplierPaymentRequest_SelectRecord>().Collection.Function("SupplierPaymentsGridRead");
+			requestSelect.ReturnsCollectionFromEntitySet<SupplierPaymentRequest_SelectRecord>(entitySetName: "SupplierPaymentRequest_SelectRecords");
+			requestSelect.Parameter<SupplierPaymentRequest_SelectDTO>("dto");
+
+			return builder.GetEdmModel();
+		}
+	}
 }

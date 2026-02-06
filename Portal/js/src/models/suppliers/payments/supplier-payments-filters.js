@@ -31,6 +31,8 @@
 
     self.paymentPeriod = ko.observable();
 
+    self.onlyIncludeOutstandingPaymentRequests = ko.observable(true);
+
     self.onlyIncludeSuppliersWithPaymentRequests = ko.observable(true);
 
     self.onlyShowSuppliersWithOutstandingInvoices = ko.observable(false);
@@ -142,7 +144,7 @@
 
     self.userSelectorParams = kendoMDCDropDownList({
         odata: true,
-        endPoint: '/odata/Members/Default.MemberFilter(searchTerm=null)',
+        endPoint: '/odata/Members/Default.MembersForSupplierPaymentsFilterFunction(searchTerm=null)',
         textField: 'FullName',
         valueField: 'Id',
         virtual: true,
@@ -206,6 +208,15 @@
         }
     });
 
+    self.onlyIncludeOutstandingPaymentRequestsParams = {
+        checkboxId: "only-with-outstanding-requests",
+        label: "Only Display Outstanding Payment Requests",
+        observable: self.onlyIncludeOutstandingPaymentRequests,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: self.busy
+    }
+
     self.onlyIncludeSuppliersWithPaymentRequestsParams = {
         checkboxId: "only-with-requests",
         label: "Only Display Suppliers with Outstanding Payment Requests",
@@ -234,7 +245,24 @@
 
     //#region Computeds
 
+    self.approvalFilters = ko.computed(() => {
+        let result = {
+            outstandingRequests: self.onlyIncludeSuppliersWithPaymentRequests(),
+            outstandingInvoices: self.onlyShowSuppliersWithOutstandingInvoices()
+        };
 
+        return result;
+    }, self);
+
+    self.requestFilters = ko.computed(() => {
+
+        let result = {
+            memberId: self.userId(),
+            onlyIncludeOutstandingRequests: self.onlyIncludeOutstandingPaymentRequests()
+        };
+
+        return result;
+    }, self);
 
     //#endregion
 

@@ -26,6 +26,9 @@ using AngleSharp.Dom;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Web.UI;
 using SharedEFClasses.Models.Suppliers.Payments;
+using Microsoft.Data.OData;
+using SharedEFClasses.Models.Suppliers.PaymentRequests;
+using Microsoft.AspNet.Identity;
 
 namespace Portal.Controllers
 {
@@ -119,25 +122,25 @@ namespace Portal.Controllers
 		[EnableQuery]
 		public async Task<IHttpActionResult> Post([FromBody]PaymentRequest entity)
 		{
-            var batchId = Request.GetODataBatchId();
+			var batchId = Request.GetODataBatchId();
 
-            if (!ModelState.IsValid)
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+            var period = await PortalDb.PaymentPeriods.FirstOrDefaultAsync(p => p.PeriodID == entity.PeriodID);
+
+            if (period == null)
             {
-                return BadRequest(ModelState);
+                var periodCreationDTO = new SupplierPayments_Period_InitialiseDTO(entity.PaymentDueDT, 1);
+
+                PortalDb.SupplierPayment_Period_Initialise(periodCreationDTO);
+
+                await PortalDb.SaveChangesAsync();
             }
 
-			//var period = await PortalDb.PaymentPeriods.FirstOrDefaultAsync(p => p.PeriodID == entity.PeriodID);
-
-			//if (period == null)
-			//{
-			//	var periodCreationDTO = new SupplierPayments_Period_InitialiseDTO(entity.PaymentDueDT, 1);
-
-			//	PortalDb.SupplierPayment_Period_Initialise(periodCreationDTO);
-
-			//	await PortalDb.SaveChangesAsync();
-			//}
-
-			var creationResult = PortalDb.PaymentRequests.Add(entity);
+            var creationResult = PortalDb.PaymentRequests.Add(entity);
 
 			await PortalDb.SaveChangesAsync();
 
@@ -232,7 +235,7 @@ namespace Portal.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        protected override void Dispose(bool disposing)
+		protected override void Dispose(bool disposing)
         {
             if (disposing)
             {

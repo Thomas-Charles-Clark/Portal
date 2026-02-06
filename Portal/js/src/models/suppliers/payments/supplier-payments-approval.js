@@ -23,13 +23,10 @@
     self.currencyId = ko.observable(rec.CurrencyID);
     self.currency = ko.observable(rec.Currency);
 
-    self.paymentRequestStatusId = ko.observable(rec.PaymentRequestStatusID);
-    self.paymentRequestStatus = ko.observable(rec.PaymentRequestStatus);
-
     self.requestedByMemberId = ko.observable(rec.RequestedByMemberID);
     self.requestedByMember = ko.observable(rec.RequestedByMember);
 
-    self.purchaseOrderIds = ko.observableArray(rec.PurchaseOrderHeadIDs == null ? [] : rec.PurchaseOrderHeadIDs)
+    self.purchaseOrderIds = ko.observableArray(rec.PurchaseOrderHeadIDs == null ? [] : rec.PurchaseOrderHeadIDs);
 
     self.bootstrapPopoverDetails = {
         title: "Purchase Order IDs",
@@ -61,6 +58,8 @@
         }
     }
 
+    self.forexLabel = ko.observable();
+
     self.exchangeRate = ko.observable(rec.ExchangeRate);
 
     self.amountInCurrency = ko.observable(rec.AmountInCurrency);
@@ -69,34 +68,34 @@
 
     self.amountInSterling = ko.observable(rec.AmountInSterling);
 
-    self.approvedAmountInSterling = ko.computed(() => {
-        if (self.approvedAmountInCurrency() && self.exchangeRate()) {
-            return Math.round((self.approvedAmountInCurrency() / self.exchangeRate()) / 100) * 100;
+    self.approvedAmountInSterling = ko.computed({
+        read: () => {
+            if (self.approvedAmountInCurrency() && self.exchangeRate()) {
+                return Math.round((self.approvedAmountInCurrency() / self.exchangeRate()) / 100) * 100;
+            }
+        },
+        write: (value) => {
+            console.log('approvedAmountInSterling write', value);
         }
     }, self);
 
-    self.approvedAmountInSterlingFormatted = ko.computed(() => {
-        let aais = self.approvedAmountInSterling();
+    self.approvedAmountInSterlingFormatted = ko.computed({
+        read: () => {
+            let aais = self.approvedAmountInSterling();
 
-        if (aais)
-            return window.formatCurrency(self.approvedAmountInSterling())
-        else
-            return ''
+            if (aais)
+                return window.formatCurrency(self.approvedAmountInSterling())
+            else
+                return ''
+        }, write: (value) => {
+            console.log('approvedAmountInSterlingFormatted write', value);
+        }
     }, self);
 
     self.forexParams = {
         buttons: false,
-        label: ko.computed(() => {
-            if (self.currency())
-                return `FX Rate ${(self.currency() && self.currency().Code)} to GBP`;
-            else
-                return '';
-        }, self),
-        observable: ko.computed(() => {
-            if (self.currency() && self.exchangeRate()) {
-                return formatNumber(self.exchangeRate(), 4, 'en-GB', 'GBP');
-            }
-        }, self),
+        label: self.forexLabel,
+        observable: self.exchangeRate,
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
@@ -260,47 +259,6 @@
         }
     });
 
-    self.paymentRequestStatusTemplate = (e) => {
-        if (e.PaymentRequestStatusID && e.Name) {
-            return `<span title="${e.Name}">${e.Name}</span>`;
-        } else {
-            return '';
-        }
-    }
-
-    self.paymentRequestStatusParams = kendoMDCDropDownList({
-        label: 'Payment Request Status',
-        odata: true,
-        endPoint: '/odata/PaymentRequestStatuses',
-        textField: 'Name',
-        valueField: 'PaymentRequestStatusID',
-        template: self.paymentRequestStatusTemplate,
-        valueTemplate: self.paymentRequestStatusTemplate,
-        idObservable: self.paymentRequestStatusId,
-        objObservable: self.paymentRequestStatus,
-        locked: ko.observable(false),
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'asc',
-            field: 'SortOrder'
-        },
-        ignoreCase: false,
-        select: (e) => {
-            console.log('paymentRequestStatus.select', e);
-        },
-        clearFunction: (e) => {
-            self.paymentRequestStatusId('');
-            self.paymentRequestStatusParams.widget().trigger('change');
-        }
-    });
-
     self.amountInCurrencyParams = {
         label: 'Amount in Currency',
         buttons: false,
@@ -310,7 +268,7 @@
         decorateInputElement: false,
         insertValidationMessages: false,
         enable: ko.computed(() => {
-            return !self.readOnly()
+            return !self.readOnly();
         }, self),
         disable: ko.computed(() => {
             return self.readOnly() ? true : self.disabled()
@@ -359,11 +317,16 @@
         }
     }
 
-    self.amountInSterlingFormatted = ko.computed(() => {
-        if (self.amountInSterling() != null) {
-            return formatCurrency(self.amountInSterling(), 2, 'en-GB', 'GBP');
-        } else {
-            return '';
+    self.amountInSterlingFormatted = ko.computed({
+        read: () => {
+            if (self.amountInSterling() != null) {
+                return formatCurrency(self.amountInSterling(), 2, 'en-GB', 'GBP');
+            } else {
+                return '';
+            }
+        },
+        write: () => {
+
         }
     }, self);
 
@@ -437,16 +400,11 @@
         disable: ko.observable(false),
         busy: ko.observable(false),
         clearable: ko.observable(true),
-        revertible: ko.observable(true),
+        revertible: ko.observable(false),
         visible: ko.observable(true),
-        clearFunction: () => {
+        clearFunction: function () {
             var self = this;
             self.observable(undefined);
-
-        },
-        revertFunction: () => {
-            var self = this;
-            self.observable(self.originalValue());
         }
     };
 
@@ -485,13 +443,22 @@
         }
     })
 
+    self.forexLabelComputer = ko.computed(() => {
+        if (self.currency())
+            return `FX Rate ${(self.currency() && self.currency().Code)} to GBP`;
+        else
+            return '';
+    }, self);
+
     //#endregion
 
 
 
     //#region Subscriptions
 
-
+    self.forexLabelComputer.subscribe(nv => {
+        self.forexLabel(nv);
+    })
 
     //#endregion
 

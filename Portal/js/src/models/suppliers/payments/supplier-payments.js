@@ -16,6 +16,8 @@
 
     self.busyMessage = ko.observable('Please Wait');
 
+    self.quietLogging = ko.observable(true);
+
     //#endregion
 
 
@@ -39,14 +41,16 @@
         ready: self.ready,
         busy: self.busy,
         busyMessage: self.busyMessage,
-        refreshParent: self.refresh
+        refreshParent: self.refresh,
+        quietLogging: self.quietLogging
     });
 
     self.dashboard = supplierPaymentsDashboardViewModel({
         ready: self.ready,
         busy: self.busy,
         busyMessage: self.busyMessage,
-        filters: self.filters
+        filters: self.filters,
+        quietLogging: self.quietLogging
     });
 
     self.requests = supplierPaymentsRequestsViewModel({
@@ -54,7 +58,8 @@
         busy: self.busy,
         busyMessage: self.busyMessage,
         filters: self.filters,
-        refreshDashboard: self.dashboard.refresh
+        refreshDashboard: self.dashboard.refresh,
+        quietLogging: self.quietLogging
     });
 
     self.approvals = supplierPaymentsApprovalsViewModel({
@@ -62,7 +67,8 @@
         busy: self.busy,
         busyMessage: self.busyMessage,
         filters: self.filters,
-        refreshDashboard: self.dashboard.refresh
+        refreshDashboard: self.dashboard.refresh,
+        quietLogging: self.quietLogging
     });
 
     self.budgets = supplierPaymentsBudgetsViewModel({
@@ -70,7 +76,8 @@
         busy: self.busy,
         busyMessage: self.busyMessage,
         filters: self.filters,
-        refreshDashboard: self.dashboard.refresh
+        refreshDashboard: self.dashboard.refresh,
+        quietLogging: self.quietLogging
     });
 
     self.historySummary = supplierPaymentsHistorySummaryViewModel({
@@ -78,7 +85,8 @@
         busy: self.busy,
         busyMessage: self.busyMessage,
         filters: self.filters,
-        refreshDashboard: self.dashboard.refresh
+        refreshDashboard: self.dashboard.refresh,
+        quietLogging: self.quietLogging
     });
 
     self.historyDetails = supplierPaymentsHistoryDetailViewModel({
@@ -86,7 +94,8 @@
         busy: self.busy,
         busyMessage: self.busyMessage,
         filters: self.filters,
-        refreshDashboard: self.dashboard.refresh
+        refreshDashboard: self.dashboard.refresh,
+        quietLogging: self.quietLogging
     });
 
     //#endregion

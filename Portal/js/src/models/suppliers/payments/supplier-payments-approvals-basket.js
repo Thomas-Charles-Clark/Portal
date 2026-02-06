@@ -39,11 +39,11 @@
     //#region Computeds
 
     self.paymentPlans = ko.computed(() => {
-        return self.items().filter(i => ko.unwrap(i.paymentRequestStatusId) == 7);
+        return self.items().filter(i => i.PaymentRequestStatusName == "Payment Plan");
     }, self);
 
     self.otherPayments = ko.computed(() => {
-        return self.items().filter(i => ko.unwrap(i.paymentRequestStatusId) != 7);
+        return self.items().filter(i => i.PaymentRequestStatusName != "Payment Plan");
     }, self);
 
     self.countDisplay = ko.computed(() => {
@@ -92,16 +92,16 @@
     }
 
     self.addBasketItem = (item) => {
-        item.busy(true);
+        //item.busy(true);
 
         let data = {
             paymentRequestId: item.PaymentRequestID,
-            amountApprovedInCurrency: item.amountApprovedInCurrency(),
-            exchangeRate: item.exchangeRate(),
-            amountApprovedInSterling: item.amountApprovedInSterling()
+            amountApprovedInCurrency: item.AmountApprovedInCurrency,
+            exchangeRate: item.ExchangeRate,
+            amountApprovedInSterling: item.AmountApprovedInSterling
         }
 
-        console.log('addBasketItem', data);
+        console.log('addBasketItem calling with', data);
 
         fetch('/api/SupplierPayments/AddBasketItem', {
             method: 'POST',
@@ -112,17 +112,22 @@
         })
             .then(window.handleFetchResponse)
             .then(data => {
-                item.busy(false);
+                //item.busy(false);
+
+                console.log('addBasketItem returned', data);
+
                 item.PaymentDecisionID = data.PaymentDecisionID;
+
+                self.items.push(item);
             })
             .catch(err => {
-                item.busy(false);
+                //item.busy(false);
                 window.catchFetchError(err);
             })
     }
 
     self.updateBasketItem = (item) => {
-        item.busy(true);
+        //item.busy(true);
 
         let data = {
             paymentDecisionId: item.PaymentDecisionID,
@@ -132,7 +137,7 @@
             amountApprovedInSterling: item.amountApprovedInSterling()
         }
 
-        console.log('updateBasketItem', data);
+        console.log('updateBasketItem calling with', data);
 
         fetch('/api/SupplierPayments/UpdateBasketItem', {
             method: 'POST',
@@ -143,16 +148,17 @@
         })
             .then(window.handleFetchResponse)
             .then(data => {
-                item.busy(false);
+                console.log('updateBasketItem returned', data);
+                //item.busy(false);
             })
             .catch(err => {
-                item.busy(false);
+                //item.busy(false);
                 window.catchFetchError(err);
             })
     }
 
     self.removeBasketItem = (item) => {
-        item.busy(true);
+        //item.busy(true);
 
         let data = {
             paymentDecisionId: item.PaymentDecisionID,
@@ -162,7 +168,7 @@
             amountApprovedInSterling: item.amountApprovedInSterling()
         }
 
-        console.log('removeBasketItem', data);
+        console.log('removeBasketItem calling with', data);
 
         fetch('/api/SupplierPayments/RemoveBasketItem', {
             method: 'POST',
@@ -173,11 +179,14 @@
         })
             .then(window.handleFetchResponse)
             .then(data => {
-                item.busy(false)
+                //item.busy(false)
+
+                console.log('removeBasketItem returned', data);
+
                 self.items.remove(item);
             })
             .catch(err => {
-                item.busy(false);
+                //item.busy(false);
                 window.catchFetchError(err);
             })
     }

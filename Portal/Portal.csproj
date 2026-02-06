@@ -560,6 +560,7 @@
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentsAPIController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentsController.cs" />
+    <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentsODataController.cs" />
     <Compile Include="Areas\Suppliers\SuppliersAreaRegistration.cs" />
     <Compile Include="Areas\Suppliers\ViewModels\SupplierPaymentsViewModel.cs" />
     <Compile Include="Areas\Trade-Accounts\Controllers\TradeAccountContactsAPIController.cs" />
@@ -1741,7 +1742,6 @@
     <Content Include="css\src\models\tasks-dashboard.scss" />
     <Content Include="css\src\models\trade-account-creation-email-maintenance.scss" />
     <Content Include="css\src\models\translations\translations.scss" />
-    <Content Include="css\src\models\virtual-scrolling-deferred-data.scss" />
     <Content Include="css\src\fonts\bootstrap-icons.css" />
     <Content Include="css\src\fonts\bootstrap-icons.min.css" />
     <Content Include="css\src\fonts\font-awesome.css" />
@@ -2749,7 +2749,6 @@
     <Content Include="Content\mdc\css\mdc-custom.min.css.map" />
     <Content Include="css\src\models\new-test.scss" />
     <Content Include="css\src\models\generic-forms.scss" />
-    <Content Include="css\src\models\trade-account-creation-email-maintenance.scss" />
     <Content Include="css\src\models\retail-store-members.scss" />
     <Content Include="css\src\models\fenwick-invoicing.scss" />
     <Content Include="css\src\models\range-management.scss" />
@@ -3176,8 +3175,6 @@
     <Content Include="css\src\models\credit-control\credit-control-sidebar.scss" />
     <Content Include="css\src\models\translations\translations-dashboard.scss" />
     <Content Include="css\src\models\suppliers\payments\supplier-payments-approvals-basket.scss" />
-    <Content Include="css\src\models\visit-booker.scss" />
-    <Content Include="css\src\models\visit-search.scss" />
     <Content Include="css\src\models\suppliers\payments\supplier-payments.scss" />
     <Content Include="css\src\models\suppliers\payments\supplier-payments-sidebar.scss" />
     <None Include="Libraries\MertexerV2.dll">

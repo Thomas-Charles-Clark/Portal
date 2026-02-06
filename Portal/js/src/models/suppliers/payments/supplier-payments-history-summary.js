@@ -43,6 +43,10 @@
             pageSize: 20,
             pageSizes: [10, 20, 50, 100, 250, 500, 'all']
         },
+        sort: {
+            field: 'SortOrder',
+            dir: 'asc'
+        },
         batch: true,
         transport: {
             read: (options) => {
@@ -51,7 +55,7 @@
 
                 let mapped = webapi.parameterMap(options.data);
 
-                let data = {}; // self.filters.toJS(); // Matt removed all parameters to this procedure 02/02/2026
+                let data = {};
 
                 for (var propertyName in mapped) {
                     data[propertyName] = mapped[propertyName];
@@ -410,13 +414,105 @@
             console.log(`change`, e);
         },
         dataBound: (e) => {
-            console.log(`dataBound`, e);
+            console.log(`historySummary dataBound`, e);
+
+            let columnIndex = 0;
+
+            let rows = e.sender.tbody.children();
+
+            for (let i = 0; i < rows.length; i++) {
+
+                let row = $(rows[i]);
+
+                let dataItem = e.sender.dataItem(row);
+
+                if (dataItem.get("Label").indexOf('Total') > -1) {
+                    row.addClass("total-row");
+                };
+            }
         },
         save: (data) => {
             console.log(`saveChanges`, e);
         },
         saveChanges: (e) => {
             console.log(`saveChanges`, e);
+        },
+        excelExport: (e) => {
+            let data = e.data;
+            let gridColumns = e.sender.columns;
+            let sheet = e.workbook.sheets[0];
+            let visibleGridColumns = [];
+            let columnTemplates = [];
+            let dataItem;
+            // Create element to generate templates in.
+            let elem = document.createElement('div');
+
+            // Get a list of visible columns
+            for (let i = 0; i < gridColumns.length; i++) {
+                if (gridColumns[i].exportable !== false) {
+                    visibleGridColumns.push(gridColumns[i]);
+                }
+            }
+
+            // Create a collection of the column templates, together with the current column index
+            for (let i = 0; i < visibleGridColumns.length; i++) {
+                if (visibleGridColumns[i].template) {
+                    columnTemplates.push({
+                        cellIndex: i,
+                        template: kendo.template(visibleGridColumns[i].template)
+                    });
+                }
+            }
+
+            //let header = sheet.rows.find(r => r.type == 'header');
+
+            //header.cells.splice(2, 0, {
+            //    background: "#7a7a7a",
+            //    colSpan: 1,
+            //    color: "#fff",
+            //    rowSpan: 1,
+            //    value: "Supplier Name"
+            //});
+
+            //header.cells.splice(4, 0, {
+            //    background: "#7a7a7a",
+            //    colSpan: 1,
+            //    color: "#fff",
+            //    rowSpan: 1,
+            //    value: "Budget Holder Name"
+            //});
+
+            // Traverse all exported rows.
+            for (let i = 1; i < sheet.rows.length; i++) {
+                let row = sheet.rows[i];
+                // Traverse the column templates and apply them for each row at the stored column position.
+
+                //// Splice back in the hidden columns, because of annoying reasons. Shush. 
+                //row.cells.splice(2, 0, { value: null });
+                //row.cells.splice(4, 0, { value: null });
+
+                // Get the data item corresponding to the current row.
+                let dataItem = data[i - 1];
+                for (let j = 0; j < columnTemplates.length; j++) {
+                    let columnTemplate = columnTemplates[j];
+                    // Generate the template content for the current cell.
+                    if (dataItem) {
+                        elem.innerHTML = columnTemplate.template(dataItem);
+                        if (row.cells[columnTemplate.cellIndex] != undefined)
+                            row.cells[columnTemplate.cellIndex].type = "string";
+                        // Output the text content of the templated cell into the exported cell.
+                        row.cells[columnTemplate.cellIndex].value = elem.textContent || elem.innerText || "";
+                    }
+                }
+            }
+
+            let now = new Date();
+
+            e.workbook.fileName = `Payment-History-Summary_${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}.xlsx`;
+
+            self.busy(false);
+
+            self.busyMessage('Please Wait');
         }
     }
 
@@ -453,6 +549,15 @@
             filter: self.gridWidget().dataSource.filter(),
             sort: self.gridWidget().dataSource.sort()
         });
+    }
+
+    self.exportToExcel = () => {
+
+        self.busyMessage('Exporting...');
+
+        self.busy(true);
+        
+        self.gridWidget().saveAsExcel();
     }
 
     //#endregion

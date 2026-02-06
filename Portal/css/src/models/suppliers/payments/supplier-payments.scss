@@ -88,8 +88,8 @@ html {
 		.mdc-select {
 			height: 35px;
 
-			.k-input-inner  {
-				padding-right: 42px; 
+			.k-input-inner {
+				padding-right: 42px;
 			}
 
 			.controls {
@@ -173,7 +173,20 @@ html {
 	position: relative;
 }
 
-#prefilters {
+.prefilters {
+	#user-selector-prefilter {
+		max-width: 600px;
+	}
+}
+
+#approvals-tab-pane {
+	.prefilters {
+		margin-bottom: $l-gutter;
+
+		h4 {
+			margin-bottom: 0;
+		}
+	}
 }
 
 #totals-table {
@@ -260,11 +273,15 @@ html {
 }
 
 .k-grid {
+	.k-table-row {
+		height: 44px;
+	}
+
 	&.supplier-detail-grid {
 		position: relative;
 		z-index: 1;
 
-		&.payment-plans {
+		&.payment-requests {
 			z-index: 2;
 		}
 
@@ -339,10 +356,8 @@ html {
 }
 
 .k-grid {
-	&.budget-grid {
-		.k-command-cell {
-			display: table-cell;
-		}
+	.k-command-cell {
+		display: table-cell;
 	}
 }
 
@@ -853,6 +868,15 @@ td {
 	.k-pager {
 		border-radius: 0 0 $border-radius $border-radius;
 	}
+
+	.total-row,
+	.current-period-row {
+		background-color: $blue-100;
+
+		&:hover {
+			background-color: shade-color($blue-100, 5%) !important;
+		}
+	}
 }
 
 .k-multiselect-clearable {
@@ -868,5 +892,31 @@ td {
 .k-animation-container {
 	.k-list-container.k-popup {
 		min-width: 240px;
+	}
+}
+
+.tab-content {
+	.tab-pane {
+		.card-body {
+			> h4 {
+				margin-bottom: $l-gutter;
+			}
+		}
+	}
+}
+
+.btn-export {
+	display: flex;
+	gap: $m-gutter;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+}
+
+#budget-tab-pane {
+	.k-grid {
+		.k-table-row {
+			height: 48.5px;
+		}
 	}
 }

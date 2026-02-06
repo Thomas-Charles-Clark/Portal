@@ -71,7 +71,32 @@ namespace Portal.Controllers
              ).OrderBy(p => p.FullName).AsQueryable();
         }
 
-        [EnableQuery(MaxNodeCount = 200)]
+		[EnableQuery(MaxNodeCount = 200)]
+		[HttpGet]
+		public IQueryable<Member> MembersForSupplierPaymentsFilterFunction(string searchTerm)
+		{
+			if (!String.IsNullOrEmpty(searchTerm))
+			{
+				return PortalDb.Users.Where(p => p.Roles.Any() &&
+												 p.Deleted == false &&
+												 p.Email.EndsWith("@designersguild.com") &&
+												 (
+													p.FullName.StartsWith(searchTerm) ||
+													p.Email.StartsWith(searchTerm)
+												 )
+											).OrderBy(p => p.FullName).AsQueryable();
+			}
+			else
+			{
+                var permittedRoles = new int[] { 1, 124, 125 };
+
+				return PortalDb.Users.Where(p => p.Roles.Any(r => permittedRoles.Contains(r.RoleId)) &&
+												 p.Deleted == false &&
+												 p.Email.EndsWith("@designersguild.com")).OrderBy(p => p.FullName).AsQueryable();
+			}
+		}
+
+		[EnableQuery(MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<Member> MemberValueMapper(int? id)
         {

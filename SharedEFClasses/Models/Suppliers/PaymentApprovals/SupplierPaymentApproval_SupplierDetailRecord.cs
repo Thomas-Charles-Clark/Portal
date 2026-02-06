@@ -21,5 +21,17 @@ namespace SharedEFClasses.Models.Suppliers.PaymentApproval
 		public decimal? ApprovedAmountInCurrency { get; set; }
 
 		public decimal? OutstandingAmountInCurrency { get; set; }
+
+		public string RequesterComments { get; set; }
+
+		public string DeciderComments { get; set; }
+
+		public int RequestedByMemberID { get; set; }
+
+		public string RequestedByMemberName { get; set; }
+
+		public decimal ExchangeRate { get; set; }
+
+		public DateTime CreatedDT { get; set; }
 	}
 }

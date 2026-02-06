@@ -30,6 +30,7 @@ using SharedEFClasses.Models.Suppliers.Payments;
 using SharedEFClasses.Models.Suppliers.PaymentApprovals;
 using SharedEFClasses.Models.Suppliers.PaymentApproval;
 using SharedEFClasses.Models.Payment;
+using SharedEFClasses.Models.Suppliers.PaymentRequests;
 
 
 namespace Portal.Areas.Suppliers.Controllers
@@ -59,7 +60,10 @@ namespace Portal.Areas.Suppliers.Controllers
 			return Ok(result);
 		}
 
-
+		/// <summary>
+		/// APPROVALS
+		/// </summary>
+		/// 
 
 
 
@@ -80,6 +84,8 @@ namespace Portal.Areas.Suppliers.Controllers
 			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
 			[FromUri]SupplierPaymentApproval_SelectDTO dto)
 		{
+			dto.MemberID = User.Identity.GetUserId<int>();
+
 			var result = PortalDb.SupplierPayment_Approval_Select(dto);
 
 			return Ok(new
