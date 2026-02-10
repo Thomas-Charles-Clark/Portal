@@ -214,27 +214,26 @@
         editor: (container, options) => {
             (options.model.PaymentPeriod && options.model.PaymentPeriod.Finalised)
                 ? $(`<span>${options.model.PaymentPeriod.Label}</span>`).appendTo(container)
-                : $(`<input type="text" required name="${options.field}" value="${options.model.PeriodID}" validationMessage="You must specify a Period" />`)
-                .appendTo(container)
+                : $(`<input type="text" required name="${options.field}" data-bind="value: ${options.field}" validationMessage="You must specify a Period" />`)
+                    .appendTo(container)
                     .kendoDropDownList({
-                        dataTextField: 'Label',
+                        dataTextField: '#: Label #',
                         dataValueField: 'PeriodID',
-                        value: {
-                            Label: options.model.Period?.Label,
-                            PeriodID: options.model.PeriodID
-                        },
+                        valuePrimitive: false,
+                        value: options.model.PeriodID,
                         autoWidth: true,
+                        autoBind: true,
                         filter: 'startswith',
                         template: (e) => {
                             if (e.Label) {
-                                return e.Label
+                                return e.Label;
                             } else {
                                 return ''
                             }
                         },
                         valueTemplate: (e) => {
                             if (e.Label) {
-                                return e.Label
+                                return e.Label;
                             } else {
                                 return ''
                             }
@@ -255,7 +254,7 @@
 
                                     let filters = [];
 
-                                    let apply = '';
+                                    let apply = [];
 
                                     filters.push({
                                         field: 'Finalised',
@@ -263,8 +262,12 @@
                                         value: false
                                     });
 
+                                    if (options.model.PeriodID) {
+                                        apply.push(`(PeriodID eq ${options.model.PeriodID})`)
+                                    }
+
                                     if (options.model.CurrencyID) {
-                                        apply = `filter(PaymentBudgets/all(b: b/CurrencyID ne ${options.model.CurrencyID}))`;
+                                        apply.push(`(PaymentBudgets/all(b: b/CurrencyID ne ${options.model.CurrencyID}))`);
                                     } //DistributionSetDetails/all(d: d/DistributionCode eq 'VISA')
 
                                     if (data.filter && data.filter.filters.length) {
@@ -277,8 +280,8 @@
                                     //Generate parameters in odata v4 format
                                     let d = kendo.data.transports['odata-v4'].parameterMap(data);
 
-                                    if (apply) {
-                                        d.$apply = apply;
+                                    if (apply.length) {
+                                        d.$apply = `filter(${apply.join(' or ')})`
                                     }
 
                                     delete d.$inlinecount; // <-- remove inlinecount

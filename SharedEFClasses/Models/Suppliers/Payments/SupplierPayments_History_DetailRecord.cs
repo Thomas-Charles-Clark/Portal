@@ -24,8 +24,6 @@ namespace SharedEFClasses.Models.Suppliers.Payments
 
 		public decimal AmountInCurrency { get; set; }
 
-		public DateTime? FinalisedDT { get; set; }
-
 		public string RequestedBy { get; set; }
 
 		public string ApprovedBy { get; set; }

@@ -26,8 +26,6 @@ namespace SharedEFClasses.Models.Payment
 
 		public decimal ExchangeRate { get; set; }
 
-		public DateTime? FinalisedDT { get; set; }
-
 		public DateTime CreatedDT { get; set; }
 
 		public DateTime? ModifiedDT { get; set; }

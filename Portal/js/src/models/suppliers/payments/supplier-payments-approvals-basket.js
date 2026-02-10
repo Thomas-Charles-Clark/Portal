@@ -1,32 +1,486 @@
 ﻿const supplierPaymentsApprovalsBasketViewModel = ({
     ready,
     busy,
-    busyMessage
+    busyMessage,
+    filters
 } = {
     ready: ko.observable(false),
     busy: ko.observable(false),
-    busyMessage: ko.observable('Please Wait')
+    busyMessage: ko.observable('Please Wait'),
+    filters: { }
 }) => {
 
-    let self = {};
+    let self = {
+        ready,
+        busy,
+        busyMessage,
+        filters
+    };
 
     //#region Properties
-
-    self.ready = ready;
-
-    self.busy = busy;
-
-    self.busyMessage = busyMessage;
 
     self.basketElement = document.querySelector('#basket-sidebar');
 
     self.items = ko.observableArray([]);
+
+    self.gridWidget = ko.observable();
 
     //#endregion
 
 
 
     //#region Components
+
+
+    self.gridDataSource = new kendo.data.DataSource({
+        sortable: true,
+        filterable: true,
+        grouping: true,
+        group: [{
+            field: 'RequestType',
+            dir: 'asc'
+        }, {
+            field: 'CurrencyCode',
+            dir: 'asc'
+        }],
+        serverGrouping: false,
+        serverFiltering: true,
+        serverPaging: false,
+        page: 1,
+        pageSize: 10,
+        pageable: {
+            pageSize: 10,
+            pageSizes: [10, 20, 50, 100, 250, 500, 'all']
+        },
+        batch: true,
+        type: "odata-v4",
+        transport: {
+            read: {
+                url: () => {
+                    let filters = self.filters.basketFilters();
+                    return `/supplier-payments-odata/GetSupplierPaymentApproval_Basket_SelectRecords/SupplierPayments.SupplierPaymentApprovalBasketGridRead(dto=@d)?@d={"PeriodID":${filters.periodId}}`;
+                }
+            },
+            update: {
+                url: function (item) {
+                    return `/supplier-payments-odata/GetSupplierPaymentApproval_Basket_SelectRecords(${item.PaymentRequestID})`
+                }
+            },
+            create: {
+                url: '/supplier-payments-odata/GetSupplierPaymentApproval_Basket_SelectRecords'
+            },
+            batch: {
+                url: '/supplier-payments-odata/$batch'
+            },
+            destroy: {
+                url: function (item) {
+                    return `/supplier-payments-odata/GetSupplierPaymentApproval_Basket_SelectRecords(${item.PaymentRequestID})`
+                }
+            },
+            parameterMap: function (options, type) {
+
+                console.log(type, options);
+
+                var result = kendo.data.transports["odata-v4"].parameterMap(options, type);
+
+                return result;
+            }
+        },
+        schema: {
+            errors: function (response) {
+                if (response && response.responses) {
+                    var errors = [];
+                    response.responses.forEach(function (r) {
+                        if (r.status < 200 || r.status >= 300) {
+                            // Extract the message from the body
+                            errors.push(r.body && r.body.error ? r.body.error.message : "Unknown Error");
+                        }
+                    });
+                    if (errors.length > 0) return errors.join(", ");
+                }
+                return null;
+            },
+            // 2. Ensure data returns an array even if segments failed
+            data: function (response) {
+                // If the parser failed to populate 'collections', 
+                // you may need to return an empty array to prevent a crash
+                return response.value || (response.responses ? [] : response);
+            },
+            parse: function (data) {
+                console.log(`supplierPaymentRequests schema.parse called with`, data);
+
+                for (let i = 0; i < data.value.length; i++) {
+                    data.value[i].PurchaseOrders = JSON.parse(data.value[i].PurchaseOrders);
+                }
+
+                return data;
+            },
+            model: {
+                id: 'PaymentDecisionID',
+                fields: {
+                    PaymentDecisionID: {
+                        type: 'number'
+                    },
+                    CurrencyCode: {
+                        type: 'string'
+                    },
+                    SortOrder: {
+                        type: 'number'
+                    },
+                    RequestType: {
+                        type: 'string'
+                    },
+                    SupplierCode: {
+                        type: 'string'
+                    },
+                    SupplierName: {
+                        type: 'string'
+                    },
+                    RequesterName: {
+                        type: 'string'
+                    },
+                    RequesterEmail: {
+                        type: 'string'
+                    },
+                    FormattingCulture: {
+                        type: 'string'
+                    },
+                    Request_OutstandingAmount_CUR: {
+                        type: 'number'
+                    },
+                    Request_OutstandingAmount_GBP: {
+                        type: 'number'
+                    },
+                    Decision_Amount_CUR: {
+                        type: 'number'
+                    },
+                    Decision_Amount_GBP: {
+                        type: 'number'
+                    },
+                }
+            }
+        },
+        error: function (e) {
+            window.showError("supplierPaymentBasketGrid errors: " + e.errors);
+        },
+        requestStart: (e) => {
+            //self.busy(true);
+            console.log(`supplierPaymentBasketGrid dataSource requestStart`, e);
+
+            if (e.type != 'submit') {
+                if (e.sender.hasChanges()) {
+                    e.preventDefault();
+                    self.busy(false);
+                    window.showInfo('Unsaved Changes', 'You have unsaved changes. Please cancel or save them before performing any other action.');
+                }
+            }
+        },
+        requestEnd: (e) => {
+            console.log(`supplierPaymentBasketGrid dataSource requestEnd`);
+            self.busy(false);
+        },
+        noDataTemplate: 'Nothing to display',
+        change: (e) => {
+            console.log(`supplierPaymentBasketGrid dataSource change`, e);
+
+            if (e.action === "itemchange") {
+                let model = e.items[0];
+                switch (e.field) {
+                    case "PaymentDueDate":
+                        let periodId = moment(model.PaymentDueDate).weekdayWithStartWeekday(0, 1).format('YYYYMMDD');
+                        model.set('PeriodID', +periodId);
+                        break;
+                    default: break;
+                }
+
+                $(`#basket-grid-container .k-button.k-grid-save-changes`).show();
+                $(`#basket-grid-container .k-button.k-grid-cancel-changes`).show();
+            }
+        }
+    });
+
+    self.gridToolbar = [
+        'save',
+        'cancel'
+    ];
+
+    self.gridColumns = [
+    //{
+    //    field: 'PeriodID',
+    //    title: 'Period',
+    //    attributes: {
+    //        "class": "readonly"
+    //    },
+    //    template: (e) => {
+    //        if (e.PeriodID) {
+    //            let arraySplit = e.PeriodID.toString().match(/(\d\d\d?\d?)(\d\d)(\d\d)/);
+    //            let dateString = `${arraySplit[1]}/${arraySplit[2]}/${arraySplit[3]}`;
+    //            return moment(Date.parse(dateString)).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
+    //        } else {
+    //            let momentFormatted = '';
+
+    //            if (e.PaymentDueDate) {
+    //                momentFormatted = moment(e.PaymentDueDate).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
+    //            }
+
+    //            return momentFormatted;
+    //        }
+    //    },
+    //    valueTemplate: (e) => {
+    //        if (e.PeriodID) {
+    //            let arraySplit = e.PeriodID.toString().match(/(\d\d\d?\d?)(\d\d)(\d\d)/);
+    //            let dateString = `${arraySplit[1]}/${arraySplit[2]}/${arraySplit[3]}`;
+    //            return moment(Date.parse(dateString)).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
+    //        } else {
+    //            return '';
+    //        }
+    //    }
+    //},
+    {
+        field: 'PaymentDecisionID',
+        title: 'Payment Decision ID',
+        hidden: true
+    },
+    {
+        field: 'CurrencyCode',
+        title: 'Currency Code',
+        hidden: true
+    }, {
+        field: 'SortOrder',
+        title: 'Sort Order',
+        hidden: true
+    }, {
+        field: 'RequestType',
+        title: 'Request Type',
+        hidden: true,
+        groupHeaderTemplate: (dataItem) => dataItem.value ? `${dataItem.value}` : ``,
+        template: (e) => {
+            if (e.RequestType) {
+                return e.RequestType;
+            } else {
+                return '';
+            }
+        },
+        valueTemplate: (e) => {
+            if (e.RequestType) {
+                return e.RequestType;
+            } else {
+                return '';
+            }
+        }
+    }, {
+        field: 'SupplierCode',
+        title: 'Supplier',
+        editable: false,
+        template: (e) => {
+            return `${e.SupplierCode} - ${e.SupplierName}`;
+        }
+    }, {
+        field: 'RequesterName',
+        title: 'Requested By',
+        editable: false,
+        template: (e) => {
+            return `<a href="mailto:${e.RequesterEmail}">${e.RequesterName}</a>`;
+        }
+    }, {
+        field: 'Request_OutstandingAmount_CUR',
+        title: 'Outstanding Amount in Currency',
+        attributes: {
+            "class": "readonly"
+        },
+        template: (e) => {
+            return formatCurrency(e.Request_OutstandingAmount_CUR, 2, e.FormattingCulture, e.CurrencyCode);
+        },
+        valueTemplate: (e) => {
+            return formatCurrency(e.Request_OutstandingAmount_CUR, 2, e.FormattingCulture, e.CurrencyCode);
+        },
+    }, {
+        field: 'Request_OutstandingAmount_GBP',
+        title: 'Outstanding Amount in Sterling',
+        attributes: {
+            "class": "readonly"
+        },
+        template: (e) => {
+            return formatCurrency(e.Request_OutstandingAmount_GBP, 2, 'en-GB', 'GBP');
+        },
+        valueTemplate: (e) => {
+            return formatCurrency(e.Request_OutstandingAmount_GBP, 2, 'en-GB', 'GBP');
+        },
+    }, {
+        field: 'Decision_Amount_CUR',
+        title: 'Decision Amount in Currency',
+        template: (e) => {
+            return formatCurrency(e.Decision_Amount_CUR, 2, e.FormattingCulture, e.CurrencyCode);
+        },
+        valueTemplate: (e) => {
+            return formatCurrency(e.Decision_Amount_CUR, 2, e.FormattingCulture, e.CurrencyCode);
+        },
+        editor: (container, options) => {
+
+        }
+    }, {
+        field: 'Decision_Amount_GBP',
+        title: 'Decision Amount in Sterling',
+        attributes: {
+            "class": "readonly"
+        },
+        template: (e) => {
+            return formatCurrency(e.Decision_Amount_GBP, 2, 'en-GB', 'GBP');
+        },
+        valueTemplate: (e) => {
+            return formatCurrency(e.Decision_Amount_GBP, 2, 'en-GB', 'GBP');
+        },
+    }];
+
+    self.skipEditEvent = true;
+
+    self.gridParams = {
+        autoBind: true,
+        widget: self.gridWidget,
+        columns: self.gridColumns,
+        data: self.gridDataSource,
+        toolbar: self.gridToolbar,
+        scrollable: false,
+        sortable: true,
+        filterable: true,
+        reorderable: false,
+        groupable: false,
+        paging: true,
+        pageSize: 10,
+        pageable: {
+            pageSize: 10,
+            pageSizes: [10, 20, 50, 100, 250, 500, 'all']
+        },
+        beforeEdit: function (e) {
+
+        },
+        selectable: false,
+        editable: {
+            createAt: "top"
+        },
+        edit: function (e) {
+
+            console.log('paymentAmountsBasket edit', e);
+
+            //if (e.model.isNew() && self.skipEditEvent) {
+
+            //    e.preventDefault();
+
+            //    self.skipEditEvent = false;
+
+            //    e.sender.editCell($(e.sender.element.find('tr.k-grid-edit-row td:eq(3)')));
+
+            //    return;
+            //} else {
+
+            //    window.setTimeout(() => {
+
+            //        let dropdown = e.container.find("[data-role=dropdownlist]").data("kendoDropDownList");
+
+            //        if (dropdown) {
+            //            dropdown.open();
+            //            return;
+            //        }
+
+            //        let datePicker = e.container.find("[data-role=datepicker]").data("kendoDatePicker");
+
+            //        if (datePicker) {
+            //            datePicker.setOptions({
+            //                close: (event) => {
+            //                    console.log('close fired', event);
+            //                    e.sender.editCell($(e.container).closest('tr').find("td:eq(4)"));
+            //                }
+            //            });
+
+            //            datePicker.open();
+            //        }
+
+            //        self.skipEditEvent = false;
+
+            //    }, 0);
+            //}
+        },
+        dataBound: (e) => {
+            console.log('paymentAmountsBasket dataBound', e);
+        },
+        saveChanges: (e) => {
+            console.log('paymentAmountsBasket saveChanges', e);
+
+            //let data = e.sender.dataSource.data();
+
+            //for (let i = 0; i < data.length; i++) {
+
+            //    let item = data[i];
+
+            //    if (item.isNew() || item.dirty) {
+
+            //        if (item.PaymentDueDate) {
+            //            item.PeriodID = moment(item.PaymentDueDate).weekdayWithStartWeekday(0, 1).format('YYYYMMDD');
+            //        }
+
+            //        if (item.ProformaNumber == '')
+            //            item.ProformaNumber = null;
+
+            //        if (item.RequesterComments == '')
+            //            item.RequesterComments = null;
+
+            //        if (item.DeciderComments == '')
+            //            item.DeciderComments = null;
+
+            //        delete item.PaymentRequestStatus;
+            //        delete item.RequestedByMember;
+            //        delete item.Currency;
+            //        delete item.Supplier;
+
+            //        item.PurchaseOrders.forEach(po => {
+            //            po = {
+            //                PurchaseOrderHeadID: po.PurchaseOrderHeadID,
+            //                PaymentRequestID: po.PaymentRequestID ?? null
+            //            }
+            //        });
+            //    }
+            //}
+
+            //self.skipEditEvent = true;
+        },
+        save: (data) => {
+            console.log('paymentRequests save', data);
+
+            //if (Object.hasOwn(data.values, 'PaymentDueDate')) {
+            //    window.setTimeout(() => {
+            //        data.sender.editCell($(data.sender.table).find('td:eq(4)'));
+            //    }, 0);
+            //} else if (Object.hasOwn(data.values, 'SupplierCode')) {
+            //    window.setTimeout(() => {
+            //        data.sender.editCell($(data.sender.table).find('td:eq(6)'));
+            //    })
+            //} else if (Object.hasOwn(data.values, 'AmountInCurrency')) {
+            //    window.setTimeout(() => {
+            //        if (data.sender.options.identifier == 'paymentPlanGrid') {
+            //            data.sender.editCell($(data.sender.table).find('td:eq(10)'));
+            //        } else {
+            //            data.sender.editCell($(data.sender.table).find('td:eq(9)'));
+            //        }
+            //    })
+            //}
+        },
+        error: function (e) {
+            console.error(`paymentRequests errors`, e);
+
+            // e.xhr contains the full response from the server
+            var response = JSON.parse(e.xhr.responseText);
+
+            var message = JSON.stringify(response.error, null, '\t');
+
+            self.busy(false);
+
+            window.showInfo('Errors', PR.prettyPrintOne(message));
+
+            // Revert changes in the grid, possibly? maybe not
+            self.gridWidget().cancelChanges();
+        }
+    };
+
 
     self.errors = new ko.validation.group([
 
@@ -38,32 +492,8 @@
 
     //#region Computeds
 
-    self.paymentPlans = ko.computed(() => {
-        return self.items().filter(i => i.PaymentRequestStatusName == "Payment Plan");
-    }, self);
-
-    self.otherPayments = ko.computed(() => {
-        return self.items().filter(i => i.PaymentRequestStatusName != "Payment Plan");
-    }, self);
-
-    self.countDisplay = ko.computed(() => {
-
-        let count = self.items().length;
-
-        if (count == 0)
-            return '(empty)';
-
-        if (count == 1)
-            return '(1 item)'
-
-        if (count > 1) {
-            return `(${count} items)`
-        }
-
-    }, self);
-
     self.canClearBasket = ko.computed(() => {
-        return self.items().length != 0;
+        return self.gridWidget() && self.gridWidget().dataSource.data().length != 0;
     }, self);
 
     //#endregion
@@ -119,6 +549,8 @@
                 item.PaymentDecisionID = data.PaymentDecisionID;
 
                 self.items.push(item);
+
+                self.refresh();
             })
             .catch(err => {
                 //item.busy(false);
@@ -150,6 +582,7 @@
             .then(data => {
                 console.log('updateBasketItem returned', data);
                 //item.busy(false);
+                self.refresh();
             })
             .catch(err => {
                 //item.busy(false);
@@ -184,11 +617,22 @@
                 console.log('removeBasketItem returned', data);
 
                 self.items.remove(item);
+
+                self.refresh();
             })
             .catch(err => {
                 //item.busy(false);
                 window.catchFetchError(err);
             })
+    }
+
+    self.refresh = () => {
+        self.gridWidget().dataSource.query({
+            page: self.gridWidget().dataSource.page(),
+            pageSize: self.gridWidget().dataSource.pageSize(),
+            filter: self.gridWidget().dataSource.filter(),
+            sort: self.gridWidget().dataSource.sort()
+        }); 
     }
 
     //#endregion

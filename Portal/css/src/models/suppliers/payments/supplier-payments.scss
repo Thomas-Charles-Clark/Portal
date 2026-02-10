@@ -174,8 +174,17 @@ html {
 }
 
 .prefilters {
+	display: flex;
+	gap: $l-gutter;
+	align-items: center;
+	justify-content: flex-start;
+
 	#user-selector-prefilter {
-		max-width: 600px;
+		width: 420px;
+	}
+
+	#payment-request-status-prefilter {
+		width: 280px;
 	}
 }
 
@@ -410,12 +419,69 @@ html {
 				}
 			}
 		}
+
+		th {
+			&.super-header {
+			}
+
+			&.sub-header {
+			}
+		}
+	}
+/*
+	thead {
+		&.k-grid-header {
+			.k-table-row {
+				background-color: $blue-700;
+				color: $white;
+			}
+		}
+	}*/
+
+	tbody {
+		> tr {
+			&.k-grouping-row {
+				.k-table-td {
+					background-color: $blue-700;
+					color: $white;
+				}
+
+				.k-group-cell {
+					& ~ .k-table-td {
+						background-color: $blue-100;
+						color: $body-color;
+					}
+				}
+			}
+		}
+
+		> tr:nth-of-type(2) {
+			&.k-grouping-row {
+				.k-table-group-td {
+				}
+			}
+		}
+
+		> tr {
+			> td {
+				&.k-group-cell {
+					background-color: $blue-700;
+
+					& ~ .k-group-cell {
+						background-color: $blue-100;
+						color: $body-color;
+					}
+				}
+			}
+		}
 	}
 
 	tr {
-		cursor: pointer;
+		cursor: default;
 
 		&.k-table-row {
+			cursor: default;
+
 			&.k-detail-row {
 				background-color: unset;
 
@@ -432,9 +498,12 @@ html {
 		}
 
 		td {
+			cursor: pointer;
+
 			&.readonly {
 				background-color: tint-color($gray-600, 75%);
 				text-shadow: 0 1px rgb(255, 255, 255, 0.5);
+				cursor: default !important;
 			}
 
 			&.command-column {

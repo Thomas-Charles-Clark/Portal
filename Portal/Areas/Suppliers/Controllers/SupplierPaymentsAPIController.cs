@@ -133,7 +133,6 @@ namespace Portal.Areas.Suppliers.Controllers
 				AmountInCurrency = dto.AmountApprovedInCurrency,
 				AmountInSterling = dto.AmountApprovedInSterling,
 				ExchangeRate = dto.ExchangeRate,
-				FinalisedDT = null,
 				CreatedDT = now,
 				ModifiedDT = now,
 				DeletedDT = null
@@ -176,6 +175,10 @@ namespace Portal.Areas.Suppliers.Controllers
 		[HttpPost]
 		public async Task<IHttpActionResult> FinaliseApprovalBasket([FromBody] SupplierPaymentApprovalBasketDTO dto)
 		{
+			// there is a procedure which must be mapped - potentially returning error codes
+			// payment.Basket_
+
+
 			var decisionIds = dto.BasketItems.Select(q => q.PaymentDecisionID);
 
 			var records = PortalDb.PaymentDecisions.Where(p => decisionIds.Contains(p.PaymentDecisionID)).ToList();
@@ -186,7 +189,6 @@ namespace Portal.Areas.Suppliers.Controllers
 			{
 				var r = dto.BasketItems.Single(bi => bi.PaymentDecisionID == p.PaymentDecisionID);
 
-				p.FinalisedDT = DateTime.Now;
 				p.AmountInCurrency = r.AmountApprovedInCurrency;
 				p.AmountInSterling = r.AmountApprovedInSterling;
 				p.ExchangeRate = r.ExchangeRate;

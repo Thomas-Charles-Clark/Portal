@@ -53,7 +53,7 @@
         quietLogging: self.quietLogging
     });
 
-    self.requests = supplierPaymentsRequestsViewModel({
+    self.approvals = supplierPaymentsApprovalsViewModel({
         ready: self.ready,
         busy: self.busy,
         busyMessage: self.busyMessage,
@@ -62,13 +62,14 @@
         quietLogging: self.quietLogging
     });
 
-    self.approvals = supplierPaymentsApprovalsViewModel({
+    self.requests = supplierPaymentsRequestsViewModel({
         ready: self.ready,
         busy: self.busy,
         busyMessage: self.busyMessage,
         filters: self.filters,
         refreshDashboard: self.dashboard.refresh,
-        quietLogging: self.quietLogging
+        quietLogging: self.quietLogging,
+        refreshApprovals: self.approvals.refresh
     });
 
     self.budgets = supplierPaymentsBudgetsViewModel({

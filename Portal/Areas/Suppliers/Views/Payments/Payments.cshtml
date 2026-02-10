@@ -186,6 +186,10 @@
 	</sidebar>
 	<main id="supplier-payments-main" class="d-none" data-bind="flexFadeVisible: true">
 		<div class="card align-self-start">
+			<div class="blocker" data-bind="flexFadeVisible: busy">
+				<div class="loading-spinner"></div>
+				<h4 class="mt-3" data-bind="text: busyMessage"></h4>
+			</div>
 			<div class="card-body">
 				<div id="prefilters" data-bind="with: filters">
 					<div class="d-flex gap-3 align-items-center mb-3">
@@ -243,25 +247,25 @@
 								<td>
 									<span data-bind="text: RowLabel"></span>
 								</td>
-								<td class="text-end">
+								<td>
 									<span data-bind="html: OverdueSupplierInvoiceTotal ? formatCurrency(OverdueSupplierInvoiceTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
-								<td class="text-end">
+								<td>
 									<span data-bind="html: formatCurrency(Budget, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
 								</td>
-								<td class="text-end">
+								<td>
 									<span data-bind="html: PaymentRequestTotal ? formatCurrency(PaymentRequestTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
-								<td class="text-end">
+								<td>
 									<span data-bind="html: PaymentRequestPaymentPlanTotal ? formatCurrency(PaymentRequestPaymentPlanTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
-								<td class="text-end">
+								<td>
 									<span data-bind="html: PendingApprovalTotal ? formatCurrency(PendingApprovalTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
-								<td class="text-end">
+								<td>
 									<span data-bind="html: ApprovedTotal ? formatCurrency(ApprovedTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
-								<td class="text-end">
+								<td>
 									<span data-bind="text: formatNumber(GBPFXRate, 4, 'en-GB')"></span>
 								</td>
 							</tr>
@@ -271,25 +275,25 @@
 								<th>
 									<span data-bind="text: RowLabel"></span>
 								</th>
-								<td class="text-end">
+								<td>
 									<span data-bind="html: OverdueSupplierInvoiceTotal ? formatCurrency(OverdueSupplierInvoiceTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
-								<td class="text-end">
+								<td>
 									<span data-bind="html: formatCurrency(Budget, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
 								</td>
-								<td class="text-end">
+								<td>
 									<span data-bind="html: PaymentRequestTotal ? formatCurrency(PaymentRequestTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
-								<td class="text-end">
+								<td>
 									<span data-bind="html: PaymentRequestPaymentPlanTotal ? formatCurrency(PaymentRequestPaymentPlanTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
-								<td class="text-end">
+								<td>
 									<span data-bind="html: PendingApprovalTotal ? formatCurrency(PendingApprovalTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
-								<td class="text-end">
+								<td>
 									<span data-bind="html: ApprovedTotal ? formatCurrency(ApprovedTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
-								<td class="text-end">
+								<td>
 								</td>
 							</tr>
 						</tbody>
@@ -355,7 +359,9 @@
 							Filters
 						</h4>
 						<div class="prefilters">
-							<div id="user-selector-prefilter" class="prefilter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: userSelectorParams }"></div>
+							<div id="user-selector-prefilter" class="prefilter relative" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: userSelectorParams }"></div>
+							<div id="payment-request-status-prefilter" class="prefilter relative" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: paymentRequestStatusParams }"></div>
+							<div data-bind="component: { name: 'mdc-checkbox-component', params: onlyIncludeOutstandingPaymentRequestsParams }"></div>
 						</div>
 					</div>
 				</div>
@@ -376,9 +382,6 @@
 							Budget
 						</h4>
 						<div style="display: none" class="supplier-payments-grid-container budget-grid z-1" data-bind="visible: true, kendoGrid: gridParams"></div>
-						<p class="mt-3 mb-0 notes">
-							Still need to ensure you can't create more than one budget entry per currency per period. How? Exactly.
-						</p>
 					</div>
 				</div>
 			</div>
@@ -464,7 +467,8 @@
 				</div>
 			</div>
 			<div id="basket-collapse" class="sidebar-body">
-				<form id="basket" data-bind="with: basket" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
+				<div id="basket-grid-container" data-bind="kendoGrid: basket.gridParams"></div>
+				@*<form id="basket" data-bind="with: basket" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
 					<div id="approval-basket-contents" style="display: none" data-bind="flexFadeVisible: items().length > 0">
 						<div class="card">
 							<div class="card-body">
@@ -555,7 +559,7 @@
 							</div>
 						</div>
 					</div>
-				</form>
+				</form>*@
 			</div>
 		</div>
 	</sidebar>

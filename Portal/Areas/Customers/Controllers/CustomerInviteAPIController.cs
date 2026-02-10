@@ -26,7 +26,7 @@ namespace Portal.Areas.Customers.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult checkViability([FromBody]PassTradeAccountID objTradeAccountId)
+        public IHttpActionResult checkViability([FromBody]PassTradeAccountIDAndCode objTradeAccountId)
         {
             var viability = PortalDb.CheckTradeAccountInviteViability(objTradeAccountId);
 

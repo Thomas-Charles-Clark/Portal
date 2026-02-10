@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Dapper;
+
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 
 using SharedEFClasses.Models.ActiveDirectory;
@@ -27,6 +29,7 @@ using SharedEFClasses.Models.Products;
 using SharedEFClasses.Models.Retail;
 using SharedEFClasses.Models.Samples;
 using SharedEFClasses.Models.StockManagement;
+using SharedEFClasses.Models.Suppliers.Payments;
 using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Models.TradeOrders;
 using SharedEFClasses.ReturnModels;
@@ -1329,8 +1332,8 @@ namespace SharedEFClasses.Models
                 .WithMany(p => p.TasksAssignedToOthersHistory)
                 .HasForeignKey(p => p.AssignedByMemberID);
 
-            #endregion
-        }
+			#endregion
+		}
 
         public void Resource_Language_Initialise()
         {

@@ -4,6 +4,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Suppliers.PaymentApproval;
+using SharedEFClasses.Models.Suppliers.PaymentApprovals;
 using SharedEFClasses.Models.Suppliers.PaymentRequest;
 using SharedEFClasses.Models.Suppliers.PaymentRequests;
 using SharedEFClasses.Models.Suppliers.Payments;
@@ -78,6 +79,16 @@ namespace SharedEFClasses.Models
 				null, true, 30, CommandType.StoredProcedure);
 
 			return true;
+		}
+
+		public async Task<SupplierPaymentApproval_Basket_SelectResult> SupplierPayment_Approval_Basket_Select(SupplierPaymentApproval_Basket_SelectDTO dto)
+		{
+			var reader = await this.Database.Connection.QueryMultipleAsync("[payment].[Approval_Basket_Select]", dto, null, null, System.Data.CommandType.StoredProcedure);
+
+			return new SupplierPaymentApproval_Basket_SelectResult()
+			{
+				Records = await reader.ReadAsync<SupplierPaymentApproval_Basket_SelectRecord>()
+			};
 		}
 	}
 }

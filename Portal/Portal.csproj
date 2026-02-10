@@ -558,9 +558,10 @@
     <Compile Include="Areas\Credit-Control\ViewModels\StatementsViewModel.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceController.cs" />
+    <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentApproval_Basket_SelectRecordsController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentsAPIController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentsController.cs" />
-    <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentsODataController.cs" />
+    <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentRequest_SelectRecordsController.cs" />
     <Compile Include="Areas\Suppliers\SuppliersAreaRegistration.cs" />
     <Compile Include="Areas\Suppliers\ViewModels\SupplierPaymentsViewModel.cs" />
     <Compile Include="Areas\Trade-Accounts\Controllers\TradeAccountContactsAPIController.cs" />

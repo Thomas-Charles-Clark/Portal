@@ -449,7 +449,7 @@ namespace SharedEFClasses.Models
             return result;
         }
 
-        public TradeAdminInviteViabilityResult CheckTradeAccountInviteViability(PassTradeAccountID objTradeAccountId)
+        public TradeAdminInviteViabilityResult CheckTradeAccountInviteViability(PassTradeAccountIDAndCode objTradeAccountId)
         {
             var viableTradePriceLists = new List<short>();
 
@@ -714,14 +714,15 @@ WHERE X.RowNumber = 1
             return result;
         }
 
-        public tradeAccountUsersModel CheckTradeAccountUsers(PassTradeAccountID objTradeAccountId, short? countryId, byte? languageId, int? memberId)
+        public tradeAccountUsersModel CheckTradeAccountUsers(PassTradeAccountIDAndCode dto, short? countryId, byte? languageId, int? memberId)
         {
             var result = new tradeAccountUsersModel();
 
             var parameters = new SqlParameter[]
             {
-                new SqlParameter("@TradeAccountID", objTradeAccountId.tradeAccountId),
-                new SqlParameter("@MemberID", memberId ?? (object)DBNull.Value),
+                new SqlParameter("@TradeAccountID", dto.tradeAccountId),
+                new SqlParameter("@TradeAccountCode", dto.code),
+				new SqlParameter("@MemberID", memberId ?? (object)DBNull.Value),
                 new SqlParameter("@CountryID", countryId ?? (object)DBNull.Value),
                 new SqlParameter("@LanguageID", languageId ?? (object)DBNull.Value)
             };

@@ -43,6 +43,8 @@
 
     self.refreshDashboard = null;
 
+    self.paymentRequestStatus = ko.observable(localStorage.paymentRequestStatus ?? '');
+
     //#endregion
 
 
@@ -198,7 +200,7 @@
         enable: ko.observable(window.getCanUserAdministrate()),
         disable: ko.observable(!window.getCanUserAdministrate()),
         clearable: ko.observable(window.getCanUserAdministrate()),
-        clearFunction: function () {
+        clearFunction: function (e) {
             self.userId('')
             self.userSelectorParams.dropDownListSettings.widget().value(-1);
         },
@@ -235,6 +237,79 @@
         busy: self.busy
     }
 
+    self.paymentRequestStatusParams = kendoMDCDropDownList({
+        skipCascade: true,
+        optionLabel: 'Payment Request Status',
+        data: [{
+            Label: 'Fully Approved',
+            RequestStatus: 'Fully Approved',
+            SortOrder: 1
+        }, {
+            Label: 'Partially Approved',
+            RequestStatus: 'Partially Approved',
+            SortOrder: 2
+        }, {
+            Label: 'Pending Approval',
+            RequestStatus: 'Pending Approval',
+            SortOrder: 3
+        }, {
+            Label: 'Outstanding',
+            RequestStatus: 'Outstanding',
+            SortOrder: 4
+        }, {
+            Label: 'Error',
+            RequestStatus: 'Error',
+            SortOrder: 5
+        }],
+        textField: 'Label',
+        valueField: 'RequestStatus',
+        idObservable: self.paymentRequestStatus,
+        objObservable: ko.observable(),
+        originalValue: ko.unwrap(self.paymentRequestStatus),
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(true),
+        revertFunction: function () {
+            let self = this;
+            self.idObservable(self.originalValue);
+            self.dropDownListSettings.widget().trigger('change');
+        },
+        clearFunction: function () {
+            self.paymentRequestStatus('')
+            self.paymentRequestStatusParams.dropDownListSettings.widget().value(-1);
+            localStorage.removeItem('paymentRequestStatus');
+        },
+        readOnly: false,
+        filter: false,
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'SortOrder'
+        },
+        select: function (e) {
+            console.log('paymentRequestStatusParams select', e);
+            localStorage.setItem('paymentRequestStatus', e.dataItem.Label);
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.getElementById('payment-request-status-prefilter')
+        }
+    });
+
     self.errorables = [
 
     ];
@@ -258,8 +333,19 @@
 
         let result = {
             memberId: self.userId(),
-            onlyIncludeOutstandingRequests: self.onlyIncludeOutstandingPaymentRequests()
+            onlyIncludeOutstandingRequests: self.onlyIncludeOutstandingPaymentRequests(),
+            paymentRequestStatus: self.paymentRequestStatus()
         };
+
+        console.log(`filters.requestFilters computed`, result);
+
+        return result;
+    }, self);
+
+    self.basketFilters = ko.computed(() => {
+        let result = {
+            periodId: self.paymentPeriod()
+        }
 
         return result;
     }, self);

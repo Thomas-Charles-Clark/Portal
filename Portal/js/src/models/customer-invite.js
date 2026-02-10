@@ -260,7 +260,8 @@ var customerInviteViewModel = function () {
         clearFields = typeof clearFields === 'undefined' ? true : clearFields
         self.busy(true);
         var data = {
-            tradeAccountId: self.tradeAccountSelector.selected().TradeAccountID
+            tradeAccountId: self.tradeAccountSelector.selected().TradeAccountID,
+            code: self.tradeAccountSelector.selected().Code
         }
         console.log('checkViability calling with', data);
         $.ajax({

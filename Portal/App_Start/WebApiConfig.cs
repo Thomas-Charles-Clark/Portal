@@ -34,6 +34,8 @@ using System.Net.Http.Headers;
 using SharedEFClasses.Models.CreditControl;
 using SharedEFClasses.Models.Payment;
 using SharedEFClasses.Models.Suppliers.PaymentRequests;
+using SharedEFClasses.Models.Suppliers.PaymentApprovals;
+using SharedEFClasses.Models.Suppliers.PaymentApproval;
 
 namespace Portal
 {
@@ -1227,11 +1229,19 @@ namespace Portal
 
 			builder.EntitySet<SupplierPaymentRequest_SelectRecord>("SupplierPaymentRequest_SelectRecords");
 
+			builder.EntitySet<SupplierPaymentApproval_Basket_SelectRecord>("SupplierPaymentApproval_Basket_SelectRecords");
+
 			builder.Namespace = "SupplierPayments";
 
-			var requestSelect = builder.EntityType<SupplierPaymentRequest_SelectRecord>().Collection.Function("SupplierPaymentsGridRead");
-			requestSelect.ReturnsCollectionFromEntitySet<SupplierPaymentRequest_SelectRecord>(entitySetName: "SupplierPaymentRequest_SelectRecords");
+            var requestSelect = builder.EntityType<SupplierPaymentRequest_SelectRecord>().Collection.Function("SupplierPaymentsGridRead");
+			
+            requestSelect.ReturnsCollectionFromEntitySet<SupplierPaymentRequest_SelectRecord>(entitySetName: "SupplierPaymentRequest_SelectRecords");
 			requestSelect.Parameter<SupplierPaymentRequest_SelectDTO>("dto");
+
+			var basketSelect = builder.EntityType<SupplierPaymentApproval_Basket_SelectRecord>().Collection.Function("SupplierBasketGridRead");
+
+			basketSelect.ReturnsCollectionFromEntitySet<SupplierPaymentApproval_Basket_SelectRecord>(entitySetName: "SupplierPaymentApproval_Basket_SelectRecords");
+			basketSelect.Parameter<SupplierPaymentApproval_Basket_SelectDTO>("dto");
 
 			return builder.GetEdmModel();
 		}

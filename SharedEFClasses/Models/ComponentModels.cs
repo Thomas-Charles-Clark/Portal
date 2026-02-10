@@ -1,5 +1,7 @@
 ﻿using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Leads;
+using SharedEFClasses.Models.Pricing;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -16,6 +18,14 @@ namespace SharedEFClasses.Models.Components
     {
         public int tradeAccountId { get; set; }
     }
+
+    public class PassTradeAccountIDAndCode
+	{
+		public int tradeAccountId { get; set; }
+
+        public string code { get; set; }
+
+	}
 
     public class PassTradeAccountIDs
     {

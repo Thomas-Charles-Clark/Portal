@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using SharedEFClasses.Models.Suppliers.Payments;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -14,17 +18,21 @@ namespace SharedEFClasses.Models.Suppliers.PaymentRequests
 
 		public byte PaymentRequestStatusID { get; set; }
 
+		public int PeriodID { get; set; }
+
 		public int RequestedByMemberID { get; set; }
 
 		public string PaymentRequestType { get; set; }
 
-		public string RequestorName { get; set; }
-
-		public string RequestorEmail { get; set; }
-
-		public string RequestType { get; set; }
+		public string PaymentRequestStatus { get; set; }
 
 		public DateTime PaymentDueDate { get; set; }
+
+		public string RequesterName { get; set; }
+
+		public string RequesterEmail { get; set; }
+
+		public string RequestType { get; set; }
 
 		public string Status { get; set; }
 
@@ -36,6 +44,10 @@ namespace SharedEFClasses.Models.Suppliers.PaymentRequests
 
 		public string FormattingCulture { get; set; }
 
+		public string CurrencySymbol { get; set; }
+
+		public string CurrencyName { get; set; }
+
 		public decimal RequestAmount { get; set; }
 
 		public decimal OutstandingAmount { get; set; }
@@ -46,8 +58,12 @@ namespace SharedEFClasses.Models.Suppliers.PaymentRequests
 
 		public string RequesterComments { get; set; }
 
-		public DateTime CreatedDT { get; set; }
+		public string PurchaseOrders { get; set; }
 
-		public DateTime? ModifiedDT { get; set; }
+		public DateTime PaymentRequestCreated { get; set; }
+
+		public DateTime? PaymentRequestModified { get; set; }
+
+		public bool ReadOnly { get; set; }
 	}
 }

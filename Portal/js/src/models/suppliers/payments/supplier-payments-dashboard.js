@@ -1,6 +1,7 @@
 ﻿const supplierPaymentsDashboardViewModel = ({
     ready,
-    busy,
+    busy,   // this falling false too often causes other async requests which 
+            // share the same blocker
     busyMessage,
     filters
 } = {
@@ -16,9 +17,9 @@
 
     self.ready = ready;
 
-    self.busy = busy;
+    self.busy = ko.observable(false);
 
-    self.busyMessage = busyMessage;
+    self.busyMessage = ko.observable('Please Wait...');
 
     self.filters = filters;
 

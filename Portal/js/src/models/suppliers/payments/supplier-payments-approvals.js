@@ -14,8 +14,7 @@
 
     let self = {
         ready,
-        busy: ko.observable(false),
-        parentBusy: busy,
+        busy: busy,
         busyMessage,
         filters,
         refreshDashboard
@@ -26,7 +25,8 @@
     self.basket = supplierPaymentsApprovalsBasketViewModel({
         ready: self.ready,
         busy: self.busy,
-        busyMessage: self.busyMessage
+        busyMessage: self.busyMessage,
+        filters: self.filters
     });
 
     self.gridWidget = ko.observable();
