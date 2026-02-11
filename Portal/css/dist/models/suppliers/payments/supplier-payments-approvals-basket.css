@@ -372,6 +372,10 @@
 #basket-sidebar .sidebar-body {
   padding: 1rem;
 }
+#basket-sidebar #basket-grid-container {
+  flex: 0 0 auto;
+  align-self: flex-start;
+}
 #basket-sidebar .sidebar-heading {
   display: inline-flex;
   align-items: center;
@@ -406,6 +410,7 @@
   position: relative;
   z-index: 1;
   display: flex;
+  justify-content: center;
 }
 #basket-sidebar #basket-collapse #basket {
   flex: 1;

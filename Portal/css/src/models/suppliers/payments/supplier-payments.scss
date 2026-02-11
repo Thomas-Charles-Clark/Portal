@@ -989,3 +989,11 @@ td {
 		}
 	}
 }
+
+#info-modal {
+	.modal-dialog {
+		.modal-header {
+			border-radius: 6px 6px 0 0;
+		}
+	}
+}

@@ -344,9 +344,8 @@
 
     self.basketFilters = ko.computed(() => {
         let result = {
-            periodId: self.paymentPeriod()
+            periodId: self.paymentPeriodId()
         }
-
         return result;
     }, self);
 

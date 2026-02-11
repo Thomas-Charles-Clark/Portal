@@ -130,7 +130,9 @@
                 console.log(`supplierPaymentRequests schema.parse called with`, data);
 
                 for (let i = 0; i < data.value.length; i++) {
-                    data.value[i].PurchaseOrders = JSON.parse(data.value[i].PurchaseOrders);
+                    if (data.value[i].PurchaseOrders != null) {
+                        data.value[i].PurchaseOrders = JSON.parse(data.value[i].PurchaseOrders);
+                    }
                 }
 
                 return data;
@@ -566,11 +568,15 @@
         template: (e) => {
             if (e.PaymentDueDate) {
                 return moment(e.PaymentDueDate).format('DD/MM/YYYY');
+            } else {
+                return '';
             }
         },
         valueTemplate: (e) => {
             if (e.PaymentDueDate) {
                 return moment(e.PaymentDueDate).format('DD/MM/YYYY');
+            } else {
+                return '';
             }
         }
     }, {
@@ -1140,13 +1146,21 @@
 
             // 1. Manually insert an empty object at index 0
             let newItem = ds.insert(0, {
-                SortOrder: -1,
-                PaymentRequestType: 'New Record',
-                RequesterName: getUserName()
+                PaymentRequestType: 'Add New',
+                RequesterName: getUserName(),
+                PaymentRequestCreated: created,
+                PaymentDueDate: null,
+                SupplierCode: null,
+                SupplierName: null,
+                ReadOnly: false
             });
 
+            // 1.5 temporarily disable grouping
+            let groupingConfig = self.gridParams.widget().dataSource.group();
+
             // 2. Find the newly created row in the DOM and put it in edit mode
-            var newRow = self.gridParams.widget().items().filter("[data-uid='" + newItem.uid + "']");
+            let newRow = self.gridParams.widget().items().filter("[data-uid='" + newItem.uid + "']");
+
             self.gridParams.widget().editRow(newRow);
         });
     });

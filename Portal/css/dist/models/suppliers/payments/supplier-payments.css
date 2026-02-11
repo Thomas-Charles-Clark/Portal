@@ -1011,4 +1011,8 @@ td > .k-widget.k-multiselect .k-multiselect-wrap > .k-i-close {
 #budget-tab-pane .k-grid .k-table-row {
   height: 48.5px;
 }
+
+#info-modal .modal-dialog .modal-header {
+  border-radius: 6px 6px 0 0;
+}
 /*# sourceMappingURL=supplier-payments.css.map */

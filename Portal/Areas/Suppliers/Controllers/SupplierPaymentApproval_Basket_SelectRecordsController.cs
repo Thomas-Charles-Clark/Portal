@@ -50,7 +50,7 @@ namespace Portal.Areas.Suppliers.Controllers
 		
 		[HttpGet]
 		[EnableQuery]
-		public async Task<IQueryable<SupplierPaymentApproval_Basket_SelectRecord>> SupplierPaymentApprovalBasketGridRead([FromODataUri] SupplierPaymentApproval_Basket_SelectDTO dto)
+		public async Task<IQueryable<SupplierPaymentApproval_Basket_SelectRecord>> SupplierPaymentsBasketGridRead([FromODataUri] SupplierPaymentApproval_Basket_SelectDTO dto)
 		{
 			var userId = User.Identity.GetUserId<int>();
 

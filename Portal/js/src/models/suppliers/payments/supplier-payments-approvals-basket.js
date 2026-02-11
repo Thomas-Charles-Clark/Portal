@@ -25,8 +25,22 @@
 
     self.gridWidget = ko.observable();
 
+    self.readOnlyMode = ko.observable(false);
+
     //#endregion
 
+
+    //#region Lifted Methods
+
+    self.showPeriodClosedWarning = () => {
+
+        let di = self.filters.paymentPeriodParams.dropDownListSettings.widget().dataItem();
+
+        window.showInfo('Period Closed', `Period ${di.Label} was closed ${moment(di.FinalisedDT).format('dddd DD/MM/YYYY')}.`);
+
+    }
+
+    //#endregion
 
 
     //#region Components
@@ -58,7 +72,7 @@
             read: {
                 url: () => {
                     let filters = self.filters.basketFilters();
-                    return `/supplier-payments-odata/GetSupplierPaymentApproval_Basket_SelectRecords/SupplierPayments.SupplierPaymentApprovalBasketGridRead(dto=@d)?@d={"PeriodID":${filters.periodId}}`;
+                    return `/supplier-payments-odata/SupplierPaymentApproval_Basket_SelectRecords/SupplierPayments.SupplierPaymentsBasketGridRead(dto=@d)?@d={"PeriodID":${filters.periodId}}`;
                 }
             },
             update: {
@@ -107,11 +121,15 @@
                 return response.value || (response.responses ? [] : response);
             },
             parse: function (data) {
-                console.log(`supplierPaymentRequests schema.parse called with`, data);
+                console.log(`paymentApprovalsBasket schema.parse called with`, data);
 
                 for (let i = 0; i < data.value.length; i++) {
-                    data.value[i].PurchaseOrders = JSON.parse(data.value[i].PurchaseOrders);
+                    if (data.value[i].PurchaseOrders != null) {
+                        data.value[i].PurchaseOrders = JSON.parse(data.value[i].PurchaseOrders);
+                    }
                 }
+
+                self.readOnlyMode(false);
 
                 return data;
             },
@@ -119,49 +137,85 @@
                 id: 'PaymentDecisionID',
                 fields: {
                     PaymentDecisionID: {
-                        type: 'number'
+                        type: 'number',
+                        editable: false
                     },
                     CurrencyCode: {
-                        type: 'string'
+                        type: 'string',
+                        editable: false
                     },
                     SortOrder: {
-                        type: 'number'
+                        type: 'number',
+                        editable: false
                     },
                     RequestType: {
-                        type: 'string'
+                        type: 'string',
+                        editable: false
                     },
                     SupplierCode: {
-                        type: 'string'
+                        type: 'string',
+                        editable: false
                     },
                     SupplierName: {
-                        type: 'string'
+                        type: 'string',
+                        editable: false
                     },
                     RequesterName: {
-                        type: 'string'
+                        type: 'string',
+                        editable: false
                     },
                     RequesterEmail: {
-                        type: 'string'
+                        type: 'string',
+                        editable: false
                     },
                     FormattingCulture: {
-                        type: 'string'
+                        type: 'string',
+                        editable: false
                     },
                     Request_OutstandingAmount_CUR: {
-                        type: 'number'
+                        type: 'number',
+                        editable: false
                     },
                     Request_OutstandingAmount_GBP: {
-                        type: 'number'
+                        type: 'number',
+                        editable: false
                     },
                     Decision_Amount_CUR: {
                         type: 'number'
                     },
                     Decision_Amount_GBP: {
-                        type: 'number'
-                    },
+                        type: 'number',
+                        editable: false
+                    }
                 }
             }
         },
         error: function (e) {
-            window.showError("supplierPaymentBasketGrid errors: " + e.errors);
+            console.warn('paymentApprovalsBasket dataSource error hit', e);
+            if (e.xhr &&
+                e.xhr.responseJSON &&
+                e.xhr.responseJSON.error &&
+                e.xhr.responseJSON.error.innererror &&
+                e.xhr.responseJSON.error.innererror.message.indexOf('period has been finalised') > -1) {
+
+                self.readOnlyMode(true);
+
+                if (document.querySelector('#approvals-tab-pane').classList.contains('show') == false) {
+                    document.querySelector('#approvals-tab-btn').addEventListener('show.bs.tab', self.showPeriodClosedWarning)
+                } else {
+                    self.showPeriodClosedWarning();
+                }
+            }
+            else {
+                if (typeof window.showError == 'function') {
+                    window.showError("supplierPaymentBasketGrid errors: <br/><br/><pre class='prettyprint linenums bg-dark'>" + PR.prettyPrintOne(JSON.stringify(e, null, '\t')) + "</pre>");
+                } else {
+                    window.addEventListener('load', () => {
+                        window.showError("supplierPaymentBasketGrid errors: <br/><br/><code class='prettyprint linenums'>" + PR.prettyPrintOne(JSON.stringify(e, null, '\t')) + "</code>");
+                    })
+                }
+
+            }
         },
         requestStart: (e) => {
             //self.busy(true);
@@ -176,7 +230,12 @@
             }
         },
         requestEnd: (e) => {
+            document.querySelector('#approvals-tab-btn').removeEventListener('show.bs.tab', self.showPeriodClosedWarning);
+
             console.log(`supplierPaymentBasketGrid dataSource requestEnd`);
+
+
+
             self.busy(false);
         },
         noDataTemplate: 'Nothing to display',
@@ -316,7 +375,16 @@
             return formatCurrency(e.Decision_Amount_CUR, 2, e.FormattingCulture, e.CurrencyCode);
         },
         editor: (container, options) => {
-
+            $('<input required data-bind="value:' + options.field + '" name="' + options.field + '" validationMessage="You must specify an Amount"/>')
+                .appendTo(container)
+                .kendoNumericTextBox({
+                    format: "n2",
+                    decimals: 2,
+                    selectOnFocus: true,
+                    change: (e) => {
+                        console.log('paymentApprovalsBasket decisionAmount change', e);
+                    }
+                });
         }
     }, {
         field: 'Decision_Amount_GBP',
@@ -325,10 +393,18 @@
             "class": "readonly"
         },
         template: (e) => {
-            return formatCurrency(e.Decision_Amount_GBP, 2, 'en-GB', 'GBP');
+            if (e.Decision_Amount_GBP) {
+                return formatCurrency(e.Decision_Amount_GBP, 2, 'en-GB', 'GBP');
+            } else {
+                return '';
+            }
         },
         valueTemplate: (e) => {
-            return formatCurrency(e.Decision_Amount_GBP, 2, 'en-GB', 'GBP');
+            if (e.Decision_Amount_GBP) {
+                return formatCurrency(e.Decision_Amount_GBP, 2, 'en-GB', 'GBP');
+            } else {
+                return '';
+            }
         },
     }];
 
@@ -360,7 +436,7 @@
         },
         edit: function (e) {
 
-            console.log('paymentAmountsBasket edit', e);
+            console.log('paymentApprovalsBasket edit', e);
 
             //if (e.model.isNew() && self.skipEditEvent) {
 
@@ -401,10 +477,10 @@
             //}
         },
         dataBound: (e) => {
-            console.log('paymentAmountsBasket dataBound', e);
+            console.log('paymentApprovalsBasket dataBound', e);
         },
         saveChanges: (e) => {
-            console.log('paymentAmountsBasket saveChanges', e);
+            console.log('paymentApprovalsBasket saveChanges', e);
 
             //let data = e.sender.dataSource.data();
 
@@ -502,7 +578,26 @@
 
     //#region Subscriptions
 
-
+    self.readOnlyMode.subscribe(nv => {
+        if (nv) {
+            self.gridParams.widget().setOptions({
+                editable: {
+                    mode: 'incell',
+                    editable: false
+                },
+                toolbar: null
+            });
+        } else {
+            document.querySelector('#approvals-tab-btn').removeEventListener('show.bs.tab', self.showPeriodClosedWarning);
+            self.gridParams.widget().setOptions({
+                editable: {
+                    mode: 'incell',
+                    editable: true
+                },
+                toolbar: self.gridToolbar
+            });
+        }
+    });
 
     //#endregion
 

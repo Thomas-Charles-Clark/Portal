@@ -1233,15 +1233,21 @@ namespace Portal
 
 			builder.Namespace = "SupplierPayments";
 
+
+
             var requestSelect = builder.EntityType<SupplierPaymentRequest_SelectRecord>().Collection.Function("SupplierPaymentsGridRead");
 			
             requestSelect.ReturnsCollectionFromEntitySet<SupplierPaymentRequest_SelectRecord>(entitySetName: "SupplierPaymentRequest_SelectRecords");
 			requestSelect.Parameter<SupplierPaymentRequest_SelectDTO>("dto");
 
-			var basketSelect = builder.EntityType<SupplierPaymentApproval_Basket_SelectRecord>().Collection.Function("SupplierBasketGridRead");
+
+
+			var basketSelect = builder.EntityType<SupplierPaymentApproval_Basket_SelectRecord>().Collection.Function("SupplierPaymentsBasketGridRead");
 
 			basketSelect.ReturnsCollectionFromEntitySet<SupplierPaymentApproval_Basket_SelectRecord>(entitySetName: "SupplierPaymentApproval_Basket_SelectRecords");
 			basketSelect.Parameter<SupplierPaymentApproval_Basket_SelectDTO>("dto");
+
+
 
 			return builder.GetEdmModel();
 		}
