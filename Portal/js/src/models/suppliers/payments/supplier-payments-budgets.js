@@ -175,6 +175,7 @@
                 if (e.sender.hasChanges()) {
                     e.preventDefault();
                     self.busy(false);
+                    console.log('budgetGrid showing unsavedChanges info');
                     window.showInfo('Unsaved Changes', 'You have unsaved changes. Please cancel or save them before performing any other action.');
                 }
             }

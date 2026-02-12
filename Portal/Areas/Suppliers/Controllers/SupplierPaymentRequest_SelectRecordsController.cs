@@ -56,6 +56,7 @@ namespace Portal.Areas.Suppliers.Controllers
 
 			return results.Records.AsQueryable();
 		}
+
 		[HttpPut]
 		[EnableQuery]
 		public async Task<IHttpActionResult> Put([FromODataUri] int key, [FromBody] PaymentRequest entity)
@@ -123,9 +124,9 @@ namespace Portal.Areas.Suppliers.Controllers
 
 			entity.RequestedByMember = PortalDb.Users.SingleOrDefault(u => u.Id == entity.RequestedByMemberID);
 
-			entity.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == entity.CurrencyID);
-
 			entity.Supplier = PortalDb.Suppliers_Live.SingleOrDefault(s => s.Code == entity.SupplierCode);
+
+			entity.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == entity.Supplier.CurrencyID);
 
 			return Updated(entity);
 		}
@@ -158,7 +159,6 @@ namespace Portal.Areas.Suppliers.Controllers
 			{
 				AmountInCurrency = entity.RequestAmount,
 				CreatedDT = DateTime.Now,
-				CurrencyID = currency.CurrencyID,
 				DeletedDT = null,
 				PaymentDueDT = entity.PaymentDueDate,
 				PeriodID = entity.PeriodID,
@@ -170,6 +170,8 @@ namespace Portal.Areas.Suppliers.Controllers
 			});
 
 			await PortalDb.SaveChangesAsync();
+
+			entity.PaymentRequestID = creationResult.PaymentRequestID;
 
 			if (!String.IsNullOrEmpty(entity.PurchaseOrders))
 			{
@@ -184,7 +186,7 @@ namespace Portal.Areas.Suppliers.Controllers
 				await PortalDb.SaveChangesAsync();
 			}
 
-			return Created(creationResult);
+			return Created(entity);
 		}
 
 		[AcceptVerbs("PATCH", "MERGE")]
@@ -254,10 +256,9 @@ namespace Portal.Areas.Suppliers.Controllers
 
 				originalEntity.RequestedByMember = PortalDb.Users.SingleOrDefault(u => u.Id == originalEntity.RequestedByMemberID);
 
-				originalEntity.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == originalEntity.CurrencyID);
-
 				originalEntity.Supplier = PortalDb.Suppliers_Live.SingleOrDefault(s => s.Code == originalEntity.SupplierCode);
 
+				originalEntity.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == originalEntity.Supplier.CurrencyID);
 			}
 
 			return Updated(originalEntity);

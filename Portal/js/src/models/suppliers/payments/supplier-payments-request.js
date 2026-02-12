@@ -1,87 +1,9 @@
 ﻿const supplierPaymentsRequestViewModel = ({
-    rec
+
 } = {
-    rec: {}
+
 }) => {
-    let self = {
-        id: 'PaymentRequestID',
-        fields: {
-            PaymentRequestID: { type: 'number', editable: false, nullable: true },
-            RequestedByMemberID: {
-                type: 'number',
-                nullable: true,
-                editable: false
-            },
-            RequestedByMember: {
-                RequestedByMemberID: { type: 'number' },
-                FullName: { type: 'string' },
-                Email: { type: 'string' }
-            },
-            PaymentRequestStatusID: {
-                type: 'number',
-                nullable: true,
-                validation: {
-                    required: {
-                        message: 'You must specify a Status'
-                    }
-                }
-            },
-            PaymentRequestStatus: {
-                type: 'object',
-                fields: [{
-                    PaymentRequestStatusID: { type: 'number' },
-                    Name: { type: 'string' }
-                }]
-            },
-            CurrencyID: {
-                type: 'number',
-                nullable: true,
-                editable: false
-            },
-            Currency: {
-                type: 'object',
-                editable: false,
-                fields: [{
-                    CurrencyID: { type: 'number' },
-                    Code: { type: 'string' },
-                    Name: { type: 'string' },
-                    Symbol: { type: 'string' }
-                }]
-            },
-            SupplierCode: {
-                type: 'string',
-                nullable: false,
-                validation: {
-                    required: {
-                        message: 'You must specify a Supplier'
-                    }
-                }
-            },
-            Supplier: {
-                type: 'object',
-                fields: {
-                    Code: { type: 'string', editable: false },
-                    Name: { type: 'string', editable: false }
-                }
-            },
-            PurchaseOrderHeadIDs: { type: 'string' },
-            ProformaNumber: { type: 'string' },
-            AmountInCurrency: {
-                type: 'number',
-                nullable: true,
-                required: {
-                    message: 'You must specify an Amount'
-                }
-            },
-            ExchangeRate: { type: 'number' },
-            AmountInSterling: { type: 'number' },
-            Comments: { type: 'string' },
-            CreatedDT: { type: 'date' },
-            ModifiedDT: { type: 'date' },
-            DeletedDT: { type: 'date' },
-            Deleted: { type: 'boolran' }
-        }
-    }
+    let self = {};
 
     //#region Properties
 
@@ -89,87 +11,79 @@
 
     self.busy = ko.observable(false);
 
-    self.readOnly = ko.observable(true);
+    self.readOnly = ko.observable(false);
 
-    self.createdDate = ko.observable(rec.CreatedDT ? new Date(rec.CreatedDT) : new Date());
+    self.validateNow = ko.observable(false);
 
-    self.supplierCode = ko.observable(rec.SupplierCode);
-    self.supplier = ko.observable(rec.Supplier);
-
-    self.currencyId = ko.observable(rec.CurrencyID);
-    self.currency = ko.observable(rec.Currency);
-
-    self.paymentRequestStatusId = ko.observable(rec.PaymentRequestStatusID);
-    self.paymentRequestStatus = ko.observable(rec.PaymentRequestStatus);
-
-    self.requestedByMemberId = ko.observable(rec.RequestedByMemberID);
-    self.requestedByMember = ko.observable(rec.RequestedByMember);
-
-    self.purchaseOrderIds = ko.observableArray(rec.PurchaseOrderHeadIDs == null ? [] : rec.PurchaseOrderHeadIDs)
-
-    self.bootstrapPopoverDetails = {
-        title: "Purchase Order IDs",
-        html: true,
-        sanitize: false,
-        busy: ko.observable(false),
-        data: ko.observable(),
-        element: ko.observable(),
-        container: 'td.purchase-orders',
-        placement: 'bottom',
-        fallbackPlacements: ['top'],
-        customClass: 'purchase-orders-popover',
-        content: (element) => {
-            let e = ko.dataFor(element);
-            console.log('purchaseOrderPopover content called', e);
-            return `Potato`;
-        },
-        trigger: 'click',
-        solo: true,
-        show: null,
-        shown: null,
-        hide: null,
-        hidden: null,
-        inserted: async function (event) {
-                                
-        },
-        popperConfig: function (defaultBsPopperConfig) {
-            return defaultBsPopperConfig;
+    self.paymentDueDate = ko.observable(new Date()).extend({
+        required: {
+            params: true,
+            onlyIf: self.validateNow,
+            message: 'You must provide a Payment Due Date'
         }
-    }
+    });
 
-    self.exchangeRate = ko.observable(rec.ExchangeRate);
+    self.supplierCode = ko.observable('').extend({
+        required: {
+            params: true,
+            onlyIf: self.validateNow,
+            message: 'You must provide a SupplierCode'
+        },
+        notEqual: {
+            params: '',
+            onlyIf: self.validateNow,
+            message: 'SupplierCode must not equal ""'
+        }
+    });
 
-    self.amountInCurrency = ko.observable(rec.AmountInCurrency);
+    self.supplier = ko.observable();
 
-    self.amountInSterling = ko.observable(rec.AmountInSterling);
+    self.supplierCurrency = ko.observable();
 
-    self.forexParams = {
-        buttons: false,
-        label: ko.computed(() => {
-            if (self.currency())
-                return `FX Rate ${(self.currency() && self.currency().Code)} to GBP`;
-            else
-                return '';
-        }, self),
-        observable: ko.computed(() => {
-            if (self.currency() && self.exchangeRate()) {
-                return formatNumber(self.exchangeRate(), 4, 'en-GB', 'GBP');
-            }
-        }, self),
-        useNativeValidation: false,
-        decorateInputElement: false,
-        insertValidationMessages: false,
-        enable: ko.observable(true),
-        disable: ko.observable(true),
-        locked: ko.observable(true),
-        clearable: ko.observable(false),
-        revertible: ko.observable(false),
-        busy: ko.observable(false),
-        inputType: 'text',
-        minValue: 0.01,
-        maxValue: null,
-        step: 1
-    }
+    self.paymentRequestStatusId = ko.observable('').extend({
+        required: {
+            params: true,
+            onlyIf: self.validateNow,
+            message: 'You must provide a Status'
+        },
+        notEqual: {
+            params: '',
+            onlyIf: self.validateNow,
+            message: 'Status must not equal ""'
+        }
+    });
+
+    self.paymentRequestStatus = ko.observable();
+
+    self.requestedByMemberId = ko.observable(getUserId());
+    self.requestedByMemberName = ko.observable(getUserName());
+
+    self.purchaseOrderIds = ko.observableArray([])
+
+    self.amountInCurrency = ko.observable().extend({
+        required: {
+            params: true,
+            onlyIf: self.validateNow,
+            message: 'You must provide an Amount'
+        },
+        greaterThan: {
+            params: {
+                value: 0,
+            },
+            onlyIf: self.validateNow,
+            message: 'Amount must be positive and greater than zero'
+        },
+        numberFormatted: {
+            digits: 2,
+            currency: self.supplierCurrency
+        }
+    });
+
+    self.proformaNumber = ko.observable();
+
+    self.requesterComments = ko.observable();
+
+    self.emptyArray = [];
 
     //#endregion
 
@@ -177,10 +91,10 @@
 
     //#region Components
 
-    self.createdDateParams = {
-        label: "Date",
-        observable: self.createdDate,
-        originalValue: self.createdDate(),
+    self.paymentDueDateParams = {
+        label: "Payment Due",
+        observable: self.paymentDueDate,
+        originalValue: self.paymentDueDate(),
         displayObservable: ko.observable(),
         dateTimePickerOptions: {
             localization: {
@@ -201,7 +115,7 @@
                     minutes: false,
                     seconds: false
                 },
-                viewMode: 'months',
+                viewMode: 'calendar',
                 cellSize: '3rem'
             },
             restrictions: {
@@ -212,19 +126,10 @@
             keepInvalid: true,
             debug: false
         },
-        clearable: ko.observable(true),
-        clearFunction: () => {
-            self.createdDate(undefined);
-            self.createdDateParams.observable.tempusDominus.clear();
-            self.createdDateParams.observable.tempusDominus.updateOptions({
-                display: {
-                    viewMode: 'months'
-                }
-            })
-        },
+        clearable: ko.observable(false),
         revertible: ko.observable(true),
         revertFunction: () => {
-            self.createdDate.observable(self.createdDateParams.originalValue);
+            self.paymentDueDate.observable(self.paymentDueDateParams.originalValue);
         },
         useNativeValidation: false,
         insertValidationMessages: false,
@@ -240,80 +145,59 @@
     }
 
     self.supplierParams = kendoMDCDropDownList({
+        widget: ko.observable(),
         label: 'Supplier',
         odata: true,
-        endPoint: '/odata/MertexLiveSuppliers',
+        endPoint: '/odata/MertexLiveSuppliers?$expand=Currency',
         textField: 'Name',
         valueField: 'Code',
         template: self.supplierTemplate,
         valueTemplate: self.supplierTemplate,
         idObservable: self.supplierCode,
         objObservable: self.supplier,
+        virtual: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/MertexLiveSuppliers/Default.MertexLiveSupplierValueMapper(supplierCode='${options.value || "null"}')?$expand=Currency`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
         locked: ko.observable(false),
         enable: ko.observable(true),
         disable: ko.observable(false),
-        clearable: ko.observable(true),
+        clearable: ko.observable(false),
         revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
         autoBind: true,
         height: 340,
-        sort: {
-            dir: 'asc',
-            field: 'Supplier.Name'
-        },
+        sort: [{
+            field: "Code", dir: "asc"
+        }, {
+            field: "Name", dir: "asc"
+        }],
         ignoreCase: false,
         select: (e) => {
             console.log('supplierParams.select', e);
-            self.currencyId(e.Currency?.CurrencyID);
-            self.currencyParams.widget().trigger('change');
+            self.supplierCurrency(e.dataItem.Currency);
         },
         clearFunction: (e) => {
             self.supplierCode('');
+            self.supplierCurrency(undefined);
             self.supplierParams.widget().trigger('change');
-        }
-    });
-
-    self.currencyTemplate = (e) => {
-        if (e.Currency && e.Currency.CurrencyID && e.Currency.Name) {
-            return `<span title="${e.Currency.Name}">${e.Currency.Name}</span>`;
-        } else {
-            return '';
-        }
-    }
-
-    self.currencyParams = kendoMDCDropDownList({
-        skipCascade: true,
-        label: 'Currency',
-        odata: true,
-        endPoint: '/odata/Currencies',
-        textField: 'Name',
-        valueField: 'CurrencyID',
-        template: self.currencyTemplate,
-        valueTemplate: self.currencyTemplate,
-        idObservable: self.currencyId,
-        objObservable: self.currency,
-        complexObjectName: 'Currency',
-        complexObjectTextField: 'Name',
-        locked: ko.observable(false),
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        clearable: ko.observable(true),
-        revertible: ko.observable(false),
-        readOnly: false,
-        filter: 'contains',
-        autoBind: true,
-        height: 340,
-        sort: {
-            dir: 'asc',
-            field: 'Currency.Name'
         },
-        select: function (e) {
-            console.log('currency select', e);
-        },
-        clearFunction: () => {
-            self.currencyId('');
-            self.currencyParams.widget().trigger('change');
+        popupSettings: {
+            appendTo: '#new-request-modal'
         }
     });
 
@@ -355,6 +239,9 @@
         clearFunction: (e) => {
             self.paymentRequestStatusId('');
             self.paymentRequestStatusParams.widget().trigger('change');
+        },
+        popupSettings: {
+            appendTo: '#new-request-modal'
         }
     });
 
@@ -366,12 +253,8 @@
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
-        enable: ko.computed(() => {
-            return !self.readOnly()
-        }, self),
-        disable: ko.computed(() => {
-            return self.readOnly() ? true : self.disabled()
-        }, self),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
         busy: ko.observable(false),
@@ -387,69 +270,185 @@
         }
     }
 
-    self.amountInSterlingParams = {
-        label: 'Amount in Sterling',
-        buttons: false,
-        observable: self.amountInSterling,
-        originalValue: self.amountInSterling(),
+    self.purchaseOrderIdsParams = {
+        observable: self.purchaseOrderIds,
+        validate: self.purchaseOrderIds,
+        emptyArray: self.emptyArray,
+        width: 'auto',
+        label: 'Purchase Orders',
+        valuePrimitive: false,
         useNativeValidation: false,
         decorateInputElement: false,
         insertValidationMessages: false,
-        enable: ko.computed(() => {
-            return !self.readOnly()
-        }, self),
-        disable: ko.computed(() => {
-            return self.readOnly() ? true : self.disabled()
-        }, self),
+        controlClass: 'form-control',
+        enable: ko.observable(true),
+        disable: ko.observable(false),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
-        busy: ko.observable(false),
-        inputType: 'text',
-        minValue: 0,
-        maxValue: null,
-        step: null,
-        clearFunction: () => {
-            self.amountInSterling(undefined);
+        clearFunction: function () {
+            var self = this;
+            self.observable(self.emptyArray);
+            self.multiSelectSettings.widget().value(self.emptyArray);
+            $(self.observable.DOMElement).focus();
         },
-        revertFunction: () => {
-            self.amountInSterling(self.amountInSterlingParams.originalValue);
+        multiSelectSettings: {
+            widget: ko.observable(),
+            autoBind: true,
+            autoWidth: true,
+            valuePrimitive: false,
+            value: self.purchaseOrderIds,
+            dataItems: self.purchaseOrderIds,
+            dataTextField: 'PurchaseOrderHeadID',
+            dataValueField: 'PurchaseOrderHeadID',
+            filter: 'startswith',
+            height: 340,
+            virtual: {
+                itemHeight: 34,
+                mapValueTo: 'dataItem',
+                valueMapper: (options) => {
+                    if (options.value && options.value.length && options.value[0] != '') {
+                        $.ajax({
+                            url: `/odata/PurchaseOrderHeads/Default.PurchaseOrderHeadValueMapper(purchaseOrderHeadIds='${options.value.join(',') || "null"}')`,
+                            type: 'GET',
+                            success: function (data) {
+                                options.success(data.value);
+                            }
+                        });
+                    } else {
+                        options.success();
+                    }
+                }
+            },
+            data: new kendo.data.DataSource({
+                type: 'odata-v4',
+                serverFiltering: true,
+                serverSorting: true,
+                serverPaging: true,
+                page: 1,
+                pageSize: 40,
+                sort: {
+                    field: 'CreatedDT',
+                    dir: 'desc'
+                },
+                dataTextField: 'PurchaseOrderHeadID',
+                dataValueField: 'PurchaseOrderHeadID',
+                schema: {
+                    parse: (response) => {
+                        let items = [];
+                        for (var i = 0; i < response.value.length; i++) {
+                            var item = {
+                                PaymentRequestID: 0,
+                                PurchaseOrderHeadID: response.value[i].PurchaseOrderHeadID
+                            };
+                            items.push(item);
+                        }
+                        response.value = items;
+                        return response;
+                    }
+                },
+                transport: {
+                    read: {
+                        url: '/odata/PurchaseOrderHeads',
+                    },
+                    parameterMap: (data, operation) => {
+
+                        //Generate parameters in odata v4 format
+                        let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+                        delete d.$inlinecount; // <-- remove inlinecount
+                        delete d.$format; // <-- remove format
+                        delete d.$callback; // <-- remove callback
+
+                        d.$count = true;
+
+                        let filters = [];
+
+                        return d;
+
+                    }
+                },
+            }),
+            change: function (e) {
+                console.log('change', e);
+            },
+            template: (e) => {
+                if (e.PurchaseOrderHeadID) {
+                    return e.PurchaseOrderHeadID;
+                } else {
+                    return '';
+                }
+            },
+            valueTemplate: (e) => {
+                if (e.PurchaseOrderHeadID) {
+                    return e.PurchaseOrderHeadID;
+                } else {
+                    return '';
+                }
+            },
+            popup: {
+                appendTo: '#new-request-modal'
+            }
         }
     }
 
-    self.amountInSterlingFormatted = ko.computed(() => {
-        if (self.amountInSterling() != null) {
-            return formatCurrency(self.amountInSterling(), 2, 'en-GB', 'GBP');
-        } else {
-            return '';
-        }
-    }, self);
+    self.proformaNumberParams = {
+        label: 'Proforma Number',
+        originalValue: ko.observable(),
+        observable: self.proformaNumber,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: false,
+        rows: 10,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        permitRevert: false,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        readonly: ko.observable(false),
+        busy: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        visible: ko.observable(true)
+    }
 
-    self.amountParams = {
-        highlightOnNull: ko.observable(true),
-        inputParams: self.amountInCurrencyParams,
-        forexParams: self.forexParams,
-        convertedParams: {
-            label: 'Amount in Currency',
-            buttons: false,
-            observable: self.amountInSterlingFormatted,
-            useNativeValidation: false,
-            decorateInputElement: false,
-            insertValidationMessages: false,
-            enable: ko.observable(false),
-            disable: ko.observable(true),
-            locked: ko.observable(true),
-            clearable: ko.observable(false),
-            revertible: ko.observable(false),
-            busy: ko.observable(false),
-            inputType: 'text',
-            minValue: 0.01,
-            maxValue: null,
-            step: 1
-        }
+    self.requesterCommentsParams = {
+        label: 'Requester Comments',
+        originalValue: ko.observable(),
+        observable: self.requesterComments,
+        useNativeValidation: false,
+        decorateInputElement: false,
+        insertValidationMessages: false,
+        showClear: true,
+        rows: 5,
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        permitRevert: true,
+        revertFunction: function () {
+            self.notes(self.originalNotes());
+            $(self.notes.DOMElement).focus();
+        },
+        charsRemainingOptions: {
+            maxLength: 2000
+        },
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(true),
+        visible: ko.observable(true)
     }
 
     self.errors = new ko.validation.group([
-
+        self.paymentRequestStatusId,
+        self.supplierCode,
+        self.amountInCurrency
     ]);
 
     //#endregion
@@ -458,21 +457,7 @@
 
     //#region Computeds
 
-    self.purchaseOrdersLabel = ko.computed(() => {
-        let purchaseOrders = self.purchaseOrderIds();
 
-        if (purchaseOrders.length == 0) {
-            return '';
-        }
-
-        if (purchaseOrders.length == 1) {
-            return purchaseOrders[0];
-        }
-
-        if (purchaseOrders.length > 1) {
-            return 'Various'
-        }
-    });
 
     //#endregion
 
@@ -488,7 +473,17 @@
 
     //#region Methods
 
-
+    self.toJS = () => {
+        return {
+            paymentRequestStatusId: self.paymentRequestStatusId(),
+            supplierCode: self.supplierCode(),
+            paymentDueDt: self.paymentDueDate(),
+            amountInCurrency: self.amountInCurrency(),
+            purchaseOrderIds: self.purchaseOrderIds(),
+            proformaNumber: self.proformaNumber() == '' ? null : self.proformaNumber(),
+            requesterComments: self.requesterComments() == '' ? null : self.requesterComments()
+        }
+    }
 
     //#endregion
 

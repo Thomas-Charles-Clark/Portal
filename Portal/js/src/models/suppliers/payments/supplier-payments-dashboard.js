@@ -23,7 +23,9 @@
 
     self.filters = filters;
 
-    self.records = ko.observableArray(window.getDashboard());
+    self.records = ko.observableArray(window.getDashboardRecords());
+
+    self.finalisedBy = ko.observable(window.getDashboardPeriodMessage());
 
     //#endregion
 
@@ -82,6 +84,8 @@
                 console.log('dashboard.refresh returned', data)
 
                 self.records(data.Records);
+
+                self.finalisedBy(data.FinalisedBy);
 
                 self.busy(false);
             })

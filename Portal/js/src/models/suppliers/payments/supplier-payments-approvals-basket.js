@@ -2,19 +2,22 @@
     ready,
     busy,
     busyMessage,
-    filters
+    filters,
+    refreshApprovals
 } = {
     ready: ko.observable(false),
     busy: ko.observable(false),
     busyMessage: ko.observable('Please Wait'),
-    filters: { }
+    filters: {},
+    refreshApprovals: () => { }
 }) => {
 
     let self = {
         ready,
         busy,
         busyMessage,
-        filters
+        filters,
+        refreshApprovals
     };
 
     //#region Properties
@@ -36,7 +39,7 @@
 
         let di = self.filters.paymentPeriodParams.dropDownListSettings.widget().dataItem();
 
-        window.showInfo('Period Closed', `Period ${di.Label} was closed ${moment(di.FinalisedDT).format('dddd DD/MM/YYYY')}.`);
+        window.showInfo('Period Finalised', `Period ${di.Label}: ${moment(di.FinalisedDT).format('dddd DD/MM/YYYY')}.`);
 
     }
 
@@ -191,7 +194,6 @@
             }
         },
         error: function (e) {
-            console.warn('paymentApprovalsBasket dataSource error hit', e);
             if (e.xhr &&
                 e.xhr.responseJSON &&
                 e.xhr.responseJSON.error &&
@@ -225,6 +227,7 @@
                 if (e.sender.hasChanges()) {
                     e.preventDefault();
                     self.busy(false);
+                    console.log('supplierPaymentBasketGrid showing unsavedChanges info');
                     window.showInfo('Unsaved Changes', 'You have unsaved changes. Please cancel or save them before performing any other action.');
                 }
             }
@@ -233,8 +236,6 @@
             document.querySelector('#approvals-tab-btn').removeEventListener('show.bs.tab', self.showPeriodClosedWarning);
 
             console.log(`supplierPaymentBasketGrid dataSource requestEnd`);
-
-
 
             self.busy(false);
         },
@@ -396,16 +397,34 @@
             if (e.Decision_Amount_GBP) {
                 return formatCurrency(e.Decision_Amount_GBP, 2, 'en-GB', 'GBP');
             } else {
-                return '';
+                return formatCurrency(e.Decision_Amount_CUR / e.ExchangeRate, 2, 'en-GB', 'GBP');
             }
         },
         valueTemplate: (e) => {
             if (e.Decision_Amount_GBP) {
                 return formatCurrency(e.Decision_Amount_GBP, 2, 'en-GB', 'GBP');
             } else {
-                return '';
+                return formatCurrency(e.Decision_Amount_CUR / e.ExchangeRate, 2, 'en-GB', 'GBP');
             }
         },
+        }, {
+            command: [{
+                name: 'Remove',
+                className: 'btn-danger',
+                click: function (e) {
+                    console.log('remove', e);
+                    e.preventDefault();
+                    let tr = $(e.target).closest("tr");
+                    let data = this.dataItem(tr);
+
+                    if (!self.basketElement.classList.contains('pinned'))
+                        self.basketElement.classList.add('pinned');
+
+                    window.showConfirm('Are you sure?', 'Please confirm removal of this payment approval', () => {
+                        self.removeBasketItem(data);
+                    }, null);
+                }
+            }]
     }];
 
     self.skipEditEvent = true;
@@ -478,6 +497,7 @@
         },
         dataBound: (e) => {
             console.log('paymentApprovalsBasket dataBound', e);
+            self.gridWidget.valueHasMutated();
         },
         saveChanges: (e) => {
             console.log('paymentApprovalsBasket saveChanges', e);
@@ -568,8 +588,13 @@
 
     //#region Computeds
 
+    self.countDisplay = ko.computed(() => {
+        let total = self.gridWidget() ? self.gridWidget().dataSource.total() : 0;
+        return `(${total} item${total == 1 ? '' : 's'})`;
+    }, 0);
+
     self.canClearBasket = ko.computed(() => {
-        return self.gridWidget() && self.gridWidget().dataSource.data().length != 0;
+        return (self.readOnlyMode() == false) && (self.gridWidget() && self.gridWidget().dataSource.data().length != 0);
     }, self);
 
     //#endregion
@@ -583,7 +608,8 @@
             self.gridParams.widget().setOptions({
                 editable: {
                     mode: 'incell',
-                    editable: false
+                    editable: false,
+                    readonly: true
                 },
                 toolbar: null
             });
@@ -592,7 +618,8 @@
             self.gridParams.widget().setOptions({
                 editable: {
                     mode: 'incell',
-                    editable: true
+                    editable: true,
+                    readonly: false
                 },
                 toolbar: self.gridToolbar
             });
@@ -606,8 +633,12 @@
     //#region Methods
 
     self.clear = () => {
+
+        if (!self.basketElement.classList.contains('pinned'))
+            self.basketElement.classList.add('pinned');
+
         window.showConfirm('Are you sure?', 'This will clear all the items from your basket.', () => {
-            self.items([]);
+            self.removeAllBasketItems();
         }, null)
     }
 
@@ -621,9 +652,7 @@
 
         let data = {
             paymentRequestId: item.PaymentRequestID,
-            amountApprovedInCurrency: item.AmountApprovedInCurrency,
-            exchangeRate: item.ExchangeRate,
-            amountApprovedInSterling: item.AmountApprovedInSterling
+            amountInCurrency: item.OutstandingAmountInCurrency
         }
 
         console.log('addBasketItem calling with', data);
@@ -641,11 +670,9 @@
 
                 console.log('addBasketItem returned', data);
 
-                item.PaymentDecisionID = data.PaymentDecisionID;
-
-                self.items.push(item);
-
                 self.refresh();
+
+                self.refreshApprovals();
             })
             .catch(err => {
                 //item.busy(false);
@@ -658,10 +685,7 @@
 
         let data = {
             paymentDecisionId: item.PaymentDecisionID,
-            paymentRequestId: item.PaymentRequestID,
-            amountApprovedInCurrency: item.amountApprovedInCurrency(),
-            exchangeRate: item.exchangeRate(),
-            amountApprovedInSterling: item.amountApprovedInSterling()
+            amountInCurrency: item.amountApprovedInCurrency()
         }
 
         console.log('updateBasketItem calling with', data);
@@ -689,11 +713,7 @@
         //item.busy(true);
 
         let data = {
-            paymentDecisionId: item.PaymentDecisionID,
-            paymentRequestId: item.PaymentRequestID,
-            amountApprovedInCurrency: item.amountApprovedInCurrency(),
-            exchangeRate: item.exchangeRate(),
-            amountApprovedInSterling: item.amountApprovedInSterling()
+            paymentDecisionId: item.PaymentDecisionID
         }
 
         console.log('removeBasketItem calling with', data);
@@ -711,14 +731,85 @@
 
                 console.log('removeBasketItem returned', data);
 
-                self.items.remove(item);
-
                 self.refresh();
+
+                self.refreshApprovals();
             })
             .catch(err => {
                 //item.busy(false);
                 window.catchFetchError(err);
             })
+    }
+
+    self.removeAllBasketItems = () => {
+        // this call is already window.showConfirm wrapped
+
+        let data = {
+            paymentDecisionIds: self.gridWidget().dataSource.data().map(d => d.PaymentDecisionID)
+        };
+
+        console.log('removeAllBasketItemsForPeriod calling with', data);
+
+        fetch('/api/SupplierPayments/RemoveAllBasketItemsForPeriod', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                console.log('removeAllBasketItemsForPeriod returned', data);
+                self.refresh();
+            })
+            .catch (window.catchFetchError)
+    }
+
+    self.finaliseBasket = () => {
+
+        if (!self.basketElement.classList.contains('pinned'))
+            self.basketElement.classList.add('pinned');
+
+        let di = self.filters.paymentPeriodParams.dropDownListSettings.widget().dataItem();
+
+        window.showConfirm('Are you sure?', `This action will finalise the period ${di.Label}`, () => {
+
+            self.busy(true);
+
+            let data = {
+                periodId: di.PeriodID,
+                basketItems: self.gridParams.widget().dataSource.data().map(i => {
+                    return {
+                        paymentDecisionId: i.PaymentDecisionID,
+                        paymentRequestId: i.PaymentRequestID,
+                        amountApprovedInCurrency: i.AmountInCurrency
+                    }
+                })
+            }
+
+            fetch('/api/SupplierPayments/FinaliseApprovalBasket', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                body: JSON.stringify(data)
+            })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    if (data.SuccessMessage) {
+                        window.showInfo('Complete', data.SuccessMessage);
+                    } else {
+                        window.showError('Error', `Error No. ${data.ErrorNumber}<br/><br/>${data.ErrorMessage}`);
+                    }
+                    self.busy(false);
+
+                    self.refreshApprovals();
+                })
+                .catch(err => {
+                    window.catchFetchError(err);
+                    self.busy(false);
+                })
+        }, null);
     }
 
     self.refresh = () => {

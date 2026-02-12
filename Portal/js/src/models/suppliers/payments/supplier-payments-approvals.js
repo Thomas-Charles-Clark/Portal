@@ -20,13 +20,27 @@
         refreshDashboard
     };
 
+    //#region Lifted Methods
+    
+    self.refresh = () => {
+        self.gridWidget().dataSource.query({
+            page: self.gridWidget().dataSource.page(),
+            pageSize: self.gridWidget().dataSource.pageSize(),
+            filter: self.gridWidget().dataSource.filter(),
+            sort: self.gridWidget().dataSource.sort()
+        });
+    }
+
+    //#endregion
+
     //#region Properties
 
     self.basket = supplierPaymentsApprovalsBasketViewModel({
         ready: self.ready,
         busy: self.busy,
         busyMessage: self.busyMessage,
-        filters: self.filters
+        filters: self.filters,
+        refreshApprovals: self.refresh
     });
 
     self.gridWidget = ko.observable();
@@ -58,6 +72,8 @@
                 let mapped = webapi.parameterMap(options.data);
 
                 let data = self.filters.toJS();
+
+                data.requestedByMemberId = data.memberId;
 
                 delete data.memberId;
 
@@ -171,8 +187,6 @@
             },
             parse: function (response) {
 
-                console.log('approvals schema.parse called with', response);
-
                 for (let i = 0; i < response.Data.length; i++) {
                     let items = [];
 
@@ -203,7 +217,7 @@
                     response.Data[i].Details = items;
                 }
 
-                console.log('approvals schema.parse returning', response);
+                console.log('supplierPaymentApprovals schema.parse returning', response);
 
                 return response;
             }
@@ -362,7 +376,7 @@
     }];
 
     self.gridParams = {
-        autoBind: true,
+        autoBind: false,
         widget: self.gridWidget,
         columns: self.gridColumns,
         data: self.gridDataSource,
@@ -439,21 +453,20 @@
                 }, {
                     command: [{
                         name: 'Approve',
+                        className: self.filters.paymentPeriod()?.Finalised ? 'k-disabled' : '',
                         click: function (e) {
                             console.log('approve', e);
                             e.preventDefault();
-                            let tr = $(e.target).closest("tr");
-                            let data = this.dataItem(tr);
-                            self.basket.addBasketItem(data);
-                        }
-                    }, {
-                        name: 'Reject',
-                        click: function (e) {
-                            console.log('reject', e);
-                            e.preventDefault();
-                            let tr = $(e.target).closest("tr");
-                            let data = this.dataItem(tr);
-                            self.rejectApprovalRequest(data);
+                            if (!self.filters.paymentPeriod()?.Finalised) {
+                                let tr = $(e.target).closest("tr");
+                                let data = this.dataItem(tr);
+                                if (data.OutstandingAmountInCurrency == 0) {
+                                    window.showInfo('Paid', 'This Payment Request has already been paid in full.');
+                                    return;
+                                } else {
+                                    self.basket.addBasketItem(data);
+                                }
+                            }
                         }
                     }]
                 }]
@@ -581,15 +594,6 @@
                 self.busy(false);
                 window.catchFetchError(err);
             })
-    }
-
-    self.refresh = () => {
-        self.gridWidget().dataSource.query({
-            page: self.gridWidget().dataSource.page(),
-            pageSize: self.gridWidget().dataSource.pageSize(),
-            filter: self.gridWidget().dataSource.filter(),
-            sort: self.gridWidget().dataSource.sort()
-        }); 
     }
 
     //#endregion

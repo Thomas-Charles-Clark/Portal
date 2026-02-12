@@ -24,14 +24,17 @@
 		</style>
 	}
 
-	<script type="text/javascript">
-		window.getDashboard = () => {
+<script type="text/javascript">
+		window.getDashboardRecords = () => {
 			return @Html.Raw(JsonConvert.SerializeObject(Model.Dashboard.Records));
+		}
+		window.getDashboardPeriodMessage = () => {
+			return @Html.Raw(JsonConvert.SerializeObject(Model.Dashboard.PeriodMessage));
 		}
 		window.getCanUserAdministrate = () => {
 			return @Html.Raw($"{Model.UserMayAdministrate}".ToLowerInvariant());
 		}
-	</script>
+</script>
 
 	<script type="text/javascript">
 
@@ -118,23 +121,57 @@
 	</script>
 }
 @section modals {
-	<div class="modal fade breakdown-modal" id="-modal" tabindex="-1">
-		<div class="modal-dialog modal-lg modal-xl" id="n-modal-dialog">
-			<div class="modal-content">
+	<div class="modal fade" id="new-request-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+		<div class="modal-dialog" id="new-request-modal-dialog">
+			<div class="modal-content" data-bind="with: requests">
 				<div class="blocker" data-bind="flexFadeVisible: busy">
 					<div class="loading-spinner"></div>
 					<h4>
 						Please Wait...
 					</h4>
 				</div>
-				<div class="modal-header grey-blue">
+				<div class="modal-header grey-blue" data-bind="with: newRequest">
 					<h4 class="modal-title">
-						Title
+						New Payment Request
 					</h4>
-					<button type="button" class="btn-close btn-close-white" aria-label="Close" data-bs-dismiss="modal"></button>
 				</div>
-				<div class="modal-body" data-bind="with: $data">
-
+				<div class="modal-body" data-bind="with: newRequest">
+					<div class="properties-container">
+						<div class="mb-3" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: paymentRequestStatusParams }"></div>
+						<div class="d-flex justify-content-end align-items-center gap-3 mb-3">
+							<label class="mb-0">
+								Payment Due
+							</label>
+							<div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: paymentDueDateParams }"></div>
+						</div>
+						<div class="mb-3" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: supplierParams }"></div>
+						<div class="d-flex justify-content-end align-items-center gap-3 mb-3">
+							<label class="mb-0">
+								Amount
+								<!-- ko if: supplier() -->
+								<span data-bind="text: supplier().Currency.Symbol, css: { 'open-sans-inflated-dollar-glyph': supplier().Currency.Symbol == '$' }"></span>
+								<!-- /ko -->
+							</label>
+							<div data-bind="component: { name: 'mdc-text-field-numeric-component', params: amountInCurrencyParams }"></div>
+						</div>
+						<div class="mb-3">
+							<div data-bind="component: { name: 'mdc-kendo-multiselect-component', params: purchaseOrderIdsParams }"></div>
+						</div>
+						<div class="mb-3">
+							<div data-bind="component: { name: 'mdc-text-field-component', params: proformaNumberParams }"></div>
+						</div>
+						<div>
+							<div data-bind="component: { name: 'mdc-text-area-component', params: requesterCommentsParams }"></div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer d-flex align-items-center justify-contents-end">
+					<button class="btn btn-secondary" data-bind="click: closeNewRequestModal">
+						Cancel
+					</button>
+					<button class="btn btn-primary" data-bind="click: saveNewRequestModal">
+						Save
+					</button>
 				</div>
 			</div>
 		</div>
@@ -194,11 +231,11 @@
 				<div id="prefilters" data-bind="with: filters">
 					<div class="d-flex gap-3 align-items-center mb-3">
 						<div class="prefilter d-flex align-items-center gap-3">
-							<label class="form-label m-0">
-								Week Commencing:
-							</label>
 							@*<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: weekCommencingDateParams }"></div>*@
 							<div id="payment-period-prefilter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: paymentPeriodParams }"></div>
+							<!-- ko if: paymentPeriod() && paymentPeriod().Finalised -->
+							<div class="form-label m-0" data-bind="html: $parent.dashboard.periodMessage"></div>
+							<!-- /ko -->
 						</div>
 					</div>
 				</div>
@@ -232,10 +269,10 @@
 									Payment Plans
 								</th>
 								<th>
-									Approved
+									Pending
 								</th>
 								<th>
-									Declined
+									Approved
 								</th>
 								<th>
 									GBP FX Rate
@@ -355,21 +392,14 @@
 			<div id="payment-requests-tab-pane" class="tab-pane fade active show">
 				<div class="card mb-3" data-bind="with: filters">
 					<div class="card-body">
-						<h4>
-							Filters
-						</h4>
 						<div class="prefilters">
 							<div id="user-selector-prefilter" class="prefilter relative" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: userSelectorParams }"></div>
 							<div id="payment-request-status-prefilter" class="prefilter relative" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: paymentRequestStatusParams }"></div>
-							<div data-bind="component: { name: 'mdc-checkbox-component', params: onlyIncludeOutstandingPaymentRequestsParams }"></div>
 						</div>
 					</div>
 				</div>
 				<div class="card mb-3" data-bind="with: requests">
 					<div class="card-body">
-						<h4>
-							Payment Requests
-						</h4>
 						<div style="display: none" class="supplier-payments-grid-container payment-requests z-2"
 							 data-bind="visible: true, kendoGrid: gridParams"></div>
 					</div>
@@ -378,9 +408,6 @@
 			<div id="budget-tab-pane" class="tab-pane fade">
 				<div class="card" data-bind="with: budgets">
 					<div class="card-body">
-						<h4>
-							Budget
-						</h4>
 						<div style="display: none" class="supplier-payments-grid-container budget-grid z-1" data-bind="visible: true, kendoGrid: gridParams"></div>
 					</div>
 				</div>
@@ -389,9 +416,6 @@
 				<div class="card">
 					<div class="card-body">
 						<div class="d-flex align-items-center gap-3 prefilters" data-bind="with: filters">
-							<h4>
-								Approvals
-							</h4>
 							<div class="prefilter">
 								<div data-bind="component: { name: 'mdc-checkbox-component', params: onlyIncludeSuppliersWithPaymentRequestsParams }"></div>
 							</div>
@@ -407,10 +431,7 @@
 			<div id="history-summary-tab-pane" class="tab-pane fade">
 				<div class="card">
 					<div class="card-body">
-						<h4 class="d-flex justify-content-between align-items-center">
-							<span>
-								History Summary
-							</span>
+						<h4 class="d-flex justify-content-end align-items-center">
 							<button class="btn btn-dark btn-export" data-bind="click: historySummary.exportToExcel">
 								Export to Excel
 								<i class="bi bi-download"></i>
@@ -425,10 +446,7 @@
 			<div id="history-detail-tab-pane" class="tab-pane fade">
 				<div class="card">
 					<div class="card-body">
-						<h4 class="d-flex justify-content-between align-items-center">
-							<span>
-								History Details
-							</span>
+						<h4 class="d-flex justify-content-end align-items-center">
 							<button class="btn btn-dark btn-export" data-bind="click: historyDetails.exportToExcel">
 								Export to Excel
 								<i class="bi bi-download"></i>
@@ -458,11 +476,21 @@
 					<button type="button" class="btn btn-light basket-toggle-btn" title="Toggle Pinning">
 						<i class="bi bi-pin-angle-fill fs-5"></i>
 					</button>
+					<!-- ko if: !busy() && basket.readOnlyMode() -->
+					<span data-bind="text: filters.paymentPeriod() ? filters.paymentPeriod().Label : ''"></span>
+					<button type="button" class="btn btn-light basket-finalised-btn" title="Finalised" disabled>
+						<i class="bi bi-lock-fill fs-5"></i>
+					</button>
+					<!-- /ko -->
 				</h5>
 				<div class="d-flex justify-content-center gap-3">
 					<button type="button" class="btn btn-secondary gap-3" data-bind="enable: basket.canClearBasket, click: basket.clear, clickBubble: false">
 						Empty Basket
 						<i class="bi bi-arrow-counterclockwise"></i>
+					</button>
+					<button type="button" class="btn btn-dark gap-3" data-bind="disable: basket.readOnlyMode, click: basket.finaliseBasket, clickBubble: false">
+						Finalise Period
+						<i class="bi bi-list-check"></i>
 					</button>
 				</div>
 			</div>

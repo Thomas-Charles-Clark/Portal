@@ -3639,6 +3639,19 @@ ko.validation.rules['emailList'] = {
 };
 ko.validation.addExtender('emailList');
 
+ko.validation.rules['greaterThan'] = {
+    validator: function (val, params) {
+        if (!params) return true;
+        if (ko.validation.utils.isEmptyVal(val)) return true;
+
+        let gt = ko.unwrap(params.value);
+
+        return +val > +gt;
+    },
+    message: 'Please enter proper comma-separated email addresses'
+};
+ko.validation.addExtender('greaterThan');
+
 ko.validation.rules['validJson'] = {
     validator: function (val, validate) {
         if (!validate) return true;

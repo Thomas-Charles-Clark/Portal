@@ -10,8 +10,6 @@ namespace SharedEFClasses.Models.Suppliers.PaymentRequests
 	{
 		public int? MemberID { get; set; }
 
-		public bool OnlyShowOutstandingRequests { get; set; }
-
 		public string PaymentRequestStatus { get; set; }
 	}
 }

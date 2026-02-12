@@ -9,5 +9,7 @@ namespace SharedEFClasses.Models.Suppliers.Payments
 	public class SupplierPayments_Dashboard_SelectResult
 	{
 		public IEnumerable<SupplierPayments_Dashboard_SelectRecord> Records { get; set; }
+
+		public SupplierPayments_Dashboard_PeriodMessage PeriodMessage { get; set; }
 	}
 }

@@ -129,7 +129,42 @@
 
     //#region Events
 
-
+    document.querySelectorAll('#tabs-container .nav .nav-link').forEach(e => {
+        switch (e.dataset['bsTarget']) {
+            case '#payment-requests-tab-pane':
+                e.addEventListener('show.bs.tab', () => {
+                    if (self.requests.gridWidget())
+                        self.requests.refresh();
+                });
+                break;
+            case '#budget-tab-pane':
+                e.addEventListener('show.bs.tab', () => {
+                    if (self.budgets.gridWidget())
+                        self.budgets.refresh();
+                });
+                break;
+            case '#approvals-tab-pane':
+                e.addEventListener('show.bs.tab', () => {
+                    if (self.approvals.gridWidget())
+                        self.approvals.refresh();
+                });
+                break;
+            case '#history-summary-tab-pane':
+                e.addEventListener('show.bs.tab', () => {
+                    if (self.historySummary.gridWidget())
+                        self.historySummary.refresh();
+                });
+                break;
+            case '#history-detail-tab-pane':
+                e.addEventListener('show.bs.tab', () => {
+                    if (self.historyDetails.gridWidget())
+                        self.historyDetails.refresh();
+                });
+                break;
+            default:
+                break;
+        }
+    });
 
     //#endregion
 

@@ -58,7 +58,11 @@ namespace Portal
 
             config.MapODataServiceRoute("pricing", "pricing-odata", GetPricingModel());
 
-			config.MapODataServiceRoute(routeName: "supplierPayments", "supplier-payments-odata", GetSupplierPaymentsODataModel());
+            var supplierPaymentsEdm = GetSupplierPaymentsODataModel();
+
+			var supplierPaymentsODataBatchHandler = new DefaultODataBatchHandler(GlobalConfiguration.DefaultServer);
+
+			config.MapODataServiceRoute(routeName: "supplierPayments", "supplier-payments-odata", supplierPaymentsEdm, supplierPaymentsODataBatchHandler);
 
 			config.AddODataQueryFilter();
 
@@ -1231,22 +1235,19 @@ namespace Portal
 
 			builder.EntitySet<SupplierPaymentApproval_Basket_SelectRecord>("SupplierPaymentApproval_Basket_SelectRecords");
 
+            builder.EntitySet<PaymentRequest>("PaymentRequests");
+
 			builder.Namespace = "SupplierPayments";
-
-
 
             var requestSelect = builder.EntityType<SupplierPaymentRequest_SelectRecord>().Collection.Function("SupplierPaymentsGridRead");
 			
             requestSelect.ReturnsCollectionFromEntitySet<SupplierPaymentRequest_SelectRecord>(entitySetName: "SupplierPaymentRequest_SelectRecords");
 			requestSelect.Parameter<SupplierPaymentRequest_SelectDTO>("dto");
 
-
-
 			var basketSelect = builder.EntityType<SupplierPaymentApproval_Basket_SelectRecord>().Collection.Function("SupplierPaymentsBasketGridRead");
 
 			basketSelect.ReturnsCollectionFromEntitySet<SupplierPaymentApproval_Basket_SelectRecord>(entitySetName: "SupplierPaymentApproval_Basket_SelectRecords");
 			basketSelect.Parameter<SupplierPaymentApproval_Basket_SelectDTO>("dto");
-
 
 
 			return builder.GetEdmModel();

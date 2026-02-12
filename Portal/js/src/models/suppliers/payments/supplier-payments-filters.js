@@ -31,8 +31,6 @@
 
     self.paymentPeriod = ko.observable();
 
-    self.onlyIncludeOutstandingPaymentRequests = ko.observable(true);
-
     self.onlyIncludeSuppliersWithPaymentRequests = ko.observable(true);
 
     self.onlyShowSuppliersWithOutstandingInvoices = ko.observable(false);
@@ -43,7 +41,7 @@
 
     self.refreshDashboard = null;
 
-    self.paymentRequestStatus = ko.observable(localStorage.paymentRequestStatus ?? '');
+    self.paymentRequestStatus = ko.observable(localStorage.paymentRequestStatus ?? 'Outstanding');
 
     //#endregion
 
@@ -98,7 +96,6 @@
     };
 
     self.paymentPeriodParams = kendoMDCDropDownList({
-        skipCascade: true,
         odata: true,
         endPoint: '/odata/PaymentPeriods',
         textField: 'Label',
@@ -121,7 +118,7 @@
         autoBind: true,
         height: 340,
         sort: {
-            dir: 'asc',
+            dir: 'desc',
             field: 'PeriodID'
         },
         select: function (e) {
@@ -169,8 +166,8 @@
         template: '#: FullName # - #: Email #',
         valueTemplate: '#: FullName # - #: Email #',
         optionLabel: {
-            FullName: 'No User Selected',
-            Email: 'no user selected'
+            FullName: 'All Users',
+            Email: 'All Users'
         },
         autoBind: true,
         height: 340,
@@ -210,15 +207,6 @@
         }
     });
 
-    self.onlyIncludeOutstandingPaymentRequestsParams = {
-        checkboxId: "only-with-outstanding-requests",
-        label: "Only Display Outstanding Payment Requests",
-        observable: self.onlyIncludeOutstandingPaymentRequests,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        busy: self.busy
-    }
-
     self.onlyIncludeSuppliersWithPaymentRequestsParams = {
         checkboxId: "only-with-requests",
         label: "Only Display Suppliers with Outstanding Payment Requests",
@@ -239,7 +227,7 @@
 
     self.paymentRequestStatusParams = kendoMDCDropDownList({
         skipCascade: true,
-        optionLabel: 'Payment Request Status',
+        optionLabel: 'All Statuses',
         data: [{
             Label: 'Fully Approved',
             RequestStatus: 'Fully Approved',
@@ -332,8 +320,7 @@
     self.requestFilters = ko.computed(() => {
 
         let result = {
-            memberId: self.userId(),
-            onlyIncludeOutstandingRequests: self.onlyIncludeOutstandingPaymentRequests(),
+            requestedByMemberId: self.userId(),
             paymentRequestStatus: self.paymentRequestStatus()
         };
 
@@ -361,6 +348,18 @@
 
     self.userId.subscribe(nv => {
         self.refreshParent();
+    })
+
+    self.paymentPeriod.subscribe(nv => {
+        console.log('paymentsFilters paymentPeriod subscribe hit', nv);
+        let approvalBtn = document.querySelector('#approvals-tab-btn');
+        if (nv.Finalised) {
+            approvalBtn.disable = true;
+            approvalBtn.classList.add('disabled');
+        } else {
+            approvalBtn.disable = false;
+            approvalBtn.classList.remove('disabled');
+        }
     })
 
     //#endregion

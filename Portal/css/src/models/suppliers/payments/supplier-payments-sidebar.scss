@@ -1,7 +1,8 @@
 ﻿@import "../../common.scss";
 
 #filters-sidebar {
-	display: flex;
+	display: none;
+	/*display: flex;*/
 	align-self: stretch;
 	position: absolute;
 	left: 0;

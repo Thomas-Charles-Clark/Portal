@@ -34,11 +34,14 @@ namespace SharedEFClasses.Models
 
 		public async Task<SupplierPayments_Dashboard_SelectResult> SupplierPayments_Dashboard_Select(SupplierPayments_Dashboard_SelectDTO dto)
 		{
-			var results = await this.Database.Connection.QueryMultipleAsync("[payment].[Dashboard_Select]", dto, null, null, System.Data.CommandType.StoredProcedure);
+			var results = await this.Database.Connection.QueryMultipleAsync("[payment].[Dashboard_Select]", new { 
+				dto.PeriodID
+			}, null, null, System.Data.CommandType.StoredProcedure);
 
 			return new SupplierPayments_Dashboard_SelectResult()
 			{
 				Records = await results.ReadAsync<SupplierPayments_Dashboard_SelectRecord>(),
+				PeriodMessage = await results.ReadSingleOrDefaultAsync<SupplierPayments_Dashboard_PeriodMessage>()
 			};
 		}
 
@@ -89,6 +92,15 @@ namespace SharedEFClasses.Models
 			{
 				Records = await reader.ReadAsync<SupplierPaymentApproval_Basket_SelectRecord>()
 			};
+		}
+
+		public async Task<SupplierPayment_Decision_FinaliseRecord> SupplierPayment_Payment_Decision_Finalise(SupplierPaymentApproval_Payment_Decision_FinaliseDTO dto)
+		{
+			var result = await this.Database.Connection.QuerySingleAsync<SupplierPayment_Decision_FinaliseRecord>("[payment].[Payment_Decision_Finalise]", new { 
+				PeriodID = dto.PeriodID
+			}, null, null, System.Data.CommandType.StoredProcedure);
+
+			return result;
 		}
 	}
 }

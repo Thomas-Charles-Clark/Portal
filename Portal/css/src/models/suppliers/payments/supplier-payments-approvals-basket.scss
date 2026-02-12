@@ -36,11 +36,18 @@
 		flex: 1;
 		cursor: pointer;
 
+		.basket-finalised-btn {
+			color: var(--bs-btn-hover-color);
+			background-color: var(--bs-btn-hover-bg);
+			border-color: var(--bs-btn-hover-border-color);
+		}
+
 		&:hover,
 		&:focus,
 		&:focus-within {
 
-			.basket-toggle-btn {
+			.basket-toggle-btn,
+			.basked-finalised-btn {
 				color: var(--bs-btn-hover-color);
 				background-color: var(--bs-btn-hover-bg);
 				border-color: var(--bs-btn-hover-border-color);
@@ -171,7 +178,6 @@
 	.mdc-text-field:not(.mdc-text-field--textarea),
 	.mdc-select,
 	.mdc-text-field:not(.mdc-text-field--textarea) {
-
 	}
 
 	.k-dropdown-wrap {
@@ -215,6 +221,7 @@
 
 		> .card {
 			flex: 1;
+
 			> .card-body {
 				padding-top: $sm-gutter;
 			}
@@ -262,5 +269,10 @@
 				margin-top: 0;
 			}
 		}
+	}
+
+	.k-grid-Remove {
+		background-color: $red-500;
+		color: $white;
 	}
 }

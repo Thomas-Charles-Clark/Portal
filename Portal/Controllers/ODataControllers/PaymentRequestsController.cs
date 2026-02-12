@@ -111,11 +111,11 @@ namespace Portal.Controllers
 
             entity.RequestedByMember = PortalDb.Users.SingleOrDefault(u => u.Id == entity.RequestedByMemberID);
 
-            entity.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == entity.CurrencyID);
-
             entity.Supplier = PortalDb.Suppliers_Live.SingleOrDefault(s => s.Code == entity.SupplierCode);
 
-            return Updated(entity);
+			entity.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == entity.Supplier.CurrencyID);
+
+			return Updated(entity);
         }
 
 		[HttpPost]
@@ -150,9 +150,9 @@ namespace Portal.Controllers
 
 			creationResult.RequestedByMember = PortalDb.Users.SingleOrDefault(u => u.Id == entity.RequestedByMemberID);
 
-			creationResult.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == entity.CurrencyID);
-
 			creationResult.Supplier = PortalDb.Suppliers_Live.SingleOrDefault(s => s.Code == entity.SupplierCode);
+
+			creationResult.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == entity.Supplier.CurrencyID);
 
 			return Created(creationResult);
 		}
@@ -208,9 +208,9 @@ namespace Portal.Controllers
 
 				originalEntity.RequestedByMember = PortalDb.Users.SingleOrDefault(u => u.Id == originalEntity.RequestedByMemberID);
 
-				originalEntity.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == originalEntity.CurrencyID);
-
 				originalEntity.Supplier = PortalDb.Suppliers_Live.SingleOrDefault(s => s.Code == originalEntity.SupplierCode);
+
+				originalEntity.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == originalEntity.Supplier.CurrencyID);
 
 			}
 

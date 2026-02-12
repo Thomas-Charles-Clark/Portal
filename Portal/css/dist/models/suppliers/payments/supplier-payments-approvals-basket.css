@@ -384,7 +384,15 @@
   flex: 1;
   cursor: pointer;
 }
-#basket-sidebar .sidebar-heading:hover .basket-toggle-btn, #basket-sidebar .sidebar-heading:focus .basket-toggle-btn, #basket-sidebar .sidebar-heading:focus-within .basket-toggle-btn {
+#basket-sidebar .sidebar-heading .basket-finalised-btn {
+  color: var(--bs-btn-hover-color);
+  background-color: var(--bs-btn-hover-bg);
+  border-color: var(--bs-btn-hover-border-color);
+}
+#basket-sidebar .sidebar-heading:hover .basket-toggle-btn,
+#basket-sidebar .sidebar-heading:hover .basked-finalised-btn, #basket-sidebar .sidebar-heading:focus .basket-toggle-btn,
+#basket-sidebar .sidebar-heading:focus .basked-finalised-btn, #basket-sidebar .sidebar-heading:focus-within .basket-toggle-btn,
+#basket-sidebar .sidebar-heading:focus-within .basked-finalised-btn {
   color: var(--bs-btn-hover-color);
   background-color: var(--bs-btn-hover-bg);
   border-color: var(--bs-btn-hover-border-color);
@@ -525,5 +533,9 @@
 }
 #basket-sidebar #approval-basket-contents .table .converting-component-wrapper {
   margin-top: 0;
+}
+#basket-sidebar .k-grid-Remove {
+  background-color: #dc3545;
+  color: #fff;
 }
 /*# sourceMappingURL=supplier-payments-approvals-basket.css.map */

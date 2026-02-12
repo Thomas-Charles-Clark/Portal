@@ -96,6 +96,20 @@ html {
 				max-height: 37px;
 			}
 		}
+
+		.nav-link:not(.active) {
+			background-color: $blue-100;
+			color: $body-color;
+		}
+
+		.nav-link {
+			&[disabled],
+			&.disabled {
+				background-color: $gray-200;
+				color: $gray-500;
+				cursor: not-allowed;
+			}
+		}
 	}
 }
 
@@ -196,6 +210,11 @@ html {
 			margin-bottom: 0;
 		}
 	}
+
+	.k-disabled {
+		cursor: not-allowed;
+		color: $gray-600;
+	}
 }
 
 #totals-table {
@@ -218,7 +237,7 @@ html {
 		display: flex;
 		flex-direction: column;
 		gap: $l-gutter;
-		padding-left: 50px;
+		/*padding-left: 50px;*/ /* Allows for filters sidebar which is currently unused 12/02/2026 */
 		padding-bottom: $l-gutter;
 		position: relative;
 		z-index: 0;
@@ -995,5 +1014,39 @@ td {
 		.modal-header {
 			border-radius: 6px 6px 0 0;
 		}
+	}
+}
+
+#new-request-modal {
+	transform: translate3d(0,0,0);
+
+	.mdc-validating-field {
+		min-width: 210px;
+
+		.mdc-text-field {
+			width: 100%;
+		}
+	}
+
+	.k-multiselect {
+		cursor: pointer;
+
+		.k-clear-value {
+			display: none;
+		}
+	}
+
+	.k-multiselect:after {
+		cursor: pointer;
+		content: "▼";
+		position: absolute;
+		top: 9px;
+		right: 9px;
+		font-size: 9px;
+		color: #555;
+	}
+
+	.blocker {
+		border-radius: 5px;
 	}
 }

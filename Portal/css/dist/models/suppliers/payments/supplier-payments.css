@@ -1,3 +1,4 @@
+@charset "UTF-8";
 :root {
   --vsm-gutter: 0.25rem;
   --sm-gutter: 0.5rem;
@@ -418,6 +419,15 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #tabs-container #tabs-list .mdc-select .controls {
   max-height: 37px;
 }
+#tabs-container #tabs-list .nav-link:not(.active) {
+  background-color: #cfe2ff;
+  color: #212529;
+}
+#tabs-container #tabs-list .nav-link[disabled], #tabs-container #tabs-list .nav-link.disabled {
+  background-color: #e9ecef;
+  color: #adb5bd;
+  cursor: not-allowed;
+}
 
 .mdc-select--selected:not(.mdc-select--disabled) .k-picker-solid {
   background-color: #084298;
@@ -476,6 +486,10 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #approvals-tab-pane .prefilters h4 {
   margin-bottom: 0;
 }
+#approvals-tab-pane .k-disabled {
+  cursor: not-allowed;
+  color: #6c757d;
+}
 
 #totals-table {
   display: inline-table;
@@ -495,7 +509,8 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding-left: 50px;
+  /*padding-left: 50px;*/
+  /* Allows for filters sidebar which is currently unused 12/02/2026 */
   padding-bottom: 1rem;
   position: relative;
   z-index: 0;
@@ -1014,5 +1029,33 @@ td > .k-widget.k-multiselect .k-multiselect-wrap > .k-i-close {
 
 #info-modal .modal-dialog .modal-header {
   border-radius: 6px 6px 0 0;
+}
+
+#new-request-modal {
+  transform: translate3d(0, 0, 0);
+}
+#new-request-modal .mdc-validating-field {
+  min-width: 210px;
+}
+#new-request-modal .mdc-validating-field .mdc-text-field {
+  width: 100%;
+}
+#new-request-modal .k-multiselect {
+  cursor: pointer;
+}
+#new-request-modal .k-multiselect .k-clear-value {
+  display: none;
+}
+#new-request-modal .k-multiselect:after {
+  cursor: pointer;
+  content: "▼";
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  font-size: 9px;
+  color: #555;
+}
+#new-request-modal .blocker {
+  border-radius: 5px;
 }
 /*# sourceMappingURL=supplier-payments.css.map */

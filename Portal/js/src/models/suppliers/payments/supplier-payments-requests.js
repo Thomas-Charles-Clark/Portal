@@ -28,6 +28,12 @@
 
     self.gridWidget = ko.observable();
 
+    self.addNewModalElement = document.querySelector('#new-request-modal');
+
+    self.addNewModal = bootstrap.Modal.getOrCreateInstance(self.addNewModalElement);
+
+    self.newRequest = ko.observable();
+
     //#endregion
 
 
@@ -60,7 +66,8 @@
             read: {
                 url: () => {
                     let filters = self.filters.requestFilters();
-                    return `/supplier-payments-odata/SupplierPaymentRequest_SelectRecords/SupplierPayments.SupplierPaymentsGridRead(dto=@d)?@d={"MemberID":${filters.memberId},"OnlyShowOutstandingRequests":${filters.onlyIncludeOutstandingRequests}}`;
+
+                    return `/supplier-payments-odata/SupplierPaymentRequest_SelectRecords/SupplierPayments.SupplierPaymentsGridRead(dto=@d)?@d={"MemberID":${filters.requestedByMemberId == '' ? null : filters.requestedByMemberId},"PaymentRequestStatus":"${filters.paymentRequestStatus}"}`;
                 }
             },
             update: {
@@ -85,23 +92,26 @@
 
                 var result = kendo.data.transports["odata-v4"].parameterMap(options, type);
 
-                let filters = [];
+                // The below is now handled by the read url function
 
-                let userId = self.filters.userId();
+                //let filters = [];
 
-                if (userId != null && userId != '') {
-                    filters.push(`(RequestedByMemberID eq ${userId})`);
-                }
+                //let userId = self.filters.userId();
 
-                let requestStatus = self.filters.paymentRequestStatus();
+                //if (userId != null && userId != '') {
+                //    filters.push(`(RequestedByMemberID eq ${userId})`);
+                //}
 
-                if (requestStatus != null && requestStatus != '') {
-                    filters.push(`(PaymentRequestStatus eq '${requestStatus}')`);
-                }
+                //let requestStatus = self.filters.paymentRequestStatus();
 
-                let filtersString = filters.join(" and ");
+                //if (requestStatus != null && requestStatus != '') {
+                //    filters.push(`(PaymentRequestStatus eq '${requestStatus}')`);
+                //}
 
-                result.$filter = `(${filtersString})`;
+                //if (filters.length) {
+                //    let filtersString = filters.join(" and ");
+                //    result.$filter = `(${filtersString})`;
+                //}
 
                 return result;
             }
@@ -127,13 +137,18 @@
                 return response.value || (response.responses ? [] : response);
             },
             parse: function (data) {
-                console.log(`supplierPaymentRequests schema.parse called with`, data);
+                if (Object.hasOwn(data, 'value')) {
+                    for (let i = 0; i < data.value.length; i++) {
 
-                for (let i = 0; i < data.value.length; i++) {
-                    if (data.value[i].PurchaseOrders != null) {
-                        data.value[i].PurchaseOrders = JSON.parse(data.value[i].PurchaseOrders);
+                        delete data.value[i]['@odata.type'];
+
+                        if (data.value[i].PurchaseOrders != null) {
+                            data.value[i].PurchaseOrders = JSON.parse(data.value[i].PurchaseOrders);
+                        }
                     }
                 }
+
+                console.log(`supplierPaymentRequests schema.parse returning`, data);
 
                 return data;
             },
@@ -160,11 +175,15 @@
                     RequestedByMemberID: {
                         type: 'number',
                         nullable: false,
-                        editable: false,
+                        editable: true,
                         defaultValue: window.getUserId(),
                     },
                     PaymentRequestType: {
                         type: 'string',
+                        nullable: true
+                    },
+                    PaymentRequestStatusID: {
+                        type: 'number',
                         nullable: true
                     },
                     PaymentRequestStatus: {
@@ -328,6 +347,7 @@
                 if (e.sender.hasChanges()) {
                     e.preventDefault();
                     self.busy(false);
+                    console.log('paymentRequests grid unsavedChanges info');
                     window.showInfo('Unsaved Changes', 'You have unsaved changes. Please cancel or save them before performing any other action.');
                 }
             }
@@ -348,10 +368,10 @@
             self.refreshApprovals();
             self.busy(false);
         },
-        //sort: {
-        //    field: 'PaymentRequestCreated',
-        //    dir: 'desc'
-        //},
+        sort: {
+            field: 'PaymentRequestCreated',
+            dir: 'desc'
+        },
         noDataTemplate: 'Nothing to display',
         change: (e) => {
             console.log(`paymentRequests dataSource change`, e);
@@ -499,6 +519,7 @@
                         change: (e) => {
                             let dataItem = e.sender.dataItem();
                             options.model.set('PaymentRequestType', dataItem.Name); // ... ?
+                            options.model.set('PaymentRequestStatusID', dataItem.PaymentRequestStatusID);
                             self.gridWidget().refresh(); // ... ?
                         },
                         height: 'auto'
@@ -667,6 +688,8 @@
                         }),
                         change: (e) => {
                             let dataItem = e.sender.dataItem();
+
+                            options.model.set('SupplierCode', dataItem.Code);
                             options.model.set('SupplierName', dataItem.Name);
 
                             options.model.set("CurrencyID", dataItem.Currency.CurrencyID);
@@ -972,9 +995,7 @@
 
         },
         selectable: false,
-        editable: {
-            createAt: "top"
-        },
+        editable: true,
         edit: function (e) {
 
             console.log('paymentRequests edit', e);
@@ -1019,6 +1040,11 @@
         },
         dataBound: (e) => {
             console.log('paymentRequests dataBound', e);
+            //e.sender.setOptions({
+            //    editable: {
+            //        mode: 'incell'
+            //    }
+            //});
         },
         saveChanges: (e) => {
             console.log('paymentRequests saveChanges', e);
@@ -1035,6 +1061,8 @@
                         item.PeriodID = moment(item.PaymentDueDate).weekdayWithStartWeekday(0, 1).format('YYYYMMDD');
                     }
 
+                    delete item.CurrencyID;
+
                     if (item.ProformaNumber == '')
                         item.ProformaNumber = null;
 
@@ -1049,14 +1077,18 @@
                     delete item.Currency;
                     delete item.Supplier;
 
-                    item.PurchaseOrders.forEach(po => {
-                        po = {
-                            PurchaseOrderHeadID: po.PurchaseOrderHeadID,
-                            PaymentRequestID: po.PaymentRequestID ?? null
-                        }
-                    });
+                    if (item.PurchaseOrders != null) {
+                        item.PurchaseOrders.forEach(po => {
+                            po = {
+                                PurchaseOrderHeadID: po.PurchaseOrderHeadID,
+                                PaymentRequestID: po.PaymentRequestID ?? null
+                            }
+                        });
+                    }
                 }
             }
+
+            self.refreshApprovals();
 
             self.skipEditEvent = true;
         },
@@ -1126,6 +1158,67 @@
 
     //#region Methods
 
+    self.openNewRequestModal = () => {
+        self.newRequest(supplierPaymentsRequestViewModel({
+            rec: {
+                created: new Date()
+            }
+        }));
+
+        self.addNewModal.show();
+    }
+
+    self.closeNewRequestModal = () => {
+
+        self.addNewModal.hide();
+
+        self.newRequest(supplierPaymentsRequestViewModel({
+            rec: {
+                created: new Date()
+            }
+        }));
+    }
+
+    self.saveNewRequestModal = () => {
+        self.newRequest().validateNow(true);
+
+        window.setTimeout(() => {
+            if (self.newRequest().errors().length) {
+                self.newRequest().errors.filter(e => {
+                    e.isValid.notifySubscribers(e.isValid());
+                });
+            } else {
+                self.reallySaveNewRequestModal();
+            }
+        }, 0);
+    }
+
+    self.reallySaveNewRequestModal = () => {
+        self.busy(true); 
+
+        let data = self.newRequest().toJS();
+
+        console.log('supplierPaymentRequests createPaymentRequest calling with', data);
+
+        fetch('/api/SupplierPayments/CreatePaymentRequest', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify(data)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                self.busy(false);
+                self.closeNewRequestModal();
+                self.refresh();
+            })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            })
+    }
+
     self.refresh = () => {
         console.log('supplierPaymentRequests refresh called');
         self.gridWidget() && self.gridWidget().dataSource.query({
@@ -1140,28 +1233,36 @@
     self.ready.subscribe(nv => {
         $(".k-grid-custom-create").click(function (e) {
             e.preventDefault();
-            let ds = self.gridParams.widget().dataSource;
 
-            let created = new Date();
+            self.openNewRequestModal();
 
-            // 1. Manually insert an empty object at index 0
-            let newItem = ds.insert(0, {
-                PaymentRequestType: 'Add New',
-                RequesterName: getUserName(),
-                PaymentRequestCreated: created,
-                PaymentDueDate: null,
-                SupplierCode: null,
-                SupplierName: null,
-                ReadOnly: false
-            });
+            //self.gridParams.widget().setOptions({
+            //    editable: {
+            //        mode: 'popup',
+            //        template: self.popupEditorTemplate
+            //    }
+            //});
 
-            // 1.5 temporarily disable grouping
-            let groupingConfig = self.gridParams.widget().dataSource.group();
+            //let ds = self.gridParams.widget().dataSource;
 
-            // 2. Find the newly created row in the DOM and put it in edit mode
-            let newRow = self.gridParams.widget().items().filter("[data-uid='" + newItem.uid + "']");
+            //let created = new Date();
 
-            self.gridParams.widget().editRow(newRow);
+            //// 1. Manually insert an empty object at index 0
+            //let newItem = ds.insert(0, {
+            //    PaymentRequestType: 'Add New',
+            //    PaymentRequestStatusID: 1,
+            //    RequesterName: getUserName(),
+            //    PaymentRequestCreated: created,
+            //    PaymentDueDate: null,
+            //    SupplierCode: null,
+            //    SupplierName: null,
+            //    ReadOnly: false
+            //});
+
+            //// 2. Find the newly created row in the DOM and put it in edit mode
+            //let newRow = self.gridParams.widget().items().filter("[data-uid='" + newItem.uid + "']");
+
+            //self.gridParams.widget().editRow(newRow);
         });
     });
 

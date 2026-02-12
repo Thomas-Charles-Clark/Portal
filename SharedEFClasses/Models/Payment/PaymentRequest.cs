@@ -23,17 +23,11 @@ namespace SharedEFClasses.Models.Payment
 
 		public int RequestedByMemberID { get; set; }
 
-		public byte CurrencyID { get; set; }
-
 		public string SupplierCode { get; set; }
 
 		public string ProformaNumber { get; set; }
 
 		public decimal AmountInCurrency { get; set; }
-
-		public decimal AmountInSterling { get; set; }
-
-		public decimal ExchangeRate { get; set; }
 
 		public string RequesterComments { get; set; }
 
@@ -61,7 +55,7 @@ namespace SharedEFClasses.Models.Payment
 		public virtual Member RequestedByMember { get; set; }
 
 		[JsonIgnore]
-		[ForeignKey("CurrencyID")]
+		[NotMapped]
 		public virtual Currency Currency { get; set; }
 
 		[JsonIgnore]

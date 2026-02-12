@@ -12,10 +12,6 @@ namespace SharedEFClasses.Models.Suppliers.PaymentApprovals
 
 		public int PaymentRequestID { get; set; }
 
-		public decimal AmountApprovedInCurrency { get; set; }
-
-		public decimal ExchangeRate { get; set; }
-
-		public decimal AmountApprovedInSterling { get; set; }
+		public decimal AmountInCurrency { get; set; }
 	}
 }

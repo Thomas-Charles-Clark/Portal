@@ -31,6 +31,8 @@ using SharedEFClasses.Models.Suppliers.PaymentApprovals;
 using SharedEFClasses.Models.Suppliers.PaymentApproval;
 using SharedEFClasses.Models.Payment;
 using SharedEFClasses.Models.Suppliers.PaymentRequests;
+using System.Data.SqlClient;
+using SharedEFClasses.Utilities;
 
 
 namespace Portal.Areas.Suppliers.Controllers
@@ -51,6 +53,62 @@ namespace Portal.Areas.Suppliers.Controllers
 		/// REQUESTS
 		/// </summary>
 		/// 
+
+		[HttpPost]
+		public async Task<IHttpActionResult> CreatePaymentRequest([FromBody] SupplierPaymentRequest_CreationDTO dto)
+		{
+			dto.RequestedByMemberID = User.Identity.GetUserId<int>();
+
+			var request = new PaymentRequest()
+			{
+				PaymentRequestStatusID = dto.PaymentRequestStatusID,
+				RequestedByMemberID = dto.RequestedByMemberID.Value,
+				PeriodID = dto.PeriodID,
+				SupplierCode = dto.SupplierCode,
+				AmountInCurrency = dto.AmountInCurrency,
+				ProformaNumber = dto.ProformaNumber,
+				RequesterComments = dto.RequesterComments,
+				PaymentDueDT = dto.PaymentDueDT,
+				CreatedDT = DateTime.Now
+			};
+
+			PortalDb.PaymentRequests.Add(request);
+
+			try
+			{
+				await PortalDb.SaveChangesAsync();
+			}
+			catch (SqlException e)
+			{
+				if (e.InnerException != null)
+				{
+					if (e.InnerException.InnerException != null)
+					{
+						if (e.InnerException.InnerException.Message.Contains("FK_payment_PaymentRequest_PeriodID"))
+						{
+							PortalDb.SupplierPayment_Period_Initialise(new SupplierPayments_Period_InitialiseDTO(dto.PaymentDueDT, 1));
+
+							PortalDb.PaymentRequests.Add(request);
+
+							await PortalDb.SaveChangesAsync();
+						}
+					}
+				}
+			}
+
+			if (dto.PurchaseOrderIDs != null && dto.PurchaseOrderIDs.Any())
+			{
+				PortalDb.PaymentRequest_PurchaseOrderHeads.AddRange(dto.PurchaseOrderIDs.Select(p => new PaymentRequest_PurchaseOrderHead()
+				{
+					PurchaseOrderHeadID = p,
+					PaymentRequestID = request.PaymentRequestID
+				}));
+
+				await PortalDb.SaveChangesAsync();
+			}
+
+			return Ok(new { });
+		}
 
 		[HttpPost]
 		public async Task<IHttpActionResult> DashboardSelect(SupplierPayments_Dashboard_SelectDTO dto)
@@ -130,9 +188,7 @@ namespace Portal.Areas.Suppliers.Controllers
 			{
 				PaymentRequestID = dto.PaymentRequestID,
 				DecidedByMemberID = User.Identity.GetUserId<int>(),
-				AmountInCurrency = dto.AmountApprovedInCurrency,
-				AmountInSterling = dto.AmountApprovedInSterling,
-				ExchangeRate = dto.ExchangeRate,
+				AmountInCurrency = dto.AmountInCurrency,
 				CreatedDT = now,
 				ModifiedDT = now,
 				DeletedDT = null
@@ -150,9 +206,7 @@ namespace Portal.Areas.Suppliers.Controllers
 
 			var result = PortalDb.PaymentDecisions.Single(p => p.PaymentDecisionID == dto.PaymentDecisionID);
 
-			result.AmountInCurrency = dto.AmountApprovedInCurrency;
-			result.AmountInSterling = dto.AmountApprovedInSterling;
-			result.ExchangeRate = dto.ExchangeRate;
+			result.AmountInCurrency = dto.AmountInCurrency;
 			result.ModifiedDT = now;
 
 			await PortalDb.SaveChangesAsync();
@@ -173,11 +227,10 @@ namespace Portal.Areas.Suppliers.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IHttpActionResult> FinaliseApprovalBasket([FromBody] SupplierPaymentApprovalBasketDTO dto)
+		public async Task<IHttpActionResult> FinaliseApprovalBasket([FromBody] SupplierPaymentApproval_Payment_Decision_FinaliseDTO dto)
 		{
 			// there is a procedure which must be mapped - potentially returning error codes
 			// payment.Basket_
-
 
 			var decisionIds = dto.BasketItems.Select(q => q.PaymentDecisionID);
 
@@ -189,23 +242,34 @@ namespace Portal.Areas.Suppliers.Controllers
 			{
 				var r = dto.BasketItems.Single(bi => bi.PaymentDecisionID == p.PaymentDecisionID);
 
-				p.AmountInCurrency = r.AmountApprovedInCurrency;
-				p.AmountInSterling = r.AmountApprovedInSterling;
-				p.ExchangeRate = r.ExchangeRate;
-				p.ModifiedDT = DateTime.Now;
+				if (r.AmountInCurrency != p.AmountInCurrency)
+				{
+					p.AmountInCurrency = r.AmountInCurrency;
+					p.ModifiedDT = DateTime.Now;
+				}
 			});
 
 			await PortalDb.SaveChangesAsync();
 
-			return Ok(new { });
+			var approvalResult = await PortalDb.SupplierPayment_Payment_Decision_Finalise(dto);
+
+			return Ok(approvalResult);
 		}
 
 		[HttpPost]
-		public async Task<IHttpActionResult> RejectApprovalRequest([FromBody] SupplierPaymentApprovalBasketItemDTO dto)
+		public async Task<IHttpActionResult> RemoveAllBasketItemsForPeriod([FromBody] SupplierPayments_BasketItemsDTO dto)
 		{
-			var record = PortalDb.PaymentRequests.Single(pr => pr.PaymentRequestID == dto.PaymentRequestID);
+			var records = PortalDb.PaymentDecisions.Where(pr => dto.PaymentDecisionIDs.Contains(pr.PaymentDecisionID));
 
-			record.DeletedDT = DateTime.Now;
+			var now = DateTime.Now;
+
+			foreach(var r in records)
+			{
+				if (r.DeletedDT == null)
+				{
+					r.DeletedDT = now;
+				}
+			}
 
 			await PortalDb.SaveChangesAsync();
 
