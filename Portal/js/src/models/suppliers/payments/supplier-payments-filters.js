@@ -321,7 +321,7 @@
 
         let result = {
             requestedByMemberId: self.userId(),
-            paymentRequestStatus: self.paymentRequestStatus()
+            paymentRequestStatus: self.paymentRequestStatus() == '' ? null : self.paymentRequestStatus()
         };
 
         console.log(`filters.requestFilters computed`, result);
@@ -356,6 +356,7 @@
         if (nv.Finalised) {
             approvalBtn.disable = true;
             approvalBtn.classList.add('disabled');
+            document.querySelector('#payment-requests-tab-btn').click();
         } else {
             approvalBtn.disable = false;
             approvalBtn.classList.remove('disabled');

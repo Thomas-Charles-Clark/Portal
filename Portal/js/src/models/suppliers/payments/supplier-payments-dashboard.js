@@ -25,7 +25,7 @@
 
     self.records = ko.observableArray(window.getDashboardRecords());
 
-    self.finalisedBy = ko.observable(window.getDashboardPeriodMessage());
+    self.periodMessage = ko.observable(window.getDashboardPeriodMessage());
 
     //#endregion
 
@@ -85,7 +85,7 @@
 
                 self.records(data.Records);
 
-                self.finalisedBy(data.FinalisedBy);
+                self.periodMessage(data.PeriodMessage?.PeriodMessage);
 
                 self.busy(false);
             })

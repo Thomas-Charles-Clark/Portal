@@ -453,7 +453,8 @@
   transition: transform 50ms linear;
 }
 #basket-sidebar:hover, #basket-sidebar:focus-within, #basket-sidebar.pinned {
-  height: calc(100vh - 50px);
+  height: calc(100vh - 447px);
+  /* 'cause threeee... is a magic number! */
 }
 #basket-sidebar:hover .basket-count, #basket-sidebar:focus-within .basket-count, #basket-sidebar.pinned .basket-count {
   opacity: 0;

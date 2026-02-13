@@ -124,7 +124,7 @@
 	&:hover,
 	&:focus-within,
 	&.pinned {
-		height: calc(100vh - 50px);
+		height: calc(100vh - 447px); /* 'cause threeee... is a magic number! */
 
 		.basket-count {
 			opacity: 0;

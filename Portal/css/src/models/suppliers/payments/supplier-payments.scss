@@ -1,5 +1,7 @@
 ﻿@import "../../common.scss";
 
+$finalised-row-bg-color: #c5f7c3b3 !important;
+
 html {
 	min-height: 100%;
 	display: flex;
@@ -187,6 +189,20 @@ html {
 	position: relative;
 }
 
+.period-message {
+	align-self: stretch;
+	flex: 1 0 auto;
+	display: flex;
+
+	.alert {
+		margin-bottom: 0;
+		padding-top: 0;
+		padding-bottom: 0;
+		display: flex;
+		align-items: center;
+	}
+}
+
 .prefilters {
 	display: flex;
 	gap: $l-gutter;
@@ -337,8 +353,34 @@ html {
 		}
 	}
 
-	.k-table-td {
-		padding: $sm-gutter;
+	tbody {
+		tr {
+			&:has(td.finalised) {
+				background-color: $finalised-row-bg-color;
+				cursor: default;
+
+				td {
+					&.readonly {
+						background-color: $finalised-row-bg-color;
+						cursor: default;
+					}
+				}
+
+				&:hover,
+				&:focus,
+				&:focus-within {
+					background-color: $finalised-row-bg-color;
+					cursor: default;
+
+					td {
+						&.readonly {
+							background-color: $finalised-row-bg-color;
+							cursor: default;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	.k-command-cell {
@@ -378,6 +420,20 @@ html {
 			&:focus,
 			&:focus-within {
 				text-decoration: underline;
+			}
+		}
+	}
+
+	.k-master-row {
+		&:has(td.k-hierarchy-cell) {
+			background-color: $blue-700;
+			color: $white;
+
+			&:hover,
+			&:focus,
+			&:focus-within {
+				background-color: $blue-600;
+				color: $white;
 			}
 		}
 	}
@@ -1048,5 +1104,47 @@ td {
 
 	.blocker {
 		border-radius: 5px;
+	}
+}
+
+.k-grid .k-grid-md .k-edit-cell,
+.k-grid .k-grid-md .k-command-cell,
+.k-grid .k-grid-md .k-grid-edit-row td,
+.k-grid .k-grid-md .k-grid-edit-row .k-table-td,
+.k-grid-md .k-edit-cell,
+.k-grid-md .k-command-cell,
+.k-grid-md .k-grid-edit-row td,
+.k-grid-md .k-grid-edit-row .k-table-td {
+	padding: $sm-gutter;
+	padding-block: unset;
+}
+
+#approvals-tab-pane {
+	tbody {
+
+		.k-hierarchy-cell {
+			border-top: 0;
+			background-color: $blue-700;
+
+			&:hover,
+			&:focus,
+			&:focus-within {
+				background-color: $blue-600;
+			}
+		}
+
+		.k-detail-row {
+			.k-hierarchy-cell {
+				&:hover,
+				&:focus,
+				&:focus-within {
+					background-color: $blue-600;
+				}
+			}
+		}
+
+		.k-detail-cell {
+			padding: 0;
+		}
 	}
 }

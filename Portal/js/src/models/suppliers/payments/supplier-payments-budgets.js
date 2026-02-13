@@ -516,6 +516,8 @@
                     row.addClass("current-period-row");
                 };
             }
+
+            self.refreshDashboard();
         },
         save: (e) => {
             console.log(`budgetGrid save`, e);

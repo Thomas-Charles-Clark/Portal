@@ -30,6 +30,8 @@ namespace SharedEFClasses.Models.Suppliers.Payments
 
 		public decimal? ApprovedTotal { get; set; }
 
+		public decimal? PendingApprovalBalance { get; set; }
+
 		public decimal? GBPFXRate { get; set; }
 	}
 }

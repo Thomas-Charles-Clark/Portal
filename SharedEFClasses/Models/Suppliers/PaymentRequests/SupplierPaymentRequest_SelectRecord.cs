@@ -65,5 +65,11 @@ namespace SharedEFClasses.Models.Suppliers.PaymentRequests
 		public DateTime? PaymentRequestModified { get; set; }
 
 		public bool ReadOnly { get; set; }
+
+		public bool Deletable { get; set; }
+
+		public bool Finalised { get; set; }
+
+		public decimal ReduceRequestAmountInCurrencyMinimum { get; set; }
 	}
 }

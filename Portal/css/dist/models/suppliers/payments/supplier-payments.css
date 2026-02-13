@@ -467,6 +467,19 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   position: relative;
 }
 
+.period-message {
+  align-self: stretch;
+  flex: 1 0 auto;
+  display: flex;
+}
+.period-message .alert {
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  display: flex;
+  align-items: center;
+}
+
 .prefilters {
   display: flex;
   gap: 1rem;
@@ -578,8 +591,21 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 .k-grid.supplier-detail-grid table thead.k-grid-header .k-header .k-column-title {
   white-space: normal;
 }
-.k-grid .k-table-td {
-  padding: 0.5rem;
+.k-grid tbody tr:has(td.finalised) {
+  background-color: #c5f7c3b3 !important;
+  cursor: default;
+}
+.k-grid tbody tr:has(td.finalised) td.readonly {
+  background-color: #c5f7c3b3 !important;
+  cursor: default;
+}
+.k-grid tbody tr:has(td.finalised):hover, .k-grid tbody tr:has(td.finalised):focus, .k-grid tbody tr:has(td.finalised):focus-within {
+  background-color: #c5f7c3b3 !important;
+  cursor: default;
+}
+.k-grid tbody tr:has(td.finalised):hover td.readonly, .k-grid tbody tr:has(td.finalised):focus td.readonly, .k-grid tbody tr:has(td.finalised):focus-within td.readonly {
+  background-color: #c5f7c3b3 !important;
+  cursor: default;
 }
 .k-grid .k-command-cell {
   display: flex;
@@ -604,6 +630,14 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 }
 .k-grid .k-table-td a.mailto-link:hover, .k-grid .k-table-td a.mailto-link:focus, .k-grid .k-table-td a.mailto-link:focus-within {
   text-decoration: underline;
+}
+.k-grid .k-master-row:has(td.k-hierarchy-cell) {
+  background-color: #084298;
+  color: #fff;
+}
+.k-grid .k-master-row:has(td.k-hierarchy-cell):hover, .k-grid .k-master-row:has(td.k-hierarchy-cell):focus, .k-grid .k-master-row:has(td.k-hierarchy-cell):focus-within {
+  background-color: #0a58ca;
+  color: #fff;
 }
 
 .k-grid .k-command-cell {
@@ -1057,5 +1091,31 @@ td > .k-widget.k-multiselect .k-multiselect-wrap > .k-i-close {
 }
 #new-request-modal .blocker {
   border-radius: 5px;
+}
+
+.k-grid .k-grid-md .k-edit-cell,
+.k-grid .k-grid-md .k-command-cell,
+.k-grid .k-grid-md .k-grid-edit-row td,
+.k-grid .k-grid-md .k-grid-edit-row .k-table-td,
+.k-grid-md .k-edit-cell,
+.k-grid-md .k-command-cell,
+.k-grid-md .k-grid-edit-row td,
+.k-grid-md .k-grid-edit-row .k-table-td {
+  padding: 0.5rem;
+  padding-block: unset;
+}
+
+#approvals-tab-pane tbody .k-hierarchy-cell {
+  border-top: 0;
+  background-color: #084298;
+}
+#approvals-tab-pane tbody .k-hierarchy-cell:hover, #approvals-tab-pane tbody .k-hierarchy-cell:focus, #approvals-tab-pane tbody .k-hierarchy-cell:focus-within {
+  background-color: #0a58ca;
+}
+#approvals-tab-pane tbody .k-detail-row .k-hierarchy-cell:hover, #approvals-tab-pane tbody .k-detail-row .k-hierarchy-cell:focus, #approvals-tab-pane tbody .k-detail-row .k-hierarchy-cell:focus-within {
+  background-color: #0a58ca;
+}
+#approvals-tab-pane tbody .k-detail-cell {
+  padding: 0;
 }
 /*# sourceMappingURL=supplier-payments.css.map */

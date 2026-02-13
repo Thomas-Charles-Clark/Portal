@@ -84,7 +84,7 @@
             let aais = self.approvedAmountInSterling();
 
             if (aais)
-                return window.formatCurrency(self.approvedAmountInSterling())
+                return window.formatCurrency(aais, 2, 'en-GB', 'GBP')
             else
                 return ''
         }, write: (value) => {

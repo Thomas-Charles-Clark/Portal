@@ -233,8 +233,8 @@
 						<div class="prefilter d-flex align-items-center gap-3">
 							@*<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: weekCommencingDateParams }"></div>*@
 							<div id="payment-period-prefilter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: paymentPeriodParams }"></div>
-							<!-- ko if: paymentPeriod() && paymentPeriod().Finalised -->
-							<div class="form-label m-0" data-bind="html: $parent.dashboard.periodMessage"></div>
+							<!-- ko if: paymentPeriod() -->
+							<div class="period-message m-0" data-bind="html: $parent.dashboard.periodMessage"></div>
 							<!-- /ko -->
 						</div>
 					</div>
@@ -260,20 +260,31 @@
 									Overdue Supplier Invoices
 								</th>
 								<th>
-									Budget
+									Requests Total
 								</th>
 								<th>
-									Requests Total
+									Budget
 								</th>
 								<th>
 									Payment Plans
 								</th>
 								<th>
-									Pending
+									<!-- ko ifnot: ($parent.filters.paymentPeriod() && $parent.filters.paymentPeriod().Finalised) -->
+									<span>
+										Pending
+									</span>
+									<!-- /ko -->
+									<!-- ko if: ($parent.filters.paymentPeriod() && $parent.filters.paymentPeriod().Finalised) -->
+									<span>
+										Approved
+									</span>
+									<!-- /ko -->
 								</th>
+								<!-- ko ifnot: ($parent.filters.paymentPeriod() && $parent.filters.paymentPeriod().Finalised) -->
 								<th>
-									Approved
+									Balance
 								</th>
+								<!-- /ko -->
 								<th>
 									GBP FX Rate
 								</th>
@@ -288,20 +299,27 @@
 									<span data-bind="html: OverdueSupplierInvoiceTotal ? formatCurrency(OverdueSupplierInvoiceTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
 								<td>
-									<span data-bind="html: formatCurrency(Budget, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
+									<span data-bind="html: PaymentRequestTotal ? formatCurrency(PaymentRequestTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
 								<td>
-									<span data-bind="html: PaymentRequestTotal ? formatCurrency(PaymentRequestTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
+									<span data-bind="html: formatCurrency(Budget, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
 								</td>
 								<td>
 									<span data-bind="html: PaymentRequestPaymentPlanTotal ? formatCurrency(PaymentRequestPaymentPlanTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
 								<td>
+									<!-- ko ifnot: ($parentContext.$parent.filters.paymentPeriod() && $parentContext.$parent.filters.paymentPeriod().Finalised) -->
 									<span data-bind="html: PendingApprovalTotal ? formatCurrency(PendingApprovalTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
-								</td>
-								<td>
+									<!-- /ko -->
+									<!-- ko if: ($parentContext.$parent.filters.paymentPeriod() && $parentContext.$parent.filters.paymentPeriod().Finalised) -->
 									<span data-bind="html: ApprovedTotal ? formatCurrency(ApprovedTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
+									<!-- /ko -->
 								</td>
+								<!-- ko ifnot: ($parent.filters.paymentPeriod() && $parent.filters.paymentPeriod().Finalised) -->
+								<td>
+									<span data-bind="html: formatCurrency(PendingApprovalBalance, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
+								</td>
+								<!-- /ko -->
 								<td>
 									<span data-bind="text: formatNumber(GBPFXRate, 4, 'en-GB')"></span>
 								</td>
@@ -312,24 +330,31 @@
 								<th>
 									<span data-bind="text: RowLabel"></span>
 								</th>
-								<td>
+								<th>
 									<span data-bind="html: OverdueSupplierInvoiceTotal ? formatCurrency(OverdueSupplierInvoiceTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
-								</td>
-								<td>
-									<span data-bind="html: formatCurrency(Budget, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
-								</td>
-								<td>
+								</th>
+								<th>
 									<span data-bind="html: PaymentRequestTotal ? formatCurrency(PaymentRequestTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
-								</td>
-								<td>
+								</th>
+								<th>
+									<span data-bind="html: formatCurrency(Budget, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
+								</th>
+								<th>
 									<span data-bind="html: PaymentRequestPaymentPlanTotal ? formatCurrency(PaymentRequestPaymentPlanTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
-								</td>
-								<td>
+								</th>
+								<th>
+									<!-- ko ifnot: ($parentContext.$parent.filters.paymentPeriod() && $parentContext.$parent.filters.paymentPeriod().Finalised) -->
 									<span data-bind="html: PendingApprovalTotal ? formatCurrency(PendingApprovalTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
-								</td>
-								<td>
+									<!-- /ko -->
+									<!-- ko if: ($parentContext.$parent.filters.paymentPeriod() && $parentContext.$parent.filters.paymentPeriod().Finalised) -->
 									<span data-bind="html: ApprovedTotal ? formatCurrency(ApprovedTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
-								</td>
+									<!-- /ko -->
+								</th>
+								<!-- ko ifnot: ($parent.filters.paymentPeriod() && $parent.filters.paymentPeriod().Finalised) -->
+								<th>
+									<span data-bind="html: formatCurrency(PendingApprovalBalance, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
+								</th>
+								<!-- /ko -->
 								<td>
 								</td>
 							</tr>

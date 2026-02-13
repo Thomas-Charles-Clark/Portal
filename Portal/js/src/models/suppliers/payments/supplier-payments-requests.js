@@ -67,11 +67,14 @@
                 url: () => {
                     let filters = self.filters.requestFilters();
 
-                    return `/supplier-payments-odata/SupplierPaymentRequest_SelectRecords/SupplierPayments.SupplierPaymentsGridRead(dto=@d)?@d={"MemberID":${filters.requestedByMemberId == '' ? null : filters.requestedByMemberId},"PaymentRequestStatus":"${filters.paymentRequestStatus}"}`;
+                    return `/supplier-payments-odata/SupplierPaymentRequest_SelectRecords/SupplierPayments.SupplierPaymentsGridRead(dto=@d)?@d={"MemberID":${filters.requestedByMemberId == '' ? null : filters.requestedByMemberId},"PaymentRequestStatus":${((filters.paymentRequestStatus == '' || filters.paymentRequestStatus == null) ? 'null' : `"${filters.paymentRequestStatus}"`)}}`;
                 }
             },
             update: {
                 url: function (item) {
+                    if (item.PurchaseOrders != null && item.PurchaseOrders.length) {
+                        item.PurchaseOrders = item.PurchaseOrders.map(p => p.PurchaseOrderHeadID).join(',');
+                    }
                     return `/supplier-payments-odata/SupplierPaymentRequest_SelectRecords(${item.PaymentRequestID})`
                 }
             },
@@ -83,35 +86,14 @@
             },
             destroy: {
                 url: function (item) {
-                    return `/supplier-payments-odata/PaymentRequests(${item.PaymentRequestID})`
+                    return `/supplier-payments-odata/SupplierPaymentRequest_SelectRecords(${item.PaymentRequestID})`
                 }
             },
-            parameterMap: function (options, type) {
+            parameterMap: function (data, operation) {
 
-                console.log(type, options);
+                console.log(operation, data);
 
-                var result = kendo.data.transports["odata-v4"].parameterMap(options, type);
-
-                // The below is now handled by the read url function
-
-                //let filters = [];
-
-                //let userId = self.filters.userId();
-
-                //if (userId != null && userId != '') {
-                //    filters.push(`(RequestedByMemberID eq ${userId})`);
-                //}
-
-                //let requestStatus = self.filters.paymentRequestStatus();
-
-                //if (requestStatus != null && requestStatus != '') {
-                //    filters.push(`(PaymentRequestStatus eq '${requestStatus}')`);
-                //}
-
-                //if (filters.length) {
-                //    let filtersString = filters.join(" and ");
-                //    result.$filter = `(${filtersString})`;
-                //}
+                var result = kendo.data.transports["odata-v4"].parameterMap(data, operation);
 
                 return result;
             }
@@ -146,6 +128,10 @@
                             data.value[i].PurchaseOrders = JSON.parse(data.value[i].PurchaseOrders);
                         }
                     }
+                } else if (Array.isArray(data)) {
+                    data.forEach(d => {
+                        delete d['@odata.context'];
+                    })
                 }
 
                 console.log(`supplierPaymentRequests schema.parse returning`, data);
@@ -311,7 +297,8 @@
                         format: 'dd/MM/yyyy HH:mm'
                     },
                     ReadOnly: {
-                        type: 'boolean'
+                        type: 'boolean',
+                        editable: false
                     }
                 }
             }
@@ -367,6 +354,11 @@
             }
             self.refreshApprovals();
             self.busy(false);
+            if (e.type === 'update') {
+                window.setTimeout(() => {
+                    self.refresh();
+                }, 0);
+            }
         },
         sort: {
             field: 'PaymentRequestCreated',
@@ -403,8 +395,11 @@
     self.gridColumns = [{
         field: 'PeriodID',
         title: 'Period',
-        attributes: {
-            "class": "readonly"
+        hidden: true,
+        attributes: () => {
+            return {
+                "class": "readonly"
+            }
         },
         template: (e) => {
             if (e.PeriodID) {
@@ -445,34 +440,36 @@
             }
         }
     }, {
-        field: 'PaymentRequestType',
+        field: 'RequestType',
         title: 'Request Type',
         hidden: false,
         editable: false,
         groupHeaderTemplate: (dataItem) => dataItem.value ? `${dataItem.value}` : ``,
-        attributes: {
-            "class": "readonly"
+        attributes: (dataItem) => {
+            return {
+                "class": "readonly" + (dataItem.Finalised ? " finalised" : "")
+            }
         },
         headerAttributes: {
             "class": "super-header"
         },
         template: (e) => {
-            if (e.PaymentRequestType) {
-                return e.PaymentRequestType;
+            if (e.RequestType) {
+                return e.RequestType;
             } else {
                 return '';
             }
         },
         valueTemplate: (e) => {
-            if (e.PaymentRequestType) {
-                return e.PaymentRequestType;
+            if (e.RequestType) {
+                return e.RequestType;
             } else {
                 return '';
             }
         },
         editor: (container, options) => {
-            if (options.model.ReadOnly) {
-                $(`<span>${options.model.PaymentRequestType}</span>`)
+            if (options.model.ReadOnly || (!options.model.isNew())) {
+                $(`<span>${options.model.RequestType}</span>`)
                     .appendTo(container);
             } else {
                 $(`<input type="text" required name="${options.field}" validationMessage="You must specify a Request Type" />`)
@@ -527,6 +524,11 @@
             }
         }
     }, {
+        field: 'PaymentRequestType',
+        title: ' ',
+        groupHeaderTemplate: (dataItem) => `${dataItem.value}`,
+        hidden: true
+    }, {
         field: 'RequesterName',
         title: 'Requested By',
         hidden: true,
@@ -556,6 +558,7 @@
     }, {
         field: 'PaymentRequestCreated',
         title: 'Created',
+        hidden: true,
         width: 130,
         attributes: {
             "class": "readonly"
@@ -586,6 +589,9 @@
             "required": true,
             validationMessage: "You must specify a Pay Date"
         },
+        editable: (dataItem) => {
+            return false;
+        },
         template: (e) => {
             if (e.PaymentDueDate) {
                 return moment(e.PaymentDueDate).format('DD/MM/YYYY');
@@ -606,6 +612,9 @@
         width: 280,
         attributes: {
             "class": "dropdown-container-cell"
+        },
+        editable: (dataItem) => {
+            return false;
         },
         editor: (container, options) => {
             if (options.model.ReadOnly) {
@@ -738,7 +747,9 @@
     }, {
         field: 'CurrencyCode',
         title: 'Currency',
-        editable: false,
+        editable: (dataItem) => {
+            return false;
+        },
         width: 100,
         attributes: {
             "class": "readonly"
@@ -775,9 +786,13 @@
         }
     }, {
         field: 'RequestAmount',
-        title: 'Amount (Currency)',
+        title: 'Amount',
+        width: 220,
         attributes: {
             /*"class": "text-end"*/ // This is not the way. So sayeth Sarah, 16/01/2026.
+        },
+        editable: (dataItem) => {
+            return dataItem.ReadOnly === false;
         },
         template: (e) => {
             if (e.RequestAmount) {
@@ -797,6 +812,7 @@
                     format: "n2",
                     decimals: 2,
                     selectOnFocus: true,
+                    min: options.model.ReduceRequestAmountInCurrencyMinimum,
                     change: (e) => {
                         console.log('RequestAmount change', e);
                         // We no longer do exchange rates / conversions at this stage of play: so sayeth Matthew 09.02.2026
@@ -807,11 +823,35 @@
                 });
         }
     }, {
+        field: 'OutstandingAmount',
+        title: 'Outstanding Amount',
+        width: 220,
+        attributes: {
+            /*"class": "text-end"*/ // This is not the way. So sayeth Sarah, 16/01/2026.
+        },
+        editable: (dataItem) => {
+            return false;
+        },
+        template: (e) => {
+            if (e.OutstandingAmount != null) {
+                if (e.CurrencyCode) {
+                    return formatCurrency(e.OutstandingAmount, 2, e.FormattingCulture, e.CurrencyCode);
+                } else {
+                    return e.OutstandingAmount;
+                }
+            } else {
+                return '';
+            }
+        }
+    }, {
         field: 'Status',
         title: 'Status',
         width: 220,
         attributes: {
             "class": "dropdown-container-cell"
+        },
+        editable: (dataItem) => {
+            return false;
         },
         template: (e) => {
             if (e.Status) {
@@ -827,9 +867,16 @@
         attributes: {
             "class": "relative"
         },
+        editable: (dataItem) => {
+            return dataItem.ReadOnly === false;
+        },
         template: (e) => {
             if (e.PurchaseOrders) {
-                return e.PurchaseOrders.map(p => p.PurchaseOrderHeadID).join(", ");
+                if (typeof e.PurchaseOrders.map === 'function') {
+                    return e.PurchaseOrders.map(p => p.PurchaseOrderHeadID).join(", ");
+                } else {
+                    return e.PurchaseOrders.split(',').map(p => p.trim()).join(", ");
+                }
             } else {
                 return '';
             }
@@ -939,37 +986,76 @@
         }
     }, {
         field: 'ProformaNumber',
-        title: 'Proforma Number'
-    },
-        {
-            field: 'RequesterComments',
-            title: 'Requester Comments',
-            editor: (container, options) => {
-                let textarea = document.createElement('textarea');
+        title: 'Proforma Number',
+        editable: (dataItem) => {
+            return dataItem.ReadOnly === false;
+        },
+    }, {
+        field: 'RequesterComments',
+        title: 'Requester Comments',
+        editable: (dataItem) => {
+            return dataItem.ReadOnly === false;
+        },
+        editor: (container, options) => {
+            let textarea = document.createElement('textarea');
 
-                textarea.value = options.model[options.field];
+            textarea.value = options.model[options.field];
 
-                textarea.classList.add('form-control');
-                textarea.setAttribute('rows', '3');
-                textarea.setAttribute('id', 'textarea-editor');
+            textarea.classList.add('form-control');
+            textarea.setAttribute('rows', '3');
+            textarea.setAttribute('id', 'textarea-editor');
 
-                container[0].appendChild(textarea);
+            container[0].appendChild(textarea);
 
-                $("#textarea-editor").on('blur', (event) => {
-                    if (textarea.value) {
-                        options.model.set('RequesterComments', textarea.value);
-                    } else {
-                        options.model.set('RequesterComments', null);
-                    }
-                })
-            },
-            template: (e) => {
-                if (e.RequesterComments) {
-                    return e.RequesterComments?.replace(/\n/gm, '<br/>');
+            $("#textarea-editor").on('blur', (event) => {
+                if (textarea.value) {
+                    options.model.set('RequesterComments', textarea.value);
                 } else {
-                    return '';
+                    options.model.set('RequesterComments', null);
                 }
+            })
+        },
+        template: (e) => {
+            if (e.RequesterComments) {
+                return e.RequesterComments?.replace(/\n/gm, '<br/>');
+            } else {
+                return '';
             }
+        }
+    }, {
+        field: 'ReadOnly',
+        title: ' ',
+        filterable: false,
+        editable: false,
+        width: 64,
+        attributes: {
+            "class": "text-center"
+        },
+        template: (dataItem) => {
+            return `<a tabindex="0"
+                        class="bi bi-info-circle fs-4"
+                        data-bs-html="true"
+                        data-bs-trigger="focus"
+                        data-bs-toggle="popover"
+                        data-bs-title="Details"
+                        data-bs-content="Created: ${moment(dataItem.PaymentRequestCreated).format('dddd DD/MM/YYYY HH:mm')}<br/>Modified: ${moment(dataItem.PaymentRequestModified).format('dddd DD/MM/YYYY HH:mm')}"></a>`;
+        },
+        valueTemplate: (dataItem) => {
+            return `<a tabindex="0"
+                        class="bi bi-info-circle fs-4"
+                        data-bs-html="true"
+                        data-bs-trigger="focus"
+                        data-bs-toggle="popover"
+                        data-bs-title="Details"
+                        data-bs-content="Created: ${moment(dataItem.PaymentRequestCreated).format('dddd DD/MM/YYYY HH:mm')}<br/>Modified: ${moment(dataItem.PaymentRequestModified).format('dddd DD/MM/YYYY HH:mm')}"></a>`;
+        }
+    }, {
+        command: [{
+            name: 'destroy',
+            visible: (e) => {
+                return e.Deletable === true;
+            }
+        }]
     }];
 
     self.skipEditEvent = true;
@@ -1040,11 +1126,15 @@
         },
         dataBound: (e) => {
             console.log('paymentRequests dataBound', e);
-            //e.sender.setOptions({
-            //    editable: {
-            //        mode: 'incell'
-            //    }
-            //});
+
+            self.refreshDashboard();
+
+            window.setTimeout(() => {
+                const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+                const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl, {
+                    container: popoverTriggerEl
+                }));
+            }, 0);
         },
         saveChanges: (e) => {
             console.log('paymentRequests saveChanges', e);

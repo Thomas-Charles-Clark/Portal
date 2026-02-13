@@ -80,18 +80,18 @@
             },
             update: {
                 url: function (item) {
-                    return `/supplier-payments-odata/GetSupplierPaymentApproval_Basket_SelectRecords(${item.PaymentRequestID})`
+                    return `/supplier-payments-odata/SupplierPaymentApproval_Basket_SelectRecords(${item.PaymentDecisionID})`
                 }
             },
             create: {
-                url: '/supplier-payments-odata/GetSupplierPaymentApproval_Basket_SelectRecords'
+                url: '/supplier-payments-odata/SupplierPaymentApproval_Basket_SelectRecords'
             },
             batch: {
                 url: '/supplier-payments-odata/$batch'
             },
             destroy: {
                 url: function (item) {
-                    return `/supplier-payments-odata/GetSupplierPaymentApproval_Basket_SelectRecords(${item.PaymentRequestID})`
+                    return `/supplier-payments-odata/SupplierPaymentApproval_Basket_SelectRecords(${item.PaymentDecisionID})`
                 }
             },
             parameterMap: function (options, type) {

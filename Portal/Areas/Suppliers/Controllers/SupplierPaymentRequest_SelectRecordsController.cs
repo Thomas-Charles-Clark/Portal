@@ -59,7 +59,7 @@ namespace Portal.Areas.Suppliers.Controllers
 
 		[HttpPut]
 		[EnableQuery]
-		public async Task<IHttpActionResult> Put([FromODataUri] int key, [FromBody] PaymentRequest entity)
+		public async Task<IHttpActionResult> Put([FromODataUri] int key, [FromBody] SupplierPaymentRequest_SelectRecord entity)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -70,11 +70,11 @@ namespace Portal.Areas.Suppliers.Controllers
 				return BadRequest("The key from the url must match the key of the entity in the body");
 			}
 
-			var period = await PortalDb.PaymentPeriods.FirstOrDefaultAsync(p => p.PeriodID == key);
+			var period = await PortalDb.PaymentPeriods.FirstOrDefaultAsync(p => p.PeriodID == entity.PeriodID);
 
 			if (period == null)
 			{
-				var periodCreationDTO = new SupplierPayments_Period_InitialiseDTO(entity.PaymentDueDT, 1);
+				var periodCreationDTO = new SupplierPayments_Period_InitialiseDTO(entity.PaymentDueDate, 1);
 
 				PortalDb.SupplierPayment_Period_Initialise(periodCreationDTO);
 
@@ -89,7 +89,13 @@ namespace Portal.Areas.Suppliers.Controllers
 			}
 			else
 			{
-				PortalDb.Entry(original).CurrentValues.SetValues(entity);
+				// This won't work because entity is not == <T> original!
+				// Strangely it doesn't actually throw: internally SetValues may be using reflection to map property names.
+				// Dunno. Anyway, we're only allowed to alter the amount (and even that has a constraint on it).
+
+				//PortalDb.Entry(original).CurrentValues.SetValues(entity);
+
+				original.AmountInCurrency = entity.RequestAmount;
 
 				await PortalDb.SaveChangesAsync();
 
@@ -102,13 +108,13 @@ namespace Portal.Areas.Suppliers.Controllers
 					await PortalDb.SaveChangesAsync();
 				}
 
-				if (entity.PaymentRequestPurchaseOrderHeads != null && entity.PaymentRequestPurchaseOrderHeads.Any())
+				if (entity.PurchaseOrders != null && entity.PurchaseOrders.Split(',').Any())
 				{
-					var poLinks = entity.PaymentRequestPurchaseOrderHeads
+					var poLinks = entity.PurchaseOrders.Split(',')
 						.Select(p => new PaymentRequest_PurchaseOrderHead()
 						{
 							PaymentRequestID = key,
-							PurchaseOrderHeadID = p.PurchaseOrderHeadID
+							PurchaseOrderHeadID = p
 						}).ToList();
 
 
@@ -118,15 +124,15 @@ namespace Portal.Areas.Suppliers.Controllers
 				}
 			}
 
-			entity.PaymentRequestPurchaseOrderHeads = PortalDb.PaymentRequest_PurchaseOrderHeads.Where(p => p.PaymentRequestID == entity.PaymentRequestID).ToList();
+			//entity.PaymentRequestPurchaseOrderHeads = PortalDb.PaymentRequest_PurchaseOrderHeads.Where(p => p.PaymentRequestID == entity.PaymentRequestID).ToList();
 
-			entity.PaymentRequestStatus = PortalDb.PaymentRequestStatuses.SingleOrDefault(prs => prs.PaymentRequestStatusID == entity.PaymentRequestStatusID);
+			//entity.PaymentRequestStatus = PortalDb.PaymentRequestStatuses.SingleOrDefault(prs => prs.PaymentRequestStatusID == entity.PaymentRequestStatusID);
 
-			entity.RequestedByMember = PortalDb.Users.SingleOrDefault(u => u.Id == entity.RequestedByMemberID);
+			//entity.RequestedByMember = PortalDb.Users.SingleOrDefault(u => u.Id == entity.RequestedByMemberID);
 
-			entity.Supplier = PortalDb.Suppliers_Live.SingleOrDefault(s => s.Code == entity.SupplierCode);
+			//entity.Supplier = PortalDb.Suppliers_Live.SingleOrDefault(s => s.Code == entity.SupplierCode);
 
-			entity.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == entity.Supplier.CurrencyID);
+			//entity.Currency = PortalDb.Currencies.Single(c => c.CurrencyID == entity.Supplier.CurrencyID);
 
 			return Updated(entity);
 		}

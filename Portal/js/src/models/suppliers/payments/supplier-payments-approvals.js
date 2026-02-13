@@ -81,6 +81,10 @@
                     data[propertyName] = mapped[propertyName];
                 }
 
+                if (data.pageSize == null) {
+                    delete data.pageSize;
+                }
+
                 let qs = new URLSearchParams(data);
 
                 fetch(`/api/SupplierPayments/ApprovalsGridRead?${qs}`, {
@@ -256,23 +260,23 @@
     });
 
     self.gridColumns = [{
+        field: 'SupplierCode',
+        title: 'Supplier',
+        width: 240,
+        attributes: {
+            "class": "text-end"
+        },
+        filterable: {
+            extra: false
+        },
+        template: (e) => {
+            return `${e.SupplierName} (${e.SupplierCode})`
+        }
+    }, {
         title: 'Payment Requests',
         columns: [{
-            field: 'SupplierCode',
-            title: 'Supplier',
-            width: 240,
-            attributes: {
-                "class": "text-end"
-            },
-            filterable: {
-                extra: false
-            },
-            template: (e) => {
-                return `${e.SupplierName} (${e.SupplierCode})`
-            }
-        }, {
             field: 'PaymentRequestPaymentPlanTotal',
-            title: 'Payment Plan Requests',
+            title: 'Payment Plan',
             width: 180,
             template: (e) => {
                 if (e.PaymentRequestPaymentPlanTotal != null) {
@@ -281,12 +285,9 @@
                     return '';
                 }
             }
-        }]
-    }, {
-        title: 'Supplier Invoices',
-        columns: [{
+        }, {
             field: 'PaymentRequestOtherTotal',
-            title: 'Other Requests',
+            title: 'Other',
             width: 180,
             template: (e) => {
                 if (e.PaymentRequestOtherTotal != null) {
@@ -295,9 +296,12 @@
                     return '';
                 }
             }
-        }, {
+        }]
+    }, {
+        title: 'Supplier Invoices',
+        columns: [{
             field: 'TotalValue',
-            title: 'Total Due',
+            title: 'Total',
             width: 180,
             template: (e) => {
                 if (e.TotalValue != null) {
@@ -391,6 +395,16 @@
                 scrollable: false,
                 sortable: true,
                 pageable: false,
+                dataBound: (e) => {
+
+                    window.setTimeout(() => {
+                        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+                        const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl, {
+                            container: popoverTriggerEl
+                        }));
+                    }, 0);
+
+                },
                 columns: [{
                     field: "SupplierCode",
                     title: "Supplier",
@@ -407,6 +421,39 @@
                     field: 'DeciderComments',
                     title: 'Decider Comments',
                     hidden: true
+                }, {
+                    field: 'RequestedByMemberName',
+                    title: 'Requested By'
+                }, {
+                    field: 'PaymentRequestID',
+                    title: 'PaymentRequestID',
+                    hidden: true
+                }, {
+                    field: 'RequestedByMemberID',
+                    title: 'RequestedByMemberID',
+                    hidden: true
+                }, {
+                    field: 'RequesterComments',
+                    title: ' ',
+                    width: 36,
+                    template: (dataItem) => {
+                        return `<a tabindex="0"
+                        class="bi bi-info-circle fs-4"
+                        data-bs-html="true"
+                        data-bs-trigger="focus"
+                        data-bs-toggle="popover"
+                        data-bs-title="Requester Comments"
+                        data-bs-content="${(dataItem.RequesterComments ?? 'None')}"></a>`;
+                    },
+                    valueTemplate: (dataItem) => {
+                        return `<a tabindex="0"
+                        class="bi bi-info-circle fs-4"
+                        data-bs-html="true"
+                        data-bs-trigger="focus"
+                        data-bs-toggle="popover"
+                        data-bs-title="Requester Comments"
+                        data-bs-content="${(dataItem.RequesterComments ?? 'None')}"></a>`;
+                    }
                 }, {
                     field: "PaymentRequestStatusName",
                     title: "Status"
@@ -453,7 +500,7 @@
                 }, {
                     command: [{
                         name: 'Approve',
-                        className: self.filters.paymentPeriod()?.Finalised ? 'k-disabled' : '',
+                        className: self.filters.paymentPeriod()?.Finalised ? 'k-disabled' : 'k-grid-Approve',
                         click: function (e) {
                             console.log('approve', e);
                             e.preventDefault();
@@ -529,6 +576,8 @@
                     }
                 });
             }, 0);
+
+            self.refreshDashboard();
         },
         save: (data) => {
             console.log(`saveChanges`, e);

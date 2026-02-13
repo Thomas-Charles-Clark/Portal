@@ -22,6 +22,8 @@ namespace SharedEFClasses.Models.Payment
 
 		public decimal AmountInCurrency { get; set; }
 
+		public DateTime PayOnDate { get; set; }
+
 		public DateTime CreatedDT { get; set; }
 
 		public DateTime? ModifiedDT { get; set; }
