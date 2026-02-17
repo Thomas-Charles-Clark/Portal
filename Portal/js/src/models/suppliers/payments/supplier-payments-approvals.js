@@ -40,10 +40,13 @@
         busy: self.busy,
         busyMessage: self.busyMessage,
         filters: self.filters,
-        refreshApprovals: self.refresh
+        refreshApprovals: self.refresh,
+        refreshDashboard: self.refreshDashboard
     });
 
     self.gridWidget = ko.observable();
+
+    self.expandedSupplierGroupRows = [];
 
     //#endregion
 
@@ -58,6 +61,7 @@
         serverGrouping: true,
         serverFiltering: true,
         serverPaging: true,
+        serverSorting: true,
         pageSize: 20,
         pageable: {
             pageSize: 20,
@@ -95,6 +99,15 @@
                 })
                     .then(window.handleFetchResponse)
                     .then(data => {
+
+                        self.gridWidget().setOptions({
+                            columns: self.gridColumns({
+                                productHeadingOne: data.newCollectionProductHeadings.NewCollectionHeading_1,
+                                productHeadingTwo: data.newCollectionProductHeadings.NewCollectionHeading_2,
+                                productHeadingThree: data.newCollectionProductHeadings.NewCollectionHeading_3
+                            })
+                        })
+
                         for (var i = 0; i < data.kendoGridResult.Data.length; i++) {
 
                             data.kendoGridResult.Data[i].Details = data.detailResult.filter(d => d.SupplierCode == data.kendoGridResult.Data[i].SupplierCode);
@@ -132,16 +145,32 @@
                     SupplierName: {
                         type: 'string'
                     },
+                    SupplierType: {
+                        type: 'string'
+                    },
+                    BudgetHolder: {
+                        type: 'string'
+                    },
                     SupplierCurrencyCode: {
                         type: 'string',
                     },
-                    PaymentRequestPaymentPlanTotal: {
-                        type: 'number',
-                        nullable: true
+                    SupplierCurrencyFormattingCulture: {
+                        type: 'string'
                     },
-                    PaymentRequestOtherTotal: {
-                        type: 'number',
-                        nullable: true
+                    BackOrderQuantity: {
+                        type: 'number'
+                    },
+                    BackOrderValueGBP: {
+                        type: 'number'
+                    },
+                    NewCollectionProductCount_1: {
+                        type: 'number'
+                    },
+                    NewCollectionProductCount_2: {
+                        type: 'number'
+                    },
+                    NewCollectionProductCount_3: {
+                        type: 'number'
                     },
                     TotalValueGBP: {
                         type: 'number',
@@ -174,6 +203,18 @@
                     Debt120DayTotal: {
                         type: 'number',
                         nullable: false
+                    },
+                    ProductionStopped: {
+                        type: 'boolean'
+                    },
+                    ShippingStopped: {
+                        type: 'boolean'
+                    },
+                    PaymentRequestPaymentPlanTotal: {
+                        type: 'number'
+                    },
+                    PaymentRequestOtherTotal: {
+                        type: 'number'
                     },
                     Details: {
                         type: 'object',
@@ -259,42 +300,85 @@
         }
     });
 
-    self.gridColumns = [{
-        field: 'SupplierCode',
+    self.gridColumns = ({
+        productHeadingOne,
+        productHeadingTwo,
+        productHeadingThree
+    }) => [{
         title: 'Supplier',
-        width: 240,
-        attributes: {
-            "class": "text-end"
-        },
-        filterable: {
-            extra: false
-        },
-        template: (e) => {
-            return `${e.SupplierName} (${e.SupplierCode})`
-        }
-    }, {
-        title: 'Payment Requests',
         columns: [{
-            field: 'PaymentRequestPaymentPlanTotal',
-            title: 'Payment Plan',
-            width: 180,
+            field: 'SupplierCode',
+            title: 'Code',
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'SupplierName',
+            title: 'Name',
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'SupplierType',
+            title: 'Type',
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'BudgetHolder',
+            title: 'Budget Holder',
+            filterable: {
+                extra: false
+            }
+        }]
+    }, {
+        title: 'Back Orders',
+        columns: [{
+            field: 'BackOrderQuantity',
+            title: 'Quantity',
+            filterable: {
+                extra: false
+            },
             template: (e) => {
-                if (e.PaymentRequestPaymentPlanTotal != null) {
-                    return formatCurrency(e.PaymentRequestPaymentPlanTotal, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                if (e.BackOrderQuantity != null) {
+                    return formatNumber(e.BackOrderQuantity, 2, 'en-GB');
                 } else {
                     return '';
                 }
             }
         }, {
-            field: 'PaymentRequestOtherTotal',
-            title: 'Other',
-            width: 180,
+            field: 'BackOrderValueGBP',
+            title: 'Value',
+            filterable: {
+                extra: false
+            },
             template: (e) => {
-                if (e.PaymentRequestOtherTotal != null) {
-                    return formatCurrency(e.PaymentRequestOtherTotal, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                if (e.TotalValue != null) {
+                    return formatCurrency(e.BackOrderValueGBP, 2, 'en-GB', 'GBP');
                 } else {
                     return '';
                 }
+            }
+        }]
+    }, {
+        title: 'New Collection Products',
+        columns: [{
+            field: 'NewCollectionProductCount_1',
+            title: productHeadingOne,
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'NewCollectionProductCount_2',
+            title: productHeadingTwo,
+            filterable: {
+                extra: false
+            }
+        }, {
+            field: 'NewCollectionProductCount_3',
+            title: productHeadingThree,
+            filterable: {
+                extra: false
             }
         }]
     }, {
@@ -302,7 +386,7 @@
         columns: [{
             field: 'TotalValue',
             title: 'Total',
-            width: 180,
+            width: 120,
             template: (e) => {
                 if (e.TotalValue != null) {
                     return formatCurrency(e.TotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -311,9 +395,9 @@
                 }
             }
         }, {
-            field: 'TotalValue',
+            field: 'NotDueTotalValue',
             title: 'Not Due',
-            width: 180,
+            width: 120,
             template: (e) => {
                 if (e.TotalValue != null) {
                     return formatCurrency(e.NotDueTotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -324,7 +408,7 @@
         }, {
             field: 'OverdueTotalValue',
             title: 'Overdue',
-            width: 180,
+            width: 120,
             template: (e) => {
                 if (e.OverdueTotalValue != null) {
                     return formatCurrency(e.OverdueTotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -335,7 +419,7 @@
         }, {
             field: 'Debt30DayValue',
             title: '30 day',
-            width: 180,
+            width: 120,
             template: (e) => {
                 if (e.Debt30DayValue != null) {
                     return formatCurrency(e.Debt30DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -346,7 +430,7 @@
         }, {
             field: 'Debt60DayValue',
             title: '60 day',
-            width: 180,
+            width: 120,
             template: (e) => {
                 if (e.Debt60DayValue != null) {
                     return formatCurrency(e.Debt60DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -357,7 +441,7 @@
         }, {
             field: 'Debt90DayValue',
             title: '90 day',
-            width: 180,
+            width: 120,
             template: (e) => {
                 if (e.Debt90DayValue != null) {
                     return formatCurrency(e.Debt90DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -368,7 +452,7 @@
         }, {
             field: 'Debt120DayValue',
             title: '120 day',
-            width: 180,
+            width: 120,
             template: (e) => {
                 if (e.Debt120DayValue != null) {
                     return formatCurrency(e.Debt120DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -377,12 +461,94 @@
                 }
             }
         }]
+    }, {
+        title: 'Problems',
+        columns: [{
+            field: 'ProductionStopped',
+            title: 'Production',
+            attributes: (dataItem) => {
+                if (dataItem.ProductionStopped) {
+                    return {
+                        "class": "text-center bg-white"
+                    };
+                } else {
+                    return {
+                        "class": ""
+                    }
+                }
+            },
+            width: 126,
+            template: (dataItem) => {
+                if (dataItem.ProductionStopped) {
+                    return `<i class="bi bi-sign-stop-fill fs-2 text-red-600"></i>`;
+                } else {
+                    return ``;
+                }
+            }
+        }, {
+            field: 'ShippingStopped',
+            title: 'Shipping',
+            attributes: (dataItem) => {
+                if (dataItem.ShippingStopped) {
+                    return {
+                        "class": "text-center bg-white"
+                    };
+                } else {
+                    return {
+                        "class": ""
+                    }
+                }
+            },
+            width: 126,
+            template: (dataItem) => {
+                if (dataItem.ShippingStopped) {
+                    return `<i class="bi bi-sign-stop-fill fs-2 text-red-600"></i>`;
+                } else {
+                    return ``;
+                }
+            }
+        }]
+    }, {
+        title: 'Payment Requests',
+        columns: [{
+            field: 'PaymentRequestPaymentPlanTotal',
+            title: 'Payment Plan',
+            width: 120,
+            template: (e) => {
+                if (e.PaymentRequestPaymentPlanTotal != null) {
+                    return formatCurrency(e.PaymentRequestPaymentPlanTotal, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                } else {
+                    return '';
+                }
+            }
+        }, {
+            field: 'PaymentRequestOtherTotal',
+            title: 'Other',
+            width: 120,
+            template: (e) => {
+                if (e.PaymentRequestOtherTotal != null) {
+                    return formatCurrency(e.PaymentRequestOtherTotal, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                } else {
+                    return '';
+                }
+            }
+        }]
     }];
+
+    self.alreadyInBasket = (dataItem) => {
+        let bi = self.basket.items().find(bi => bi.PaymentRequestID == dataItem.PaymentRequestID && bi.CurrencyCode == dataItem.CurrencyCode);
+
+        return bi != null;
+    }
 
     self.gridParams = {
         autoBind: false,
         widget: self.gridWidget,
-        columns: self.gridColumns,
+        columns: self.gridColumns({
+            productHeadingOne: 'P1',
+            productHeadingTwo: 'P2',
+            productHeadingThree: 'P3'
+        }),
         data: self.gridDataSource,
         detailTemplate: (item) => {
             return `<div class="supplier-detail-grid"></div>`
@@ -391,10 +557,78 @@
             var detailRow = e.detailRow;
 
             detailRow.find(".supplier-detail-grid").kendoGrid({
-                dataSource: e.data.Details,
+                dataSource: new kendo.data.DataSource({
+                    data: e.data.Details,
+                    editable: true,
+                    schema: {
+                        model: {
+                            key: 'PaymentRequestID',
+                            fields: {
+                                PaymentRequestID: { type: 'number', nullable: false },
+                                ApprovedAmountInCurrency: { type: 'number', editable: false },
+                                CreatedDT: { type: 'date', editable: false },
+                                RequestedBy: { type: 'string', editable: false },
+                                Currency: {
+                                    type: 'object',
+                                    fields: [{
+                                        Code: { type: 'string', editable: false },
+                                        FormattingCulture: { type: 'string', editable: false }
+                                    }]
+                                },
+                                CurrencyCode: { type: 'string', editable: false },
+                                DeciderComments: { type: 'string', editable: false },
+                                ExchangeRate: { type: 'number', editable: false },
+                                FormattingCulture: { type: 'string', editable: false },
+                                OriginalAmountInCurrency: { type: 'number', editable: false },
+                                OutstandingAmountInCurrency: {
+                                    type: 'number',
+                                    editable: true,
+                                    nullable: false,
+                                    validation: {
+                                        required: {
+                                            message: 'You must provide an Amount'
+                                        }
+                                    }
+                                },
+                                PaymentRequestStatusName: { type: 'string', editable: false },
+                                PendingApprovalAmountInCurrency: { type: 'number', editable: false },
+                                RequestedByMember: {
+                                    type: 'object',
+                                    fields: [{
+                                        MemberID: { type: 'number', editable: false },
+                                        FullName: { type: 'string', editable: false }
+                                    }]
+                                },
+                                RequestedByMemberID: { type: 'number', editable: false },
+                                RequestedByMemberName: { type: 'string', editable: false },
+                                RequesterComments: { type: 'string', editable: false },
+                                Supplier: {
+                                    type: 'object',
+                                    fields: [{
+                                        Code: { type: 'string', editable: false },
+                                        Name: { type: 'string', editable: false }
+                                    }]
+                                },
+                                SupplierCode: { type: 'string', editable: false },
+                                PayOnDate: {
+                                    type: 'date',
+                                    format: 'dd/MM/yyyy',
+                                    defaultValue: new Date(),
+                                    editable: true,
+                                    validation: {
+                                        required: {
+                                            message: 'You must specify a Pay On Date'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }),
                 scrollable: false,
                 sortable: true,
                 pageable: false,
+                editable: true,
                 dataBound: (e) => {
 
                     window.setTimeout(() => {
@@ -403,118 +637,220 @@
                             container: popoverTriggerEl
                         }));
                     }, 0);
-
+                },
+                edit: function (e) {
+                    console.log(`detailEdit`, e);
                 },
                 columns: [{
                     field: "SupplierCode",
                     title: "Supplier",
-                    hidden: true
+                    hidden: true,
+                    editable: false
                 }, {
                     field: "PaymentRequestID",
                     title: "Payment Request ID",
-                    hidden: true
+                    hidden: true,
+                    editable: false
                 }, {
                     field: 'RequesterComments',
                     title: 'Requester Comments',
-                    hidden: true
+                    hidden: true,
+                    editable: false
                 }, {
                     field: 'DeciderComments',
                     title: 'Decider Comments',
-                    hidden: true
+                    hidden: true,
+                    editable: false
                 }, {
                     field: 'RequestedByMemberName',
-                    title: 'Requested By'
+                    title: 'Requested By',
+                    editable: false
                 }, {
                     field: 'PaymentRequestID',
                     title: 'PaymentRequestID',
-                    hidden: true
+                    hidden: true,
+                    editable: false
                 }, {
                     field: 'RequestedByMemberID',
                     title: 'RequestedByMemberID',
-                    hidden: true
+                    hidden: true,
+                    editable: false
                 }, {
                     field: 'RequesterComments',
-                    title: ' ',
-                    width: 36,
-                    template: (dataItem) => {
-                        return `<a tabindex="0"
-                        class="bi bi-info-circle fs-4"
-                        data-bs-html="true"
-                        data-bs-trigger="focus"
-                        data-bs-toggle="popover"
-                        data-bs-title="Requester Comments"
-                        data-bs-content="${(dataItem.RequesterComments ?? 'None')}"></a>`;
-                    },
-                    valueTemplate: (dataItem) => {
-                        return `<a tabindex="0"
-                        class="bi bi-info-circle fs-4"
-                        data-bs-html="true"
-                        data-bs-trigger="focus"
-                        data-bs-toggle="popover"
-                        data-bs-title="Requester Comments"
-                        data-bs-content="${(dataItem.RequesterComments ?? 'None')}"></a>`;
-                    }
+                    title: 'Request Comments',
+                    editable: false
                 }, {
                     field: "PaymentRequestStatusName",
-                    title: "Status"
+                    title: "Type",
+                    editable: false
                 }, {
                     field: "OriginalAmountInCurrency",
-                    title: "Original Amount in Currency",
+                    title: "Original Amount",
                     template: (e) => {
                         if (e.OriginalAmountInCurrency != null) {
                             return formatCurrency(e.OriginalAmountInCurrency, 2, e.FormattingCulture, e.CurrencyCode);
                         } else {
                             return '';
                         }
-                    }
-                }, {
-                    field: "PendingApprovalAmountInCurrency",
-                    title: "Pending in Currency",
-                    template: (e) => {
-                        if (e.PendingApprovalAmountInCurrency != null) {
-                            return formatCurrency(e.PendingApprovalAmountInCurrency, 2, e.FormattingCulture, e.CurrencyCode);
-                        } else {
-                            return '';
-                        }
-                    }
+                    },
+                    editable: false
                 }, {
                     field: "ApprovedAmountInCurrency",
-                    title: "Approved in Currency",
+                    title: "Previously Approved",
                     template: (e) => {
                         if (e.ApprovedAmountInCurrency != null) {
                             return formatCurrency(e.ApprovedAmountInCurrency, 2, e.FormattingCulture, e.CurrencyCode);
                         } else {
                             return '';
                         }
-                    }
-                }, {
+                    },
+                    editable: false
+                },
+                {
                     field: "OutstandingAmountInCurrency",
-                    title: "Outstanding in Currency",
+                    title: "To Pay",
+                    width: 190,
+                    attributes: (dataItem) => {
+                        if (self.alreadyInBasket(dataItem)) {
+                            return {
+                                "class": "approval-already-in-basket",
+                                "required": true,
+                                validationMessage: "You must specify an Amount"
+                            }
+                        } else {
+                            return {
+                                "class": "approval-editable",
+                                "required": true,
+                                validationMessage: "You must specify an Amount"
+                            }
+                        }
+                    },
                     template: (e) => {
                         if (e.OutstandingAmountInCurrency != null) {
                             return formatCurrency(e.OutstandingAmountInCurrency, 2, e.FormattingCulture, e.CurrencyCode);
                         } else {
                             return '';
                         }
+                    },
+                    editor: (container, options) => {
+                        if (self.alreadyInBasket(options.model)) {
+                            $(`<span>${formatCurrency(options.model.OutstandingAmountInCurrency, 2, options.model.FormattingCulture, options.model.CurrencyCode)}</span>`)
+                        } else {
+                            $('<input data-bind="value:' + options.field + '" name="' + options.field + '"/>')
+                                .appendTo(container)
+                                .kendoNumericTextBox({
+                                    format: "n2",
+                                    decimals: 2,
+                                    selectOnFocus: true
+                                });
+                        }
+                    }
+                }, {
+                    field: 'PayOnDate',
+                    title: 'Pay On Date',
+                    width: 190,
+                    format: 'dd/MM/yyyy',
+                    parseFormats: ["dd/MM/yyyy", "dd/MM/yy"],
+                    autoCorrectParts: true,
+                    attributes: (dataItem) => {
+                        if (self.alreadyInBasket(dataItem)) {
+                            return {
+                                "class": "approval-already-in-basket",
+                                "required": true,
+                                validationMessage: "You must specify a Pay On Date"
+                            }
+                        } else {
+                            return {
+                                "class": "approval-editable",
+                                "required": true,
+                                validationMessage: "You must specify a Pay On Date"
+                            }
+                        }
+                    },
+                    editable: (dataItem) => {
+                        return self.alreadyInBasket(dataItem) == false;
+                    },
+                    template: (e) => {
+                        if (e.PayOnDate) {
+                            return moment(e.PayOnDate).format('DD/MM/YYYY');
+                        } else {
+                            return moment(new Date()).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
+                        }
+                    },
+                    valueTemplate: (e) => {
+                        if (e.PayOnDate) {
+                            return moment(e.PayOnDate).format('DD/MM/YYYY');
+                        } else {
+                            return moment(new Date()).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
+                        }
+                    },
+                    editor: function (container, options) {
+                        if (self.alreadyInBasket(options.model)) {
+                            $(`<span>${moment(options.model.PayOnDate).format('DD/MM/YYYY') }</span>`).appendTo(container);
+                        } else {
+                            let input = $('<input name="' + options.field + '"/>');
+                            input.appendTo(container);
+
+                            let initialValue = options.model.PayOnDate || moment(new Date()).weekdayWithStartWeekday(0, 1).toDate();
+
+                            // 2. SILENTLY update the model if it was null
+                            // This prevents the grid from re-rendering the cell and closing the editor
+                            if (!options.model[options.field]) {
+                                options.model[options.field] = initialValue;
+                                options.model.dirty = true; // Manually mark as dirty if desired
+                            }
+
+                            input.kendoDatePicker({
+                                format: "dd/MM/yyyy",
+                                parseFormats: ["dd/MM/yyyy", "dd/MM/yy"],
+                                value: initialValue,
+                                change: function () {
+                                    options.model.set(options.field, this.value());
+                                }
+                            });
+
+                            input.on("focus", function () {
+                                var inputElement = $(this);
+                                setTimeout(function () {
+                                    // Selects the entire text in the input box
+                                    inputElement.select();
+                                }, 10);
+                            });
+                        }
                     }
                 }, {
                     command: [{
                         name: 'Approve',
+                        visible: (dataItem) => self.alreadyInBasket(dataItem) == false,
                         className: self.filters.paymentPeriod()?.Finalised ? 'k-disabled' : 'k-grid-Approve',
+                        template: `<button class="btn btn-secondary k-grid-Approve">
+                            Approve
+                        </button>`,
+                        // data-bs-html="true" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-title="Approve" data-bs-content="Loading..."
                         click: function (e) {
                             console.log('approve', e);
                             e.preventDefault();
+
                             if (!self.filters.paymentPeriod()?.Finalised) {
                                 let tr = $(e.target).closest("tr");
                                 let data = this.dataItem(tr);
                                 if (data.OutstandingAmountInCurrency == 0) {
                                     window.showInfo('Paid', 'This Payment Request has already been paid in full.');
                                     return;
+                                } else if (data.PayOnDate == null) {
+                                    let td = tr.find('td:eq(13)').click();
+                                    var validator = $(tr).kendoValidator().data("kendoValidator");
+                                    validator.validate();
                                 } else {
                                     self.basket.addBasketItem(data);
                                 }
                             }
                         }
+                    }, {
+                        name: 'In Basket',
+                        visible: (dataItem) => self.alreadyInBasket(dataItem) == true,
+                        className: 'approval-editable',
+                        template: `<span class="fs-5 text-success">Already in Basket</span>`
                     }]
                 }]
             });
@@ -532,10 +868,10 @@
         selectable: false,
         editable: false,
         edit: function (e) {
-            console.log(`edit`, e);
+            console.log(`approvals edit`, e);
         },
         change: (e) => {
-            console.log(`change`, e);
+            console.log(`approvals change`, e);
 
             //let selectedRows = e.sender.select();
 
@@ -550,10 +886,34 @@
             //    rec: r
             //}))));
         },
+        detailExpand: (e) => {
+            let supplierCode = e.sender.dataItem(e.masterRow).id;
+            if (self.expandedSupplierGroupRows.indexOf(supplierCode) === -1) {
+                self.expandedSupplierGroupRows.push(supplierCode);
+            }
+        },
+        detailCollapse: (e) => {
+            let supplierCode = e.sender.dataItem(e.masterRow).id;
+            let index = self.expandedSupplierGroupRows.indexOf(supplierCode);
+            if (index !== -1) {
+                self.expandedSupplierGroupRows.splice(index, 1);
+            }
+        },
         dataBound: (e) => {
             console.log(`dataBound`, e);
 
             var grid = e.sender;
+
+            var rows = grid.items();
+
+            $(rows).each(function () {
+                var dataItem = grid.dataItem(this);
+
+                // Check if this row's uid is in our tracked list
+                if (self.expandedSupplierGroupRows.indexOf(dataItem.id) !== -1) {
+                    grid.expandRow(this);
+                }
+            });
 
             window.setTimeout(() => {
 
@@ -584,6 +944,13 @@
         },
         saveChanges: (e) => {
             console.log(`saveChanges`, e);
+        },
+        excelExport: (e) => {
+            let now = new Date();
+
+            e.workbook.fileName = `Payment_Approvals_${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}.xlsx`;
+
+            self.busy(false);
         }
     }
 
@@ -615,6 +982,11 @@
 
     //#region Methods
 
+    self.approveAdditionToBasket = (data, event) => {
+        console.log('approveAdditionToBasket called', data, event);
+        self.basket.addBasketItem(data);
+    }
+
     self.rejectApprovalRequest = (item) => {
         self.busy(true);
 
@@ -643,6 +1015,12 @@
                 self.busy(false);
                 window.catchFetchError(err);
             })
+    }
+
+    self.exportToExcel = () => {
+        self.busy(true);
+
+        self.gridWidget().saveAsExcel();
     }
 
     //#endregion

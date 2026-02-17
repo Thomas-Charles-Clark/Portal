@@ -349,6 +349,12 @@
   flex: 0 1 calc(50% - 0.5rem);
 }
 
+.open-sans-inflated-dollar-glyph {
+  font-size: 111%;
+  position: relative;
+  top: 1px;
+}
+
 .visually-hidden, .tempus-dominus-widget [data-action]::after {
   position: absolute !important;
   width: 1px !important;

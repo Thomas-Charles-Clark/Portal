@@ -486,20 +486,23 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   align-items: center;
   justify-content: flex-start;
 }
-.prefilters #user-selector-prefilter {
+.prefilters .user-selector-prefilter {
   width: 420px;
 }
 .prefilters #payment-request-status-prefilter {
   width: 280px;
 }
 
-#approvals-tab-pane .prefilters {
+#approvals-tab-pane .prefilters,
+#suppliers-tab-pane .prefilters {
   margin-bottom: 1rem;
 }
-#approvals-tab-pane .prefilters h4 {
+#approvals-tab-pane .prefilters h4,
+#suppliers-tab-pane .prefilters h4 {
   margin-bottom: 0;
 }
-#approvals-tab-pane .k-disabled {
+#approvals-tab-pane .k-disabled,
+#suppliers-tab-pane .k-disabled {
   cursor: not-allowed;
   color: #6c757d;
 }
@@ -1013,6 +1016,17 @@ td > .k-widget.k-multiselect .k-multiselect-wrap > .k-i-close {
   top: 8px;
 }
 
+.supplier-detail-grid table tbody td {
+  cursor: default;
+}
+.supplier-detail-grid table tbody td.approval-editable {
+  background-color: #cfe2ff !important;
+  cursor: pointer;
+}
+.supplier-detail-grid table tbody td.approval-already-in-basket {
+  background-color: #c5f7c3b3 !important;
+}
+
 .supplier-payments-grid-container {
   border-radius: 0.375rem;
   border: 1px solid #ced4da;
@@ -1117,5 +1131,6 @@ td > .k-widget.k-multiselect .k-multiselect-wrap > .k-i-close {
 }
 #approvals-tab-pane tbody .k-detail-cell {
   padding: 0;
+  overflow: visible;
 }
 /*# sourceMappingURL=supplier-payments.css.map */

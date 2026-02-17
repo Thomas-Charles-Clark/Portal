@@ -16,7 +16,7 @@
 
     let self = {
         ready,
-        busy: ko.observable(false),
+        busy: busy,
         parentBusy: busy,
         busyMessage,
         filters,
@@ -65,7 +65,7 @@
         transport: {
             read: {
                 url: () => {
-                    let filters = self.filters.requestFilters();
+                    let filters = self.filters.supplierFilters();
 
                     return `/supplier-payments-odata/SupplierPaymentRequest_SelectRecords/SupplierPayments.SupplierPaymentsGridRead(dto=@d)?@d={"MemberID":${filters.requestedByMemberId == '' ? null : filters.requestedByMemberId},"PaymentRequestStatus":${((filters.paymentRequestStatus == '' || filters.paymentRequestStatus == null) ? 'null' : `"${filters.paymentRequestStatus}"`)}}`;
                 }
@@ -1238,7 +1238,7 @@
 
     //#region Subscriptions
 
-    self.filters.requestFilters.subscribe(nv => {
+    self.filters.supplierFilters.subscribe(nv => {
         self.refresh();
     });
 

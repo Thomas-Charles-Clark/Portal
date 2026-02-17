@@ -681,6 +681,7 @@
     <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApproval_Basket_SelectRecord.cs" />
     <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApproval_Basket_SelectResult.cs" />
     <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApproval_Basket_SelectDTO.cs" />
+    <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApproval_NewCollectionProductHeadings.cs" />
     <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequest_CreationDTO.cs" />
     <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequest_SelectDTO.cs" />
     <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequest_SelectRecord.cs" />
@@ -766,6 +767,9 @@
     <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequest_Dashboard_SelectDTO.cs" />
     <Compile Include="Models\Suppliers\PaymentRequests\SupplierPaymentRequest_Dashboard_SelectResult.cs" />
     <Compile Include="Models\Suppliers\Payments\SupplierPayments_Dashboard_PeriodMessage.cs" />
+    <Compile Include="Models\Suppliers\Payments\SupplierPayments_SupplierRecord.cs" />
+    <Compile Include="Models\Suppliers\Payments\SupplierPayments_SupplierResult.cs" />
+    <Compile Include="Models\Suppliers\Payments\SupplierPayments_Supplier_SelectDTO.cs" />
     <Compile Include="Models\Suppliers\Payments\SupplierPayments_History_Summary_SelectDTO.cs" />
     <Compile Include="Models\Suppliers\Payments\SupplierPayments_History_Detail_SelectDTO.cs" />
     <Compile Include="Models\Suppliers\Payments\SupplierPayments_History_DetailRecord.cs" />

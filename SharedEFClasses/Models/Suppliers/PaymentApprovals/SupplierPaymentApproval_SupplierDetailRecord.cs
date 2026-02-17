@@ -33,5 +33,7 @@ namespace SharedEFClasses.Models.Suppliers.PaymentApproval
 		public decimal ExchangeRate { get; set; }
 
 		public DateTime CreatedDT { get; set; }
+
+		public DateTime? PayOnDate { get; set; }
 	}
 }

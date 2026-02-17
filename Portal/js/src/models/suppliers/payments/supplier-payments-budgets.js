@@ -14,7 +14,7 @@
 
     let self = {
         ready,
-        busy: ko.observable(false),
+        busy: busy,
         parentBusy: busy,
         busyMessage,
         filters,

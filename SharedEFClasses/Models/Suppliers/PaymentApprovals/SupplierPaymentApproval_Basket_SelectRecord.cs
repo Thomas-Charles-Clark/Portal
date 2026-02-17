@@ -42,7 +42,7 @@ namespace SharedEFClasses.Models.Suppliers.PaymentApprovals
 
 		public decimal Decision_Amount_CUR { get; set; }
 
-		public decimal Decision_Amount_GPB { get; set; }
+		public decimal Decision_Amount_GBP { get; set; }
 
 		public DateTime PayOnDate { get; set; }
 

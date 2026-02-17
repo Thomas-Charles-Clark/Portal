@@ -4,11 +4,11 @@
     busyMessage,
     refreshParent
 } = {
-        ready: ko.observable(false),
-        busy: ko.observable(false),
-        busyMessage: ko.observable('Please Wait'),
-        refreshParent: () => { }
-    }) => {
+    ready: ko.observable(false),
+    busy: ko.observable(false),
+    busyMessage: ko.observable('Please Wait'),
+    refreshParent: () => { }
+}) => {
 
     let self = {
         ready,
@@ -34,6 +34,10 @@
     self.onlyIncludeSuppliersWithPaymentRequests = ko.observable(true);
 
     self.onlyShowSuppliersWithOutstandingInvoices = ko.observable(false);
+
+    self.onlyIncludeSuppliersWhereProductionStopped = ko.observable(false);
+
+    self.onlyIncludeSuppliersWhereShippingStopped = ko.observable(false);
 
     self.userId = ko.observable(getUserId());
 
@@ -201,10 +205,7 @@
             self.userId('')
             self.userSelectorParams.dropDownListSettings.widget().value(-1);
         },
-        revertible: ko.observable(true),
-        popupSettings: {
-            appendTo: document.querySelector('#user-selector')
-        }
+        revertible: ko.observable(true)
     });
 
     self.onlyIncludeSuppliersWithPaymentRequestsParams = {
@@ -220,6 +221,24 @@
         checkboxId: "only-with-invoices",
         label: "Only Display Suppliers with Outstanding Invoices",
         observable: self.onlyShowSuppliersWithOutstandingInvoices,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: self.busy
+    }
+
+    self.onlyIncludeSuppliersWhereProductionStoppedParams = {
+        checkboxId: "only-with-requests",
+        label: "Only Display Suppliers where Production is Stopped",
+        observable: self.onlyIncludeSuppliersWhereProductionStopped,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: self.busy
+    }
+
+    self.onlyIncludeSuppliersWhereShippingStoppedParams = {
+        checkboxId: "only-with-invoices",
+        label: "Only Display Suppliers where Shipping is Stopped",
+        observable: self.onlyIncludeSuppliersWhereShippingStopped,
         enable: ko.observable(true),
         disable: ko.observable(false),
         busy: self.busy
@@ -333,6 +352,17 @@
         let result = {
             periodId: self.paymentPeriodId()
         }
+        return result;
+    }, self);
+
+    self.supplierFilters = ko.computed(() => {
+        let result = {
+            periodId: self.paymentPeriodId(),
+            memberId: self.userId(),
+            onlyShowSuppliersWhereProductionHasStopped: self.onlyIncludeSuppliersWhereProductionStopped(),
+            onlyShowSuppliersWhereShippingHasStopped: self.onlyIncludeSuppliersWhereShippingStopped()
+        };
+
         return result;
     }, self);
 

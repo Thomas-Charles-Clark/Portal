@@ -52,7 +52,8 @@ namespace SharedEFClasses.Models
 			return new SupplierPaymentApproval_SelectResult()
 			{
 				SupplierSummaryRecords = results.Read<SupplierPaymentApproval_SupplierSummaryRecord>().ToList(),
-				SupplierDetailRecords = results.Read<SupplierPaymentApproval_SupplierDetailRecord>().ToList()
+				SupplierDetailRecords = results.Read<SupplierPaymentApproval_SupplierDetailRecord>().ToList(),
+				NewCollectionProductHeadings = results.Read<SupplierPaymentApproval_NewCollectionProductHeadings>().Single()
 			};
 		}
 
@@ -101,6 +102,16 @@ namespace SharedEFClasses.Models
 			}, null, null, System.Data.CommandType.StoredProcedure);
 
 			return result;
+		}
+
+		public SupplierPayments_SupplierResult SupplierPayment_Supplier_Select(SupplierPayments_Supplier_SelectDTO dto)
+		{
+			var results = this.Database.Connection.QueryMultiple("[payment].[Supplier_Select]", dto, null, 60, System.Data.CommandType.StoredProcedure);
+
+			return new SupplierPayments_SupplierResult()
+			{
+				Records = results.Read<SupplierPayments_SupplierRecord>().ToList()
+			};
 		}
 	}
 }

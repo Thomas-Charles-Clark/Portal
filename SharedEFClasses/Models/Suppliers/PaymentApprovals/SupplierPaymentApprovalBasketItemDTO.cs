@@ -13,5 +13,7 @@ namespace SharedEFClasses.Models.Suppliers.PaymentApprovals
 		public int PaymentRequestID { get; set; }
 
 		public decimal AmountInCurrency { get; set; }
+
+		public DateTime PayOnDate { get; set; }
 	}
 }

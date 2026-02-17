@@ -1,6 +1,7 @@
 ﻿@import "../../common.scss";
 
 $finalised-row-bg-color: #c5f7c3b3 !important;
+$editable-approval-row-cell-bg-color: #cfe2ff !important;
 
 html {
 	min-height: 100%;
@@ -209,7 +210,7 @@ html {
 	align-items: center;
 	justify-content: flex-start;
 
-	#user-selector-prefilter {
+	.user-selector-prefilter {
 		width: 420px;
 	}
 
@@ -218,7 +219,8 @@ html {
 	}
 }
 
-#approvals-tab-pane {
+#approvals-tab-pane,
+#suppliers-tab-pane {
 	.prefilters {
 		margin-bottom: $l-gutter;
 
@@ -999,6 +1001,25 @@ td {
 	}
 }
 
+.supplier-detail-grid {
+	table {
+		tbody {
+			td {
+				cursor: default;
+
+				&.approval-editable {
+					background-color: $editable-approval-row-cell-bg-color;
+					cursor: pointer;
+				}
+
+				&.approval-already-in-basket {
+					background-color: $finalised-row-bg-color;
+				}
+			}
+		}
+	}
+}
+
 .supplier-payments-grid-container {
 	border-radius: $border-radius;
 	border: 1px solid $gray-400;
@@ -1145,6 +1166,7 @@ td {
 
 		.k-detail-cell {
 			padding: 0;
+			overflow: visible;
 		}
 	}
 }

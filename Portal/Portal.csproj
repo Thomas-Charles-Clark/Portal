@@ -757,6 +757,7 @@
     <Compile Include="Controllers\ODataControllers\StockManagement\BranchesController.cs" />
     <Compile Include="Controllers\ODataControllers\TransactionTypesController.cs" />
     <Compile Include="Controllers\ODataControllers\TradeAccountTypesController.cs" />
+    <Compile Include="js\src\models\suppliers\payments\FileName.cs" />
     <Compile Include="Service References\PCAFind_v1_10\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1884,6 +1885,7 @@
     <Content Include="js\src\models\suppliers\payments\supplier-payments-decision.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-approval.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-approvals.js" />
+    <Content Include="js\src\models\suppliers\payments\supplier-payments-suppliers.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-history-summary.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-request.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-filters.js" />
@@ -6647,10 +6649,16 @@
     <None Include="Web References\Void\VoidWebServiceSchema.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Web.Development.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Production.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>

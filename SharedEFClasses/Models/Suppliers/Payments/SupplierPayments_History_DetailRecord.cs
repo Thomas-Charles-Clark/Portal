@@ -27,5 +27,7 @@ namespace SharedEFClasses.Models.Suppliers.Payments
 		public string RequestedBy { get; set; }
 
 		public string ApprovedBy { get; set; }
+
+		public DateTime PayOnDate { get; set; }
 	}
 }

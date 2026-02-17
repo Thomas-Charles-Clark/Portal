@@ -33,6 +33,7 @@ using SharedEFClasses.Models.Payment;
 using SharedEFClasses.Models.Suppliers.PaymentRequests;
 using System.Data.SqlClient;
 using SharedEFClasses.Utilities;
+using Unity.Interception.Utilities;
 
 
 namespace Portal.Areas.Suppliers.Controllers
@@ -146,10 +147,22 @@ namespace Portal.Areas.Suppliers.Controllers
 
 			var result = PortalDb.SupplierPayment_Approval_Select(dto);
 
+			var now = DateTime.Now;
+
+			var periodStart = now.StartOfWeek(DayOfWeek.Monday);
+
+			result.SupplierDetailRecords.ForEach(d => {
+				if (d.PayOnDate == null)
+				{
+					d.PayOnDate = periodStart;
+				}
+			});
+
 			return Ok(new
 			{
 				kendoGridResult = result.SupplierSummaryRecords.AsQueryable().ToDataSourceResult(request),
-				detailResult = result.SupplierDetailRecords
+				detailResult = result.SupplierDetailRecords,
+				newCollectionProductHeadings = result.NewCollectionProductHeadings
 			});
 		}
 
@@ -189,6 +202,7 @@ namespace Portal.Areas.Suppliers.Controllers
 				PaymentRequestID = dto.PaymentRequestID,
 				DecidedByMemberID = User.Identity.GetUserId<int>(),
 				AmountInCurrency = dto.AmountInCurrency,
+				PayOnDate = dto.PayOnDate,
 				CreatedDT = now,
 				ModifiedDT = now,
 				DeletedDT = null
@@ -274,6 +288,19 @@ namespace Portal.Areas.Suppliers.Controllers
 			await PortalDb.SaveChangesAsync();
 
 			return Ok(new { });
+		}
+
+		[HttpGet]
+		public IHttpActionResult SuppliersGridRead(
+			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+			[FromUri] SupplierPayments_Supplier_SelectDTO dto)
+		{
+			var result = PortalDb.SupplierPayment_Supplier_Select(dto);
+
+			return Ok(new
+			{
+				kendoGridResult = result.Records.AsQueryable().ToDataSourceResult(request)
+			});
 		}
 	}
 }

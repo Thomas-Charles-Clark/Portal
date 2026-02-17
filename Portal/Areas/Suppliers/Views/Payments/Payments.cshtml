@@ -24,7 +24,7 @@
 		</style>
 	}
 
-<script type="text/javascript">
+	<script type="text/javascript">
 		window.getDashboardRecords = () => {
 			return @Html.Raw(JsonConvert.SerializeObject(Model.Dashboard.Records));
 		}
@@ -34,7 +34,7 @@
 		window.getCanUserAdministrate = () => {
 			return @Html.Raw($"{Model.UserMayAdministrate}".ToLowerInvariant());
 		}
-</script>
+	</script>
 
 	<script type="text/javascript">
 
@@ -185,11 +185,6 @@
 	</h2>
 }
 
-<div class="blocker" data-bind="flexFadeVisible: busy">
-	<div class="loading-spinner"></div>
-	<h4 class="mt-3" data-bind="text: busyMessage"></h4>
-</div>
-
 <div id="supplier-payments-container" class="d-flex align-items-start w-100 opacity-100" data-bind="flexFadeVisible: true">
 	<sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top show">
 		<div class="sidebar-inner">
@@ -207,11 +202,6 @@
 						</h5>
 					</div>
 					<div class="prefilter-group">
-						@*<h5 class="sidebar-heading">
-								Sales Analysis
-							</h5>*@
-						@*<div id="sales-history-analysis-period-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesHistoryAnalysisPeriodsParams }"></div>
-							<div id="invoice-company-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: invoiceCompanyParams }"></div>*@
 					</div>
 				</form>
 				<button type="button" class="btn btn-secondary gap-3 mt-5" data-bind="click: filters.reset">
@@ -223,7 +213,7 @@
 	</sidebar>
 	<main id="supplier-payments-main" class="d-none" data-bind="flexFadeVisible: true">
 		<div class="card align-self-start">
-			<div class="blocker" data-bind="flexFadeVisible: busy">
+			<div class="blocker" data-bind="flexFadeVisible: dashboard.busy">
 				<div class="loading-spinner"></div>
 				<h4 class="mt-3" data-bind="text: busyMessage"></h4>
 			</div>
@@ -231,7 +221,6 @@
 				<div id="prefilters" data-bind="with: filters">
 					<div class="d-flex gap-3 align-items-center mb-3">
 						<div class="prefilter d-flex align-items-center gap-3">
-							@*<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: weekCommencingDateParams }"></div>*@
 							<div id="payment-period-prefilter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: paymentPeriodParams }"></div>
 							<!-- ko if: paymentPeriod() -->
 							<div class="period-message m-0" data-bind="html: $parent.dashboard.periodMessage"></div>
@@ -263,15 +252,15 @@
 									Requests Total
 								</th>
 								<th>
-									Budget
+									Payment Plans
 								</th>
 								<th>
-									Payment Plans
+									Budget
 								</th>
 								<th>
 									<!-- ko ifnot: ($parent.filters.paymentPeriod() && $parent.filters.paymentPeriod().Finalised) -->
 									<span>
-										Pending
+										To Pay
 									</span>
 									<!-- /ko -->
 									<!-- ko if: ($parent.filters.paymentPeriod() && $parent.filters.paymentPeriod().Finalised) -->
@@ -302,10 +291,10 @@
 									<span data-bind="html: PaymentRequestTotal ? formatCurrency(PaymentRequestTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
 								<td>
-									<span data-bind="html: formatCurrency(Budget, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
+									<span data-bind="html: PaymentRequestPaymentPlanTotal ? formatCurrency(PaymentRequestPaymentPlanTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
 								<td>
-									<span data-bind="html: PaymentRequestPaymentPlanTotal ? formatCurrency(PaymentRequestPaymentPlanTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
+									<span data-bind="html: formatCurrency(Budget, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
 								</td>
 								<td>
 									<!-- ko ifnot: ($parentContext.$parent.filters.paymentPeriod() && $parentContext.$parent.filters.paymentPeriod().Finalised) -->
@@ -317,7 +306,7 @@
 								</td>
 								<!-- ko ifnot: ($parent.filters.paymentPeriod() && $parent.filters.paymentPeriod().Finalised) -->
 								<td>
-									<span data-bind="html: formatCurrency(PendingApprovalBalance, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
+									<span data-bind="css: { 'text-danger': PendingApprovalBalance < 0 }, html: formatCurrency(PendingApprovalBalance, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
 								</td>
 								<!-- /ko -->
 								<td>
@@ -337,10 +326,10 @@
 									<span data-bind="html: PaymentRequestTotal ? formatCurrency(PaymentRequestTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</th>
 								<th>
-									<span data-bind="html: formatCurrency(Budget, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
+									<span data-bind="html: PaymentRequestPaymentPlanTotal ? formatCurrency(PaymentRequestPaymentPlanTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</th>
 								<th>
-									<span data-bind="html: PaymentRequestPaymentPlanTotal ? formatCurrency(PaymentRequestPaymentPlanTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
+									<span data-bind="html: formatCurrency(Budget, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
 								</th>
 								<th>
 									<!-- ko ifnot: ($parentContext.$parent.filters.paymentPeriod() && $parentContext.$parent.filters.paymentPeriod().Finalised) -->
@@ -352,7 +341,7 @@
 								</th>
 								<!-- ko ifnot: ($parent.filters.paymentPeriod() && $parent.filters.paymentPeriod().Finalised) -->
 								<th>
-									<span data-bind="html: formatCurrency(PendingApprovalBalance, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
+									<span data-bind="css: { 'text-danger': PendingApprovalBalance < 0 }, html: formatCurrency(PendingApprovalBalance, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
 								</th>
 								<!-- /ko -->
 								<td>
@@ -369,6 +358,11 @@
 					<li class="nav-item" role="presentation">
 						<button class="nav-link active" id="payment-requests-tab-btn" data-bs-toggle="tab" data-bs-target="#payment-requests-tab-pane" type="button" role="tab" aria-controls="payment-requests-tab" aria-selected="true">
 							Payment Requests
+						</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="suppliers-tab-btn" data-bs-toggle="tab" data-bs-target="#suppliers-tab-pane" type="button" role="tab" aria-controls="suppliers-tab" aria-selected="true">
+							Suppliers
 						</button>
 					</li>
 					@if (Model.UserMayAdministrate)
@@ -397,41 +391,59 @@
 				</ul>
 			</div>
 		</div>
-		<div id="notes-container" class="card d-none">
-			<div class="card-body">
-				<p>
-					This is now an amalgamation of requests and approvals back into one single destination. We must have the various functionalities siloed for various roles. Doesn't have to be Fort Knox: just having client side control over visibility of functional components of the whole is sufficient.
-				</p>
-				<p>
-					Should request rows be editable by any requester? At the moment that is the case. Might we perhaps need to restrict editing - or even viewing - to only those requests which the currently-viewing user has created? That would seem to make sense, but then... possibly not. Might be the case that departments <i>should</i> see what other departments are requesting.
-				</p>
-				<p>
-					A further argument against having the approvals information displayed here: interdepartmental rivalry: "Why do Product Development always get their payments made in a timely fashion but Facilities don't?" sort of thing.
-				</p>
-				<p>
-					Experiment with background &amp; foreground colouring for one of the grids - probably Payment Plans, as it's the more important...? Colouring just the card elements, not the grids within them.
-				</p>
-			</div>
-		</div>
 		<div class="tab-content">
 			<div id="payment-requests-tab-pane" class="tab-pane fade active show">
-				<div class="card mb-3" data-bind="with: filters">
-					<div class="card-body">
+				<div class="card mb-3">
+					<div class="card-body" data-bind="with: filters">
 						<div class="prefilters">
-							<div id="user-selector-prefilter" class="prefilter relative" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: userSelectorParams }"></div>
+							<div class="prefilter user-selector-prefilter relative" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: userSelectorParams }"></div>
 							<div id="payment-request-status-prefilter" class="prefilter relative" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: paymentRequestStatusParams }"></div>
 						</div>
 					</div>
 				</div>
 				<div class="card mb-3" data-bind="with: requests">
+					<div class="blocker" data-bind="flexFadeVisible: busy">
+						<div class="loading-spinner"></div>
+						<h4 class="mt-3" data-bind="text: busyMessage"></h4>
+					</div>
 					<div class="card-body">
 						<div style="display: none" class="supplier-payments-grid-container payment-requests z-2"
 							 data-bind="visible: true, kendoGrid: gridParams"></div>
 					</div>
 				</div>
 			</div>
+			<div id="suppliers-tab-pane" class="tab-pane fade">
+				<div class="card">
+					<div class="blocker" data-bind="flexFadeVisible: suppliers.busy">
+						<div class="loading-spinner"></div>
+						<h4 class="mt-3" data-bind="text: suppliers.busyMessage"></h4>
+					</div>
+					<div class="card-body">
+						<div class="d-flex align-items-center gap-3 prefilters" data-bind="with: filters">
+							<div class="prefilter user-selector-prefilter relative" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: userSelectorParams }"></div>
+							<div class="prefilter">
+								<div data-bind="component: { name: 'mdc-checkbox-component', params: onlyIncludeSuppliersWhereProductionStoppedParams }"></div>
+							</div>
+							<div class="prefilter">
+								<div data-bind="component: { name: 'mdc-checkbox-component', params: onlyIncludeSuppliersWhereShippingStoppedParams }"></div>
+							</div>
+							<button class="btn btn-dark btn-export ms-auto" data-bind="click: $parent.suppliers.exportToExcel">
+								Export to Excel
+								<i class="bi bi-download"></i>
+								<i class="bi bi-filetype-xlsx"></i>
+							</button>
+						</div>
+						<div style="display: none" class="supplier-payments-grid-container z-1"
+							 data-bind="visible: true, kendoGrid: suppliers.gridParams"></div>
+					</div>
+				</div>
+			</div>
 			<div id="budget-tab-pane" class="tab-pane fade">
 				<div class="card" data-bind="with: budgets">
+					<div class="blocker" data-bind="flexFadeVisible: busy">
+						<div class="loading-spinner"></div>
+						<h4 class="mt-3" data-bind="text: busyMessage"></h4>
+					</div>
 					<div class="card-body">
 						<div style="display: none" class="supplier-payments-grid-container budget-grid z-1" data-bind="visible: true, kendoGrid: gridParams"></div>
 					</div>
@@ -439,6 +451,10 @@
 			</div>
 			<div id="approvals-tab-pane" class="tab-pane fade">
 				<div class="card">
+					<div class="blocker" data-bind="flexFadeVisible: approvals.busy">
+						<div class="loading-spinner"></div>
+						<h4 class="mt-3" data-bind="text: approvals.busyMessage"></h4>
+					</div>
 					<div class="card-body">
 						<div class="d-flex align-items-center gap-3 prefilters" data-bind="with: filters">
 							<div class="prefilter">
@@ -447,6 +463,11 @@
 							<div class="prefilter">
 								<div data-bind="component: { name: 'mdc-checkbox-component', params: onlyShowSuppliersWithOutstandingInvoicesParams }"></div>
 							</div>
+							<button class="btn btn-dark btn-export ms-auto" data-bind="click: $parent.approvals.exportToExcel">
+								Export to Excel
+								<i class="bi bi-download"></i>
+								<i class="bi bi-filetype-xlsx"></i>
+							</button>
 						</div>
 						<div style="display: none" class="supplier-payments-grid-container z-1"
 							 data-bind="visible: true, kendoGrid: approvals.gridParams"></div>
@@ -454,32 +475,40 @@
 				</div>
 			</div>
 			<div id="history-summary-tab-pane" class="tab-pane fade">
-				<div class="card">
+				<div class="card" data-bind="with: historySummary">
+					<div class="blocker" data-bind="flexFadeVisible: busy">
+						<div class="loading-spinner"></div>
+						<h4 class="mt-3" data-bind="text: busyMessage"></h4>
+					</div>
 					<div class="card-body">
 						<h4 class="d-flex justify-content-end align-items-center">
-							<button class="btn btn-dark btn-export" data-bind="click: historySummary.exportToExcel">
+							<button class="btn btn-dark btn-export" data-bind="click: exportToExcel">
 								Export to Excel
 								<i class="bi bi-download"></i>
 								<i class="bi bi-filetype-xlsx"></i>
 							</button>
 						</h4>
 						<div style="display: none" class="supplier-payments-grid-container z-1"
-							 data-bind="visible: true, kendoGrid: historySummary.gridParams"></div>
+							 data-bind="visible: true, kendoGrid: gridParams"></div>
 					</div>
 				</div>
 			</div>
 			<div id="history-detail-tab-pane" class="tab-pane fade">
-				<div class="card">
+				<div class="card" data-bind="with: historyDetails">
+					<div class="blocker" data-bind="flexFadeVisible: busy">
+						<div class="loading-spinner"></div>
+						<h4 class="mt-3" data-bind="text: busyMessage"></h4>
+					</div>
 					<div class="card-body">
 						<h4 class="d-flex justify-content-end align-items-center">
-							<button class="btn btn-dark btn-export" data-bind="click: historyDetails.exportToExcel">
+							<button class="btn btn-dark btn-export" data-bind="click: exportToExcel">
 								Export to Excel
 								<i class="bi bi-download"></i>
 								<i class="bi bi-filetype-xlsx"></i>
 							</button>
 						</h4>
 						<div style="display: none" class="supplier-payments-grid-container z-1"
-							 data-bind="visible: true, kendoGrid: historyDetails.gridParams"></div>
+							 data-bind="visible: true, kendoGrid: gridParams"></div>
 					</div>
 				</div>
 			</div>
@@ -522,97 +551,97 @@
 			<div id="basket-collapse" class="sidebar-body">
 				<div id="basket-grid-container" data-bind="kendoGrid: basket.gridParams"></div>
 				@*<form id="basket" data-bind="with: basket" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
-					<div id="approval-basket-contents" style="display: none" data-bind="flexFadeVisible: items().length > 0">
-						<div class="card">
-							<div class="card-body">
-								<table id="payment-plans" class="table">
-									<colgroup>
-										<col />
-										<col />
-										<col />
-										<col />
-										<col />
-										<col />
-									</colgroup>
-									<thead>
-										<tr>
-											<th colspan="6">
-												<h4 class="mb-0">
-													Payment Plans
-												</h4>
-											</th>
-										</tr>
-										<tr>
-											<th>
-												Supplier
-											</th>
-											<th>
-												Amount Requested
-											</th>
-											<th>
-												Requester Comments
-											</th>
-											<th>
-												Amount Approved
-											</th>
-											<th>
-												Approval Comments
-											</th>
-											<th></th>
-										</tr>
-									</thead>
-									<tbody data-bind="foreach: paymentPlans">
-										<!-- ko template: { name: 'approval-item-row', data: $data } --><!-- /ko -->
-									</tbody>
-								</table>
+						<div id="approval-basket-contents" style="display: none" data-bind="flexFadeVisible: items().length > 0">
+							<div class="card">
+								<div class="card-body">
+									<table id="payment-plans" class="table">
+										<colgroup>
+											<col />
+											<col />
+											<col />
+											<col />
+											<col />
+											<col />
+										</colgroup>
+										<thead>
+											<tr>
+												<th colspan="6">
+													<h4 class="mb-0">
+														Payment Plans
+													</h4>
+												</th>
+											</tr>
+											<tr>
+												<th>
+													Supplier
+												</th>
+												<th>
+													Amount Requested
+												</th>
+												<th>
+													Requester Comments
+												</th>
+												<th>
+													Amount Approved
+												</th>
+												<th>
+													Approval Comments
+												</th>
+												<th></th>
+											</tr>
+										</thead>
+										<tbody data-bind="foreach: paymentPlans">
+											<!-- ko template: { name: 'approval-item-row', data: $data } --><!-- /ko -->
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<div class="card">
+								<div class="card-body">
+									<table id="other-payments" class="table">
+										<colgroup>
+											<col />
+											<col />
+											<col />
+											<col />
+											<col />
+											<col />
+										</colgroup>
+										<thead>
+											<tr>
+												<th colspan="6">
+													<h4 class="mb-0">
+														Other Payments
+													</h4>
+												</th>
+											</tr>
+											<tr>
+												<th>
+													Supplier
+												</th>
+												<th>
+													Amount Requested
+												</th>
+												<th>
+													Requester Comments
+												</th>
+												<th>
+													Amount Approved
+												</th>
+												<th>
+													Approval Comments
+												</th>
+												<th></th>
+											</tr>
+										</thead>
+										<tbody data-bind="foreach: otherPayments">
+											<!-- ko template: { name: 'approval-item-row', data: $data } --><!-- /ko -->
+										</tbody>
+									</table>
+								</div>
 							</div>
 						</div>
-						<div class="card">
-							<div class="card-body">
-								<table id="other-payments" class="table">
-									<colgroup>
-										<col />
-										<col />
-										<col />
-										<col />
-										<col />
-										<col />
-									</colgroup>
-									<thead>
-										<tr>
-											<th colspan="6">
-												<h4 class="mb-0">
-													Other Payments
-												</h4>
-											</th>
-										</tr>
-										<tr>
-											<th>
-												Supplier
-											</th>
-											<th>
-												Amount Requested
-											</th>
-											<th>
-												Requester Comments
-											</th>
-											<th>
-												Amount Approved
-											</th>
-											<th>
-												Approval Comments
-											</th>
-											<th></th>
-										</tr>
-									</thead>
-									<tbody data-bind="foreach: otherPayments">
-										<!-- ko template: { name: 'approval-item-row', data: $data } --><!-- /ko -->
-									</tbody>
-								</table>
-							</div>
-						</div>
-					</div>
-				</form>*@
+					</form>*@
 			</div>
 		</div>
 	</sidebar>

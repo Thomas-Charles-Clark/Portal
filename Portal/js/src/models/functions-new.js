@@ -96,7 +96,8 @@ function formatCurrency(value, digits, culture, currency, html) {
         maximumFractionDigits: digits
     }).format(value);
 
-    result = result.replace(/\$/gm, '<span class="open-sans-inflated-dollar-glyph">$</span>')
+    // Nope, this buggered stuff up all over the place
+    //result = result.replace(/\$/gm, '<span class="open-sans-inflated-dollar-glyph">$</span>')
 
     //// 2. Reorder or manipulate parts
     //// Example: Force symbol to front, removing any extra whitespace

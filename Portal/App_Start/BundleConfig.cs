@@ -1061,7 +1061,8 @@ namespace Portal
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments-history-detail{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments-filters{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments-request{jsSuffix}",
-						$"{jsPrefix}/models/suppliers/payments/supplier-payments-requests{jsSuffix}"
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-requests{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-suppliers{jsSuffix}"
 				));
 
 			foreach (var b in BundleTable.Bundles)

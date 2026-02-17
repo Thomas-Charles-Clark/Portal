@@ -345,6 +345,12 @@
   flex: 0 1 calc(50% - 0.5rem);
 }
 
+.open-sans-inflated-dollar-glyph {
+  font-size: 111%;
+  position: relative;
+  top: 1px;
+}
+
 .panel {
   border: 1px solid #dee2e6;
   background-color: #fff;

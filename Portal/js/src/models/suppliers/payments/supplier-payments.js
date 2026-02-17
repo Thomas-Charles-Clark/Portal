@@ -39,7 +39,7 @@
 
     self.filters = supplierPaymentsFiltersViewModel({
         ready: self.ready,
-        busy: self.busy,
+        busy: ko.observable(false),
         busyMessage: self.busyMessage,
         refreshParent: self.refresh,
         quietLogging: self.quietLogging
@@ -47,7 +47,7 @@
 
     self.dashboard = supplierPaymentsDashboardViewModel({
         ready: self.ready,
-        busy: self.busy,
+        busy: ko.observable(false),
         busyMessage: self.busyMessage,
         filters: self.filters,
         quietLogging: self.quietLogging
@@ -55,7 +55,7 @@
 
     self.approvals = supplierPaymentsApprovalsViewModel({
         ready: self.ready,
-        busy: self.busy,
+        busy: ko.observable(false),
         busyMessage: self.busyMessage,
         filters: self.filters,
         refreshDashboard: self.dashboard.refresh,
@@ -64,7 +64,7 @@
 
     self.requests = supplierPaymentsRequestsViewModel({
         ready: self.ready,
-        busy: self.busy,
+        busy: ko.observable(false),
         busyMessage: self.busyMessage,
         filters: self.filters,
         refreshDashboard: self.dashboard.refresh,
@@ -74,7 +74,7 @@
 
     self.budgets = supplierPaymentsBudgetsViewModel({
         ready: self.ready,
-        busy: self.busy,
+        busy: ko.observable(false),
         busyMessage: self.busyMessage,
         filters: self.filters,
         refreshDashboard: self.dashboard.refresh,
@@ -83,7 +83,7 @@
 
     self.historySummary = supplierPaymentsHistorySummaryViewModel({
         ready: self.ready,
-        busy: self.busy,
+        busy: ko.observable(false),
         busyMessage: self.busyMessage,
         filters: self.filters,
         refreshDashboard: self.dashboard.refresh,
@@ -92,7 +92,16 @@
 
     self.historyDetails = supplierPaymentsHistoryDetailViewModel({
         ready: self.ready,
-        busy: self.busy,
+        busy: ko.observable(false),
+        busyMessage: self.busyMessage,
+        filters: self.filters,
+        refreshDashboard: self.dashboard.refresh,
+        quietLogging: self.quietLogging
+    });
+
+    self.suppliers = supplierPaymentsSuppliersViewModel({
+        ready: self.ready,
+        busy: ko.observable(false),
         busyMessage: self.busyMessage,
         filters: self.filters,
         refreshDashboard: self.dashboard.refresh,

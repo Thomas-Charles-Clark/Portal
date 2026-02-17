@@ -79,6 +79,7 @@
 		z-index: 1;
 		display: flex;
 		justify-content: center;
+		overflow-y: auto;
 
 		#basket {
 			flex: 1;
@@ -169,6 +170,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: $l-gutter;
+		transform: translate3d(0, 0, 0);
 	}
 
 	.sidebar-body {
@@ -270,6 +272,41 @@
 			}
 		}
 	}
+
+	tbody {
+		> tr {
+			p.k-reset {
+				> span:first-of-type {
+					width: 160px;
+				}
+
+				span:nth-of-type(2) {
+					width: 240px;
+				}
+
+				span:nth-of-type(3) {
+					width: auto;
+				}
+			}
+
+			&:has(.k-table-group-td) {
+				p.k-reset {
+					> span:first-of-type {
+						width: 160px;
+					}
+
+					span:nth-of-type(2) {
+						width: 239px;
+					}
+
+					span:nth-of-type(3) {
+						width: auto;
+					}
+				}
+			}
+		}
+	}
+
 
 	.k-grid-Remove {
 		background-color: $red-500;

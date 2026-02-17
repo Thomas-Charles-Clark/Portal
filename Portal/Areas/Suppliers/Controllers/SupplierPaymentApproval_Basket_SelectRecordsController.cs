@@ -61,18 +61,9 @@ namespace Portal.Areas.Suppliers.Controllers
 
 		[HttpPut]
 		[EnableQuery]
-		public async Task<IHttpActionResult> Put([FromODataUri] int key, [FromBody] SupplierPaymentApproval_Basket_SelectRecord entity)
+		public async Task<IHttpActionResult> Put([FromODataUri] int keyPaymentDecisionID, [FromODataUri] string keyCurrencyCode, SupplierPaymentApproval_Basket_SelectRecord entity)
 		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-			else if (key != entity.PaymentDecisionID)
-			{
-				return BadRequest("The key from the url must match the key of the entity in the body");
-			}
-
-			var original = await PortalDb.PaymentDecisions.FindAsync(key);
+			var original = await PortalDb.PaymentDecisions.SingleOrDefaultAsync(pd => pd.PaymentDecisionID == keyPaymentDecisionID);
 
 			if (original == null || original.Deleted)
 			{
@@ -91,7 +82,7 @@ namespace Portal.Areas.Suppliers.Controllers
 
 		[HttpPost]
 		[EnableQuery]
-		public async Task<IHttpActionResult> Post([FromBody] SupplierPaymentApproval_Basket_SelectRecord entity)
+		public async Task<IHttpActionResult> Post(SupplierPaymentApproval_Basket_SelectRecord entity)
 		{
 			var batchId = Request.GetODataBatchId();
 
@@ -116,20 +107,25 @@ namespace Portal.Areas.Suppliers.Controllers
 		}
 
 		[AcceptVerbs("PATCH", "MERGE")]
-		public async Task<IHttpActionResult> Patch([FromODataUri] int key, Delta<SupplierPaymentApproval_Basket_SelectRecord> patch)
+		public async Task<IHttpActionResult> Patch([FromODataUri] int keyPaymentDecisionID, [FromODataUri] string keyCurrencyCode, Delta<SupplierPaymentApproval_Basket_SelectRecord> patch)
 		{
 			object id;
+			object cc;
 
 			if (!ModelState.IsValid)
 			{
 				return BadRequest(ModelState);
 			}
-			else if ((patch.TryGetPropertyValue("PaymentDecisionId", out id) && (int)id != key))
+			else if ((patch.TryGetPropertyValue("PaymentDecisionId", out id) && (int)id != keyPaymentDecisionID))
 			{
-				return BadRequest("The key from the url must match the key of the entity in the body");
+				return BadRequest("The PaymentDecisionID from the url must match that of the entity in the body");
+			}
+			else if ((patch.TryGetPropertyValue("CurrencyCode", out cc) && (string)cc != keyCurrencyCode))
+			{
+				return BadRequest("The CurrencyCode from the url must match that of the entity in the body");
 			}
 
-			var originalEntity = await PortalDb.PaymentDecisions.FindAsync(key);
+			var originalEntity = await PortalDb.PaymentDecisions.SingleOrDefaultAsync(pd => pd.PaymentDecisionID == keyPaymentDecisionID);
 
 			if (originalEntity == null || originalEntity.Deleted)
 			{
@@ -155,9 +151,9 @@ namespace Portal.Areas.Suppliers.Controllers
 
 		[HttpDelete]
 		[EnableQuery]
-		public async Task<IHttpActionResult> Delete([FromODataUri] int key)
+		public async Task<IHttpActionResult> Delete([FromODataUri] int keyPaymentDecisionID, [FromODataUri] string keyCurrencyCode)
 		{
-			var entry = await PortalDb.PaymentDecisions.FindAsync(key);
+			var entry = await PortalDb.PaymentDecisions.SingleOrDefaultAsync(pd => pd.PaymentDecisionID == keyPaymentDecisionID);
 
 			if (entry == null)
 			{
