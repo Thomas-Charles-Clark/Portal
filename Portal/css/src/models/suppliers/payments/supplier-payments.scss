@@ -2,6 +2,8 @@
 
 $finalised-row-bg-color: #c5f7c3b3 !important;
 $editable-approval-row-cell-bg-color: #cfe2ff !important;
+$overdue-red: #d6091d;
+$payment-request: #0dcb0d;
 
 html {
 	min-height: 100%;
@@ -233,6 +235,44 @@ html {
 		cursor: not-allowed;
 		color: $gray-600;
 	}
+
+	td {
+		&.k-table-td {
+			cursor: default;
+		}
+	}
+}
+
+#suppliers-tab-pane {
+
+
+	.k-grid {
+		.mdc-checkbox::before,
+		.mdc-checkbox::after {
+			background-color: $mdc-theme-error;
+		}
+
+		.mdc-checkbox {
+			.mdc-checkbox__native-control {
+				border-color: $mdc-theme-error;
+			}
+
+			.mdc-checkbox__background {
+				border-color: $mdc-theme-error;
+
+				.mdc-checkbox__checkmark {
+				}
+			}
+
+			&.mdc-checkbox--selected {
+				.mdc-checkbox__background {
+					.mdc-checkbox__checkmark {
+						background-color: $red-500;
+					}
+				}
+			}
+		}
+	}
 }
 
 #totals-table {
@@ -323,6 +363,12 @@ html {
 		height: 44px;
 	}
 
+	.k-grid-filter-menu {
+		&.k-grid-header-menu {
+			margin-right: 0;
+		}
+	}
+
 	&.supplier-detail-grid {
 		position: relative;
 		z-index: 1;
@@ -340,7 +386,7 @@ html {
 			}
 
 			thead {
-				&.k-grid-header {
+				.k-grid-header {
 					.k-header {
 						font-weight: bold;
 						white-space: normal;
@@ -353,6 +399,78 @@ html {
 				}
 			}
 		}
+	}
+
+	thead {
+		.k-header {
+			&.k-filterable {
+				.k-cell-inner {
+					display: flex;
+					flex-flow: wrap;
+					flex-direction: column;
+					justify-contents: center;
+
+					.k-link {
+						white-space: nowrap;
+						padding: $sm-gutter;
+					}
+				}
+			}
+		}
+	}
+
+	.new-collection-column-subheader,
+	.new-collection-column {
+		width: 60px;
+	}
+
+	.back-orders-quantity-column-subheader,
+	.back-orders-quantity-column {
+		width: 92px;
+	}
+
+	.back-orders-value-column-subheader,
+	.back-orders-value-column {
+		width: 92px;
+	}
+
+	.supplier-invoices-column-subheader,
+	.supplier-invoices-column {
+		width: 92;
+	}
+
+	.supplier-invoices-column {
+		&.supplier-invoices-overdue {
+			background-color: $overdue-red;
+		}
+	}
+
+	.payment-requests-column {
+		&.payment-requests-positive {
+			background-color: $payment-request;
+		}
+	}
+
+	.problems-production-column-subheader,
+	.problems-production-column {
+		width: 64px;
+	}
+
+	.problems-shipping-column-subheader,
+	.problems-shipping-column {
+		width: 64px;
+	}
+
+	.payment-requests-column-subheader,
+	.payment-requests-column {
+		width: 64px;
+	}
+
+	.spacer-column-header,
+	.spacer-column {
+		padding: 0 !important;
+		background-color: #f8f9fa !important;
+		width: $vsm-gutter;
 	}
 
 	tbody {
@@ -804,10 +922,11 @@ html {
 
 						.k-column-title {
 							white-space: normal;
+							text-align: center;
 						}
 
 						.k-cell-inner {
-							align-items: flex-end;
+							align-items: center;
 						}
 					}
 				}
@@ -1170,3 +1289,4 @@ td {
 		}
 	}
 }
+

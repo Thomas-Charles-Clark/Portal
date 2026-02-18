@@ -58,12 +58,13 @@ namespace Portal.Areas.CreditControl.Controllers
 
 				var gridData = model.Results.ToDataSourceResult(request);
 
-				gridData.Total = model.ResultsCount;
+				gridData.Total = model.TotalsRecord.TotalRows;
 
 				return Ok(new
 				{
 					gridData = gridData,
-					dashboardPods = model.DashboardPods
+					dashboardPods = model.DashboardPods,
+					totalsRecord = model.TotalsRecord
 				});
 			}
 			catch(SqlException)
@@ -127,6 +128,15 @@ namespace Portal.Areas.CreditControl.Controllers
 			var results = PortalDb.SalesHistoryAnalysisPeriods.AsQueryable();
 
 			return Ok(results.ToDataSourceResult(request));
+		}
+
+		[HttpPost]
+		public async Task<IHttpActionResult> FetchAgedSalesLedger(
+			[FromBody]CreditControl_TradeAccount_PerformanceDTO dto)
+		{
+			var results = await PortalDb.CreditControl_AgedSalesLedger_Select(dto);
+
+			return Ok(results);
 		}
 	}
 }

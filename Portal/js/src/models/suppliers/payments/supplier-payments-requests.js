@@ -65,7 +65,7 @@
         transport: {
             read: {
                 url: () => {
-                    let filters = self.filters.supplierFilters();
+                    let filters = self.filters.requestFilters();
 
                     return `/supplier-payments-odata/SupplierPaymentRequest_SelectRecords/SupplierPayments.SupplierPaymentsGridRead(dto=@d)?@d={"MemberID":${filters.requestedByMemberId == '' ? null : filters.requestedByMemberId},"PaymentRequestStatus":${((filters.paymentRequestStatus == '' || filters.paymentRequestStatus == null) ? 'null' : `"${filters.paymentRequestStatus}"`)}}`;
                 }
@@ -1068,7 +1068,14 @@
         toolbar: self.gridToolbar,
         scrollable: false,
         sortable: true,
-        filterable: true,
+        filterable: {
+            extra: false,
+            operators: {
+                string: {
+                    contains: "Contains"
+                }
+            }
+        },
         reorderable: false,
         groupable: false,
         paging: true,
@@ -1238,7 +1245,7 @@
 
     //#region Subscriptions
 
-    self.filters.supplierFilters.subscribe(nv => {
+    self.filters.requestFilters.subscribe(nv => {
         self.refresh();
     });
 

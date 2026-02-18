@@ -397,7 +397,14 @@
         data: self.gridDataSource,
         scrollable: false,
         sortable: true,
-        filterable: true,
+        filterable: {
+            extra: false,
+            operators: {
+                string: {
+                    contains: "Contains"
+                }
+            }
+        },
         reorderable: false,
         paging: true,
         pageSize: 20,

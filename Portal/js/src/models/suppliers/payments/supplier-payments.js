@@ -26,6 +26,7 @@
     self.refresh = () => {
         self.dashboard.refresh();
         self.requests.refresh();
+        self.suppliers.refresh();
         self.approvals.refresh();
         self.budgets.refresh();
         self.historySummary.refresh();
@@ -144,6 +145,12 @@
                 e.addEventListener('show.bs.tab', () => {
                     if (self.requests.gridWidget())
                         self.requests.refresh();
+                });
+                break;
+            case '#suppliers-tab-pane':
+                e.addEventListener('show.bs.tab', () => {
+                    if (self.suppliers.gridWidget())
+                        self.suppliers.refresh();
                 });
                 break;
             case '#budget-tab-pane':

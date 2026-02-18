@@ -104,7 +104,7 @@ namespace SharedEFClasses.Models
 			return result;
 		}
 
-		public SupplierPayments_SupplierResult SupplierPayment_Supplier_Select(SupplierPayments_Supplier_SelectDTO dto)
+		public async Task<SupplierPayments_SupplierResult> SupplierPayment_Supplier_Select(SupplierPayments_Supplier_SelectDTO dto)
 		{
 			var results = this.Database.Connection.QueryMultiple("[payment].[Supplier_Select]", dto, null, 60, System.Data.CommandType.StoredProcedure);
 

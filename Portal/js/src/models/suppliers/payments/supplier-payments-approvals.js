@@ -300,6 +300,21 @@
         }
     });
 
+    self.spacerColumn = () => {
+        return {
+            title: ' ',
+            field: ' ',
+            filterable: false,
+            sortable: false,
+            headerAttributes: {
+                "class": "spacer-column-subheader"
+            },
+            attributes: {
+                "class": "spacer-column"
+            }
+        };
+    }
+
     self.gridColumns = ({
         productHeadingOne,
         productHeadingTwo,
@@ -331,13 +346,21 @@
                 extra: false
             }
         }]
-    }, {
+    },
+    self.spacerColumn(),
+    {
         title: 'Back Orders',
         columns: [{
             field: 'BackOrderQuantity',
             title: 'Quantity',
             filterable: {
                 extra: false
+            },
+            headerAttributes: {
+                "class": "back-orders-quantity-column-subheader"
+            },
+            attributes: {
+                "class": "back-orders-quantity-column"
             },
             template: (e) => {
                 if (e.BackOrderQuantity != null) {
@@ -352,6 +375,12 @@
             filterable: {
                 extra: false
             },
+            headerAttributes: {
+                "class": "back-orders-value-column-subheader"
+            },
+            attributes: {
+                "class": "back-orders-value-column"
+            },
             template: (e) => {
                 if (e.TotalValue != null) {
                     return formatCurrency(e.BackOrderValueGBP, 2, 'en-GB', 'GBP');
@@ -360,33 +389,64 @@
                 }
             }
         }]
-    }, {
+    },
+    self.spacerColumn(),
+    {
         title: 'New Collection Products',
         columns: [{
             field: 'NewCollectionProductCount_1',
+            headerAttributes: {
+                "class": "new-collection-column-subheader"
+            },
+            attributes: {
+                "class": "new-collection-column"
+            },
             title: productHeadingOne,
             filterable: {
                 extra: false
             }
         }, {
             field: 'NewCollectionProductCount_2',
+            headerAttributes: {
+                "class": "new-collection-column-subheader"
+            },
+            attributes: {
+                "class": "new-collection-column"
+            },
             title: productHeadingTwo,
             filterable: {
                 extra: false
             }
         }, {
             field: 'NewCollectionProductCount_3',
+            headerAttributes: {
+                "class": "new-collection-column-subheader"
+            },
+            attributes: {
+                "class": "new-collection-column"
+            },
             title: productHeadingThree,
             filterable: {
                 extra: false
             }
         }]
-    }, {
+    },
+    self.spacerColumn(),
+    {
         title: 'Supplier Invoices',
         columns: [{
             field: 'TotalValue',
             title: 'Total',
-            width: 120,
+            headerAttributes: {
+                "class": "supplier-invoices-column-subheader"
+            },
+            attributes: (dataItem) => {
+                let result = {
+                    "class": "supplier-invoices-column"
+                };
+
+                return result;
+            },
             template: (e) => {
                 if (e.TotalValue != null) {
                     return formatCurrency(e.TotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -397,7 +457,16 @@
         }, {
             field: 'NotDueTotalValue',
             title: 'Not Due',
-            width: 120,
+            headerAttributes: {
+                "class": "supplier-invoices-column-subheader"
+            },
+            attributes: (dataItem) => {
+                let result = {
+                    "class": "supplier-invoices-column"
+                };
+
+                return result;
+            },
             template: (e) => {
                 if (e.TotalValue != null) {
                     return formatCurrency(e.NotDueTotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -408,7 +477,24 @@
         }, {
             field: 'OverdueTotalValue',
             title: 'Overdue',
-            width: 120,
+            headerAttributes: {
+                "class": "supplier-invoices-column-subheader"
+            },
+            attributes: (dataItem) => {
+                let result = {
+                    "class": "supplier-invoices-column"
+                };
+
+                if (dataItem.OverdueTotalValue > 0 ||
+                    dataItem.Debt30DayValue > 0 ||
+                    dataItem.Debt60DayValue > 0 ||
+                    dataItem.Debt90DayValue > 0 ||
+                    dataItem.Debt120DayValue > 0) {
+                    result.class = "supplier-invoices-column supplier-invoices-overdue"; 
+                }
+
+                return result;
+            },
             template: (e) => {
                 if (e.OverdueTotalValue != null) {
                     return formatCurrency(e.OverdueTotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -419,7 +505,23 @@
         }, {
             field: 'Debt30DayValue',
             title: '30 day',
-            width: 120,
+            headerAttributes: {
+                "class": "supplier-invoices-column-subheader"
+            },
+            attributes: (dataItem) => {
+                let result = {
+                    "class": "supplier-invoices-column"
+                };
+
+                if (dataItem.Debt30DayValue > 0 ||
+                    dataItem.Debt60DayValue > 0 ||
+                    dataItem.Debt90DayValue > 0 ||
+                    dataItem.Debt120DayValue > 0) {
+                    result.class = "supplier-invoices-column supplier-invoices-overdue";
+                }
+
+                return result;
+            },
             template: (e) => {
                 if (e.Debt30DayValue != null) {
                     return formatCurrency(e.Debt30DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -430,7 +532,22 @@
         }, {
             field: 'Debt60DayValue',
             title: '60 day',
-            width: 120,
+            headerAttributes: {
+                "class": "supplier-invoices-column-subheader"
+            },
+            attributes: (dataItem) => {
+                let result = {
+                    "class": "supplier-invoices-column"
+                };
+
+                if (dataItem.Debt60DayValue > 0 ||
+                    dataItem.Debt90DayValue > 0 ||
+                    dataItem.Debt120DayValue > 0) {
+                    result.class = "supplier-invoices-column supplier-invoices-overdue";
+                }
+
+                return result;
+            },
             template: (e) => {
                 if (e.Debt60DayValue != null) {
                     return formatCurrency(e.Debt60DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -441,7 +558,21 @@
         }, {
             field: 'Debt90DayValue',
             title: '90 day',
-            width: 120,
+            headerAttributes: {
+                "class": "supplier-invoices-column-subheader"
+            },
+            attributes: (dataItem) => {
+                let result = {
+                    "class": "supplier-invoices-column"
+                };
+
+                if (dataItem.Debt90DayValue > 0 ||
+                    dataItem.Debt120DayValue > 0) {
+                    result.class = "supplier-invoices-column supplier-invoices-overdue";
+                }
+
+                return result;
+            },
             template: (e) => {
                 if (e.Debt90DayValue != null) {
                     return formatCurrency(e.Debt90DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -452,7 +583,20 @@
         }, {
             field: 'Debt120DayValue',
             title: '120 day',
-            width: 120,
+            headerAttributes: {
+                "class": "supplier-invoices-column-subheader"
+            },
+            attributes: (dataItem) => {
+                let result = {
+                    "class": "supplier-invoices-column"
+                };
+
+                if (dataItem.Debt120DayValue > 0) {
+                    result.class = "supplier-invoices-column supplier-invoices-overdue";
+                }
+
+                return result;
+            },
             template: (e) => {
                 if (e.Debt120DayValue != null) {
                     return formatCurrency(e.Debt120DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -461,23 +605,27 @@
                 }
             }
         }]
-    }, {
+    },
+    self.spacerColumn(),
+    {
         title: 'Problems',
         columns: [{
             field: 'ProductionStopped',
             title: 'Production',
+            headerAttributes: {
+                "class": "problems-production-column-subheader"
+            },
             attributes: (dataItem) => {
                 if (dataItem.ProductionStopped) {
                     return {
-                        "class": "text-center bg-white"
+                        "class": "problems-production-column text-center bg-white"
                     };
                 } else {
                     return {
-                        "class": ""
+                        "class": "problems-production-column"
                     }
                 }
             },
-            width: 126,
             template: (dataItem) => {
                 if (dataItem.ProductionStopped) {
                     return `<i class="bi bi-sign-stop-fill fs-2 text-red-600"></i>`;
@@ -488,18 +636,20 @@
         }, {
             field: 'ShippingStopped',
             title: 'Shipping',
+            headerAttributes: {
+                "class": "problems-shipping-column-subheader"
+            },
             attributes: (dataItem) => {
                 if (dataItem.ShippingStopped) {
                     return {
-                        "class": "text-center bg-white"
+                        "class": "problems-shipping-column text-center bg-white"
                     };
                 } else {
                     return {
-                        "class": ""
+                        "class": "problems-shipping-column"
                     }
                 }
             },
-            width: 126,
             template: (dataItem) => {
                 if (dataItem.ShippingStopped) {
                     return `<i class="bi bi-sign-stop-fill fs-2 text-red-600"></i>`;
@@ -508,12 +658,27 @@
                 }
             }
         }]
-    }, {
+    },
+    self.spacerColumn(),
+    {
         title: 'Payment Requests',
         columns: [{
             field: 'PaymentRequestPaymentPlanTotal',
             title: 'Payment Plan',
-            width: 120,
+            headerAttributes: {
+                "class": "payment-requests-column-subheader"
+            },
+            attributes: (dataItem) => {
+                let result = {
+                    "class": "payment-requests-column"
+                };
+
+                if (dataItem.PaymentRequestPaymentPlanTotal > 0) {
+                    result.class = "payment-requests-column payment-requests-positive";
+                }
+
+                return result;
+            },
             template: (e) => {
                 if (e.PaymentRequestPaymentPlanTotal != null) {
                     return formatCurrency(e.PaymentRequestPaymentPlanTotal, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -524,7 +689,20 @@
         }, {
             field: 'PaymentRequestOtherTotal',
             title: 'Other',
-            width: 120,
+            headerAttributes: {
+                "class": "payment-requests-column-subheader"
+            },
+            attributes: (dataItem) => {
+                let result = {
+                    "class": "payment-requests-column"
+                };
+
+                if (dataItem.PaymentRequestOtherTotal > 0) {
+                    result.class = "payment-requests-column payment-requests-positive";
+                }
+
+                return result;
+            },
             template: (e) => {
                 if (e.PaymentRequestOtherTotal != null) {
                     return formatCurrency(e.PaymentRequestOtherTotal, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -857,7 +1035,14 @@
         },
         scrollable: false,
         sortable: true,
-        filterable: true,
+        filterable: {
+            extra: false,
+            operators: {
+                string: {
+                    contains: "Contains"
+                }
+            }
+        },
         reorderable: false,
         paging: true,
         pageSize: 20,

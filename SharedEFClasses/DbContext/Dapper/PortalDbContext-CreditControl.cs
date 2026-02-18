@@ -17,6 +17,7 @@ using SimpleImpersonation;
 using SharedEFClasses.Models.NeimanMarcus;
 using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Models.CreditControl;
+using NLog.LayoutRenderers;
 
 namespace SharedEFClasses.Models
 {
@@ -70,7 +71,7 @@ namespace SharedEFClasses.Models
 			{
 				DashboardPods = await reply.ReadAsync<CreditControl_TradeAccount_Search_DashboardPod>(),
                 Results = await reply.ReadAsync<CreditControl_TradeAccount_Search_Record>(),
-                ResultsCount = await reply.ReadSingleAsync<int>()
+				TotalsRecord = await reply.ReadSingleAsync<CreditControl_TradeAccount_Totals_Record>() // remap this to a class
 			};
 		}
 
@@ -131,6 +132,16 @@ namespace SharedEFClasses.Models
 				Heading = await reply.ReadSingleAsync<CreditControl_TradeAccount_SalesBreakdown_HeadingResult>(),
 				Pods = await reply.ReadAsync<CreditControl_TradeAccount_SalesBreakdown_Pod>(),
 				Records = await reply.ReadAsync<CreditControl_TradeAccount_SalesBreakdown_Record>()
+			};
+		}
+
+		public async Task<CreditControl_AgedSalesLedger_Result> CreditControl_AgedSalesLedger_Select(CreditControl_TradeAccount_PerformanceDTO dto)
+		{
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_AgedSalesLedger_Select]", dto, null, 60, CommandType.StoredProcedure);
+
+			return new CreditControl_AgedSalesLedger_Result()
+			{
+				Records = await reply.ReadAsync<CreditControl_AgedSalesLedger_Record>()
 			};
 		}
 	}

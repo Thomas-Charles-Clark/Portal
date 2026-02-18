@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace SharedEFClasses.Models.Suppliers.Payments
 {
 	public class SupplierPayments_SupplierRecord
 	{
+		[Key]
 		public string SupplierCode { get; set; }
 
 		public string SupplierName { get; set; }

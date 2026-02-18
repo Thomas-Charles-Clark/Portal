@@ -559,6 +559,7 @@
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentApproval_Basket_SelectRecordsController.cs" />
+    <Compile Include="Areas\Suppliers\Controllers\SupplierPayments_SupplierRecordsController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentsAPIController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentsController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentRequest_SelectRecordsController.cs" />
@@ -757,7 +758,6 @@
     <Compile Include="Controllers\ODataControllers\StockManagement\BranchesController.cs" />
     <Compile Include="Controllers\ODataControllers\TransactionTypesController.cs" />
     <Compile Include="Controllers\ODataControllers\TradeAccountTypesController.cs" />
-    <Compile Include="js\src\models\suppliers\payments\FileName.cs" />
     <Compile Include="Service References\PCAFind_v1_10\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1803,6 +1803,9 @@
     <Content Include="js\src\models\common-modals-old.js" />
     <Content Include="js\src\models\common-modals.js" />
     <Content Include="js\src\models\contract-pricing.js" />
+    <Content Include="js\src\models\credit-control\credit-control-performance.js" />
+    <Content Include="js\src\models\credit-control\credit-control-performance-pod.js" />
+    <Content Include="js\src\models\credit-control\credit-control-performance-record.js" />
     <Content Include="js\src\models\credit-control\credit-control-sales-breakdown.js" />
     <Content Include="js\src\models\credit-control\credit-control-sales-breakdown-pod.js" />
     <Content Include="js\src\models\credit-control\credit-control-sales-breakdown-record.js" />
@@ -1885,6 +1888,7 @@
     <Content Include="js\src\models\suppliers\payments\supplier-payments-decision.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-approval.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-approvals.js" />
+    <Content Include="js\src\models\suppliers\payments\supplier-payments-supplier.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-suppliers.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-history-summary.js" />
     <Content Include="js\src\models\suppliers\payments\supplier-payments-request.js" />
@@ -3180,6 +3184,7 @@
     <Content Include="css\src\models\suppliers\payments\supplier-payments-approvals-basket.scss" />
     <Content Include="css\src\models\suppliers\payments\supplier-payments.scss" />
     <Content Include="css\src\models\suppliers\payments\supplier-payments-sidebar.scss" />
+    <Content Include="css\src\models\credit-control\credit-control-performance.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -433,7 +433,7 @@
 								<i class="bi bi-filetype-xlsx"></i>
 							</button>
 						</div>
-						<div style="display: none" class="supplier-payments-grid-container z-1"
+						<div style="display: none" class="supplier-payments-grid-container suppliers-grid z-1"
 							 data-bind="visible: true, kendoGrid: suppliers.gridParams"></div>
 					</div>
 				</div>
@@ -527,9 +527,9 @@
 						Approvals Basket
 						<label class="count" data-bind="html: basket.countDisplay"></label>
 					</span>
-					<button type="button" class="btn btn-light basket-toggle-btn" title="Toggle Pinning">
+					@*<button type="button" class="btn btn-light basket-toggle-btn" title="Toggle Pinning">
 						<i class="bi bi-pin-angle-fill fs-5"></i>
-					</button>
+					</button>*@
 					<!-- ko if: !busy() && basket.readOnlyMode() -->
 					<span data-bind="text: filters.paymentPeriod() ? filters.paymentPeriod().Label : ''"></span>
 					<button type="button" class="btn btn-light basket-finalised-btn" title="Finalised" disabled>

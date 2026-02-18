@@ -93,11 +93,7 @@
         serverFiltering: true,
         serverPaging: false,
         page: 1,
-        pageSize: 10,
-        pageable: {
-            pageSize: 10,
-            pageSizes: [10, 20, 50, 100, 250, 500, 'all']
-        },
+        pageSize: undefined,
         batch: true,
         type: "odata-v4",
         transport: {
@@ -361,8 +357,8 @@
 
             let resultArray = [
                 `<span class="d-inline-block">${data.value}</span>`,
-                `<span class="d-inline-block ps-3">Requested: ${formatCurrency(data.Request_OutstandingAmount_CUR.sum, 2, data.items[0].FormattingCulture, data.items[0].CurrencyCode)}</span>`,
-                `<span class="d-inline-block ps-3">To Pay: ${formatCurrency(data.Decision_Amount_CUR.sum, 2, data.items[0].FormattingCulture, data.items[0].CurrencyCode)}</span>`,
+                `<span class="d-inline-block ps-3">${formatCurrency(data.Request_OutstandingAmount_CUR.sum, 2, data.items[0].FormattingCulture, data.items[0].CurrencyCode)}</span>`,
+                `<span class="d-inline-block ps-3">${formatCurrency(data.Decision_Amount_CUR.sum, 2, data.items[0].FormattingCulture, data.items[0].CurrencyCode)}</span>`,
             ];
 
             return resultArray.join(' ');
@@ -381,8 +377,8 @@
 
             let resultArray = [
                 `<span class="d-inline-block">${data.value}</span>`,
-                `<span class="d-inline-block ps-3">Requested: ${formatCurrency(data.Request_OutstandingAmount_GBP.sum, 2, 'en-GB', 'GBP')}</span>`,
-                `<span class="d-inline-block ps-3">To Pay: ${formatCurrency(data.Decision_Amount_GBP.sum, 2, 'en-GB', 'GBP')}</span>`,
+                `<span class="d-inline-block ps-3">${formatCurrency(data.Request_OutstandingAmount_GBP.sum, 2, 'en-GB', 'GBP')}</span>`,
+                `<span class="d-inline-block ps-3">${formatCurrency(data.Decision_Amount_GBP.sum, 2, 'en-GB', 'GBP')}</span>`,
             ];
 
             return resultArray.join(' ');
@@ -562,8 +558,9 @@
                 let tr = $(e.target).closest("tr");
                 let data = this.dataItem(tr);
 
-                if (!self.basketElement.classList.contains('pinned'))
-                    self.basketElement.classList.add('pinned');
+                // I liked this, Matt didn't
+                //if (!self.basketElement.classList.contains('pinned'))
+                //    self.basketElement.classList.add('pinned');
 
                 window.showConfirm('Are you sure?', 'Please confirm removal of this payment approval', () => {
                     self.removeBasketItem(data);
@@ -586,9 +583,7 @@
         reorderable: false,
         groupable: false,
         paging: true,
-        pageSize: 10,
         pageable: {
-            pageSize: 10,
             pageSizes: [10, 20, 50, 100, 250, 500, 'all']
         },
         beforeEdit: function (e) {
@@ -783,16 +778,25 @@
 
     self.clear = () => {
 
-        if (!self.basketElement.classList.contains('pinned'))
-            self.basketElement.classList.add('pinned');
+        // I liked this, Matt didn't
+        //if (!self.basketElement.classList.contains('pinned'))
+        //    self.basketElement.classList.add('pinned');
 
         window.showConfirm('Are you sure?', 'This will clear all the items from your basket.', () => {
             self.removeAllBasketItems();
         }, null)
     }
 
-    self.togglePinning = (data, event) => {
-        self.basketElement.classList.toggle('pinned');
+    self.togglePinning = (data, event, forced) => {
+        if (typeof forced != 'undefined') {
+            if (forced) {
+                self.basketElement.classList.add('pinned');
+            } else {
+                self.basketElement.classList.remove('pinned');
+            }
+        } else {
+            self.basketElement.classList.toggle('pinned');
+        }
         event && event.target.closest('button') && event.target.closest('button').blur();
     }
 
@@ -910,6 +914,7 @@
             .then(window.handleFetchResponse)
             .then(data => {
                 console.log('removeAllBasketItemsForPeriod returned', data);
+                self.refreshApprovals();
                 self.refresh();
             })
             .catch (window.catchFetchError)
@@ -917,8 +922,9 @@
 
     self.finaliseBasket = () => {
 
-        if (!self.basketElement.classList.contains('pinned'))
-            self.basketElement.classList.add('pinned');
+        // I liked this, Matt didn't
+        //if (!self.basketElement.classList.contains('pinned'))
+        //    self.basketElement.classList.add('pinned');
 
         let di = self.filters.paymentPeriodParams.dropDownListSettings.widget().dataItem();
 
@@ -978,12 +984,29 @@
 
     //#region Events
 
-    self.basketElement.addEventListener('show.bs.collapse', () => {
-        self.refreshApprovals();
+    //self.basketElement.addEventListener('show.bs.collapse', () => {
+    //    self.refreshApprovals();
+    //});
+
+    //self.basketElement.addEventListener('shown.bs.collapse', (event) => {
+    //    self.togglePinning(null, event, true);
+    //});
+
+    //self.basketElement.addEventListener('hide.bs.collapse', () => {
+    //    self.refreshApprovals();
+    //});
+
+    document.querySelector('.body-content').addEventListener('click', (event) => {
+        self.togglePinning(null, event, false);
     });
 
-    self.basketElement.addEventListener('hide.bs.collapse', () => {
-        self.refreshApprovals();
+    document.querySelector('nav.navbar.navbar-default').addEventListener('click', (event) => {
+        self.togglePinning(null, event, false);
+    });
+
+    self.basketElement.addEventListener('click', (event) => {
+        self.togglePinning(null, event, true);
+        event.stopPropagation();
     });
 
     //#endregion

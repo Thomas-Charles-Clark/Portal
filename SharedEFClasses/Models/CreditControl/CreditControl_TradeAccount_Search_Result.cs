@@ -12,6 +12,6 @@ namespace SharedEFClasses.Models.CreditControl
 
 		public IEnumerable<CreditControl_TradeAccount_Search_Record> Results { get; set; }
 
-		public int ResultsCount { get; set; }
+		public CreditControl_TradeAccount_Totals_Record TotalsRecord { get; set; }
 	}
 }

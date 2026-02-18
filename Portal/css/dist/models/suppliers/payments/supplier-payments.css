@@ -506,6 +506,24 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   cursor: not-allowed;
   color: #6c757d;
 }
+#approvals-tab-pane td.k-table-td,
+#suppliers-tab-pane td.k-table-td {
+  cursor: default;
+}
+
+#suppliers-tab-pane .k-grid .mdc-checkbox::before,
+#suppliers-tab-pane .k-grid .mdc-checkbox::after {
+  background-color: #db0028;
+}
+#suppliers-tab-pane .k-grid .mdc-checkbox .mdc-checkbox__native-control {
+  border-color: #db0028;
+}
+#suppliers-tab-pane .k-grid .mdc-checkbox .mdc-checkbox__background {
+  border-color: #db0028;
+}
+#suppliers-tab-pane .k-grid .mdc-checkbox.mdc-checkbox--selected .mdc-checkbox__background .mdc-checkbox__checkmark {
+  background-color: #dc3545;
+}
 
 #totals-table {
   display: inline-table;
@@ -575,6 +593,9 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 .k-grid .k-table-row {
   height: 44px;
 }
+.k-grid .k-grid-filter-menu.k-grid-header-menu {
+  margin-right: 0;
+}
 .k-grid.supplier-detail-grid {
   position: relative;
   z-index: 1;
@@ -586,13 +607,63 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   overflow: visible;
   position: relative;
 }
-.k-grid.supplier-detail-grid table thead.k-grid-header .k-header {
+.k-grid.supplier-detail-grid table thead .k-grid-header .k-header {
   font-weight: bold;
   white-space: normal;
   text-overflow: unset;
 }
-.k-grid.supplier-detail-grid table thead.k-grid-header .k-header .k-column-title {
+.k-grid.supplier-detail-grid table thead .k-grid-header .k-header .k-column-title {
   white-space: normal;
+}
+.k-grid thead .k-header.k-filterable .k-cell-inner {
+  display: flex;
+  flex-flow: wrap;
+  flex-direction: column;
+  justify-contents: center;
+}
+.k-grid thead .k-header.k-filterable .k-cell-inner .k-link {
+  white-space: nowrap;
+  padding: 0.5rem;
+}
+.k-grid .new-collection-column-subheader,
+.k-grid .new-collection-column {
+  width: 60px;
+}
+.k-grid .back-orders-quantity-column-subheader,
+.k-grid .back-orders-quantity-column {
+  width: 92px;
+}
+.k-grid .back-orders-value-column-subheader,
+.k-grid .back-orders-value-column {
+  width: 92px;
+}
+.k-grid .supplier-invoices-column-subheader,
+.k-grid .supplier-invoices-column {
+  width: 92;
+}
+.k-grid .supplier-invoices-column.supplier-invoices-overdue {
+  background-color: #d6091d;
+}
+.k-grid .payment-requests-column.payment-requests-positive {
+  background-color: #0dcb0d;
+}
+.k-grid .problems-production-column-subheader,
+.k-grid .problems-production-column {
+  width: 64px;
+}
+.k-grid .problems-shipping-column-subheader,
+.k-grid .problems-shipping-column {
+  width: 64px;
+}
+.k-grid .payment-requests-column-subheader,
+.k-grid .payment-requests-column {
+  width: 64px;
+}
+.k-grid .spacer-column-header,
+.k-grid .spacer-column {
+  padding: 0 !important;
+  background-color: #f8f9fa !important;
+  width: 0.25rem;
 }
 .k-grid tbody tr:has(td.finalised) {
   background-color: #c5f7c3b3 !important;
@@ -881,9 +952,10 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 }
 .k-grid.supplier-payments-grid-container table thead.k-grid-header .k-header .k-column-title {
   white-space: normal;
+  text-align: center;
 }
 .k-grid.supplier-payments-grid-container table thead.k-grid-header .k-header .k-cell-inner {
-  align-items: flex-end;
+  align-items: center;
 }
 .k-grid .k-table-td {
   padding: 0.5rem;

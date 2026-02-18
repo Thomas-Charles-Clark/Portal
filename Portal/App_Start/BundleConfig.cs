@@ -432,6 +432,7 @@ namespace Portal
             bundles.Add(new StyleBundle("~/bundles/css/credit-control").Include(
                     $"{cssPrefix}/models/credit-control/credit-control{cssSuffix}",
                     $"{cssPrefix}/models/credit-control/credit-control-sidebar{cssSuffix}",
+                    $"{cssPrefix}/models/credit-control/credit-control-performance{cssSuffix}",
 					$"{cssPrefix}/models/trade-account-contacts-widener{cssSuffix}"
 			));
 
@@ -1036,6 +1037,9 @@ namespace Portal
 						$"{jsPrefix}/models/credit-control/credit-control-dashboard-pod{jsSuffix}",
 						$"{jsPrefix}/models/credit-control/credit-control-trade-account-search-result{jsSuffix}",
                         $"{jsPrefix}/models/credit-control/credit-control-filters{jsSuffix}",
+                        $"{jsPrefix}/models/credit-control/credit-control-performance{jsSuffix}",
+                        $"{jsPrefix}/models/credit-control/credit-control-performance-pod{jsSuffix}",
+                        $"{jsPrefix}/models/credit-control/credit-control-performance-record{jsSuffix}",
 						$"{jsPrefix}/models/credit-control/credit-control{jsSuffix}"
                 ));
 
@@ -1062,6 +1066,7 @@ namespace Portal
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments-filters{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments-request{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments-requests{jsSuffix}",
+						$"{jsPrefix}/models/suppliers/payments/supplier-payments-supplier{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments-suppliers{jsSuffix}"
 				));
 

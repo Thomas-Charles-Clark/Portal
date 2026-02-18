@@ -4,8 +4,27 @@
 	will-change: height;
 	transition: height 150ms linear;
 	transition-delay: 150ms;
-	height: 68px;
+	height: 62px;
 	border-top: 1px solid $gray-300;
+
+	&:hover,
+	&:focus {
+		&:not(.pinned) {
+			cursor: pointer;
+
+			.sidebar-heading {
+				text-decoration: underline;
+
+				label {
+					text-decoration: underline;
+				}
+			}
+		}
+
+		&.pinned {
+			cursor: default;
+		}
+	}
 
 	.sidebar-header {
 		display: flex;
@@ -34,7 +53,6 @@
 		margin-bottom: 0;
 		gap: $m-gutter;
 		flex: 1;
-		cursor: pointer;
 
 		.basket-finalised-btn {
 			color: var(--bs-btn-hover-color);
@@ -122,10 +140,8 @@
 		}
 	}
 
-	&:hover,
-	&:focus-within,
 	&.pinned {
-		height: calc(100vh - 447px); /* 'cause threeee... is a magic number! */
+		height: calc(100vh - 445px);
 
 		.basket-count {
 			opacity: 0;
@@ -277,11 +293,11 @@
 		> tr {
 			p.k-reset {
 				> span:first-of-type {
-					width: 160px;
+					width: 744px;
 				}
 
 				span:nth-of-type(2) {
-					width: 240px;
+					width: 400px;
 				}
 
 				span:nth-of-type(3) {
@@ -292,11 +308,11 @@
 			&:has(.k-table-group-td) {
 				p.k-reset {
 					> span:first-of-type {
-						width: 160px;
+						width: 714px;
 					}
 
 					span:nth-of-type(2) {
-						width: 239px;
+						width: 200px;
 					}
 
 					span:nth-of-type(3) {

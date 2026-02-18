@@ -81,6 +81,10 @@ namespace SharedEFClasses.Models.Mertex
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool AccountClosed { get; set; }
 
+        public bool ProductionStopped { get; set; }
+
+        public bool ShippingStopped { get; set; }
+
         [ForeignKey("MertexCurrencyCode")]
         [InverseProperty("Suppliers")]
         public virtual ExchangeRate ExchangeRate { get; set; }

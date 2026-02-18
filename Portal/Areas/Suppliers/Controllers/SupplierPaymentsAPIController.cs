@@ -291,11 +291,11 @@ namespace Portal.Areas.Suppliers.Controllers
 		}
 
 		[HttpGet]
-		public IHttpActionResult SuppliersGridRead(
+		public async Task<IHttpActionResult> SuppliersGridRead(
 			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
 			[FromUri] SupplierPayments_Supplier_SelectDTO dto)
 		{
-			var result = PortalDb.SupplierPayment_Supplier_Select(dto);
+			var result = await PortalDb.SupplierPayment_Supplier_Select(dto);
 
 			return Ok(new
 			{

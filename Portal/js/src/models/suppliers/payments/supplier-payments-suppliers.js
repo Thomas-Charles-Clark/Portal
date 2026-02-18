@@ -44,100 +44,160 @@
             pageSizes: [10, 20, 50, 100, 250, 500, 'all']
         },
         sort: {
-            field: 'SortOrder',
-            dir: 'desc'
+            field: 'SupplierCode',
+            dir: 'asc'
         },
         batch: true,
+        type: "odata-v4",
         transport: {
-            read: (options) => {
+            read: {
+                url: function(item) {
+                    //return `/supplier-payments-odata/SupplierPayments_SupplierRecords`
 
-                self.busy(true);
+                    let filters = self.filters.supplierFilters();
 
-                let webapi = new kendo.data.transports.webapi({ prefix: "" });
+                    console.log('SupplierPayments.SuppliersGridRead calling with', filters);
 
-                let mapped = webapi.parameterMap(options.data);
-
-                let data = self.filters.supplierFilters();
-
-                for (var propertyName in mapped) {
-                    data[propertyName] = mapped[propertyName];
+                    return `/supplier-payments-odata/SupplierPayments_SupplierRecords/SupplierPayments.SuppliersGridRead(dto=@d)?@d={"MemberID":${filters.memberId == '' ? null : filters.memberId},"PeriodID":${filters.periodId},"OnlyShowSuppliersWhereProductionHasStopped":${filters.onlyShowSuppliersWhereProductionHasStopped},"OnlyShowSuppliersWhereShippingHasStopped":${filters.onlyShowSuppliersWhereShippingHasStopped}}`;
                 }
+            },
+            //read: (options) => {
 
-                let qs = new URLSearchParams(data);
+            //    self.busy(true);
 
-                fetch(`/api/SupplierPayments/SuppliersGridRead?${qs}`, {
-                    method: 'GET',
-                    headers: window.fetchHeaders,
-                    cache: 'no-cache',
-                    credentials: 'same-origin'
-                })
-                    .then(window.handleFetchResponse)
-                    .then(data => {
-                        options.success(data.kendoGridResult);
-                        self.busy(false);
-                    })
-                    .catch(err => {
-                        self.busy(false);
-                        window.catchFetchError(err);
-                    });
-            }
+            //    let webapi = new kendo.data.transports.webapi({ prefix: "" });
+
+            //    let mapped = webapi.parameterMap(options.data);
+
+            //    let data = self.filters.supplierFilters();
+
+            //    for (var propertyName in mapped) {
+            //        data[propertyName] = mapped[propertyName];
+            //    }
+
+            //    let qs = new URLSearchParams(data);
+
+            //    fetch(`/api/SupplierPayments/SuppliersGridRead?${qs}`, {
+            //        method: 'GET',
+            //        headers: window.fetchHeaders,
+            //        cache: 'no-cache',
+            //        credentials: 'same-origin'
+            //    })
+            //        .then(window.handleFetchResponse)
+            //        .then(data => {
+            //            options.success(data.kendoGridResult);
+            //            self.busy(false);
+            //        })
+            //        .catch(err => {
+            //            self.busy(false);
+            //            window.catchFetchError(err);
+            //        });
+            //},
+            update: {
+                url: function (item) {
+                    return `/supplier-payments-odata/SupplierPayments_SupplierRecords('${item.SupplierCode}')`
+                }
+            },
+            batch: {
+                url: '/supplier-payments-odata/$batch'
+            },
         },
         error: (e) => {
             console.error(`error`, e);
         },
-        schema: $.extend({}, kendo.data.schemas.webapi, {
-            data: "Data",
-            total: "Total",
-            filters: "Filters",
-            aggregates: "Aggregates",
-            errors: "Errors",
+        schema: {
             model: {
                 id: 'SupplierCode',
                 fields: {
-                    PaymentDecisionID: {
-                        type: 'number'
-                    },
-                    PeriodID: {
-                        type: 'number'
-                    },
-                    Label: {
-                        type: 'string',
-                    },
                     SupplierCode: {
-                        type: 'string'
+                        type: 'string',
+                        editable: false
                     },
                     SupplierName: {
-                        type: 'string'
+                        type: 'string',
+                        editable: false
                     },
-                    CurrencyCode: {
-                        type: 'string'
+                    SupplierType: {
+                        type: 'string',
+                        editable: false
                     },
-                    FormattingCulture: {
-                        type: 'string'
+                    BudgetHolder: {
+                        type: 'string',
+                        editable: false
                     },
-                    AmountInCurrency: {
+                    ProductionStopped: {
+                        type: 'boolean',
+                        editable: true
+                    },
+                    ShippingStopped: {
+                        type: 'boolean',
+                        editable: true
+                    },
+                    SupplierCurrencyCode: {
+                        type: 'string',
+                        editable: false
+                    },
+                    SupplierCurrencyFormattingCulture: {
+                        type: 'string',
+                        nullable: false,
+                        editable: false
+                    },
+                    TotalValue: {
                         type: 'number',
-                        nullable: false
+                        nullable: false,
+                        editable: false
                     },
-                    FinalisedDT: {
-                        type: 'date',
-                        nullable: true
+                    NotDueTotalValue: {
+                        type: 'number',
+                        nullable: false,
+                        editable: false
                     },
-                    RequestedBy: {
-                        type: 'string',
-                        nullable: true
+                    OverdueTotalValue: {
+                        type: 'number',
+                        nullable: false,
+                        editable: false
                     },
-                    ApprovedBy: {
-                        type: 'string',
-                        nullable: true
-                    }, 
-                    PayOnDate: {
-                        type: 'date',
+                    Debt30DayValue: {
+                        type: 'number',
+                        nullable: false,
+                        editable: false
+                    },
+                    Debt60DayValue: {
+                        type: 'number',
+                        nullable: false,
+                        editable: false
+                    },
+                    Debt90DayValue: {
+                        type: 'number',
+                        nullable: false,
+                        editable: false
+                    },
+                    Debt120DayValue: {
+                        type: 'number',
+                        nullable: false,
                         editable: false
                     }
                 }
-            }
-        }),
+            },
+            parse: function (data) {
+                if (Array.isArray(data)) {
+                    data.forEach(d => {
+                        delete d['@odata.context'];
+                    });
+                } else {
+                    for (let i = 0; i < data.value.length; i++) {
+                        data.value[i] = supplierRecord({
+                            rec: data.value[i],
+                            parentGridWidget: self.gridWidget
+                        });
+                    }
+                }
+
+                console.log(`suppliers schema.parse called with`, data);
+
+                return data;
+            },
+        },
         errors: function (e) {
             console.error(`errors`, e);
 
@@ -168,69 +228,87 @@
             console.log(`requestEnd`, e);
 
             self.busy(false);
+        },
+        change: (e) => {
+            console.log(`suppliers dataSource change`, e);
+
+            if (e.action === "itemchange") {
+                $(`.suppliers-grid .k-button.k-grid-save-changes`).show();
+                $(`.suppliers-grid .k-button.k-grid-cancel-changes`).show();
+            }
         }
     });
 
     self.gridColumns = [{
         field: 'SupplierCode',
-        title: 'Supplier Code'
+        title: 'Supplier Code',
+        editable: false
     }, {
         field: 'SupplierName',
-        title: 'Supplier Name'
+        title: 'Supplier Name',
+        editable: false
     }, {
         field: 'SupplierType',
         title: 'Supplier Type',
+        editable: false
     }, {
         field: 'BudgetHolder',
         title: 'Budget Holder',
+        editable: false
     }, {
         field: 'ProductionStopped',
-        title: 'Production',
+        title: 'Production Stopped',
+        editable: true,
         attributes: (dataItem) => {
             if (dataItem.ProductionStopped) {
                 return {
-                    "class": "text-center bg-white"
+                    "class": "text-center"
                 };
             } else {
                 return {
-                    "class": ""
+                    "class": "text-center"
                 }
             }
         },
         width: 126,
         template: (dataItem) => {
-            if (dataItem.ProductionStopped) {
-                return `<i class="bi bi-sign-stop-fill fs-2 text-red-600"></i>`;
-            } else {
-                return ``;
-            }
+            return `<div data-bind="component: { name: 'mdc-checkbox-component', params: productionStoppedParams }"></div>`
+        },
+        valueTemplate: (dataItem) => {
+            return `<div data-bind="component: { name: 'mdc-checkbox-component', params: productionStoppedParams }"></div>`
+        },
+        editor: (options, container) => {
+            $(`<div data-bind="component: { name: 'mdc-checkbox-component', params: productionStoppedParams }"></div>`)
+                .appendTo(container);
         }
     }, {
         field: 'ShippingStopped',
-        title: 'Shipping',
+        title: 'Shipping Stopped',
+        editable: true,
         attributes: (dataItem) => {
             if (dataItem.ShippingStopped) {
                 return {
-                    "class": "text-center bg-white"
+                    "class": "text-center"
                 };
             } else {
                 return {
-                    "class": ""
+                    "class": "text-center"
                 }
             }
         },
         width: 126,
         template: (dataItem) => {
-            if (dataItem.ShippingStopped) {
-                return `<i class="bi bi-sign-stop-fill fs-2 text-red-600"></i>`;
-            } else {
-                return ``;
-            }
+            return `<div data-bind="component: { name: 'mdc-checkbox-component', params: shippingStoppedParams }"></div>`
+        },
+        editor: (options, container) => {
+            $(`<div data-bind="component: { name: 'mdc-checkbox-component', params: shippingStoppedParams }"></div>`)
+                .appendTo(container);
         }
     }, {
         field: 'FinalisedDT',
         title: 'Finalised',
         width: 180,
+        editable: false,
         template: (e) => {
             if (e.FinalisedDT) {
                 return moment(e.FinalisedDT).format('dddd DD/MM/YYYY');
@@ -240,11 +318,13 @@
         }
     }, {
         field: 'SupplierCurrencyCode',
-        title: 'Currency'
+        title: 'Currency',
+        editable: false,
     }, {
         field: 'TotalValue',
         title: 'Total',
         width: 120,
+        editable: false,
         template: (e) => {
             if (e.TotalValue != null) {
                 return formatCurrency(e.TotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -256,6 +336,7 @@
         field: 'NotDueTotalValue',
         title: 'Not Due',
         width: 120,
+        editable: false,
         template: (e) => {
             if (e.TotalValue != null) {
                 return formatCurrency(e.NotDueTotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -267,6 +348,7 @@
         field: 'OverdueTotalValue',
         title: 'Overdue',
         width: 120,
+        editable: false,
         template: (e) => {
             if (e.OverdueTotalValue != null) {
                 return formatCurrency(e.OverdueTotalValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -278,6 +360,7 @@
         field: 'Debt30DayValue',
         title: '30 day',
         width: 120,
+        editable: false,
         template: (e) => {
             if (e.Debt30DayValue != null) {
                 return formatCurrency(e.Debt30DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -289,6 +372,7 @@
         field: 'Debt60DayValue',
         title: '60 day',
         width: 120,
+        editable: false,
         template: (e) => {
             if (e.Debt60DayValue != null) {
                 return formatCurrency(e.Debt60DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -300,6 +384,7 @@
         field: 'Debt90DayValue',
         title: '90 day',
         width: 120,
+        editable: false,
         template: (e) => {
             if (e.Debt90DayValue != null) {
                 return formatCurrency(e.Debt90DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -311,6 +396,7 @@
         field: 'Debt120DayValue',
         title: '120 day',
         width: 120,
+        editable: false,
         template: (e) => {
             if (e.Debt120DayValue != null) {
                 return formatCurrency(e.Debt120DayValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
@@ -327,7 +413,14 @@
         data: self.gridDataSource,
         scrollable: false,
         sortable: true,
-        filterable: true,
+        filterable: {
+            extra: false,
+            operators: {
+                string: {
+                    contains: "Contains"
+                }
+            }
+        },
         reorderable: false,
         paging: true,
         pageSize: 20,
@@ -336,7 +429,8 @@
             pageSizes: [10, 20, 50, 100, 250, 500, 'all']
         },
         selectable: false,
-        editable: false,
+        editable: true,
+        toolbar: [ 'save', 'cancel'],
         edit: function (e) {
             console.log(`edit`, e);
         },
@@ -345,12 +439,44 @@
         },
         dataBound: (e) => {
             console.log(`dataBound`, e);
+
+            var pristine = e.sender.dataSource.data().toJSON();
+
+            ko.utils.arrayForEach(e.sender.dataSource.data(), function (item, index) {
+
+                let rows = document.querySelectorAll('tr[data-uid="' + item.uid + '"]');
+
+                rows.forEach(row => {
+                    ko.cleanNode(row);
+
+                    pristine[index] = supplierRecord({
+                        rec: item,
+                        parentGridWidget: self.gridWidget
+                    });
+
+                    ko.applyBindings(pristine[index], row);
+                });
+            });
         },
         save: (data) => {
             console.log(`saveChanges`, e);
         },
         saveChanges: (e) => {
-            console.log(`saveChanges`, e);
+            console.log('suppliers saveChanges', e);
+
+            let data = e.sender.dataSource.data();
+
+            for (let i = 0; i < data.length; i++) {
+
+                let item = data[i];
+
+                if (item.isNew() || item.dirty) {
+
+                    delete item.productionStoppedParams;
+                    delete item.shippingStoppedParams;
+
+                }
+            }
         },
         excelExport: (e) => {
             let now = new Date();
@@ -381,7 +507,7 @@
 
     self.filters.supplierFilters.subscribe(nv => {
         self.refresh();
-    })
+    });
 
     //#endregion
 

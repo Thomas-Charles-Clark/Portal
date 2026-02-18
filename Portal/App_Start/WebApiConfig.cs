@@ -36,6 +36,7 @@ using SharedEFClasses.Models.Payment;
 using SharedEFClasses.Models.Suppliers.PaymentRequests;
 using SharedEFClasses.Models.Suppliers.PaymentApprovals;
 using SharedEFClasses.Models.Suppliers.PaymentApproval;
+using SharedEFClasses.Models.Suppliers.Payments;
 
 namespace Portal
 {
@@ -1231,6 +1232,8 @@ namespace Portal
 		{
 			ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
 
+			builder.EntitySet<SupplierPayments_SupplierRecord>("SupplierPayments_SupplierRecords");
+
 			builder.EntitySet<SupplierPaymentRequest_SelectRecord>("SupplierPaymentRequest_SelectRecords");
 
 			builder.EntitySet<SupplierPaymentApproval_Basket_SelectRecord>("SupplierPaymentApproval_Basket_SelectRecords");
@@ -1249,6 +1252,10 @@ namespace Portal
 			basketSelect.ReturnsCollectionFromEntitySet<SupplierPaymentApproval_Basket_SelectRecord>(entitySetName: "SupplierPaymentApproval_Basket_SelectRecords");
 			basketSelect.Parameter<SupplierPaymentApproval_Basket_SelectDTO>("dto");
 
+			var supplierSelect = builder.EntityType<SupplierPayments_SupplierRecord>().Collection.Function("SuppliersGridRead");
+
+			supplierSelect.ReturnsCollectionFromEntitySet<SupplierPayments_SupplierRecord>(entitySetName: "SupplierPayments_SupplierRecords");
+			supplierSelect.Parameter<SupplierPayments_Supplier_SelectDTO>("dto");
 
 			return builder.GetEdmModel();
 		}
