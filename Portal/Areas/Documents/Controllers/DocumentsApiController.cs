@@ -43,7 +43,9 @@ namespace Portal.Areas.Documents.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<IHttpActionResult> GetDocument([FromUri] PassDocumentBase64Identifier objDoc64)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             byte[] byteArray = Convert.FromBase64String(objDoc64.d);
 
@@ -95,7 +97,9 @@ namespace Portal.Areas.Documents.Controllers
         }
 
         [HttpPost]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<IHttpActionResult> FetchDocument([FromBody] PassDocumentBase64Identifier objDoc64)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             byte[] byteArray = Convert.FromBase64String(objDoc64.d);
 

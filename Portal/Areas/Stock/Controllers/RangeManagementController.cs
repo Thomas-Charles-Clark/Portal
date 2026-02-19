@@ -63,7 +63,9 @@ namespace Portal.Areas.Stock.Controllers
         }
 
         [HttpPost]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<ActionResult> ProductImagesDownload(RangeManagementXlsxDto dto)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             foreach (var fileName in Directory.EnumerateFiles(Server.MapPath("~/Programmatic/ImageDownloads"), "*.zip"))
             {

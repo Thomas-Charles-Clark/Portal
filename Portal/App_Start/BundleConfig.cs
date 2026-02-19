@@ -523,22 +523,22 @@ namespace Portal
                         $"{jsPrefix}/lib/kendo/kendo.modernizr.custom{jsSuffix}"));
 
             bundles.Add(new ScriptBundle("~/bundles/js/components").Include(
-                    $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                    $"{jsPrefix}/models/trade-account-selector{jsSuffix}",
-                    $"{jsPrefix}/models/product-search{jsSuffix}",
-                    $"{jsPrefix}/models/order-search{jsSuffix}",
-                    $"{jsPrefix}/models/order-products-basket-splitter{jsSuffix}",
-                    $"{jsPrefix}/models/stock-check-request{jsSuffix}",
-                    $"{jsPrefix}/models/order-products{jsSuffix}",
-                    $"{jsPrefix}/models/order-products-drilldown{jsSuffix}",
-                    $"{jsPrefix}/models/order-products-member-basket-fetcher{jsSuffix}",
-                    $"{jsPrefix}/models/care-search{jsSuffix}",
-                    $"{jsPrefix}/models/task-search{jsSuffix}",
-                    $"{jsPrefix}/models/visit-search{jsSuffix}",
-                    $"{jsPrefix}/models/visit-booker{jsSuffix}",
-                    $"{jsPrefix}/models/member-search{jsSuffix}",
-                    $"{jsPrefix}/models/recently-used-members{jsSuffix}",
-                    $"{jsPrefix}/models/address{jsSuffix}",
+                    $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                    $"{jsPrefix}/models/others/trade-account-selector{jsSuffix}",
+                    $"{jsPrefix}/models/others/product-search{jsSuffix}",
+                    $"{jsPrefix}/models/others/order-search{jsSuffix}",
+                    $"{jsPrefix}/models/others/order-products-basket-splitter{jsSuffix}",
+                    $"{jsPrefix}/models/others/stock-check-request{jsSuffix}",
+                    $"{jsPrefix}/models/others/order-products{jsSuffix}",
+                    $"{jsPrefix}/models/others/order-products-drilldown{jsSuffix}",
+                    $"{jsPrefix}/models/others/order-products-member-basket-fetcher{jsSuffix}",
+                    $"{jsPrefix}/models/others/care-search{jsSuffix}",
+                    $"{jsPrefix}/models/others/task-search{jsSuffix}",
+                    $"{jsPrefix}/models/others/visit-search{jsSuffix}",
+                    $"{jsPrefix}/models/others/visit-booker{jsSuffix}",
+                    $"{jsPrefix}/models/others/member-search{jsSuffix}",
+                    $"{jsPrefix}/models/others/recently-used-members{jsSuffix}",
+                    $"{jsPrefix}/models/others/address{jsSuffix}",
                     $"{jsPrefix}/lib/jquery-3.1.1/jquery.twbsPagination{jsSuffix}"
                 ));
 
@@ -559,198 +559,198 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/address").Include(
-                    $"{jsPrefix}/models/address{jsSuffix}"
+                    $"{jsPrefix}/models/others/address{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/trade-account-selector").Include(
-                    $"{jsPrefix}/models/trade-account-selector{jsSuffix}"
+                    $"{jsPrefix}/models/others/trade-account-selector{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/product-search").Include(
-                        $"{jsPrefix}/models/product-search{jsSuffix}"
+                        $"{jsPrefix}/models/others/product-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-search").Include(
                         $"{jsPrefix}/lib/jquery-3.1.1/jquery.twbsPagination{jsSuffix}",
                         $"{jsPrefix}/lib/bootstrap-datetime-picker/bootstrap-datetime-picker{jsSuffix}",
-                        $"{jsPrefix}/models/order-search{jsSuffix}"
+                        $"{jsPrefix}/models/others/order-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/care-search").Include(
-                      $"{jsPrefix}/models/care-search{jsSuffix}"
+                      $"{jsPrefix}/models/others/care-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/task-search").Include(
-                      $"{jsPrefix}/models/task-search{jsSuffix}"
+                      $"{jsPrefix}/models/others/task-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-maintenance").Include(
-                      $"{jsPrefix}/models/customer-maintenance{jsSuffix}"
+                      $"{jsPrefix}/models/others/customer-maintenance{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/visit-search").Include(
                         $"{jsPrefix}/lib/jquery-3.1.1/jquery.twbsPagination{jsSuffix}",
                         $"{jsPrefix}/lib/bootstrap-datetime-picker/bootstrap-datetime-picker{jsSuffix}",
-                        $"{jsPrefix}/models/visit-search{jsSuffix}"
+                        $"{jsPrefix}/models/others/visit-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/member-search").Include(
-                        $"{jsPrefix}/models/recently-used-members{jsSuffix}",
-                        $"{jsPrefix}/models/member-search{jsSuffix}"
+                        $"{jsPrefix}/models/others/recently-used-members{jsSuffix}",
+                        $"{jsPrefix}/models/others/member-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/visit-booker").Include(
-                        $"{jsPrefix}/models/visit-booker{jsSuffix}"
+                        $"{jsPrefix}/models/others/visit-booker{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/lead-search").Include(
                         $"{jsPrefix}/lib/jquery-3.1.1/jquery.twbsPagination{jsSuffix}",
                         $"{jsPrefix}/lib/bootstrap-datetime-picker/bootstrap-datetime-picker{jsSuffix}",
-                        $"{jsPrefix}/models/lead-search{jsSuffix}"
+                        $"{jsPrefix}/models/others/lead-search{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/download-products").Include(
-                        $"{jsPrefix}/models/download-products{jsSuffix}"
+                        $"{jsPrefix}/models/others/download-products{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/projects-dashboard").Include(
-                        $"{jsPrefix}/models/projects-dashboard{jsSuffix}"
+                        $"{jsPrefix}/models/others/projects-dashboard{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/tasks-dashboard").Include(
-                        $"{jsPrefix}/models/tasks-dashboard{jsSuffix}"
+                        $"{jsPrefix}/models/others/tasks-dashboard{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-tagging").Include(
-                        $"{jsPrefix}/models/customer-tagging{jsSuffix}"
+                        $"{jsPrefix}/models/others/customer-tagging{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/sales-statistics").Include(
-                        $"{jsPrefix}/models/sales-statistics{jsSuffix}"
+                        $"{jsPrefix}/models/others/sales-statistics{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/gdpr-survey").Include(
-                        $"{jsPrefix}/models/gdpr-survey{jsSuffix}"
+                        $"{jsPrefix}/models/others/gdpr-survey{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/home").Include(
-                        $"{jsPrefix}/models/home{jsSuffix}"
+                        $"{jsPrefix}/models/others/home{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/sample-request").Include(
-                        $"{jsPrefix}/models/sample-request{jsSuffix}"
+                        $"{jsPrefix}/models/others/sample-request{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/sample-request-dg").Include(
-                        $"{jsPrefix}/models/stock-check-request{jsSuffix}",
-                        $"{jsPrefix}/models/sample-request-dg{jsSuffix}"
+                        $"{jsPrefix}/models/others/stock-check-request{jsSuffix}",
+                        $"{jsPrefix}/models/others/sample-request-dg{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/alternative-products").Include(
-                        $"{jsPrefix}/models/alternative-products{jsSuffix}"
+                        $"{jsPrefix}/models/others/alternative-products{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/trade-order-enquiry").Include(
-                        $"{jsPrefix}/models/trade-order-enquiry{jsSuffix}"
+                        $"{jsPrefix}/models/others/trade-order-enquiry{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-enquiry").Include(
-                      $"{jsPrefix}/models/business-potential{jsSuffix}",
-                      $"{jsPrefix}/models/price-checker{jsSuffix}",
-                      $"{jsPrefix}/models/customer-enquiry{jsSuffix}"
+                      $"{jsPrefix}/models/others/business-potential{jsSuffix}",
+                      $"{jsPrefix}/models/others/price-checker{jsSuffix}",
+                      $"{jsPrefix}/models/others/customer-enquiry{jsSuffix}"
 				));
 
             bundles.Add(new ScriptBundle("~/bundles/js/pricing-enquiry").Include(
-                        $"{jsPrefix}/models/price-checker{jsSuffix}",
-                      $"{jsPrefix}/models/pricing-enquiry{jsSuffix}"
+                        $"{jsPrefix}/models/others/price-checker{jsSuffix}",
+                      $"{jsPrefix}/models/others/pricing-enquiry{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-visit").Include(
-                        $"{jsPrefix}/models/customer-visit{jsSuffix}"
+                        $"{jsPrefix}/models/others/customer-visit{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-care").Include(
-                        $"{jsPrefix}/models/customer-care{jsSuffix}"
+                        $"{jsPrefix}/models/others/customer-care{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/lead-enquiry").Include(
-                    $"{jsPrefix}/models/lead-enquiry{jsSuffix}",
-                    $"{jsPrefix}/models/price-checker{jsSuffix}",
+                    $"{jsPrefix}/models/others/lead-enquiry{jsSuffix}",
+                    $"{jsPrefix}/models/others/price-checker{jsSuffix}",
                     $"{jsPrefix}/lib/jquery-3.1.1/jquery.twbsPagination{jsSuffix}",
                     $"{jsPrefix}/lib/bootstrap-datetime-picker/bootstrap-datetime-picker{jsSuffix}",
-                    $"{jsPrefix}/models/address{jsSuffix}",
-                    $"{jsPrefix}/models/trade-account-contact{jsSuffix}",
-                    $"{jsPrefix}/models/business-potential{jsSuffix}",
+                    $"{jsPrefix}/models/others/address{jsSuffix}",
+                    $"{jsPrefix}/models/others/trade-account-contact{jsSuffix}",
+                    $"{jsPrefix}/models/others/business-potential{jsSuffix}",
                     $"{jsPrefix}/lib/google-maps/google-maps-marker-clusterer{jsSuffix}",
-                    $"{jsPrefix}/models/lead-search{jsSuffix}",
-                    $"{jsPrefix}/models/visit-search{jsSuffix}",
-                    $"{jsPrefix}/models/visit-booker{jsSuffix}",
-                    $"{jsPrefix}/models/member-search{jsSuffix}",
-                    $"{jsPrefix}/models/care-search{jsSuffix}",
-                    $"{jsPrefix}/models/trade-account-creation-email-maintenance{jsSuffix}",
+                    $"{jsPrefix}/models/others/lead-search{jsSuffix}",
+                    $"{jsPrefix}/models/others/visit-search{jsSuffix}",
+                    $"{jsPrefix}/models/others/visit-booker{jsSuffix}",
+                    $"{jsPrefix}/models/others/member-search{jsSuffix}",
+                    $"{jsPrefix}/models/others/care-search{jsSuffix}",
+                    $"{jsPrefix}/models/others/trade-account-creation-email-maintenance{jsSuffix}",
 					$"{jsPrefix}/models/trade-accounts/trade-account-contact{jsSuffix}"
 
 				));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-products-base").Include(
-                        $"{jsPrefix}/models/order-products-base{jsSuffix}",
-                        $"{jsPrefix}/models/basket-status{jsSuffix}"
+                        $"{jsPrefix}/models/others/order-products-base{jsSuffix}",
+                        $"{jsPrefix}/models/others/basket-status{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/product-maintenance").Include(
-                        $"{jsPrefix}/models/product-maintenance{jsSuffix}"
+                        $"{jsPrefix}/models/others/product-maintenance{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/treatment-maintenance").Include(
-                        $"{jsPrefix}/models/treatment-maintenance{jsSuffix}"
+                        $"{jsPrefix}/models/others/treatment-maintenance{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/product-type-maintenance").Include(
-                        $"{jsPrefix}/models/product-type-maintenance-code-mirror.bundle{jsSuffix}",
-                        $"{jsPrefix}/models/product-type-maintenance{jsSuffix}"
+                        $"{jsPrefix}/models/others/product-type-maintenance-code-mirror.bundle{jsSuffix}",
+                        $"{jsPrefix}/models/others/product-type-maintenance{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/basket-status").Include(
-                        $"{jsPrefix}/models/basket-status{jsSuffix}"
+                        $"{jsPrefix}/models/others/basket-status{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/translations").Include(
-                    $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                    $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
                     $"{jsPrefix}/models/translations/translations-dashboard-pod{jsSuffix}",
                     $"{jsPrefix}/models/translations/translations{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/product-delivery").Include(
-                        $"{jsPrefix}/models/product-delivery{jsSuffix}"
+                        $"{jsPrefix}/models/others/product-delivery{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/product-categories").Include(
-                        $"{jsPrefix}/models/product-categories{jsSuffix}"
+                        $"{jsPrefix}/models/others/product-categories{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-tracking").Include(
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
-                        $"{jsPrefix}/models/order-tracking{jsSuffix}"
+                        $"{jsPrefix}/models/others/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/others/order-tracking{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/ring-fenced-stock").Include(
-                        $"{jsPrefix}/models/ring-fenced-stock{jsSuffix}"
+                        $"{jsPrefix}/models/others/ring-fenced-stock{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/marketing-messages").Include(
-                        $"{jsPrefix}/models/marketing-messages{jsSuffix}"
+                        $"{jsPrefix}/models/others/marketing-messages{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/marketing-budget").Include(
-                        $"{jsPrefix}/models/marketing-budget{jsSuffix}"
+                        $"{jsPrefix}/models/others/marketing-budget{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/global").Include(
                         $"{jsPrefix}/lib/money/money{jsSuffix}",
                         $"{jsPrefix}/lib/moment/moment-with-locales{jsSuffix}",
                         $"{jsPrefix}/lib/linq/linq{jsSuffix}",
-                        $"{jsPrefix}/models/functions{jsSuffix}",
-                        $"{jsPrefix}/models/extensions{jsSuffix}",
+                        $"{jsPrefix}/models/others/functions{jsSuffix}",
+                        $"{jsPrefix}/models/others/extensions{jsSuffix}",
                         $"{jsPrefix}/lib/jquery-3.1.1/jquery.signalR{jsSuffix}",
                         $"{jsPrefix}/lib/debounce/debounce{jsSuffix}"
                 ));
@@ -759,130 +759,130 @@ namespace Portal
                         $"{jsPrefix}/lib/money/money{jsSuffix}",
                         $"{jsPrefix}/lib/moment/moment-with-locales{jsSuffix}",
                         $"{jsPrefix}/lib/linq/linq{jsSuffix}",
-                        $"{jsPrefix}/models/functions-new{jsSuffix}",
-                        $"{jsPrefix}/models/extensions{jsSuffix}",
+                        $"{jsPrefix}/models/others/functions-new{jsSuffix}",
+                        $"{jsPrefix}/models/others/extensions{jsSuffix}",
                         $"{jsPrefix}/lib/jquery-3.1.1/jquery.signalR{jsSuffix}",
                         $"{jsPrefix}/lib/debounce/debounce{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-returns").Include(
-                        $"{jsPrefix}/models/address{jsSuffix}",
+                        $"{jsPrefix}/models/others/address{jsSuffix}",
                         $"{jsPrefix}/lib/bootstrap-datetime-picker/bootstrap-datetime-picker{jsSuffix}",
                         $"{jsPrefix}/lib/moment/moment-with-locales{jsSuffix}",
                         $"{jsPrefix}/lib/intl-tel-input/intl-tel-input{jsSuffix}",
                         $"{jsPrefix}/lib/intl-tel-input/utils{jsSuffix}",
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/ups-references{jsSuffix}",
-                        $"{jsPrefix}/models/trade-order-returns{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/ups-references{jsSuffix}",
+                        $"{jsPrefix}/models/others/trade-order-returns{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/documents-preview").Include(
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/documents-preview{jsSuffix}"
+                        $"{jsPrefix}/models/others/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/documents-preview{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/application-groups").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/application-groups{jsSuffix}"
+                        $"{jsPrefix}/models/others/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/others/application-groups{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-invite").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/customer-invite{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/customer-invite{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/treatment-invoice-approval").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/treatment-invoice-approval{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/treatment-invoice-approval{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/paint-invoice-approval").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/paint-invoice-approval{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/paint-invoice-approval{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/furniture-invoice-approval").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/furniture-invoice-approval{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/furniture-invoice-approval{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/furniture-maintenance").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/furniture-maintenance{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/furniture-maintenance{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/customer-ordering-notes").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/customer-ordering-notes{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/customer-ordering-notes{jsSuffix}"
                 ));
             bundles.Add(new ScriptBundle("~/bundles/js/order-import").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/order-import{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/order-import{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/generic-forms").Include(
-                        $"{jsPrefix}/models/generic-form-factory{jsSuffix}",
-                        $"{jsPrefix}/models/generic-form-field{jsSuffix}",
-                        $"{jsPrefix}/models/generic-form-panel{jsSuffix}"
+                        $"{jsPrefix}/models/others/generic-form-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/generic-form-field{jsSuffix}",
+                        $"{jsPrefix}/models/others/generic-form-panel{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/common-modals").Include(
-                        $"{jsPrefix}/models/common-modals{jsSuffix}"
+                        $"{jsPrefix}/models/others/common-modals{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/common-modals-old").Include(
-                        $"{jsPrefix}/models/common-modals-old{jsSuffix}"
+                        $"{jsPrefix}/models/others/common-modals-old{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/paint-mixing").Include(
-                        $"{jsPrefix}/models/paint-mixing{jsSuffix}"
+                        $"{jsPrefix}/models/others/paint-mixing{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/notifications").Include(
-                        $"{jsPrefix}/models/notifications{jsSuffix}"
+                        $"{jsPrefix}/models/others/notifications{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/trade-account-creation-email-maintenance").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
-                        $"{jsPrefix}/models/trade-account-creation-email-maintenance{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/others/trade-account-creation-email-maintenance{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/retail-store-members").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
-                        $"{jsPrefix}/models/retail-store-members{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/others/retail-store-members{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/press-contacts").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
-                        $"{jsPrefix}/models/press-contacts{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/others/press-contacts{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/stock-management").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/stock-management{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/stock-management{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/fenwick-invoicing").Include(
-                        $"{jsPrefix}/models/fenwick-invoicing{jsSuffix}"
+                        $"{jsPrefix}/models/others/fenwick-invoicing{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/range-management").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/range-management{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/range-management{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/contract-pricing").Include(
-                        $"{jsPrefix}/models/virtual-scrolling-deferred-data{jsSuffix}",
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/contract-pricing{jsSuffix}"
+                        $"{jsPrefix}/models/others/virtual-scrolling-deferred-data{jsSuffix}",
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/contract-pricing{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/virtual-scrolling-deferred-data").Include(
-                        $"{jsPrefix}/models/virtual-scrolling-deferred-data{jsSuffix}"
+                        $"{jsPrefix}/models/others/virtual-scrolling-deferred-data{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/image-download-tasks").Include(
@@ -893,7 +893,7 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-book").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-summary-filter{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-user-defined-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-date-filters{jsSuffix}",
@@ -905,8 +905,8 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-book-detail").Include(
-                        $"{jsPrefix}/models/virtual-scrolling-deferred-data{jsSuffix}",
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/virtual-scrolling-deferred-data{jsSuffix}",
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-advanced-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-summary-filter{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-user-defined-filters{jsSuffix}",
@@ -920,8 +920,8 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-book-reallocate-stock").Include(
-                        $"{jsPrefix}/models/virtual-scrolling-deferred-data{jsSuffix}",
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/virtual-scrolling-deferred-data{jsSuffix}",
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-advanced-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-summary-filter{jsSuffix}",
@@ -936,8 +936,8 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-book-back-orders-without-purchase-orders").Include(
-                        $"{jsPrefix}/models/virtual-scrolling-deferred-data{jsSuffix}",
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/virtual-scrolling-deferred-data{jsSuffix}",
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-advanced-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-summary-filter{jsSuffix}",
@@ -952,23 +952,23 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/parcel-calculator").Include(
-                        $"{jsPrefix}/models/parcel-calculator{jsSuffix}"
+                        $"{jsPrefix}/models/others/parcel-calculator{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/pattern-books").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
-                        $"{jsPrefix}/models/pattern-books{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/others/pattern-books{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/gift-vouchers").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
-                        $"{jsPrefix}/models/gift-vouchers{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/others/gift-vouchers{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/invoice-booking").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/lib/tiff/tiff{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/controllers/invoice-document-download-task-header-controller{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/controllers/invoice-document-download-tasks-controller{jsSuffix}",
@@ -989,28 +989,28 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/email-contacts").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/email-contacts{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/email-contacts{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/marylebone-boxing").Include(
-                        $"{jsPrefix}/models/marylebone-boxing{jsSuffix}"
+                        $"{jsPrefix}/models/others/marylebone-boxing{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/neiman-marcus-order-status").Include(
-                        $"{jsPrefix}/models/neiman-marcus-order-status{jsSuffix}"
+                        $"{jsPrefix}/models/others/neiman-marcus-order-status{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/advertiser-maintenance").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
-                        $"{jsPrefix}/models/pager{jsSuffix}",
-                        $"{jsPrefix}/models/advertiser-maintenance{jsSuffix}"
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/others/pager{jsSuffix}",
+                        $"{jsPrefix}/models/others/advertiser-maintenance{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/documents-sent-report").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
-                        $"{jsPrefix}/models/emailer{jsSuffix}",
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/emailer{jsSuffix}",
                         $"{jsPrefix}/models/documents/sent-report/documents-sent-report-filters{jsSuffix}",
                         $"{jsPrefix}/models/documents/sent-report/documents-sent-report-dashboard{jsSuffix}",
                         $"{jsPrefix}/models/documents/sent-report/documents-sent-report-viewing-document{jsSuffix}",
@@ -1018,7 +1018,7 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/credit-control").Include(
-                        $"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
 						$"{jsPrefix}/models/credit-control/credit-control-sales-breakdown{jsSuffix}",
 						$"{jsPrefix}/models/credit-control/credit-control-sales-breakdown-pod{jsSuffix}",
 						$"{jsPrefix}/models/credit-control/credit-control-sales-breakdown-record{jsSuffix}",
@@ -1044,7 +1044,7 @@ namespace Portal
                 ));
 
 			bundles.Add(new ScriptBundle("~/bundles/js/trade-account-contacts").Include(
-						$"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+						$"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
 						$"{jsPrefix}/models/trade-accounts/trade-account{jsSuffix}",
 						$"{jsPrefix}/models/trade-accounts/trade-account-contacts-filters{jsSuffix}",
 						$"{jsPrefix}/models/trade-accounts/trade-account-contacts{jsSuffix}",
@@ -1053,7 +1053,7 @@ namespace Portal
 				));
 
 			bundles.Add(new ScriptBundle("~/bundles/js/supplier-payments").Include(
-						$"{jsPrefix}/models/kendo-mdc-drop-down-list-factory{jsSuffix}",
+						$"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments-approval{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments-approvals{jsSuffix}",

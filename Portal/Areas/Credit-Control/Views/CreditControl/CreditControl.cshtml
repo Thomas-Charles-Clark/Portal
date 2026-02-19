@@ -374,11 +374,57 @@
 	</sidebar>
 	<main id="credit-control-main">
 		<div id="performance-container">
-			<div class="card">
-				<div class="card-body">
-					<h4>
-						Performance
-					</h4>
+			<div class="accordion" id="performance-accordion">
+				<div class="accordion-item">
+					<h2 class="accordion-header">
+						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#performance-collapse" aria-expanded="true" aria-controls="performance-collapse">
+							Performance
+						</button>
+					</h2>
+					<div id="performance-collapse" class="accordion-collapse collapse" data-bs-parent="#performance-accordion">
+						<div class="accordion-body" data-bind="with: performance">
+							<div class="blocker" data-bind="flexFadeVisible: busy">
+								<h4 class="loading-title" data-bind="text: busyMessage"></h4>
+								<div class="loading-spinner"></div>
+							</div>
+							<div class="prefilters">
+								<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: reportingGroupParams }"></div>
+								<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyOrSterlingParams }"></div>
+							</div>
+							<table class="performance-table table table-bordered">
+								<colgroup>
+									<col />
+									<!-- ko foreach: periods -->
+									<col />
+									<!-- /ko -->
+								</colgroup>
+								<thead>
+									<tr>
+										<th>
+
+										</th>
+										<!-- ko foreach: periods -->
+										<th>
+											<span data-bind="text: $data"></span>
+										</th>
+										<!-- /ko -->
+									</tr>
+								</thead>
+								<tbody data-bind="foreach: records">
+									<tr>
+										<td>
+											<span data-bind="text: $data[0]">
+										</td>
+										<!-- ko foreach: $data[1] -->^
+										<td>
+											<span data-bind="text: formatCurrency(TotalOutstanding, 2, FormattingCulture, CurrencyCode)"></span>
+										</td>
+										<!-- /ko -->
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -11,7 +11,9 @@ namespace SharedEFClasses.Models
 {
     public static class ZipTask
     {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public static async Task ExecuteZipArchive(ImageDownloadTask taskDetail, CancellationToken token, IProgress<int> progress)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (token.IsCancellationRequested)
             {
@@ -160,7 +162,9 @@ namespace SharedEFClasses.Models
                 progress.Report(100);
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public static async Task ExecuteDocumentDownloadZipArchive(DocumentDownloadTask taskDetail, CancellationToken token, IProgress<int> progress)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (token.IsCancellationRequested)
             {

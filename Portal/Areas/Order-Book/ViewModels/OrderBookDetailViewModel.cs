@@ -40,7 +40,9 @@ namespace Portal.Areas.Orders.ViewModels
             Parameters = parameters;
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public static async Task<OrderBookDetailViewModel> CreateAsync(
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             string procedureName,
             ExpandoObject objParams,
             RoleProperties properties,

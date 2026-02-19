@@ -59,7 +59,9 @@ namespace Portal.Areas.Customers.Controllers
         }
 
         [HttpPost]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<IHttpActionResult> Autocomplete([FromBody] PassAutocomplete objAutocomplete)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var results = PortalDb.GiftVouchers
                 .Where(gv => gv.Code.StartsWith(objAutocomplete.term))

@@ -34,7 +34,9 @@ namespace Portal.Areas.Sales.Controllers
         }
 
         [ActionName("index")]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async System.Threading.Tasks.Task<ActionResult> Index(long? leadId) 
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var application = PortalDb.Applications.Where(p => p.ControllerName == "leads" && p.AreaName == "sales" && p.ActionName == "index").Single();
 

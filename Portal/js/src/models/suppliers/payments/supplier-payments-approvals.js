@@ -27,7 +27,8 @@
             page: self.gridWidget().dataSource.page(),
             pageSize: self.gridWidget().dataSource.pageSize(),
             filter: self.gridWidget().dataSource.filter(),
-            sort: self.gridWidget().dataSource.sort()
+            sort: self.gridWidget().dataSource.sort(),
+            aggregate: self.gridWidget().dataSource.aggregate()
         });
     }
 
@@ -62,12 +63,59 @@
         serverFiltering: true,
         serverPaging: true,
         serverSorting: true,
+        serverAggregates: false,
         pageSize: 20,
         pageable: {
             pageSize: 20,
             pageSizes: [10, 20, 50, 100, 250, 500, 'all']
         },
         batch: true,
+        aggregate: [{
+            field: "BackOrderValueGBP",
+            aggregate: "sum"
+        }, {
+            field: "BackOrderQuantity",
+            aggregate: "sum"
+        }, {
+            field: 'NewCollectionProductCount_1',
+            aggregate: "sum"
+        }, {
+            field: 'NewCollectionProductCount_2',
+            aggregate: "sum"
+        }, {
+            field: 'NewCollectionProductCount_3',
+            aggregate: "sum"
+        }, {
+            field: 'TotalValueGBP',
+            aggregate: "sum"
+        }, {
+            field: 'RegisterValueGBP',
+            aggregate: "sum"
+        }, {
+            field: 'NotDueTotalValueGBP',
+            aggregate: "sum"
+        }, {
+            field: 'OverdueTotalValueGBP',
+            aggregate: "sum"
+        }, {
+            field: 'Debt30DayValueGBP',
+            aggregate: "sum"
+        }, {
+            field: 'Debt60DayValueGBP',
+            aggregate: "sum"
+        }, {
+            field: 'Debt90DayValueGBP',
+            aggregate: "sum"
+        }, {
+            field: 'Debt120DayValueGBP',
+            aggregate: "sum"
+        }, {
+            field: 'PaymentRequestPaymentPlanTotal',
+            aggregate: "sum"
+        }, {
+            field: 'PaymentRequestOtherTotal',
+            aggregate: "sum"
+        }],
         transport: {
             read: (options) => {
 
@@ -99,12 +147,14 @@
                 })
                     .then(window.handleFetchResponse)
                     .then(data => {
+                    
+                        console.log('approvalsGridRead returning', data);
 
                         self.gridWidget().setOptions({
                             columns: self.gridColumns({
-                                productHeadingOne: data.newCollectionProductHeadings.NewCollectionHeading_1,
-                                productHeadingTwo: data.newCollectionProductHeadings.NewCollectionHeading_2,
-                                productHeadingThree: data.newCollectionProductHeadings.NewCollectionHeading_3
+                                productHeadingOne: `${data.newCollectionProductHeadings.NewCollectionHeading_1}<br/><span id='new-collections-one-total-quantity'></span>`,
+                                productHeadingTwo: `${data.newCollectionProductHeadings.NewCollectionHeading_2}<br/><span id='new-collections-two-total-quantity'></span>`,
+                                productHeadingThree: `${data.newCollectionProductHeadings.NewCollectionHeading_3}<br/><span id='new-collections-three-total-quantity'></span>`
                             })
                         })
 
@@ -123,6 +173,8 @@
                         }
                         
                         options.success(data.kendoGridResult);
+
+
                     })
                     .catch(window.catchFetchError);
             }
@@ -172,11 +224,11 @@
                     NewCollectionProductCount_3: {
                         type: 'number'
                     },
-                    TotalValueGBP: {
+                    TotalValue: {
                         type: 'number',
                         nullable: false
                     },
-                    TotalValue: {
+                    RegisterValue: {
                         type: 'number',
                         nullable: false
                     },
@@ -209,6 +261,31 @@
                     },
                     ShippingStopped: {
                         type: 'boolean'
+                    },
+                    TotalValueGBP: {
+                        type: 'number',
+                        nullable: false
+                    },
+                    RegisterValueGBP: {
+                        type: 'number'
+                    },
+                    NotDueTotalValueGBP: {
+                        type: 'number'
+                    },
+                    OverdueTotalValueGBP: {
+                        type: 'number'
+                    },
+                    Debt30DayValueGBP: {
+                        type: 'number'
+                    },
+                    Debt60DayValueGBP: {
+                        type: 'number'
+                    },
+                    Debt90DayValueGBP: {
+                        type: 'number'
+                    },
+                    Debt120DayValueGBP: {
+                        type: 'number'
                     },
                     PaymentRequestPaymentPlanTotal: {
                         type: 'number'
@@ -262,7 +339,7 @@
                     response.Data[i].Details = items;
                 }
 
-                console.log('supplierPaymentApprovals schema.parse returning', response);
+                console.log('approvals dataSource schema.parse returning', response);
 
                 return response;
             }
@@ -285,7 +362,7 @@
         requestStart: (e) => {
             self.busy(true);
 
-            console.log(`requestStart`, e);
+            console.log(`approvals dataSource requestStart`, e);
 
             if (self.ready()) {
                 self.refreshDashboard();
@@ -294,7 +371,7 @@
         noDataTemplate: 'Nothing to display',
         requestEnd: (e) => {
 
-            console.log(`requestEnd`, e);
+            console.log(`approvals dataSource requestEnd`, e);
 
             self.busy(false);
         }
@@ -349,10 +426,13 @@
     },
     self.spacerColumn(),
     {
-        title: 'Back Orders',
+        title: `Back Orders`,
+        headerAttributes: {
+            "class": "back-orders-superheader" 
+        },
         columns: [{
             field: 'BackOrderQuantity',
-            title: 'Quantity',
+            title: "Quantity<br/><span id='back-orders-total-quantity'></span>",
             filterable: {
                 extra: false
             },
@@ -371,7 +451,7 @@
             }
         }, {
             field: 'BackOrderValueGBP',
-            title: 'Value',
+            title: "Value<br/><span id='back-orders-total-value-gbp'></span>",
             filterable: {
                 extra: false
             },
@@ -392,7 +472,10 @@
     },
     self.spacerColumn(),
     {
-        title: 'New Collection Products',
+        title: "New Collection Products",
+        headerAttributes: {
+            "class": "new-collection-superheader"
+        },
         columns: [{
             field: 'NewCollectionProductCount_1',
             headerAttributes: {
@@ -433,10 +516,13 @@
     },
     self.spacerColumn(),
     {
-        title: 'Supplier Invoices',
+        title: "Supplier Invoices",
+        headerAttributes: {
+            "class": "supplier-invoices-superheader"
+        },
         columns: [{
             field: 'TotalValue',
-            title: 'Total',
+            title: "Total<br/><span id='supplier-invoices-total-value-gbp'></span>",
             headerAttributes: {
                 "class": "supplier-invoices-column-subheader"
             },
@@ -455,8 +541,28 @@
                 }
             }
         }, {
+            field: 'RegisterValue',
+            title: "On Register<br/><span id='supplier-invoices-register-value-gbp'></span>",
+            headerAttributes: {
+                "class": "supplier-invoices-column-subheader"
+            },
+            attributes: (dataItem) => {
+                let result = {
+                    "class": "supplier-invoices-column"
+                };
+
+                return result;
+            },
+            template: (e) => {
+                if (e.RegisterValue != null) {
+                    return formatCurrency(e.RegisterValue, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                } else {
+                    return '';
+                }
+            }
+        }, {
             field: 'NotDueTotalValue',
-            title: 'Not Due',
+            title: "Not Due<br/><span id='supplier-invoices-not-due-total-value-gbp'></span>",
             headerAttributes: {
                 "class": "supplier-invoices-column-subheader"
             },
@@ -476,7 +582,7 @@
             }
         }, {
             field: 'OverdueTotalValue',
-            title: 'Overdue',
+            title: "Overdue<br/><span id='supplier-invoices-overdue-total-value-gbp'></span>",
             headerAttributes: {
                 "class": "supplier-invoices-column-subheader"
             },
@@ -504,7 +610,7 @@
             }
         }, {
             field: 'Debt30DayValue',
-            title: '30 day',
+            title: "30 day<br/><span id='supplier-invoices-30-day-value-gbp'></span>",
             headerAttributes: {
                 "class": "supplier-invoices-column-subheader"
             },
@@ -531,7 +637,7 @@
             }
         }, {
             field: 'Debt60DayValue',
-            title: '60 day',
+            title: "60 day<br/><span id='supplier-invoices-60-day-value-gbp'></span>",
             headerAttributes: {
                 "class": "supplier-invoices-column-subheader"
             },
@@ -557,7 +663,7 @@
             }
         }, {
             field: 'Debt90DayValue',
-            title: '90 day',
+            title: "90 day<br/><span id='supplier-invoices-90-day-value-gbp'></span>",
             headerAttributes: {
                 "class": "supplier-invoices-column-subheader"
             },
@@ -582,7 +688,7 @@
             }
         }, {
             field: 'Debt120DayValue',
-            title: '120 day',
+            title: "120 day<br/><span id='supplier-invoices-120-day-value-gbp'></span>",
             headerAttributes: {
                 "class": "supplier-invoices-column-subheader"
             },
@@ -661,10 +767,13 @@
     },
     self.spacerColumn(),
     {
-        title: 'Payment Requests',
+        title: "Payment Requests",
+        headerAttributes: {
+            "class": "payment-requests-superheader"
+        },
         columns: [{
             field: 'PaymentRequestPaymentPlanTotal',
-            title: 'Payment Plan',
+            title: "Plans<br/><span id='payment-requests-total-value-gbp'></span>",
             headerAttributes: {
                 "class": "payment-requests-column-subheader"
             },
@@ -688,7 +797,7 @@
             }
         }, {
             field: 'PaymentRequestOtherTotal',
-            title: 'Other',
+            title: "Other<br/><span id='other-requests-total-value-gbp'></span>",
             headerAttributes: {
                 "class": "payment-requests-column-subheader"
             },
@@ -1120,6 +1229,43 @@
                         grid.collapseRow(row);
                     }
                 });
+
+                document.querySelector('#back-orders-total-quantity').innerHTML = `${formatNumber(grid.dataSource.aggregates().BackOrderQuantity.sum, 2, 'en-GB')}`;
+
+                document.querySelector('#back-orders-total-value-gbp').innerHTML = `${formatCurrency(grid.dataSource.aggregates().BackOrderValueGBP.sum, 2, 'en-GB', 'GBP')}`;
+
+                document.querySelector('#new-collections-one-total-quantity').innerHTML = `${formatCurrency(grid.dataSource.aggregates().NewCollectionProductCount_1.sum, 2, 'en-GB', 'GBP')}`;
+
+                document.querySelector('#new-collections-two-total-quantity').innerHTML = `${formatCurrency(grid.dataSource.aggregates().NewCollectionProductCount_2.sum, 2, 'en-GB', 'GBP')}`;
+
+                document.querySelector('#new-collections-three-total-quantity').innerHTML = `${formatCurrency(grid.dataSource.aggregates().NewCollectionProductCount_3.sum, 2, 'en-GB', 'GBP')}`;
+
+                document.querySelector('#supplier-invoices-total-value-gbp').innerHTML = `${formatCurrency(grid.dataSource.aggregates().TotalValueGBP.sum, 2, 'en-GB', 'GBP')}`;
+
+                document.querySelector('#supplier-invoices-register-value-gbp').innerHTML = `${formatCurrency(grid.dataSource.aggregates().RegisterValueGBP.sum, 2, 'en-GB', 'GBP')}`;
+
+                document.querySelector('#supplier-invoices-not-due-total-value-gbp').innerHTML = `${formatCurrency(grid.dataSource.aggregates().NotDueTotalValueGBP.sum, 2, 'en-GB', 'GBP')}`;
+
+                document.querySelector('#supplier-invoices-overdue-total-value-gbp').innerHTML = `${formatCurrency(grid.dataSource.aggregates().OverdueTotalValueGBP.sum, 2, 'en-GB', 'GBP')}`;
+
+                document.querySelector('#supplier-invoices-30-day-value-gbp').innerHTML = `${formatCurrency(grid.dataSource.aggregates().Debt30DayValueGBP.sum, 2, 'en-GB', 'GBP')}`;
+
+                document.querySelector('#supplier-invoices-60-day-value-gbp').innerHTML = `${formatCurrency(grid.dataSource.aggregates().Debt60DayValueGBP.sum, 2, 'en-GB', 'GBP')}`;
+
+                document.querySelector('#supplier-invoices-90-day-value-gbp').innerHTML = `${formatCurrency(grid.dataSource.aggregates().Debt90DayValueGBP.sum, 2, 'en-GB', 'GBP')}`;
+
+                document.querySelector('#supplier-invoices-120-day-value-gbp').innerHTML = `${formatCurrency(grid.dataSource.aggregates().Debt120DayValueGBP.sum, 2, 'en-GB', 'GBP')}`;
+
+                document.querySelector('#payment-requests-total-value-gbp').innerHTML = `${formatCurrency(grid.dataSource.aggregates().PaymentRequestPaymentPlanTotal.sum, 2, 'en-GB', 'GBP')}`;
+
+                document.querySelector('#other-requests-total-value-gbp').innerHTML = `${formatCurrency(grid.dataSource.aggregates().PaymentRequestOtherTotal.sum, 2, 'en-GB', 'GBP')}`;
+                //document.querySelector('#supplier-invoices-total-value-gbp').innerHTML = `Total GBP: ${formatCurrency(grid.dataSource.aggregates().TotalValueGBP.sum, 2, 'en-GB', 'GBP')}`;
+
+                //document.querySelector('#payment-requests-total-value-gbp').innerHTML =
+                //    formatCurrency(grid.dataSource.aggregates().PaymentRequestPaymentPlanTotal.sum +
+                //        grid.dataSource.aggregates().PaymentRequestOtherTotal.sum, 2, 'en-GB', 'GBP');
+
+
             }, 0);
 
             self.refreshDashboard();

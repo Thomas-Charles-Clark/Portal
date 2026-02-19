@@ -43,7 +43,9 @@ namespace Portal.Areas.Parcel.ViewModels
             return result;
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         protected async System.Threading.Tasks.Task InitialiseAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var db = new SharedEFClasses.Models.PortalDbContext();
 

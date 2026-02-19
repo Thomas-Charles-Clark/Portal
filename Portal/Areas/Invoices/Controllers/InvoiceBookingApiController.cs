@@ -613,7 +613,9 @@ namespace Portal.Areas.Invoices.Controllers
         }
 
         [HttpPost]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<IHttpActionResult> Flag(
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             [FromBody] PassInvoiceBookingFlagParams dto)
         {
             var email = PortalDb.EmailStubs.Single(e => e.EmailID == dto.EmailID);
@@ -935,7 +937,9 @@ namespace Portal.Areas.Invoices.Controllers
 
 
         [HttpPost]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<IHttpActionResult> DownloadDocuments([FromBody]PassDocumentDownloadRequest dto)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             foreach (var fileName in Directory.EnumerateFiles(HttpContext.Current.Server.MapPath("~/Programmatic/DocumentDownloads"), "*.zip"))
             {

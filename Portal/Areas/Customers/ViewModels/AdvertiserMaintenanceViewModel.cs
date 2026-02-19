@@ -31,7 +31,9 @@ namespace Portal.Areas.Customers.ViewModels
             FixedSalesMarketID = fixedSalesMarketId;
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public static async Task<AdvertiserMaintenanceViewModel> CreateAsync(
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             byte? fixedSalesMarketId,
             RoleProperties properties,
             string applicationHeading,

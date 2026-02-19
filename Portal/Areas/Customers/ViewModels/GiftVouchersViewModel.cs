@@ -31,7 +31,9 @@ namespace Portal.Areas.Customers.ViewModels
             GiftVoucherCode = giftVoucherCode;
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public static async Task<GiftVouchersViewModel> CreateAsync(
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             string giftVoucherCode,
             RoleProperties properties,
             string applicationHeading,

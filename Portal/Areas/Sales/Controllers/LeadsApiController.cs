@@ -398,7 +398,9 @@ namespace Portal.Areas.Sales.Controllers
     }
 
     [HttpPost]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public async Task<IHttpActionResult> ResetLeadToCreditControl([FromBody]PassLeadID objLeadId)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
       //_ = await portalDb.ResetLeadToCreditControl(objLeadId);
 

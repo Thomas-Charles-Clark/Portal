@@ -619,11 +619,20 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   display: flex;
   flex-flow: wrap;
   flex-direction: column;
-  justify-contents: center;
+  justify-content: left;
 }
 .k-grid thead .k-header.k-filterable .k-cell-inner .k-link {
   white-space: nowrap;
   padding: 0.5rem;
+  flex: 1;
+  align-self: stretch;
+  text-align: left;
+}
+.k-grid thead .k-header.k-filterable .k-cell-inner .k-link .k-column-title {
+  text-align: left;
+}
+.k-grid tfoot {
+  display: none;
 }
 .k-grid .new-collection-column-subheader,
 .k-grid .new-collection-column {
@@ -956,6 +965,9 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 }
 .k-grid.supplier-payments-grid-container table thead.k-grid-header .k-header .k-cell-inner {
   align-items: center;
+}
+.k-grid.supplier-payments-grid-container table thead.k-grid-header .k-header.back-orders-superheader .k-column-title, .k-grid.supplier-payments-grid-container table thead.k-grid-header .k-header.new-collection-superheader .k-column-title, .k-grid.supplier-payments-grid-container table thead.k-grid-header .k-header.supplier-invoices-superheader .k-column-title, .k-grid.supplier-payments-grid-container table thead.k-grid-header .k-header.payment-requests-superheader .k-column-title {
+  text-align: left;
 }
 .k-grid .k-table-td {
   padding: 0.5rem;

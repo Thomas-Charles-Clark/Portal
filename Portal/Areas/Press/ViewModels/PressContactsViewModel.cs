@@ -30,7 +30,9 @@ namespace Portal.Areas.Press.ViewModels
 
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public static async Task<PressContactsViewModel> CreateAsync(
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             RoleProperties properties,
             string applicationHeading,
             string applicationSubHeading)

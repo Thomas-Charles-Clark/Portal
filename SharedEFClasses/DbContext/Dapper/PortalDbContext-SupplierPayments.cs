@@ -104,7 +104,9 @@ namespace SharedEFClasses.Models
 			return result;
 		}
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public async Task<SupplierPayments_SupplierResult> SupplierPayment_Supplier_Select(SupplierPayments_Supplier_SelectDTO dto)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 		{
 			var results = this.Database.Connection.QueryMultiple("[payment].[Supplier_Select]", dto, null, 60, System.Data.CommandType.StoredProcedure);
 

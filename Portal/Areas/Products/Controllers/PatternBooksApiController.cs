@@ -104,7 +104,9 @@ namespace Portal.Areas.Products.Controllers
         }
 
         [HttpPost]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<HttpResponseMessage> FetchPDF([FromBody] PassPatternBookFetch objPatternBook)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var results = PortalDb.FetchPatternBookContents(new PassStockViewerLoad()
             {

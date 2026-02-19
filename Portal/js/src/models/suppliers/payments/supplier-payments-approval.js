@@ -68,49 +68,6 @@
 
     self.amountInSterling = ko.observable(rec.AmountInSterling);
 
-    self.approvedAmountInSterling = ko.computed({
-        read: () => {
-            if (self.approvedAmountInCurrency() && self.exchangeRate()) {
-                return Math.round((self.approvedAmountInCurrency() / self.exchangeRate()) / 100) * 100;
-            }
-        },
-        write: (value) => {
-            console.log('approvedAmountInSterling write', value);
-        }
-    }, self);
-
-    self.approvedAmountInSterlingFormatted = ko.computed({
-        read: () => {
-            let aais = self.approvedAmountInSterling();
-
-            if (aais)
-                return window.formatCurrency(aais, 2, 'en-GB', 'GBP')
-            else
-                return ''
-        }, write: (value) => {
-            console.log('approvedAmountInSterlingFormatted write', value);
-        }
-    }, self);
-
-    self.forexParams = {
-        buttons: false,
-        label: self.forexLabel,
-        observable: self.exchangeRate,
-        useNativeValidation: false,
-        decorateInputElement: false,
-        insertValidationMessages: false,
-        enable: ko.observable(true),
-        disable: ko.observable(true),
-        locked: ko.observable(true),
-        clearable: ko.observable(false),
-        revertible: ko.observable(false),
-        busy: ko.observable(false),
-        inputType: 'text',
-        minValue: 0.01,
-        maxValue: null,
-        step: 1
-    }
-
     self.deciderComments = ko.observable(rec.DeciderComments);
 
     //#endregion

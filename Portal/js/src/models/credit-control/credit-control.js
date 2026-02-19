@@ -56,9 +56,7 @@ const creditControlViewModel = (() => {
 
     self.sendResponse = ko.observable();
 
-    self.performance = creditControlPerformanceViewModel({
-
-    });
+    self.performance = creditControlPerformanceViewModel();
 
     self.dashboardPods = ko.observableArray([]);
 
@@ -219,7 +217,7 @@ const creditControlViewModel = (() => {
 
                     self.tradeAccounts(data.gridData); // the mapping to ViewModel occurs in the grid's dataBound event handler
 
-                    self.performance.setTradeAccountDetails(data.totalsRecord)
+                    self.performance.tradeAccountCodeList(data.totalsRecord.TradeAccountCodeList);
 
                     //self.gridParams.widget().setOptions({
                     //    columns: self.gridColumns()
@@ -1321,34 +1319,6 @@ const creditControlViewModel = (() => {
                 self.busy(false);
 
                 self.salesBreakdownModal.show();
-            })
-    }
-
-    self.fetchPerformance = (data, event) => {
-        self.busy(true);
-
-        console.log('fetchPerformance calling with', data);
-
-        fetch("/api/CreditControlAPI/FetchPerformance", {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            body: JSON.stringify(data)
-        })
-            .then(window.handleFetchResponse)
-            .then(result => {
-                console.log('fetchPerformance returned', result);
-                self.performance(creditControlPerformanceViewModel({
-                    callee: data,
-                    rec: result
-                }));
-
-                self.busy(false);
-            })
-            .catch(err => {
-                self.busy(false);
-                window.catchFetchError(err);
             })
     }
 

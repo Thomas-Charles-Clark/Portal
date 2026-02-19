@@ -408,15 +408,26 @@ html {
 					display: flex;
 					flex-flow: wrap;
 					flex-direction: column;
-					justify-contents: center;
+					justify-content: left;
 
 					.k-link {
 						white-space: nowrap;
 						padding: $sm-gutter;
+						flex: 1;
+						align-self: stretch;
+						text-align: left;
+
+						.k-column-title {
+							text-align: left;
+						}
 					}
 				}
 			}
 		}
+	}
+
+	tfoot {
+		display: none;
 	}
 
 	.new-collection-column-subheader,
@@ -927,6 +938,15 @@ html {
 
 						.k-cell-inner {
 							align-items: center;
+						}
+
+						&.back-orders-superheader,
+						&.new-collection-superheader,
+						&.supplier-invoices-superheader,
+						&.payment-requests-superheader {
+							.k-column-title {
+								text-align: left;
+							}
 						}
 					}
 				}

@@ -100,7 +100,9 @@ namespace Portal.Areas.Fenwick.Controllers
         }
 
         [HttpPost]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<IHttpActionResult> FetchSelfBillInvoicesForDate([FromBody] PassFencwickSelfBillInvoiceDate objDto)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var results = PortalDb.FenwickSelfBillInvoices.Where(sbi => sbi.Deleted == false && sbi.InvoiceDate == objDto.InvoiceDate).Select(sbi => new 
             {
@@ -167,8 +169,6 @@ namespace Portal.Areas.Fenwick.Controllers
 
             byte[] bytes = null;
 
-            string fileExtension = null;
-
             if (provider.FileData.Any())
             {
                 bytes = File.ReadAllBytes(result.FileData[0].LocalFileName);
@@ -176,13 +176,6 @@ namespace Portal.Areas.Fenwick.Controllers
                 if (bytes.Count() > 2097152)
                 {
                     return Request.CreateResponse(HttpStatusCode.ExpectationFailed, "File too large");
-                }
-
-                switch (provider.FileData[0].Headers.ContentType.MediaType)
-                {
-                    case "application/pdf":
-                        fileExtension = "pdf";
-                        break;
                 }
 
                 File.Delete(result.FileData[0].LocalFileName);

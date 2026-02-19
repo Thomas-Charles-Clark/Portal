@@ -137,7 +137,11 @@ namespace SharedEFClasses.Models
 
 		public async Task<CreditControl_AgedSalesLedger_Result> CreditControl_AgedSalesLedger_Select(CreditControl_TradeAccount_PerformanceDTO dto)
 		{
-			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_AgedSalesLedger_Select]", dto, null, 60, CommandType.StoredProcedure);
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_AgedSalesLedger_Select]", new {
+				dto.ReportGrouping,
+				dto.CurrencyOrSterling,
+				TradeAccountCodeList = String.Join(",", dto.TradeAccountCodeList)
+			}, null, 60, CommandType.StoredProcedure);
 
 			return new CreditControl_AgedSalesLedger_Result()
 			{

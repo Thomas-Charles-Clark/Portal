@@ -51,8 +51,6 @@ namespace Portal.Areas.Customers.Controllers
         [HttpPost]
         public IHttpActionResult CheckCreationEmailAttachment([FromBody] TradeAccountCreationEmailAttachmentDto dto)
         {
-            var success = true;
-
             try
             {
                 if (!System.IO.Directory.Exists($"{dto.PathRoot}\\{dto.SalesMarketFolderName}\\"))

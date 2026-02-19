@@ -27,14 +27,24 @@ namespace SharedEFClasses.Models.Suppliers.PaymentApproval
 		public int NewCollectionProductCount_3 { get; set; }
 
 		// Supplier Aged Debt
-		public decimal TotalValueGBP { get; set; }
 		public decimal TotalValue { get; set; }
+		public decimal RegisterValue { get; set; }
 		public decimal NotDueTotalValue { get; set; }
 		public decimal OverdueTotalValue { get; set; }
 		public decimal Debt30DayValue { get; set; }
 		public decimal Debt60DayValue { get; set; }
 		public decimal Debt90DayValue { get; set; }
 		public decimal Debt120DayValue { get; set; }
+
+		// Supplier Aged Debt GBP
+		public decimal TotalValueGBP { get; set; }
+		public decimal RegisterValueGBP { get; set; }
+		public decimal NotDueTotalValueGBP { get; set; }
+		public decimal OverdueTotalValueGBP { get; set; }
+		public decimal Debt30DayValueGBP { get; set; }
+		public decimal Debt60DayValueGBP { get; set; }
+		public decimal Debt90DayValueGBP { get; set; }
+		public decimal Debt120DayValueGBP { get; set; }
 
 		// Problems
 		public bool ProductionStopped { get; set; }
