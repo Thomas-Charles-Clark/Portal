@@ -62,7 +62,8 @@ namespace SharedEFClasses.Models
 				dto.PageSize,
 				Page = dto.Page - 1,
 				dto.TradeAccountCompanyCode,
-				dto.InvoiceCompanyCode
+				dto.InvoiceCompanyCode,
+				dto.SortOrder
 			};
 
 			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_Search]", dat, null, 30, CommandType.StoredProcedure);

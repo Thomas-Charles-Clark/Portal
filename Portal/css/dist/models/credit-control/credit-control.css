@@ -398,6 +398,15 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   padding: 0.75rem 1rem;
 }
 
+#credit-control-main .nav-item .nav-link {
+  font-size: 1.25rem;
+}
+
+#credit-control-tab-content {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-top: 0;
+}
 #main-credit-control-container {
   will-change: opacity;
   transition: opacity 300ms ease-in-out;
@@ -419,7 +428,12 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   left: 0;
   top: 0;
 }
-
+#main-credit-control-container #credit-control-main #credit-control-grid-container .spacer-column-header,
+#main-credit-control-container #credit-control-main #credit-control-grid-container .spacer-column {
+  padding: 0 !important;
+  background-color: #f8f9fa !important;
+  width: 0.25rem;
+}
 #send-statements-controls {
   display: flex;
   gap: 1rem;
@@ -452,6 +466,9 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   white-space: normal;
   word-break: break-word;
 }
+#credit-control-main .k-header.k-grid-toolbar {
+  border-bottom: 0;
+}
 #credit-control-main .statement-column i {
   font-size: 2rem;
 }
@@ -464,6 +481,9 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #credit-control-main .k-grid .html-cell .alert {
   margin-bottom: 0;
   padding: 0.25rem 0.5rem;
+}
+#credit-control-main .k-grid .html-cell .alert + .alert {
+  margin-top: 0.25rem;
 }
 #credit-control-main .k-grid .grid-btn-cell {
   position: relative;
@@ -509,6 +529,8 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   vertical-align: middle;
   background-color: #084298;
   color: #fff;
+  border-left: 1px solid #084298;
+  border-right: 1px solid #084298;
 }
 #credit-control-main .k-grid .credit-limit-subheading,
 #credit-control-main .k-grid .totals-subheading,
@@ -645,8 +667,8 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 }
 
 #selected-filter-pills {
-  margin-bottom: 1rem;
   display: flex;
+  margin-bottom: 1rem;
 }
 #selected-filter-pills .filter-pill {
   background-color: #ccc;

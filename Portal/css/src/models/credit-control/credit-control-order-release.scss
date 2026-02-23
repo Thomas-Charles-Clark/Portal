@@ -1,0 +1,159 @@
+﻿@import '../common.scss';
+
+#order-release-pane {
+	.prefilters {
+		display: flex;
+		gap: $m-gutter;
+		margin-bottom: $l-gutter;
+
+		.prefilter {
+			flex: 0 1 240px;
+		}
+
+		#held-orders-search-term-filter {
+			flex: 1 1 490px;
+		}
+
+		#held-orders-filter-search-btn {
+			flex: 0 0 auto;
+			padding: $btn-padding-y $btn-padding-x;
+			margin-top: 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: $sm-gutter;
+		}
+
+		#held-orders-filter-clear-btn {
+			flex: 0 1 auto;
+			padding: $btn-padding-y $btn-padding-x;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: $sm-gutter;
+			margin-top: 0;
+		}
+
+		.k-dropdown-wrap,
+		.k-multiselect-wrap,
+		.mdc-text-field {
+			background-color: $white;
+			border-radius: $border-radius;
+
+			.k-clear-value {
+				display: none !important;
+			}
+		}
+	}
+
+	.hold-reason-summary-pods {
+		margin-bottom: $l-gutter;
+
+		.pods-wrapper {
+			display: flex;
+			gap: $m-gutter;
+
+			$light-red-bg: #ca2121;
+
+			.hold-reason-summary-pod {
+				padding: $m-gutter;
+				background-color: $white;
+				border: 4px solid $white;
+				border-radius: $border-radius;
+				border: 1px solid $gray-500;
+				cursor: pointer;
+				flex: 1 1 auto;
+				will-change: background-color, border-color, color;
+				transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out, color 150ms ease-in-out;
+				position: relative;
+
+				&:hover,
+				&:focus,
+				&:focus-within {
+					background-color: $gray-700;
+					border-color: $gray-700;
+					color: $white;
+				}
+
+				&.active {
+					background-color: $gray-700;
+					border-color: shade-color($gray-700, 40%);
+					color: $white;
+				}
+
+				&.priority {
+					background-color: $red-500;
+					border: 4px solid $red-500;
+					color: $white;
+
+					&:hover,
+					&:focus,
+					&:focus-within {
+						background-color: $light-red-bg;
+						border-color: shade-color($light-red-bg, 30%);
+					}
+
+					&.active {
+						background-color: $red-500;
+						border-color: shade-color($gray-700, 40%);
+					}
+				}
+
+				.title-wrapper {
+					text-align: center;
+
+					.title {
+						margin-top: 0;
+					}
+				}
+
+				.detail {
+					text-align: center;
+					font-size: 28px;
+				}
+
+				.bi-x {
+					font-size: 1.5rem;
+					line-height: 0;
+				}
+			}
+		}
+
+		.filter-display {
+			text-align: center;
+			margin: $xl-gutter 0 $l-gutter 0;
+		}
+	}
+
+	#order-release-container {
+		.k-grid-content {
+			td {
+				button {
+					display: block;
+				}
+			}
+		}
+	}
+
+	.btn.btn-flat {
+		border: 1px solid #ddd;
+	}
+
+	.btn.btn-battleship-blue {
+		background-image: none;
+		text-shadow: none;
+
+		&:hover {
+			background-image: none;
+			background-color: #426698;
+		}
+	}
+
+	.btn {
+		+ {
+			.btn {
+				margin-top: 5px;
+			}
+		}
+	}
+}

@@ -31,6 +31,8 @@ const creditControlViewModel = (() => {
 
     self.busyMessage = ko.observable('Please wait...');
 
+    self.heldOrdersGridBusy = ko.observable(true);
+
     self.validateNow = ko.observable(false);
 
     self.refresh = () => {
@@ -180,7 +182,7 @@ const creditControlViewModel = (() => {
             }
         }
 
-        console.log('tradeAccountSearch calling with', data);
+        console.log('creditControl gridDataSourceRead calling with', data);
 
         self.busy(true);
 
@@ -193,43 +195,47 @@ const creditControlViewModel = (() => {
             .then(window.handleFetchResponse)
             .then(data => {
 
-                console.log('tradeAccountSearch returned', data);
+                console.log('creditControl gridDataSourceRead returned', data);
 
-                if (Object.hasOwn(data, 'errorMessage')) {
+                ko.ignoreDependencies(() => {
 
-                    document.querySelector('#info-modal').addEventListener('hide.bs.modal', self.refresh);
-                    options.success([]);
-                    window.showInfo('Sorry', data.errorMessage);
+                    if (Object.hasOwn(data, 'errorMessage')) {
 
-                } else {
-                    document.querySelector('#info-modal').removeEventListener('hide.bs.modal', self.refresh);
-                    self.previouslySelectedDashboardPod = self.selectedPod()?.PodHandle;
+                        document.querySelector('#info-modal').addEventListener('hide.bs.modal', self.refresh);
+                        options.success([]);
+                        window.showInfo('Sorry', data.errorMessage);
 
-                    self.dashboardPods(data.dashboardPods.map(dp => creditControlDashboardPodViewModel({
-                        rec: dp
-                    })));
+                    } else {
+                        document.querySelector('#info-modal').removeEventListener('hide.bs.modal', self.refresh);
+                        self.previouslySelectedDashboardPod = self.selectedPod()?.PodHandle;
 
-                    if (self.previouslySelectedDashboardPod) {
-                        self.selectedPod(self.dashboardPods().find(dp => dp.PodHandle == self.previouslySelectedDashboardPod));
+                        self.dashboardPods(data.dashboardPods.map(dp => creditControlDashboardPodViewModel({
+                            rec: dp
+                        })));
+
+                        if (self.previouslySelectedDashboardPod) {
+                            self.selectedPod(self.dashboardPods().find(dp => dp.PodHandle == self.previouslySelectedDashboardPod));
+                        }
+
+                        options.success(data.gridData);
+
+                        self.tradeAccounts(data.gridData); // the mapping to ViewModel occurs in the grid's dataBound event handler
+
+                        self.performance.tradeAccountCodeList(data.totalsRecord.TradeAccountCodeList);
+
+                        //self.gridParams.widget().setOptions({
+                        //    columns: self.gridColumns()
+                        //});
                     }
 
-                    options.success(data.gridData);
 
-                    self.tradeAccounts(data.gridData); // the mapping to ViewModel occurs in the grid's dataBound event handler
+                    if (typeof callback == 'function') {
+                        callback();
+                    } else {
+                        self.busy(false);
+                    }
 
-                    self.performance.tradeAccountCodeList(data.totalsRecord.TradeAccountCodeList);
-
-                    //self.gridParams.widget().setOptions({
-                    //    columns: self.gridColumns()
-                    //});
-                }
-
-
-                if (typeof callback == 'function') {
-                    callback();
-                } else {
-                    self.busy(false);
-                }
+                });
 
             })
             .catch(err => {
@@ -246,6 +252,8 @@ const creditControlViewModel = (() => {
 
 
     //#region Components
+
+    self.memberBasketFetcher = memberBasketFetcher(self);
 
     self.formatCurrency = (e, fieldName) => {
         if (e[fieldName] != null) {
@@ -308,7 +316,7 @@ const creditControlViewModel = (() => {
         hidden: false, //self.tradeAccounts().length == 0,
         width: gridColumnWidths.oneForty
     }, {
-        field: 'Contacts',
+        field: 'MemberCount',
         title: 'Contacts',
         attributes: {
             "class": "text-center grid-btn-cell contacts-cell"
@@ -399,6 +407,7 @@ const creditControlViewModel = (() => {
             "class": "text-center grid-btn-cell"
         },
         locked: true,
+        sortable: false,
         filterable: false,
         width: gridColumnWidths.ninety,
         template: (e) => {
@@ -417,7 +426,7 @@ const creditControlViewModel = (() => {
         },
         columns: [{
             field: 'InsuredCreditLimit',
-            title: 'Insured',
+            title: 'Coface Insured',
             headerAttributes: {
                 "class": "credit-limit-subheading"
             },
@@ -433,11 +442,22 @@ const creditControlViewModel = (() => {
                 "class": "credit-limit-subheading"
             },
             attributes: {
-                "class": 'text-danger text-end'
+                "class": 'text-end'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => self.formatCurrency(e, 'CreditLimit')
         }]
+    }, {
+        field: '',
+        title: '',
+        attributes: {
+            'class': 'spacer-column left-border'
+        },
+        headerAttributes: {
+            'class': 'spacer-column left-border'
+        },
+        template: '&nbsp;',
+        width: 20
     }, {
         title: 'Totals',
         headerAttributes: {
@@ -461,11 +481,22 @@ const creditControlViewModel = (() => {
                 "class": "totals-subheading"
             },
             attributes: {
-                "class": 'text-danger text-end'
+                "class": 'text-end'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => self.formatCurrency(e, 'DebtPlusOrdersTotal')
         }]
+    }, {
+        field: '',
+        title: '',
+        attributes: {
+            'class': 'spacer-column left-border'
+        },
+        headerAttributes: {
+            'class': 'spacer-column left-border'
+        },
+        template: '&nbsp;',
+        width: 20
     }, {
         title: 'Orders',
         headerAttributes: {
@@ -561,13 +592,46 @@ const creditControlViewModel = (() => {
             }
         }]
     }, {
+        field: '',
+        title: '',
+        attributes: {
+            'class': 'spacer-column left-border'
+        },
+        headerAttributes: {
+            'class': 'spacer-column left-border'
+        },
+        template: '&nbsp;',
+        width: 20
+    }, {
         title: 'Debt Breakdown',
         headerAttributes: {
             "class": "debt-breakdown-heading debt-breakdown"
         },
         columns: [{
+            field: 'StatementTotalValue',
+            title: 'Total',
+            headerAttributes: {
+                "class": "debt-breakdown-subheading debt-breakdown"
+            },
+            attributes: {
+                "class": "text-end debt-breakdown"
+            },
+            width: gridColumnWidths.oneForty,
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'StatementTotalValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'TotalQuantity'));
+
+                return result.join(SINGLE_BR);
+            }
+        },{
             field: 'NotDueTotalValue',
-            title: 'Due',
+            title: 'Not Due',
             headerAttributes: {
                 "class": "debt-breakdown-subheading debt-breakdown"
             },
@@ -741,20 +805,20 @@ const creditControlViewModel = (() => {
 
                 return result.join(SINGLE_BR)
             }
-        }, {
-            field: 'StatementTotalValue',
-            title: 'Total',
-            headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
-            },
-            attributes: {
-                "class": "text-danger text-end debt-breakdown"
-            },
-            width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'StatementTotalValue')
         }]
     }, {
-        title: 'Claims',
+        field: '',
+        title: '',
+        attributes: {
+            'class': 'spacer-column left-border'
+        },
+        headerAttributes: {
+            'class': 'spacer-column left-border'
+        },
+        template: '&nbsp;',
+        width: 20
+    }, {
+        title: 'CCR Claims',
         headerAttributes: {
             "class": "claim-heading claims-breakdown"
         },
@@ -782,13 +846,24 @@ const creditControlViewModel = (() => {
             template: (e) => self.formatCurrency(e, 'ClaimValue')
         }]
     }, {
+        field: '',
+        title: '',
+        attributes: {
+            'class': 'spacer-column left-border'
+        },
+        headerAttributes: {
+            'class': 'spacer-column left-border'
+        },
+        template: '&nbsp;',
+        width: 20
+    }, {
         title: 'Other',
         headerAttributes: {
             "class": "other-heading other-breakdown"
         },
         columns: [{
             field: 'CreditsValue',
-            title: 'Credits',
+            title: 'Unused Credit Notes',
             headerAttributes: {
                 "class": "other-subheading other-breakdown"
             },
@@ -854,7 +929,7 @@ const creditControlViewModel = (() => {
             }
         }, {
             field: 'RefundsValue',
-            title: 'Refunds',
+            title: 'Refund Requests',
             headerAttributes: {
                 "class": "other-subheading other-breakdown"
             },
@@ -875,6 +950,17 @@ const creditControlViewModel = (() => {
                 return result.join(SINGLE_BR)
             }
         }]
+    }, {
+        field: '',
+        title: '',
+        attributes: {
+            'class': 'spacer-column left-border'
+        },
+        headerAttributes: {
+            'class': 'spacer-column left-border'
+        },
+        template: '&nbsp;',
+        width: 20
     }, {
         title: self.filters.salesHistoryAnalysisPeriod() ? `Sales (${self.filters.salesHistoryAnalysisPeriod().Name})` : `Sales`,
         headerAttributes: {
@@ -920,14 +1006,14 @@ const creditControlViewModel = (() => {
                 read: self.gridDataSourceRead,
             },
             batch: false,
-            sortable: false,
+            sortable: true,
             filterable: true,
             grouping: false,
             serverFiltering: false,
             serverGrouping: false,
             serverPaging: true,
             serverAggregates: false,
-            serverSorting: false,
+            serverSorting: true,
             pageSize: 10,
             pageable: {
                 pageSize: 10,
@@ -937,6 +1023,7 @@ const creditControlViewModel = (() => {
                 data: "Data",
                 total: "Total",
                 errors: "Errors",
+                sorts: "Sorts",
                 aggregates: "Aggregates",
                 model: {
                     id: 'TradeAccountID',
@@ -971,6 +1058,7 @@ const creditControlViewModel = (() => {
                         DisputedValue: { type: 'number' },
                         WrittenOffValue: { type: 'number' },
                         NotDueTotalQuantity: { type: 'number' },
+                        NotDueTotalQuantity: { type: 'number' },
                         OverdueTotalQuantity: { type: 'number' },
                         Debt30DayQuantity: { type: 'number' },
                         Debt60DayQuantity: { type: 'number' },
@@ -980,6 +1068,7 @@ const creditControlViewModel = (() => {
                         WrittenOffQuantity: { type: 'number' },
                         StatementURI: { type: 'string' },
                         StatementTotalValue: { type: 'number' },
+                        StatementTotalQuantity: { type: 'number' },
                         CreditsValue: { type: 'number' },
                         DepositsValue: { type: 'number' },
                         OverpaymentsValue: { type: 'number' },
@@ -1013,6 +1102,9 @@ const creditControlViewModel = (() => {
         pageable: {
             pageSize: 10,
             pageSizes: [10, 20, 50, 100, 250, 500, 'all']
+        },
+        excel: {
+            allPages: true
         },
         //height: 'calc(100vh - 230px)',
         selectable: 'cell',
@@ -1055,28 +1147,29 @@ const creditControlViewModel = (() => {
             }
         },
         dataBound: (e) => {
+            console.log('creditControlViewModel dataBound', e);
 
-            var pristine = e.sender.dataSource.data().toJSON();
+            ko.ignoreDependencies(() => {
 
-            ko.utils.arrayForEach(e.sender.dataSource.data(), function (item, index) {
+                var pristine = e.sender.dataSource.data().toJSON();
 
-                let rows = document.querySelectorAll('tr[data-uid="' + item.uid + '"]');
+                ko.utils.arrayForEach(e.sender.dataSource.data(), function (item, index) {
 
-                rows.forEach(row => {
-                    ko.cleanNode(row);
+                    let rows = document.querySelectorAll('tr[data-uid="' + item.uid + '"]');
 
-                    pristine[index] = creditControlTradeAccountSearchResultViewModel({
-                        parent: self,
-                        rec: item
+                    rows.forEach(row => {
+                        ko.cleanNode(row);
+
+                        pristine[index] = creditControlTradeAccountSearchResultViewModel({
+                            parent: self,
+                            rec: item
+                        });
+
+                        ko.applyBindings(pristine[index], row);
                     });
 
-                    ko.applyBindings(pristine[index], row);
                 });
-
-                console.log('creditControlViewModel dataBound', rows);
             });
-
-
         }
     };
 
@@ -1091,7 +1184,7 @@ const creditControlViewModel = (() => {
         });
     }, self, 'arrayChange');
 
-    self.filters.salesHistoryAnalysisPeriod.subscribe(nv => {
+    self.filters.salesHistoryAnalysisPeriodId.subscribe(nv => {
         self.gridParams.widget().setOptions({
             columns: self.gridColumns()
         });
@@ -1320,6 +1413,10 @@ const creditControlViewModel = (() => {
 
                 self.salesBreakdownModal.show();
             })
+    }
+
+    self.exportToExcel = () => {
+        self.gridWidget() && self.gridWidget().saveAsExcel();
     }
 
     //#endregion

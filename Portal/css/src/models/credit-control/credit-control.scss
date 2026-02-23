@@ -72,6 +72,27 @@ html {
     }
 }
 
+#credit-control-main {
+    .nav-item {
+        .nav-link {
+            font-size: $font-size-lg;
+        }
+    }
+}
+
+#credit-control-tab-content {
+    background-color: $white;
+    border: 1px solid $gray-300;
+    border-top: 0;
+
+    .accordion-header {
+        > button {
+            > span {
+            }
+        }
+    }
+}
+
 #main-credit-control-container {
     will-change: opacity;
     transition: opacity 300ms ease-in-out;
@@ -94,6 +115,16 @@ html {
                 position: sticky;
                 left: 0;
                 top: 0;
+            }
+
+            .spacer-column-header,
+            .spacer-column {
+                padding: 0 !important;
+                background-color: #f8f9fa !important;
+                width: $vsm-gutter;
+            }
+
+            th.spacer-column {
             }
         }
     }
@@ -134,6 +165,12 @@ html {
         word-break: break-word;
     }
 
+    .k-header {
+        &.k-grid-toolbar {
+            border-bottom: 0;
+        }
+    }
+
     .statement-column {
         i {
             font-size: $xl-gutter;
@@ -155,6 +192,10 @@ html {
             .alert {
                 margin-bottom: 0;
                 padding: $vsm-gutter $sm-gutter;
+
+                + .alert {
+                    margin-top: $vsm-gutter;
+                }
             }
         }
 
@@ -217,6 +258,8 @@ html {
             vertical-align: middle;
             background-color: $blue-700;
             color: $white;
+            border-left: 1px solid $blue-700;
+            border-right: 1px solid $blue-700;
         }
 
         .credit-limit-subheading,
@@ -397,8 +440,8 @@ html {
 }
 
 #selected-filter-pills {
-    margin-bottom: $l-gutter;
     display: flex;
+    margin-bottom: $l-gutter;
 
     .filter-pill {
         background-color: #ccc;

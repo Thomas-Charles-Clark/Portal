@@ -43,8 +43,6 @@
 
     self.user = ko.observable();
 
-    self.refreshDashboard = null;
-
     self.paymentRequestStatus = ko.observable(localStorage.paymentRequestStatus ?? 'Outstanding');
 
     //#endregion

@@ -14,7 +14,7 @@ namespace SharedEFClasses.Models.CreditControl
 		public string CurrencyCode { get; set; }
 		public string FormattingCulture { get; set; }
 		public string MarketName { get; set; }
-		public string TradeAccountCode { get; set; } 
+		public string TradeAccountCode { get; set; }
 		public string TradeAccountName { get; set; }
 		public string Status { get; set; }
 		public bool CreditStop { get; set; }
@@ -51,6 +51,7 @@ namespace SharedEFClasses.Models.CreditControl
 		public decimal? WrittenOffQuantity { get; set; }
 		public string StatementURI { get; set; }
 		public decimal? StatementTotalValue { get; set; }
+		public decimal? TotalQuantity { get; set; }
 		public decimal? CreditsValue { get; set; }
 		public decimal? DepositsValue { get; set; }
 		public decimal? OverpaymentsValue { get; set; }

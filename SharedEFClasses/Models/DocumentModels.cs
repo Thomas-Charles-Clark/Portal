@@ -65,6 +65,8 @@ namespace SharedEFClasses.Models.Documents
         public string OrderHeaderLabel4 { get; set; }
         public string OrderHeaderValue4 { get; set; }
 
+        public string OrderTableHeader { get; set; }
+
         public string OrderHeaderMemoLabel { get; set; }
 
         public string OrderHeaderParagraphsJSON { get; set; }

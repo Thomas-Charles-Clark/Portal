@@ -69,9 +69,9 @@
 
     self.holdReasonSummaryPods = ko.observableArray([]);
 
-    self.basketSubmissionResults = self.parent.orderFactory.basketSubmissionResults;
+    self.basketSubmissionResults = self.parent.orderFactory?.basketSubmissionResults ?? ko.observableArray([]);
 
-    self.submissionResultText = self.parent.orderFactory.submissionResultText;
+    self.submissionResultText = self.parent.orderFactory?.submissionResultText ?? ko.observable();
 
     self.justMyOrders = ko.observable(typeof getMemberId === 'function' ? true : false);
 
@@ -206,6 +206,9 @@
     }, {
         field: 'Controls',
         title: 'Controls',
+        attributes: {
+            "class": "held-order-controls-column"
+        },
         width: 180,
         filterable: false
     }, {
@@ -243,6 +246,9 @@
     }, {
         field: 'Controls',
         title: 'Controls',
+        attributes: {
+            "class": "held-order-controls-column"
+        },
         width: 180,
         filterable: false
     }];
@@ -723,7 +729,7 @@
     }
 
     self.closeSubmissionModal = function () {
-        self.parent.tradeAccountSelector.clearSearch();
+        self.parent.tradeAccountSelector?.clearSearch();
         $("#order-products-modal").modal('hide');
 
         self.requeryAllGrids();
@@ -788,7 +794,7 @@
         if (self.basketLocker) {
             self.basketLocker.unlockBasket();
         }
-        self.parent.orderFactory.reset();
+        self.parent.orderFactory?.reset();
     }
 
     self.resultGridDataSourceRead = function (options) {
@@ -994,14 +1000,14 @@
                                                     <!-- /ko -->
                                                     <!-- ko if: documents != null -->
                                                         <!-- ko foreach: documents -->
-                                                        <button class="btn btn-green" data-bind="click: function () { $parentContext.$parentContext.$parentContext.$parentContext.$parent.fetchDocument($data, $parent); }">
+                                                        <button class="btn btn-green" data-bind="click: function () { $parentContext.$parentContext.$parentContext.$parentContext.$parent?.fetchDocument($data, $parent); }">
                                                             <span data-bind="text: label"></span>
                                                         </button>
                                                         <!-- /ko -->
                                                     <!-- /ko -->
                                                 </div>
                                             </div>
-                                            <div data-bind="kendoGrid: $parent.orderLinesGrid"></div>
+                                            <div data-bind="kendoGrid: $parent?.orderLinesGrid"></div>
                                         </div>
                                         <div class="basket-line-memo-footer" data-bind="text: label"></div>`
                             },
@@ -1499,11 +1505,11 @@
     self.fetchDocument = function (document, parent) {
         let objJsonStr = JSON.stringify({
             documentType: document.documentType,
-            basketId: parent.BasketID,
-            transactionId: parent.TransactionID,
+            basketId: parent?.BasketID,
+            transactionId: parent?.TransactionID,
             orderHeadId: document.orderHeadId,
             tradeAccountId: document.tradeAccountId,
-            languageId: parent.LanguageID || parent.languageId
+            languageId: parent?.LanguageID || parent?.languageId
         });
         let objJsonB64 = btoa(objJsonStr);
 
@@ -1553,7 +1559,7 @@
 
     self.provideRetailPaymentDetails = function (heldOrder) {
         self.busy(true);
-        self.parent.orderFactory.loadBasketForRetailPayment(heldOrder, function () {
+        self.parent.orderFactory?.loadBasketForRetailPayment(heldOrder, function () {
             self.busy(false);
         });
     }
@@ -1728,7 +1734,7 @@
         //        switch (event.data.message) {
         //            case 'basketId event':
         //                self.busy(true);
-        //                self.parent.orderFactory.loadBasket(Object.assign({
+        //                self.parent.orderFactory?.loadBasket(Object.assign({
         //                    mertexVATLookupSuccessful: ko.observable(event.data.dataItem.MertexVATLookupSuccessful)
         //                }, event.data.dataItem), () => {
         //                    self.busy(false);
@@ -2151,7 +2157,7 @@
                 self.busy(true);
                 var selectedItem = self.resultGridWidget().dataItem(self.resultGridWidget().select());
                 if (selectedItem != null) {
-                    self.parent.orderFactory.loadBasket(selectedItem, function () {
+                    self.parent.orderFactory?.loadBasket(selectedItem, function () {
                         self.busy(false);
                     });
                 } else {
@@ -2320,7 +2326,7 @@
                 self.busy(true);
                 var selectedItem = self.focDeliveryGridWidget().dataItem(self.focDeliveryGridWidget().select());
                 if (selectedItem != null) {
-                    self.parent.orderFactory.loadBasket(selectedItem, function () {
+                    self.parent.orderFactory?.loadBasket(selectedItem, function () {
                         self.busy(false);
                     });
                 } else {
@@ -2354,7 +2360,7 @@
         //        self.busy(true);
         //        var selectedItem = self.submittedGridWidget().dataItem(self.submittedGridWidget().select());
         //        if (selectedItem != null) {
-        //            self.parent.orderFactory.loadBasketForReceipt(selectedItem, function () {
+        //            self.parent.orderFactory?.loadBasketForReceipt(selectedItem, function () {
         //                self.busy(false);
         //            });
         //        } else {
@@ -2390,7 +2396,7 @@
                 self.busy(true);
                 var selectedItem = self.importResultGridWidget().dataItem(self.importResultGridWidget().select());
                 if (selectedItem != null) {
-                    self.parent.orderFactory.loadBasket(selectedItem, function () {
+                    self.parent.orderFactory?.loadBasket(selectedItem, function () {
                         self.busy(false);
                     });
                 } else {
@@ -2525,6 +2531,7 @@
         enable: ko.observable(true),
         disable: ko.observable(false),
         showClear: true,
+        clearable: ko.observable(true),
         revertible: ko.observable(false),
         readOnly: false,
         filter: 'contains',
@@ -2621,6 +2628,16 @@
         observable: self.heldOrdersHoldReasons,
         validate: self.heldOrdersHoldReasonIds,
         showClear: true,
+        clearable: ko.observable(true),
+        clearFunction: function () {
+            let self = this;
+            self.observable([]);
+            self.multiSelectSettings.widget().value([]);
+            self.multiSelectSettings.widget().trigger('false');
+        },
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        revertible: ko.observable(false),
         label: 'Hold Reason(s)',
         valuePrimitive: false,
         useNativeValidation: false,
@@ -2670,6 +2687,7 @@
             filter: false,
             tagMode: 'single'
         },
+        disable: ko.observable(false),
         clearFunction: () => {
             self.clearHoldReasonIds();
         }
@@ -2678,10 +2696,16 @@
     self.heldOrdersSearchTermParams = {
         label: 'Search by Order Number, Basket ID, Trade Account Code, etc.',
         observable: self.heldOrdersSearchTerm,
+        useNativeValidation: false,
         showClear: true,
+        clearable: ko.observable(true),
         clearFunction: function () {
             self.heldOrdersSearchTerm(undefined);
         },
+        busy: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        revertible: ko.observable(false),
         enterKey: function () {
             let filters = [];
 
@@ -3082,7 +3106,7 @@
                 self.busy(true);
                 var selectedItem = self.customerHeldBasketsGridWidget().dataItem(self.customerHeldBasketsGridWidget().select());
                 if (selectedItem != null) {
-                    self.parent.orderFactory.loadBasket(selectedItem, function () {
+                    self.parent.orderFactory?.loadBasket(selectedItem, function () {
                         self.busy(false);
                     });
                 } else {
@@ -3148,11 +3172,11 @@
 
         let data = {
             memberId: self.memberId(),
-            marketCode: self.heldOrdersMarketId() ?? "",
-            searchTerm: self.heldOrdersSearchTerm() ?? "",
-            holdReasonIds: self.heldOrdersHoldReasonIdsJson() ?? "",
-            heldFromDt: self.heldOrdersHeldFromDt() ?? "",
-            heldToDt: self.heldOrdersHeldToDt() ?? ""
+            marketCode: (self.heldOrdersMarketId() == '' || self.heldOrdersMarketId() == null) ? null : self.heldOrdersMarketId(),
+            searchTerm: (self.heldOrdersSearchTerm() == '' || self.heldOrdersSearchTerm() == null) ? null : self.heldOrdersSearchTerm(),
+            holdReasonIds: self.heldOrdersHoldReasonIdsJson(),
+            heldFromDt: self.heldOrdersHeldFromDt(),
+            heldToDt: self.heldOrdersHeldToDt()
         };
 
         self.heldOrdersGridAdditionalParameters(data);
@@ -3425,23 +3449,24 @@ const holdReasonSummaryPod = ({ active, rec, parent } = { rec: {}, parent: {} })
 
             self.parent.customHeldReasonFilterActive(false);
 
-            self.parent.heldOrdersHoldReasonsParams.multiSelectSettings.value([]);
-            self.parent.heldOrdersHoldReasonsParams.multiSelectSettings.widget().value([]);
-            self.parent.heldOrdersHoldReasonsParams.multiSelectSettings.widget().trigger('change');
+            self.parent.heldOrdersHoldReasonsParams?.multiSelectSettings?.value([]);
+            self.parent.heldOrdersHoldReasonsParams?.multiSelectSettings?.widget().value([]);
+            self.parent.heldOrdersHoldReasonsParams?.multiSelectSettings?.widget().trigger('change');
 
-            self.parent.heldOrdersGridWidget().dataSource.query({
+            self.parent.heldOrdersGridWidget()?.dataSource.query({
                 page: 1,
-                pageSize: self.parent.heldOrdersGridWidget().dataSource.pageSize()
+                pageSize: self.parent.heldOrdersGridWidget()?.dataSource.pageSize()
             });
 
         } else {
+
             self.parent.clearActiveHoldReasonOnNextSubscriptionFire = false;
 
             self.parent.heldOrdersHeldFromDt(data.HeldFromDT);
 
             self.parent.heldOrdersHeldToDt(data.HeldToDT);
 
-            self.parent.heldReasonListSelection(self.parent.holdReasons().filter(x => x.HoldReasonGroupID == data.HoldReasonGroupID).map(hr => hr.HoldReasonID));
+            self.parent.heldReasonListSelection(self.parent.holdReasons()?.filter(x => x.HoldReasonGroupID == data.HoldReasonGroupID).map(hr => hr.HoldReasonID));
 
             self.parent.activeHeldOrderReasonPodId(self.HoldReasonSummaryPodID);
 

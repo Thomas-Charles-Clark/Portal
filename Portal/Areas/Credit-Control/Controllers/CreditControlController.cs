@@ -13,7 +13,10 @@ using Portal.Utilities.DynamicRoles;
 using SharedEFClasses;
 using SharedEFClasses.Models;
 using SharedEFClasses.Models.Documents;
+using SharedEFClasses.Models.Orders;
+
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,7 +41,13 @@ namespace Portal.Areas.Orders.Controllers
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
-            var model = await StatementsViewModel.CreateAsync(
+            var holdReasons = PortalDb.HoldReasons.Where(p => p.Deleted == false).OrderBy(p => p.Name).ToList();
+
+			var orderImportSources = PortalDb.OrderImportSources.OrderBy(p => p.Name).ToList();
+
+			var model = await CreditControlViewModel.CreateAsync(
+			    holdReasons,
+			    orderImportSources,
 				user.Id,
 				user.GetActiveRoleProperties(),
                 application.Heading, 

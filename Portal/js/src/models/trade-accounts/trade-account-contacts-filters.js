@@ -77,8 +77,8 @@ const tradeAccountContactsFiltersViewModel = ({
     self.creditStoppedAwaitingBinding = ko.observable(params.creditStoppedId != null && params.creditStoppedId != '');
 
     self.tradeAccountStatusId = ko.observable(params.tradeAccountStatusId ?? true);
-    self.tradeAccountStatus = ko.observable();
-    self.tradeAccountStatusAwaitingBinding = ko.observable(params.tradeAccountStatusId != null && params.tradeAccountStatusId != '');
+    self.tradeAccountStatus = ko.observable(params.tradeAccountStatus ?? undefined);
+    self.tradeAccountStatusAwaitingBinding = ko.observable(false);
 
     self.tradeAccountCompanyId = ko.observable(params.tradeAccountCompanyId ?? '');
     self.tradeAccountCompany = ko.observable();

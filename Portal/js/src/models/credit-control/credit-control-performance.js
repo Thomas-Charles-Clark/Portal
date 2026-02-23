@@ -38,11 +38,17 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
 
     self.tradeAccountCodeList = ko.observableArray([]);
 
-    self.reportGrouping = ko.observable(CREDIT_CONTROLLER);
+    self.reportGrouping = ko.observable(localStorage.getItem('performance_reportGrouping') ?? CREDIT_CONTROLLER);
 
-    self.currencyOrSterling = ko.observable(CURRENCY);
+    self.currencyOrSterling = ko.observable(localStorage.getItem('performance_currencyOrSterling') ?? STERLING);
 
     self.periods = ko.observableArray([]);
+
+    self.performanceCollapsableElement = document.querySelector('#performance-collapse');
+
+    self.performanceCollapse = bootstrap.Collapse.getOrCreateInstance(self.performanceCollapsableElement, {
+        toggle: false
+    });
 
     //#endregion
 
@@ -69,12 +75,7 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
         disable: ko.observable(false),
         enable: ko.observable(true),
         busy: ko.observable(false),
-        clearable: function () {
-            let self = this;
-            self.observable(undefined);
-            self.dropDownListSettings.widget().value(-1);
-            self.dropDownListSettings.widget().trigger('change');
-        },
+        clearable: ko.observable(false),
         revertible: ko.observable(false)
     });
 
@@ -96,12 +97,7 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
         disable: ko.observable(false),
         enable: ko.observable(true),
         busy: ko.observable(false),
-        clearable: function () {
-            let self = this;
-            self.observable(undefined);
-            self.dropDownListSettings.widget().value(-1);
-            self.dropDownListSettings.widget().trigger('change');
-        },
+        clearable: ko.observable(false),
         revertible: ko.observable(false)
     });
 
@@ -120,14 +116,21 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
     //#region Subscriptions
 
     self.tradeAccountCodeList.subscribe(nv => {
+
+        if (localStorage.getItem('performance_Expanded') === "true") {
+            self.performanceCollapse.show();
+        }
+
         self.fetch();
     });
 
     self.reportGrouping.subscribe(nv => {
+        localStorage.setItem('performance_reportGrouping', nv.toString());
         self.fetch();
     });
 
     self.currencyOrSterling.subscribe(nv => {
+        localStorage.setItem('performance_currencyOrSterling', nv.toString());
         self.fetch();
     });
 
@@ -160,12 +163,36 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
 
                 self.periods(Map.groupBy(data.Records, (item) => item.PeriodLabel).entries().toArray().map(e => e[0])); // First stage of transposing the results...
 
-                let map = Map.groupBy(data.Records, (item) => `${item.ReportGroup}: ${item.CurrencyCode}`).entries().toArray();
+                let currencyGrouping = Map.groupBy(data.Records, (item) => `${item.CurrencyCode}`).entries().toArray();
 
-                self.records(map);
+                currencyGroup = currencyGrouping.map(cg => {
+                    let items = Map.groupBy(cg[1], (item) => `${item.ReportGroup}`).entries().toArray();
+
+                    return {
+                        currencyCode: cg[0],
+                        formattingCulture: cg[1][0].FormattingCulture,
+                        Totallabel: `${cg[0]}: ${formatNumber(items.flatMap(i => i[1]).reduce((a, i) => a + i.TotalOutstanding, 0), 2, items[0].FormattingCulture)}`,
+                        totals: Map.groupBy(items.flatMap(i => i[1]), item => item.PeriodLabel).entries().toArray().map(m => {
+                            return {
+                                PeriodLabel: m[0],
+                                Total: m[1].reduce((accumulator, currentItem) => accumulator += currentItem.TotalOutstanding, 0),
+                                FormattingCulture: m[1][0].FormattingCulture,
+                                CurrencyCode: m[1][0].CurrencyCode
+                            }
+                        }),
+                        items: items
+                    };
+                });
+
+                self.records(currencyGroup);
 
                 self.busy(false);
             })
+    }
+
+    self.revert = () => {
+        self.reportGrouping(CREDIT_CONTROLLER);
+        self.currencyOrSterling(CURRENCY);
     }
 
     //#endregion
@@ -174,7 +201,13 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
 
     //#region Events
 
-    
+    self.performanceCollapsableElement.addEventListener('show.bs.collapse', (event) => {
+        localStorage.setItem('performance_Expanded', "true");
+    });
+
+    self.performanceCollapsableElement.addEventListener('hide.bs.collapse', (event) => {
+        localStorage.setItem('performance_Expanded', "false");
+    });
 
     //#endregion
 

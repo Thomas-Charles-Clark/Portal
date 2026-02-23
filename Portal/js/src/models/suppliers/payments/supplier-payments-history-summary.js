@@ -183,10 +183,6 @@
             self.busy(true);
 
             console.log(`requestStart`, e);
-
-            if (self.ready()) {
-                self.refreshDashboard();
-            }
         },
         noDataTemplate: 'Nothing to display',
         requestEnd: (e) => {
@@ -391,7 +387,7 @@
     }];
 
     self.gridParams = {
-        autoBind: true,
+        autoBind: false,
         widget: self.gridWidget,
         columns: self.gridColumns,
         data: self.gridDataSource,
@@ -437,6 +433,8 @@
                     row.addClass("total-row");
                 };
             }
+
+            self.refreshDashboard();
         },
         save: (data) => {
             console.log(`saveChanges`, e);

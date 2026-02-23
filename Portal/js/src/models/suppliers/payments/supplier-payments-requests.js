@@ -338,12 +338,6 @@
                     window.showInfo('Unsaved Changes', 'You have unsaved changes. Please cancel or save them before performing any other action.');
                 }
             }
-
-            // Avoid extraneous call to fetchDashboard if ready == false; the call is made when building 
-            // the server-side viewModel.
-            if (self.ready()) {
-                self.refreshDashboard();
-            }
         },
         requestEnd: (e) => {
             console.log(`paymentRequests dataSource requestEnd`);
@@ -1134,14 +1128,14 @@
         dataBound: (e) => {
             console.log('paymentRequests dataBound', e);
 
-            self.refreshDashboard();
-
             window.setTimeout(() => {
                 const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
                 const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl, {
                     container: popoverTriggerEl
                 }));
             }, 0);
+
+            self.refreshDashboard();
         },
         saveChanges: (e) => {
             console.log('paymentRequests saveChanges', e);

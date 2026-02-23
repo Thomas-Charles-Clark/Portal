@@ -3396,6 +3396,7 @@ namespace SharedEFClasses.Models
             var cmd = this.Database.Connection.CreateCommand();
             cmd.CommandText = "[portal].[Document_Select]";
             cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandTimeout = 120;
 
             cmd.Parameters.AddRange(parameters);
 

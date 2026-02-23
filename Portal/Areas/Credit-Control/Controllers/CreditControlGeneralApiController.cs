@@ -4,6 +4,8 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
 using Microsoft.AspNet.Identity;
+using Microsoft.Owin.Security.Twitter.Messages;
+
 using Newtonsoft.Json;
 using Portal.Models;
 using Portal.Utilities.Document;
@@ -18,6 +20,7 @@ using SimpleImpersonation;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -52,13 +55,20 @@ namespace Portal.Areas.CreditControl.Controllers
         {
 			try
 			{
+				if (request.Sorts.Any())
+				{
+					var sort = request.Sorts.First();
+
+					dto.SortOrder = $"{sort.Member}_{(sort.SortDirection == ListSortDirection.Ascending ? "Asc" : "Desc")}";
+				}
+
 				var model = await PortalDb.CreditControl_TradeAccount_Search(dto);
 
 				request.Page = 1; // This is a super weird and stupid hack but...
 
 				var gridData = model.Results.ToDataSourceResult(request);
 
-				gridData.Total = model.TotalsRecord.TotalRows;
+				gridData.Total = model.TotalsRecord.TotalRowCount;
 
 				return Ok(new
 				{

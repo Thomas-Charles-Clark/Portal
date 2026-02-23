@@ -1,4 +1,4 @@
-﻿@model Portal.Areas.CreditControl.ViewModels.StatementsViewModel
+﻿@model CreditControlViewModel
 @{
 	ViewBag.Title = "Credit Control";
 }
@@ -24,6 +24,54 @@
 			return '@(Model.CreditControllerCode)'
 		}
 		window.lockCreditController = () => false;
+
+		window.getMarketToLoad = () => '';
+
+		window.getHeldOrderReasonPodIdToLoad = () => undefined;
+
+		window.getMyHeldOrderImportStatuses = () => [{
+			Status: 'Active',
+			Name: 'Active Baskets'
+		}, {
+			Status: 'Held',
+			Name: 'Held Baskets'
+		}, {
+			Status: 'Parked',
+			Name: 'Parked Baskets'
+			}];
+
+		window.getHeldOrderReasonGroupIdToLoad = () => undefined;
+
+		window.getOrderImportStatuses = () => [{
+			Status: 'Sample',
+			Name: 'Sample Orders'
+		}, {
+			Status: 'Mixed',
+			Name: 'Mixed Orders'
+		}];
+
+		window.getOrderImportSources = () => {
+			return @Html.Raw(JsonConvert.SerializeObject(Model.OrderImportSources));
+		}
+
+		window.getTradeMarkets = () => {
+			return @Html.Raw(JsonConvert.SerializeObject(Model.TradeMarkets));
+		}
+
+		window.getCanSearchTradeAccounts = () => true;
+
+		window.getSelectedTradeAccount = () => null;
+
+		window.getBasketIdToLoad = () => null;
+
+		window.getTransactionIdToLoad = () => null;
+
+		window.getOrderHeadIdToLoad = () => null;
+
+		window.getHeldOrderReasonIdToLoad = () => null;
+
+		window.getTabToLoad = () => "ordersToApprove";
+
 	</script>
 
 	<script type="text/javascript">
@@ -54,7 +102,7 @@
 		<span>
 			@(ViewBag.Title)
 		</span>
-		<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
+		@*<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
 			<a class="btn btn-secondary dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
 				<i class="bi bi-list-check"></i>
 			</a>
@@ -70,7 +118,7 @@
 					</a>
 				</li>
 			</ul>
-		</div>
+		</div>*@
 	</h2>
 }
 
@@ -269,7 +317,7 @@
 	</div>
 </div>
 
-<div class="modal fade" id="send-statements-modal" tabindex="-1">
+@*<div class="modal fade" id="send-statements-modal" tabindex="-1">
 	<div class="modal-dialog modal-lg" id="send-statements-modal-dialog">
 		<div class="modal-content">
 			<div class="blocker" data-bind="flexFadeVisible: busy">
@@ -301,7 +349,7 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div>*@
 
 <div class="modal fade" id="trade-account-contacts-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
 	<div class="modal-dialog modal-fullscreen" id="trade-account-contacts-modal-dialog" data-bind="with: tradeAccountContacts">
@@ -359,10 +407,15 @@
 					</div>
 					<div class="prefilter-group">
 						<h5 class="sidebar-heading">
+							Invoice
+						</h5>
+						<div id="invoice-company-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: invoiceCompanyParams }"></div>
+					</div>
+					<div class="prefilter-group">
+						<h5 class="sidebar-heading">
 							Sales Analysis
 						</h5>
 						<div id="sales-history-analysis-period-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesHistoryAnalysisPeriodsParams }"></div>
-						<div id="invoice-company-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: invoiceCompanyParams }"></div>
 					</div>
 				</form>
 				<button type="button" class="btn btn-secondary gap-3 mt-5" data-bind="click: filters.reset">
@@ -373,79 +426,139 @@
 		</div>
 	</sidebar>
 	<main id="credit-control-main">
-		<div id="performance-container">
-			<div class="accordion" id="performance-accordion">
-				<div class="accordion-item">
-					<h2 class="accordion-header">
-						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#performance-collapse" aria-expanded="true" aria-controls="performance-collapse">
-							Performance
-						</button>
-					</h2>
-					<div id="performance-collapse" class="accordion-collapse collapse" data-bs-parent="#performance-accordion">
-						<div class="accordion-body" data-bind="with: performance">
-							<div class="blocker" data-bind="flexFadeVisible: busy">
-								<h4 class="loading-title" data-bind="text: busyMessage"></h4>
-								<div class="loading-spinner"></div>
+		<ul class="nav nav-tabs" id="credit-control-tabs" role="tablist">
+			<li class="nav-item" role="presentation">
+				<button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard-tab-pane" type="button" role="tab" aria-controls="dashboard-tab-pane" aria-selected="true">
+					Dashboard
+				</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" id="order-release-tab" data-bs-toggle="tab" data-bs-target="#order-release-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
+					Portal Order Release
+				</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" id="statements-tab" data-bs-toggle="tab" data-bs-target="#statements-tab-pane" type="button" role="tab" aria-controls="statements-tab-pane" aria-selected="false">
+					Statements
+				</button>
+			</li>
+		</ul>
+		<div class="tab-content" id="credit-control-tab-content">
+			<div class="tab-pane fade show active" id="dashboard-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+				<div id="performance-container">
+					<div class="accordion" id="performance-accordion">
+						<div class="accordion-item relative" data-bind="with: performance">
+							<h2 class="accordion-header">
+								<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#performance-collapse" aria-expanded="false" aria-controls="performance-collapse">
+									<span>
+										Performance
+									</span>
+								</button>
+							</h2>
+							<div id="performance-collapse" class="accordion-collapse collapse" data-bs-parent="#performance-accordion">
+								<div class="blocker" data-bind="flexFadeVisible: busy">
+									<h4 class="loading-title" data-bind="text: busyMessage"></h4>
+									<div class="loading-spinner"></div>
+								</div>
+								<div class="accordion-body">
+									<table class="performance-table table table-bordered" style="display: none" , data-bind="visible: periods().length">
+										<colgroup>
+											<col />
+											<!-- ko foreach: periods -->
+											<col />
+											<!-- /ko -->
+										</colgroup>
+										<thead>
+											<tr>
+												<th>
+													<div class="prefilters">
+														<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: reportingGroupParams }"></div>
+														<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyOrSterlingParams }"></div>
+													</div>
+												</th>
+												<!-- ko foreach: periods -->
+												<th>
+													<span data-bind="text: $data"></span>
+												</th>
+												<!-- /ko -->
+											</tr>
+										</thead>
+										<tbody data-bind="foreach: records">
+											<tr class="totals-row">
+												<th>
+													<span data-bind="text: $data.currencyCode"></span>
+												</th>
+												<!-- ko foreach: totals -->
+												<th>
+													<span data-bind="text: formatCurrency(Total, 2, FormattingCulture, CurrencyCode)"></span>
+												</th>
+												<!-- /ko -->
+											</tr>
+											<!-- ko foreach: $data.items -->
+											<tr>
+												<td class="indented">
+													<span data-bind="text: $data[0]">
+												</td>
+												<!-- ko foreach: $data[1] -->
+												<td>
+													<span data-bind="text: formatCurrency(TotalOutstanding, 2, FormattingCulture, CurrencyCode)"></span>
+												</td>
+												<!-- /ko -->
+											</tr>
+											<!-- /ko -->
+										</tbody>
+									</table>
+								</div>
 							</div>
-							<div class="prefilters">
-								<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: reportingGroupParams }"></div>
-								<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyOrSterlingParams }"></div>
-							</div>
-							<table class="performance-table table table-bordered">
-								<colgroup>
-									<col />
-									<!-- ko foreach: periods -->
-									<col />
-									<!-- /ko -->
-								</colgroup>
-								<thead>
-									<tr>
-										<th>
-
-										</th>
-										<!-- ko foreach: periods -->
-										<th>
-											<span data-bind="text: $data"></span>
-										</th>
-										<!-- /ko -->
-									</tr>
-								</thead>
-								<tbody data-bind="foreach: records">
-									<tr>
-										<td>
-											<span data-bind="text: $data[0]">
-										</td>
-										<!-- ko foreach: $data[1] -->^
-										<td>
-											<span data-bind="text: formatCurrency(TotalOutstanding, 2, FormattingCulture, CurrencyCode)"></span>
-										</td>
-										<!-- /ko -->
-									</tr>
-								</tbody>
-							</table>
 						</div>
 					</div>
 				</div>
+				<div class="dashboard" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
+					<div class="dashboard-pod card" data-bind="css: { 'selected-pod': $parent.selectedPod() == $data }">
+						<div class="card-body" data-bind="class: Classes">
+							<h4 data-bind="html: Heading"></h4>
+							<div data-bind="html: Stats"></div>
+							<a href="#" class="stretched-link" data-bind="click: $parent.dashboardClick"></a>
+						</div>
+					</div>
+				</div>
+				<div id="selected-filter-pills">
+					<!-- ko template: { name: 'filter-pills-template', data: filters } --><!-- /ko -->
+					<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
+						<a class="btn btn-secondary dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
+							<i class="bi bi-list-check"></i>
+						</a>
+						<!-- ko template: { name: 'credit-control-quantity-value-dropdown-container', data: filters } --><!-- /ko -->
+					</div>
+					<button class="btn btn-dark btn-export ms-auto" data-bind="click: exportToExcel">
+						Export to Excel
+						<i class="bi bi-download"></i>
+						<i class="bi bi-filetype-xlsx"></i>
+					</button>
+					<!-- ko if: filters.initTooltips() --><!-- /ko -->
+				</div>
+				<div id="credit-control-grid-container" data-bind="kendoGrid: gridParams"></div>
 			</div>
-		</div>
-		<div class="dashboard" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
-			<div class="dashboard-pod card" data-bind="css: { 'selected-pod': $parent.selectedPod() == $data }">
-				<div class="card-body" data-bind="class: Classes">
-					<h4 data-bind="html: Heading"></h4>
-					<div data-bind="html: Stats"></div>
-					<a href="#" class="stretched-link" data-bind="click: $parent.dashboardClick"></a>
+			<div class="tab-pane fade" id="order-release-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+				<div id="order-release-container">
+					<!-- ko template: { name: 'held-orders-template', data: memberBasketFetcher } --><!-- /ko -->
 				</div>
 			</div>
-		</div>
-		<div id="selected-filter-pills">
-			<!-- ko template: { name: 'filter-pills-template', data: filters } --><!-- /ko -->
-			<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
-				<a class="btn btn-secondary dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
-					<i class="bi bi-list-check"></i>
-				</a>
-				<!-- ko template: { name: 'credit-control-quantity-value-dropdown-container', data: filters } --><!-- /ko -->
+			<div class="tab-pane fade" id="statements-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
+				<form id="send-statements-controls" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
+					<div class="trade-account-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statementsTradeAccountParams }"></div>
+					<div class="prefilter">
+						<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
+						<span class="validation-message" data-bind="validationMessage: date"></span>
+					</div>
+				</form>
+				<div id="controls-wrapper">
+					<button class="btn btn-dark" data-bind="click: sendStatements">
+						Send Statements
+					</button>
+				</div>
+				<div id="response-container" data-bind="html: sendResponse"></div>
 			</div>
 		</div>
-		<div id="credit-control-grid-container" data-bind="kendoGrid: gridParams"></div>
 	</main>
 </div>

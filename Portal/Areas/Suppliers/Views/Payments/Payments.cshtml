@@ -239,11 +239,15 @@
 							<col />
 							<col />
 							<col />
+							<col />
 						</colgroup>
 						<thead>
 							<tr>
 								<th>
 									Currency
+								</th>
+								<th>
+									Suppler Invoices Total
 								</th>
 								<th>
 									Overdue Supplier Invoices
@@ -285,6 +289,9 @@
 									<span data-bind="text: RowLabel"></span>
 								</td>
 								<td>
+									<span data-bind="html: SupplierInvoiceTotal ? formatCurrency(SupplierInvoiceTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
+								</td>
+								<td>
 									<span data-bind="html: OverdueSupplierInvoiceTotal ? formatCurrency(OverdueSupplierInvoiceTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
 								<td>
@@ -320,6 +327,9 @@
 									<span data-bind="text: RowLabel"></span>
 								</th>
 								<th>
+									<span data-bind="html: SupplierInvoiceTotal ? formatCurrency(SupplierInvoiceTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
+								</th>
+								<th>
 									<span data-bind="html: OverdueSupplierInvoiceTotal ? formatCurrency(OverdueSupplierInvoiceTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</th>
 								<th>
@@ -345,6 +355,7 @@
 								</th>
 								<!-- /ko -->
 								<td>
+									<small>GBP Totals calculated with latest FX rates above</small>
 								</td>
 							</tr>
 						</tbody>

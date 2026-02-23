@@ -15,6 +15,7 @@ using Resources;
 using SharedEFClasses.Models.Documents;
 using SharedEFClasses.Models;
 using System.Diagnostics;
+using OpenXmlPowerTools;
 
 namespace Portal.Utilities.Document
 {
@@ -63,7 +64,11 @@ namespace Portal.Utilities.Document
 
             var normalFont = new Font(gillSansMt, standardSize, Font.NORMAL, BaseColor.BLACK);
 
-            var strikeThroughFont = new Font(gillSansMt, standardSize, Font.STRIKETHRU, BaseColor.BLACK);
+			var largeFont = new Font(gillSansMt, standardSize + 12, Font.NORMAL, BaseColor.BLACK);
+
+			var largerFont = new Font(gillSansMt, standardSize + 24, Font.NORMAL, BaseColor.BLACK);
+
+			var strikeThroughFont = new Font(gillSansMt, standardSize, Font.STRIKETHRU, BaseColor.BLACK);
 
             var hyperlinkFont = new Font(gillSansMt, standardSize, Font.UNDERLINE, BaseColor.BLUE);
 
@@ -71,7 +76,11 @@ namespace Portal.Utilities.Document
 
             var boldFont = FontFactory.GetFont("Arial", standardSize, Font.BOLD, BaseColor.BLACK);
 
-            var underlinedFont = new Font(gillSansMt, standardSize, Font.UNDERLINE, BaseColor.BLACK);
+			var largeBoldFont = FontFactory.GetFont("Arial", standardSize + 3, Font.BOLD, BaseColor.BLACK);
+
+			var largerBoldFont = FontFactory.GetFont("Arial", standardSize + 6, Font.BOLD, BaseColor.BLACK);
+
+			var underlinedFont = new Font(gillSansMt, standardSize, Font.UNDERLINE, BaseColor.BLACK);
 
             var smallItalicFont = FontFactory.GetFont("Arial", standardSize - 1, Font.ITALIC, BaseColor.BLACK);
 
@@ -678,7 +687,26 @@ namespace Portal.Utilities.Document
 
                         bodyTable.SplitLate = false;
 
-                        foreach (var c in input.ColumnHeadings)
+						if (!String.IsNullOrEmpty(orderHead.OrderTableHeader))
+						{
+                            bodyTable.AddCell(new PdfPCell(ProcessPhrase($"{{b}}{orderHead.OrderTableHeader}{{/b}}", largeBoldFont))
+                            {
+                                Border = 0,
+                                BorderWidthTop = 0,
+                                BorderWidthBottom = 0,
+                                BorderWidthLeft = 0,
+                                BorderWidthRight = 0,
+                                VerticalAlignment = Element.ALIGN_TOP,
+                                HorizontalAlignment = Element.ALIGN_LEFT,
+                                PaddingLeft = 3,
+                                PaddingRight = 3,
+                                PaddingTop = 3,
+                                PaddingBottom = 6,
+                                Colspan = columnCount
+							});
+						}
+
+						foreach (var c in input.ColumnHeadings)
                         {
                             bodyTable.AddCell(new PdfPCell(ProcessPhrase($"{{b}}{c.Name}{{/b}}", normalFont))
                             {
@@ -689,14 +717,14 @@ namespace Portal.Utilities.Document
                                 BorderWidthRight = 0,
                                 VerticalAlignment = Element.ALIGN_TOP,
                                 HorizontalAlignment = (c.TextAlign == "left" ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT),
-                                PaddingLeft = 3,
+                                PaddingLeft = 0,
                                 PaddingRight = 3,
                                 PaddingTop = 3,
                                 PaddingBottom = 6
                             });
                         }
 
-                        bodyTable.HeaderRows = 1;
+                        bodyTable.HeaderRows = String.IsNullOrEmpty(orderHead.OrderTableHeader) ? 1 : 2; //?
 
                         foreach (var line in orderLines)
                         {
@@ -1524,7 +1552,7 @@ namespace Portal.Utilities.Document
                     Paragraph orderHeadParagraph = new Paragraph();
 
                     orderHeadParagraph.SpacingBefore = 0.0f;
-                    orderHeadParagraph.SpacingAfter = 20.0f;
+                    orderHeadParagraph.SpacingAfter = 5.0f;
 
                     var orderHeadPhrase1 = new Phrase();
 
@@ -1704,6 +1732,25 @@ namespace Portal.Utilities.Document
 
                         bodyTable.SplitLate = false;
 
+                        if (!String.IsNullOrEmpty(orderHead.OrderTableHeader)) 
+                        {
+                            bodyTable.AddCell(new PdfPCell(ProcessPhrase($"{orderHead.OrderTableHeader}", largeBoldFont))
+                            {
+                                Border = 0,
+                                BorderWidthTop = 0,
+                                BorderWidthBottom = 0,
+                                BorderWidthLeft = 0,
+                                BorderWidthRight = 0,
+                                VerticalAlignment = Element.ALIGN_TOP,
+                                HorizontalAlignment = Element.ALIGN_LEFT,
+                                PaddingLeft = 0,
+                                PaddingRight = 3,
+                                PaddingTop = 3,
+                                PaddingBottom = 6,
+								Colspan = columnCount
+							});
+                        }
+
                         foreach (var c in input.ColumnHeadings)
                         {
                             bodyTable.AddCell(new PdfPCell(ProcessPhrase($"{{b}}{c.Name}{{/b}}", normalFont))
@@ -1722,7 +1769,7 @@ namespace Portal.Utilities.Document
                             });
                         }
 
-                        bodyTable.HeaderRows = 1;
+                        bodyTable.HeaderRows = String.IsNullOrEmpty(orderHead.OrderTableHeader) ? 1 : 2;
 
                         foreach (var line in orderLines)
                         {
@@ -2665,50 +2712,59 @@ namespace Portal.Utilities.Document
                         string inner = tagMatch.Groups[3].Value;
 
                         // Clone current font
-                        Font newFont = new Font(currentFont);
+                        Font newFont = new Font(currentFont.BaseFont, currentFont.Size);
 
                         switch (tag)
                         {
                             case "s":
                                 newFont = smallNormalFont;
-                                phrase.Add(ProcessPhrase(inner, newFont));
+								newFont.Size = currentFont.Size;
+								phrase.Add(ProcessPhrase(inner, newFont));
                                 break;
                             case "sb":
                             case "bs":
                                 newFont = smallBoldFont;
-                                phrase.Add(ProcessPhrase(inner, newFont));
+								newFont.Size = currentFont.Size;
+								phrase.Add(ProcessPhrase(inner, newFont));
                                 break;
                             case "si":
                             case "is":
                                 newFont = smallItalicFont;
-                                phrase.Add(ProcessPhrase(inner, newFont));
+								newFont.Size = currentFont.Size;
+								phrase.Add(ProcessPhrase(inner, newFont));
                                 break;
                             case "u":
                                 newFont = underlinedFont;
-                                phrase.Add(ProcessPhrase(inner, newFont));
+								newFont.Size = currentFont.Size;
+								phrase.Add(ProcessPhrase(inner, newFont));
                                 break;
                             case "b":
                                 newFont = boldFont;
+                                newFont.Size = currentFont.Size;
                                 phrase.Add(ProcessPhrase(inner, newFont));
                                 break;
                             case "bu":
                             case "ub":
                                 newFont = boldUnderlined;
-                                phrase.Add(ProcessPhrase(inner, newFont));
+								newFont.Size = currentFont.Size;
+								phrase.Add(ProcessPhrase(inner, newFont));
                                 break;
                             case "bi":
                             case "ib":
                                 newFont = italicBold;
-                                phrase.Add(ProcessPhrase(inner, newFont));
+								newFont.Size = currentFont.Size;
+								phrase.Add(ProcessPhrase(inner, newFont));
                                 break;
                             case "i":
                                 newFont = italicFont;
-                                phrase.Add(ProcessPhrase(inner, newFont));
+								newFont.Size = currentFont.Size;
+								phrase.Add(ProcessPhrase(inner, newFont));
                                 break;
                             case "iu":
                             case "ui":
                                 newFont = italicUnderlined;
-                                phrase.Add(ProcessPhrase(inner, newFont));
+								newFont.Size = currentFont.Size;
+								phrase.Add(ProcessPhrase(inner, newFont));
                                 break;
                             case "biu":
                             case "bui":
@@ -2717,7 +2773,8 @@ namespace Portal.Utilities.Document
                             case "uib":
                             case "ubi":
                                 newFont = italicBoldUnderlined;
-                                phrase.Add(ProcessPhrase(inner, newFont));
+								newFont.Size = currentFont.Size;
+								phrase.Add(ProcessPhrase(inner, newFont));
                                 break;
                             case "uri":
                                 // Recursively parse inner text with current font

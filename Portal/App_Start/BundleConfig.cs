@@ -433,6 +433,7 @@ namespace Portal
                     $"{cssPrefix}/models/credit-control/credit-control{cssSuffix}",
                     $"{cssPrefix}/models/credit-control/credit-control-sidebar{cssSuffix}",
                     $"{cssPrefix}/models/credit-control/credit-control-performance{cssSuffix}",
+                    $"{cssPrefix}/models/credit-control/credit-control-order-release{cssSuffix}",
 					$"{cssPrefix}/models/trade-account-contacts-widener{cssSuffix}"
 			));
 
@@ -1018,30 +1019,33 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/credit-control").Include(
-                        $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-sales-breakdown{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-sales-breakdown-pod{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-sales-breakdown-record{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-other-breakdown{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-other-breakdown-pod{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-other-breakdown-record{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-claims-breakdown{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-claims-breakdown-pod{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-claims-breakdown-record{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-debt-breakdown{jsSuffix}",
-                        $"{jsPrefix}/models/credit-control/credit-control-debt-breakdown-pod{jsSuffix}",
-                        $"{jsPrefix}/models/credit-control/credit-control-debt-breakdown-record{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-orders-breakdown{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-orders-breakdown-pod{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-orders-breakdown-record{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-dashboard-pod{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control-trade-account-search-result{jsSuffix}",
-                        $"{jsPrefix}/models/credit-control/credit-control-filters{jsSuffix}",
-                        $"{jsPrefix}/models/credit-control/credit-control-performance{jsSuffix}",
-                        $"{jsPrefix}/models/credit-control/credit-control-performance-pod{jsSuffix}",
-                        $"{jsPrefix}/models/credit-control/credit-control-performance-record{jsSuffix}",
-						$"{jsPrefix}/models/credit-control/credit-control{jsSuffix}"
-                ));
+                         $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+					                $"{jsPrefix}/models/others/trade-account-selector{jsSuffix}",
+									$"{jsPrefix}/models/others/basket-status{jsSuffix}",
+									$"{jsPrefix}/models/others/order-products-member-basket-fetcher{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-sales-breakdown{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-sales-breakdown-pod{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-sales-breakdown-record{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-other-breakdown{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-other-breakdown-pod{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-other-breakdown-record{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-claims-breakdown{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-claims-breakdown-pod{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-claims-breakdown-record{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-debt-breakdown{jsSuffix}",
+                                    $"{jsPrefix}/models/credit-control/credit-control-debt-breakdown-pod{jsSuffix}",
+                                    $"{jsPrefix}/models/credit-control/credit-control-debt-breakdown-record{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-orders-breakdown{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-orders-breakdown-pod{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-orders-breakdown-record{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-dashboard-pod{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control-trade-account-search-result{jsSuffix}",
+                                    $"{jsPrefix}/models/credit-control/credit-control-filters{jsSuffix}",
+                                    $"{jsPrefix}/models/credit-control/credit-control-performance{jsSuffix}",
+                                    $"{jsPrefix}/models/credit-control/credit-control-performance-pod{jsSuffix}",
+                                    $"{jsPrefix}/models/credit-control/credit-control-performance-record{jsSuffix}",
+						            $"{jsPrefix}/models/credit-control/credit-control{jsSuffix}"
+                            ));
 
 			bundles.Add(new ScriptBundle("~/bundles/js/trade-account-contacts").Include(
 						$"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",

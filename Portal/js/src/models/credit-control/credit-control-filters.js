@@ -39,7 +39,7 @@
     self.statementsTradeAccountCode = ko.observable(params.statementsTradeAccountCode ?? '');
     self.statementsTradeAccount = ko.observable();
 
-    self.salesHistoryAnalysisPeriodId = ko.observable(params.salesHistoryAnalysisPeriodId ?? '');
+    self.salesHistoryAnalysisPeriodId = ko.observable(params.salesHistoryAnalysisPeriodId ?? 'L12M');
     self.salesHistoryAnalysisPeriod = ko.observable();
     self.salesHistoryAnalysisPeriodAwaitingBinding = ko.observable(params.salesHistoryAnalysisPeriodId != null && params.salesHistoryAnalysisPeriodId != '');
 
@@ -62,6 +62,8 @@
     self = Object.assign(tradeAccountContactsFiltersViewModel({
         params: Object.assign({
             filtersPrefix: 'credit-control-',
+            tradeAccountStatusId: true,
+            tradeAccountStatus: tradeAccountStatuses[0],
             creditController: window.getCreditControllerCode()
         }, params),
         parent: parent
@@ -69,7 +71,11 @@
 
     self.countDisplay = ko.observable(undefined);
 
-    self.displayModes = ko.observableArray([DISPLAY_MODE_QUANTITY])
+    let displayModes = localStorage.getItem('displayModes', '[1,2]');
+
+    displayModes = displayModes == null ? [DISPLAY_MODE_QUANTITY] : JSON.parse(displayModes);
+
+    self.displayModes = ko.observableArray(displayModes);
 
     //#endregion
 
@@ -516,81 +522,12 @@
         }
     }
 
-
-    // why TF can't I get grouping to work vs odata controller endpoints
-  //  self.salesHistoryAnalysisPeriodsParams = kendoMDCDropDownList({
-  //      skipCascade: true,
-  //      label: 'Sales History Analysis Period',
-  //      odata: true,
-  //      endPoint: '/odata/GetSalesHistoryAnalysisPeriodGroups',
-  //      textField: 'Name',
-  //      valueField: 'Code',
-  //      groupTemplate: '<strong>#:data#</strong>',
-  //      template: self.salesHistoryAnalysisPeriodTemplate,
-  //      valueTemplate: self.salesHistoryAnalysisPeriodValueTemplate,
-  //      idObservable: self.salesHistoryAnalysisPeriodId,
-  //      objObservable: self.salesHistoryAnalysisPeriod,
-  //      fixedGroupTemplate: (e) => `Group: #: data #`,
-  //      //grouping: [{
-  //      //    field: 'GroupName',
-  //      //    dir: 'asc'
-  //      //}],
-  //      locked: ko.observable(self.salesHistoryAnalysisPeriodId() != ''),
-  //      enable: ko.observable(true),
-  //      disable: ko.observable(false),
-  //      clearable: ko.observable(true),
-  //      revertible: ko.observable(false),
-  //      readOnly: false,
-  //      filter: 'contains',
-  //      autoBind: true,
-  //      height: 340,
-  //      sort: {
-  //          dir: 'asc',
-  //          field: 'GroupName'
-  //      },
-  //      select: function (e) {
-  //          console.log('salesHistoryAnalysisPeriod select', e);
-  //      },
-  //      clearFunction: self.genericUnsavedChangesClear,
-  //      parameterMap: (data) => {
-
-  //          //Generate parameters in odata v4 format
-  //          let d = kendo.data.transports['odata-v4'].parameterMap(data);
-
-  //          delete d.$inlinecount; // <-- remove inlinecount
-  //          delete d.$format; // <-- remove format
-  //          delete d.$callback; // <-- remove callback
-
-  //          d.$count = true;
-
-  //          /*
-            
-            
-		//[Key]
-		//public string Code { get; set; }
-
-		//public string Name { get; set; }
-
-		//public string GroupName { get; set; }
-
-		//public byte SortOrder { get; set; }
-  //          */
-
-  //          d.$apply = 'groupby((Code,GroupName,Name))/filter((Code ne null))';
-
-  //          return d;
-  //      },
-  //      popupSettings: {
-  //          appendTo: document.getElementById(`${self.filtersPrefix}sales-history-analysis-period-prefilter`)
-  //      }
-  //  });
-
     self.salesHistoryAnalysisPeriodsParams = {
         enable: true,
         enable: ko.observable(true),
         disable: ko.observable(false),
         observable: self.salesHistoryAnalysisPeriodId,
-        clearable: true,
+        clearable: false,
         revertible: false,
         width: 'auto',
         label: 'Sales History Analysis Period',
@@ -675,11 +612,6 @@
             autoClose: false,
             optionLabel: ' ',
             filter: 'startswith'
-        },
-        clearFunction: function () {
-            var self = this
-            self.dropDownListSettings.value('');
-            self.dropDownListSettings.widget().trigger('change');
         }
     }
 
@@ -813,21 +745,21 @@
         }
     });
 
-    self.saleHistoryAnalysisPeriodTemplate = (e) => {
-        if (e.SaleHistoryAnalysisPeriod && e.SaleHistoryAnalysisPeriod.Code && e.SaleHistoryAnalysisPeriod.Name) {
-            return `<span title="${e.SaleHistoryAnalysisPeriod.Name}">${e.SaleHistoryAnalysisPeriod.Name}</span>`;
-        } else {
-            return '';
-        }
-    }
+    //self.saleHistoryAnalysisPeriodTemplate = (e) => {
+    //    if (e.SaleHistoryAnalysisPeriod && e.SaleHistoryAnalysisPeriod.Code && e.SaleHistoryAnalysisPeriod.Name) {
+    //        return `<span title="${e.SaleHistoryAnalysisPeriod.Name}">${e.SaleHistoryAnalysisPeriod.Name}</span>`;
+    //    } else {
+    //        return '';
+    //    }
+    //}
 
-    self.saleHistoryAnalysisPeriodValueTemplate = (e) => {
-        if (e.SaleHistoryAnalysisPeriod && e.SaleHistoryAnalysisPeriod.Code && e.SaleHistoryAnalysisPeriod.Name) {
-            return `<span title="${e.SaleHistoryAnalysisPeriod.Name}">${e.SaleHistoryAnalysisPeriod.Name}</span>`;
-        } else {
-            return '';
-        }
-    }
+    //self.saleHistoryAnalysisPeriodValueTemplate = (e) => {
+    //    if (e.SaleHistoryAnalysisPeriod && e.SaleHistoryAnalysisPeriod.Code && e.SaleHistoryAnalysisPeriod.Name) {
+    //        return `<span title="${e.SaleHistoryAnalysisPeriod.Name}">${e.SaleHistoryAnalysisPeriod.Name}</span>`;
+    //    } else {
+    //        return '';
+    //    }
+    //}
 
     //self.salesHistoryAnalysisPeriodParams = kendoMDCDropDownList({
     //    skipCascade: true,
@@ -866,6 +798,14 @@
 
 
     //#region Subscriptions
+
+    self.displayModes.subscribe(nv => {
+        if (nv.length) {
+            localStorage.setItem('displayModes', `[${nv}]`)
+        } else {
+            localStorage.removeItem('displayModes');
+        }
+    });
 
     //self.tradeAccountCode.subscribe(nv => {
     //    self.refreshParent();
@@ -966,13 +906,14 @@
     }
 
     self.getSelectedFilters = ko.computed(() => {
-        return Object.keys(self)
+        let results = Object.keys(self)
             .filter(k => {
                 return (k.length)
                     && (k != 'initialParams')
                     && (k != 'dateParams')
                     && (k != 'statementsTradeAccountParams')
                     && (k != 'includeClosedTradeAccountsParams')
+                    && (k != 'salesHistoryAnalysisPeriodsParams')
                     && (k.indexOf('Params') > -1)
                     && (k.indexOf('Params') == k.length - 6);
             }).map(k => self[k])
@@ -1001,6 +942,25 @@
 
                 return selected;
             });
+
+        results.forEach(r => {
+            r.bsTooltipTitle = Object.hasOwn(r, 'label')
+                ? r.label
+                : (Object.hasOwn(r, 'multiSelectSettings')
+                    ? r.multiSelectSettings.label
+                    : '')
+                + ' '
+                + (Object.hasOwn(r, 'dropDownListSettings')
+                    ? Object.hasOwn(ko.unwrap(r.dropDownListSettings.dataItem), 'complexObjectName')
+                        ? `= ${ko.unwrap(r.dropDownListSettings.dataItem)[r.complexObjectName][r.complexObjectTextField]}`
+                        : `= ${(r.dropDownListSettings.dataValueField == 'Code'
+                            ? ko.unwrap(r.dropDownListSettings.dataItem)[r.dropDownListSettings.dataValueField] + ' -'
+                            : '')} ${ko.unwrap(r.dropDownListSettings.dataItem)[r.dropDownListSettings.dataTextField]}`
+                    : '');
+
+        })
+
+        return results;
     }, self);
 
     self.selectedFilterCount = ko.computed(() => {
@@ -1025,7 +985,11 @@
 
     //#region Late Subscriptions
 
-
+    self.getSelectedFilters.subscribe(nv => {
+        window.setTimeout(() => {
+            self.initTooltips();
+        }, 0);
+    });
 
     //#endregion
 
@@ -1054,6 +1018,11 @@
             self.tradeAccountStatusId(true);
             self.tradeAccountStatusParams.dropDownListSettings.widget().trigger('change');
         }, 0);
+    }
+
+    self.initTooltips = () => {
+        const tooltipTriggerList = document.querySelectorAll('.filter-pill[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     }
 
     //#endregion

@@ -572,7 +572,7 @@
     self.skipEditEvent = true;
 
     self.gridParams = {
-        autoBind: true,
+        autoBind: false,
         widget: self.gridWidget,
         columns: self.gridColumns,
         data: self.gridDataSource,

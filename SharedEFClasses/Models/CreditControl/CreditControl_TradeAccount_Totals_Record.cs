@@ -13,7 +13,7 @@ namespace SharedEFClasses.Models.CreditControl
 {
 	public class CreditControl_TradeAccount_Totals_Record
 	{
-		public int TotalRows { get; set; }
+		public int TotalRowCount { get; set; }
 
 		public string TradeAccountIDList { get; set; }
 

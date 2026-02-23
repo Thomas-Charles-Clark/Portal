@@ -16,6 +16,8 @@ namespace SharedEFClasses.Models.Suppliers.Payments
 
 		public string CurrencyCode { get; set; }
 
+		public decimal SupplierInvoiceTotal { get; set; }
+
 		public string CurrencyFormattingCulture { get; set; }
 
 		public decimal? OverdueSupplierInvoiceTotal { get; set; }

@@ -179,12 +179,6 @@
                     window.showInfo('Unsaved Changes', 'You have unsaved changes. Please cancel or save them before performing any other action.');
                 }
             }
-
-            // Avoid extraneous call to fetchDashboard if ready == false; the call is made when building 
-            // the server-side viewModel.
-            if (self.ready()) {
-                self.refreshDashboard();
-            }
         },
         sort: {
             field: 'PeriodID',
@@ -474,7 +468,7 @@
     }];
 
     self.gridParams = {
-        autoBind: true,
+        autoBind: false,
         widget: self.gridWidget,
         columns: self.gridColumns,
         data: self.gridDataSource,

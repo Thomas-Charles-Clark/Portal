@@ -66,33 +66,36 @@
     //#region Methods
 
     self.refresh = () => {
+        if (!self.busy()) {
+            self.busy(true);
 
-        self.busy(true);
+            let data = self.filters.toJS();
 
-        let data = self.filters.toJS();
+            console.log('dashboard.refresh calling with', data)
 
-        console.log('dashboard.refresh calling with', data)
+            fetch('/api/SupplierPayments/DashboardSelect', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                body: JSON.stringify(data)
+            }).then(window.handleFetchResponse)
+                .then(data => {
+                    console.log('dashboard.refresh returned', data)
 
-        fetch('/api/SupplierPayments/DashboardSelect', {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            body: JSON.stringify(data)
-        }).then(window.handleFetchResponse)
-            .then(data => {
-                console.log('dashboard.refresh returned', data)
+                    self.records(data.Records);
 
-                self.records(data.Records);
+                    self.periodMessage(data.PeriodMessage?.PeriodMessage);
 
-                self.periodMessage(data.PeriodMessage?.PeriodMessage);
-
-                self.busy(false);
-            })
-            .catch(err => {
-                self.busy(false);
-                window.catchFetchError(err);
-            });
+                    window.setTimeout(() => {
+                        self.busy(false);
+                    }, 500);
+                })
+                .catch(err => {
+                    self.busy(false);
+                    window.catchFetchError(err);
+                });
+        }
     }
 
     //#endregion

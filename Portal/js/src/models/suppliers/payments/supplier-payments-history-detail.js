@@ -151,10 +151,6 @@
             self.busy(true);
 
             console.log(`requestStart`, e);
-
-            if (self.ready()) {
-                self.refreshDashboard();
-            }
         },
         noDataTemplate: 'Nothing to display',
         requestEnd: (e) => {
@@ -220,7 +216,7 @@
     }];
 
     self.gridParams = {
-        autoBind: true,
+        autoBind: false,
         widget: self.gridWidget,
         columns: self.gridColumns,
         data: self.gridDataSource,
@@ -251,6 +247,7 @@
         },
         dataBound: (e) => {
             console.log(`dataBound`, e);
+            self.refreshDashboard();
         },
         save: (data) => {
             console.log(`saveChanges`, e);
