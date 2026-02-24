@@ -351,6 +351,10 @@
   top: 1px;
 }
 
+.k-grid .k-grid-content .held-order-controls-column .btn {
+  width: calc(100% - 1.5rem);
+}
+
 .btn-battleship-blue {
   color: #fff;
   background-color: #44546b;

@@ -1,0 +1,152 @@
+@import 'common';
+
+#sales-market-wrapper {
+    max-width: 240px;    
+}
+
+#attachment-manager {
+    ul {
+        li {
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 0 1rem;
+
+            &.valid {
+                background-image: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 90%, rgba(0,255,0,0.4) 100%);
+            }
+
+            &.invalid:not(.barber-busy) {
+                background-image: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 90%, rgba(255,0,0,0.4) 100%);
+            }
+
+            input.invalid {
+                background-image: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 60%, rgba(255,0,0,0.4) 100%);
+            }
+
+            .list-group-item:not(.ui-sortable-helper):first-child {
+                border-top-left-radius: inherit;
+                border-top-right-radius: inherit;
+            }
+
+            .sort-handle {
+                cursor: pointer;
+                align-self: stretch;
+                padding: $btn-padding-y $btn-padding-x;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
+
+                &:hover {
+                    background-color: $gray-600;
+                    color: $white;
+                }
+            }
+
+            .bi-check-lg,
+            .bi-hand-thumbs-down {
+                display: flex;
+                align-items: center;
+                position: absolute;
+                right: 0;
+                height: 38px;
+                padding: $btn-padding-y $btn-padding-x;
+            }
+
+            &:focus,
+            &:active,
+            &:focus-within {
+                z-index: 1;
+            }
+
+            input {
+                background: none;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow-x: hidden;
+            }
+
+            input.form-control {
+                border-radius: $border-radius-sm;
+                border: none;
+                padding: $list-group-item-padding-y $list-group-item-padding-x;
+
+                &::placeholder {
+                    color: $gray-500;
+                }
+                /*&:focus,
+                &:active,
+                &:focus-within {
+                    outline: none;
+                    box-shadow: none;
+                }*/
+            }
+
+            input.attachment-name {
+                padding-right: 8em;
+            }
+
+            input.attachment-path {
+                flex: 1;
+                padding-right: 8em;
+            }
+
+            label.file-size {
+                display: flex;
+                align-items: center;
+                position: absolute;
+                right: 38px;
+                height: 38px;
+                padding: $btn-padding-y $btn-padding-x;
+            }
+
+            .validation-message {
+                width: 100%;
+                margin: 0;
+                padding: $sm-gutter $l-gutter;
+            }
+        }
+
+        .ui-sortable-placeholder + .sort-item {
+            border-top-left-radius: $border-radius;
+            border-top-right-radius: $border-radius;
+            border-top-width: $border-width;
+        }
+
+        #add-new-attachment {
+            border-radius: 0;
+        }
+    }
+
+    #attachments-total-size {
+        padding: $m-gutter $l-gutter;
+    }
+}
+
+#creation-email-edit-modal {
+    .blocker {
+        border-radius: $border-radius;
+    }
+}
+
+.send-success.text-success {
+    margin-top: $l-gutter;
+    margin-bottom: 0!important;
+}
+
+.k-grid td {
+    vertical-align: top;
+}
+
+#attachment-from-list {
+    min-width: 260px;
+
+    .mdc-select {
+        .k-dropdown-wrap {
+            border-bottom: none;
+        }
+    }
+}

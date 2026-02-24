@@ -3175,6 +3175,23 @@
     <Content Include="css\src\models\suppliers\payments\supplier-payments-sidebar.scss" />
     <Content Include="css\src\models\credit-control\credit-control-performance.scss" />
     <Content Include="css\src\models\credit-control\credit-control-order-release.scss" />
+    <Content Include="css\src\models\virtual-scrolling-deferred-data.scss" />
+    <Content Include="css\src\models\visit-booker.scss" />
+    <Content Include="css\src\models\visit-search.scss" />
+    <Content Include="css\src\models\ring-fenced-stock.scss" />
+    <Content Include="css\src\models\sales-statistics.scss" />
+    <Content Include="css\src\models\sample-request-dg.scss" />
+    <Content Include="css\src\models\sample-request.scss" />
+    <Content Include="css\src\models\site-new.scss" />
+    <Content Include="css\src\models\site.scss" />
+    <Content Include="css\src\models\slicer-components.scss" />
+    <Content Include="css\src\models\stock-management.scss" />
+    <Content Include="css\src\models\stock-viewer.scss" />
+    <Content Include="css\src\models\task-dashboard.scss" />
+    <Content Include="css\src\models\task-search.scss" />
+    <Content Include="css\src\models\trade-account-contacts-widener.scss" />
+    <Content Include="css\src\models\trade-account-contacts.scss" />
+    <Content Include="css\src\models\trade-account-creation-email-maintenance.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
