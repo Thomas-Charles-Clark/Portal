@@ -100,13 +100,15 @@
         }, {
             field: 'OrderDate',
             title: 'Order Date',
-            template: (e) => e.InvoiceDT ? moment(e.InvoiceDT).format('DD/MM/YYYY') : ''
+            template: (e) => e.OrderDate ? moment(e.OrderDate).format('DD/MM/YYYY') : ''
         }, {
             field: 'DataSource',
-            title: 'Data Source'
+            title: 'Data Source',
+            hidden: true
         }, {
             field: 'ProductID',
-            title: 'Product ID'
+            title: 'Product ID',
+            hidden: true
         }, {
             field: 'ProductCode',
             title: 'Product Code'
@@ -125,7 +127,7 @@
             }
         }, {
             field: 'LineValueSterling',
-            title: 'Line Value (in Sterling)',
+            title: 'Line Value in Sterling (Ex. VAT)',
             template: (e) => e.LineValueSterling != null ? formatCurrency(e.LineValueSterling, 2, 'en-GB', 'GBP') : '',
             attributes: {
                 'class': 'text-end'

@@ -102,9 +102,9 @@
             field: 'OrderID',
             title: 'Order ID'
         }, {
-            field: 'OrderDT',
+            field: 'OrderDate',
             title: 'Order Date',
-            template: (e) => e.OrderDT ? moment(e.OrderDT).format('DD/MM/YYYY') : ''
+            template: (e) => e.OrderDate ? moment(e.OrderDate).format('DD/MM/YYYY') : ''
         }, {
             field: 'InvoiceNumber',
             title: 'Invoice Number'
@@ -200,7 +200,7 @@
                         ClaimID: { type: 'string' },
                         ClaimDT: { type: 'date' },
                         OrderID: { type: 'string' },
-                        OrderDT: { type: 'date' },
+                        OrderDate: { type: 'date' },
                         InvoiceNumber: { type: 'string' },
                         ClaimTaker: { type: 'string' },
                         OrderLineID: { type: 'string' },

@@ -4,6 +4,7 @@
     seventy: 70,
     eighty: 80,
     ninety: 90,
+    ninetyTwo: 92,
     oneHundred: 100,
     oneTwenty: 120,
     oneForty: 140,
@@ -60,13 +61,15 @@ const creditControlViewModel = (() => {
 
     self.performance = creditControlPerformanceViewModel();
 
+    self.gridWidget = ko.observable();
+
     self.dashboardPods = ko.observableArray([]);
 
     self.tradeAccounts = ko.observableArray([]);
 
     self.tradeAccountContacts = tradeAccountContactsViewModel({});
 
-    self.selectedTradeAccount = self.tradeAccountContacts.selectedTradeAccount;
+    self.selectedTradeAccount = ko.observable();
 
     self.debtBreakdown = ko.observable();
 
@@ -255,12 +258,16 @@ const creditControlViewModel = (() => {
 
     self.memberBasketFetcher = memberBasketFetcher(self);
 
+    self.memberBasketFetcher.holdO
+
     self.formatCurrency = (e, fieldName) => {
-        if (e[fieldName] != null) {
-            return window.formatCurrency(e[fieldName], 2, e.FormattingCulture, e.CurrencyCode);
-        } else {
-            return ``;
+
+        // Display e.g. £0.00 if ever we see a NULL
+        if (e[fieldName] == null) {
+            e[fieldName] = 0;
         }
+
+        return window.formatCurrency(e[fieldName], 2, e.FormattingCulture, e.CurrencyCode);
     }
 
     self.formatNumber = (e, fieldName, decimals = 0) => {
@@ -315,22 +322,6 @@ const creditControlViewModel = (() => {
         locked: true,
         hidden: false, //self.tradeAccounts().length == 0,
         width: gridColumnWidths.oneForty
-    }, {
-        field: 'MemberCount',
-        title: 'Contacts',
-        attributes: {
-            "class": "text-center grid-btn-cell contacts-cell"
-        },
-        filterable: false,
-        locked: true,
-        hidden: false, //self.tradeAccounts().length == 0,
-        width: gridColumnWidths.eighty,
-        template: (e) => {
-            return `<a href="#" class="btn grid-btn contacts-btn" data-bind="click: openContactsModal">
-					<i class="bi bi-people-fill"></i>
-                    <span class="badge rounded-pill text-bg-primary">${e.MemberCount}</span>
-				</a>`;
-        }
     }, {
         field: 'Status',
         title: 'Status',
@@ -398,27 +389,61 @@ const creditControlViewModel = (() => {
             }
         }
     }, {
-        field: 'StatementURI',
-        title: 'Statement',
+        title: 'Errata',
         headerAttributes: {
-            "class": "errata-heading"// "debt-breakdown-subheading"
+            "class": "errata-heading"
         },
-        attributes: {
-            "class": "text-center grid-btn-cell"
-        },
-        locked: true,
-        sortable: false,
-        filterable: false,
-        width: gridColumnWidths.ninety,
-        template: (e) => {
-            if (e.StatementURI) {
-                return `<a href="#" class="btn grid-btn statement-btn" data-bind="attr: { href: StatementURI, target: '_blank' }">
-					    <i class="bi bi-filetype-pdf"></i>
-				    </a>`;
-            } else {
-                return ``;
+        columns: [{
+            field: 'MemberCount',
+            title: 'Contacts',
+            attributes: {
+                "class": "text-center grid-btn-cell contacts-cell"
+            },
+            headerAttributes: {
+                "class": "errata-subheading"
+            },
+            filterable: false,
+            hidden: false, //self.tradeAccounts().length == 0,
+            width: gridColumnWidths.eighty,
+            template: (e) => {
+                return `<a href="#" class="btn grid-btn contacts-btn" data-bind="click: openContactsModal">
+			<i class="bi bi-people-fill"></i>
+            <span class="badge rounded-pill text-bg-primary">${e.MemberCount}</span>
+		</a>`;
             }
-        }
+        }, {
+            field: 'StatementURI',
+            title: 'Statement',
+            headerAttributes: {
+                "class": "errata-subheading"
+            },
+            attributes: {
+                "class": "text-center grid-btn-cell"
+            },
+            sortable: false,
+            filterable: false,
+            width: gridColumnWidths.ninetyTwo,
+            template: (e) => {
+                if (e.StatementURI) {
+                    return `<a href="#" class="btn grid-btn statement-btn" data-bind="attr: { href: StatementURI, target: '_blank' }">
+				<i class="bi bi-filetype-pdf"></i>
+			</a>`;
+                } else {
+                    return ``;
+                }
+            }
+        }]
+    }, {
+        field: '',
+        title: '',
+        attributes: {
+            "class": "spacer-column left-border"
+        },
+        headerAttributes: {
+            "class": "spacer-column left-border"
+        },
+        template: '&nbsp;',
+        width: 20
     }, {
         title: 'Credit Limit',
         headerAttributes: {
@@ -553,7 +578,7 @@ const creditControlViewModel = (() => {
                 "class": "orders-subheading orders-breakdown"
             },
             attributes: {
-                "class": 'text-end orders-breakdown'
+                "class": 'text-end orders-breakdown relative'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -566,7 +591,7 @@ const creditControlViewModel = (() => {
                 if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
                     result.push(self.formatNumber(e, 'OrdersHeldPortalQuantity'));
 
-                return result.join(SINGLE_BR)
+                return `<a href="javascript:;" class="stretched-link" data-bind="click: (data, event) => { viewModel.selectedTradeAccount(data); viewModel.gridWidget().select(event.currentTarget.closest('tr')); }">${result.join(SINGLE_BR)}</a>`;
             }
         }, {
             field: 'OrdersHeldMertexValue',
@@ -587,6 +612,28 @@ const creditControlViewModel = (() => {
 
                 if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
                     result.push(self.formatNumber(e, 'OrdersHeldMertexQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
+        }, {
+            field: 'BackOrderValue',
+            title: 'Back Order',
+            headerAttributes: {
+                "class": "orders-subheading orders-breakdown"
+            },
+            attributes: {
+                "class": 'text-end orders-breakdown'
+            },
+            width: gridColumnWidths.oneForty,
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'BackOrderValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'BackOrderQuantity'));
 
                 return result.join(SINGLE_BR)
             }
@@ -818,45 +865,6 @@ const creditControlViewModel = (() => {
         template: '&nbsp;',
         width: 20
     }, {
-        title: 'CCR Claims',
-        headerAttributes: {
-            "class": "claim-heading claims-breakdown"
-        },
-        columns: [{
-            field: 'ClaimCount',
-            title: 'Count',
-            headerAttributes: {
-                "class": "claim-subheading claims-breakdown"
-            },
-            attributes: {
-                "class": 'text-end claims-breakdown'
-            },
-            width: gridColumnWidths.oneForty,
-            template: (e) => self.formatNumber(e, 'ClaimCount')
-        }, {
-            field: 'ClaimValue',
-            title: 'Value',
-            headerAttributes: {
-                "class": "claim-subheading claims-breakdown"
-            },
-            attributes: {
-                "class": 'text-end claims-breakdown'
-            },
-            width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'ClaimValue')
-        }]
-    }, {
-        field: '',
-        title: '',
-        attributes: {
-            'class': 'spacer-column left-border'
-        },
-        headerAttributes: {
-            'class': 'spacer-column left-border'
-        },
-        template: '&nbsp;',
-        width: 20
-    }, {
         title: 'Other',
         headerAttributes: {
             "class": "other-heading other-breakdown"
@@ -962,44 +970,85 @@ const creditControlViewModel = (() => {
         template: '&nbsp;',
         width: 20
     }, {
-        title: self.filters.salesHistoryAnalysisPeriod() ? `Sales (${self.filters.salesHistoryAnalysisPeriod().Name})` : `Sales`,
+            title: self.filters.salesHistoryAnalysisPeriod() ? `Sales (${self.filters.salesHistoryAnalysisPeriod().Name})` : `Sales`,
+            headerAttributes: {
+                "class": "sales-heading sales-breakdown"
+            },
+        columns: [
+            //{
+            //    field: 'SalesRank',
+            //    title: 'Rank',
+            //    headerAttributes: {
+            //        "class": "sales-subheading sales-breakdown"
+            //    },
+            //    attributes: {
+            //        "class": 'text-end sales-breakdown'
+            //    },
+            //    width: gridColumnWidths.oneForty,
+            //    template: (e) => {
+            //        if (e.SalesRank) {
+            //            return e.SalesRank;
+            //        } else {
+            //            return '';
+            //        }
+            //    }
+            //},
+            {
+                field: 'SalesValue',
+                title: 'Value',
+                headerAttributes: {
+                    "class": "sales-subheading sales-breakdown"
+                },
+                attributes: {
+                    "class": 'text-end sales-breakdown'
+                },
+                width: gridColumnWidths.oneForty,
+                template: (e) => self.formatCurrency(e, 'SalesValue')
+            }]
+    }, {
+        field: '',
+        title: '',
+        attributes: {
+            'class': 'spacer-column left-border'
+        },
         headerAttributes: {
-            "class": "sales-heading sales-breakdown"
+            'class': 'spacer-column left-border'
+        },
+        template: '&nbsp;',
+        width: 20
+    }, {
+        title: 'CCR Claims',
+        headerAttributes: {
+            "class": "claim-heading claims-breakdown"
         },
         columns: [{
-            field: 'SalesRank',
-            title: 'Rank',
+            field: 'ClaimCount',
+            title: ' ',
             headerAttributes: {
-                "class": "sales-subheading sales-breakdown"
+                "class": "claim-subheading claims-breakdown"
             },
             attributes: {
-                "class": 'text-end sales-breakdown'
+                "class": 'text-end claims-breakdown'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
-                if (e.SalesRank) {
-                    return e.SalesRank;
-                } else {
-                    return '';
-                }
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'ClaimValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'ClaimCount'));
+
+                return result.join(SINGLE_BR)
             }
-        }, {
-            field: 'SalesValue',
-            title: 'Value',
-            headerAttributes: {
-                "class": "sales-subheading sales-breakdown"
-            },
-            attributes: {
-                "class": 'text-end sales-breakdown'
-            },
-            width: gridColumnWidths.oneForty,
-            template: (e) => self.formatCurrency(e, 'SalesValue')
         }]
     }];
 
     self.gridParams = {
         autoBind: true,
-        widget: ko.observable(),
+        widget: self.gridWidget,
         columns: self.gridColumns(),
         data: new kendo.data.DataSource({
             transport: {
@@ -1014,9 +1063,9 @@ const creditControlViewModel = (() => {
             serverPaging: true,
             serverAggregates: false,
             serverSorting: true,
-            pageSize: 10,
+            pageSize: 20,
             pageable: {
-                pageSize: 10,
+                pageSize: 20,
                 pageSizes: [10, 20, 50, 100, 250, 500, 'all']
             },
             schema: $.extend({}, kendo.data.schemas.webapi, {
@@ -1042,10 +1091,12 @@ const creditControlViewModel = (() => {
                         DebtTotal: { type: 'number' },
                         DebtPlusOrdersTotal: { type: 'number' },
                         OrdersTotalValue: { type: 'number' },
+                        BackOrderValue: { type: 'number' },
                         OrdersInProgressValue: { type: 'number' },
                         OrdersHeldPortalValue: { type: 'number' },
                         OrdersHeldMertexValue: { type: 'number' },
                         OrdersTotalQuantity: { type: 'number' },
+                        BackOrderQuantity: { type: 'number' },
                         OrdersInProgressQuantity: { type: 'number' },
                         OrdersHeldPortalQuantity: { type: 'number' },
                         OrdersHeldMertexQuantity: { type: 'number' },
@@ -1093,20 +1144,25 @@ const creditControlViewModel = (() => {
         noRecords: {
             template: () => `No Results. Please search using the filters to the left.`//: ${$("#grid").data("kendoGrid").dataSource.page()}`
         },
-        scrollable: true,
+        scrollable: {
+            endless: true
+        },
         sortable: true,
-        filterable: true,
+        filterable: {
+            extra: false,
+            defaultOperation: 'contains'
+        },
         reorderable: false,
         paging: true,
-        pageSize: 10,
+        pageSize: 20,
         pageable: {
-            pageSize: 10,
+            pageSize: 20,
             pageSizes: [10, 20, 50, 100, 250, 500, 'all']
         },
         excel: {
             allPages: true
         },
-        //height: 'calc(100vh - 230px)',
+        height: 'calc(100vh - 230px)',
         selectable: 'cell',
         change: function (event) {
             console.log('change', event, event.sender.select());
@@ -1133,7 +1189,7 @@ const creditControlViewModel = (() => {
                     self.fetchSalesBreakdown(dataItem);
                 }
                 else if (classList.contains('contacts-cell')) {
-                    self.selectedTradeAccount(tradeAccountViewModel({
+                    self.tradeAccountContacts.selectedTradeAccount(tradeAccountViewModel({
                         rec: dataItem
                     }));
                 }
@@ -1196,6 +1252,17 @@ const creditControlViewModel = (() => {
             pageSize: (self.gridParams.widget() && self.gridParams.widget().dataSource.pageSize())
         });
     });
+
+    self.selectedTradeAccount.subscribe(nv => {
+        self.busy(true);
+        self.memberBasketFetcher.heldOrdersGridWidget().one('dataBound', () => {
+            window.setTimeout(() => {
+                document.querySelector('#order-release-tab').click();
+                self.busy(false);
+            }, 0);
+        });
+        self.memberBasketFetcher.heldOrdersSearchTerm(nv.TradeAccountCode);
+    })
 
     //self.emptyFiltersJSON = JSON.stringify(self.filters.getData());
 

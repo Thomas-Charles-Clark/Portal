@@ -24,10 +24,12 @@ namespace SharedEFClasses.Models.CreditControl
 		public decimal? DebtTotal { get; set; }
 		public decimal? DebtPlusOrdersTotal { get; set; }
 		public decimal? OrdersTotalValue { get; set; }
+		public decimal? BackOrderValue { get; set; }
 		public decimal? OrdersInProgressValue { get; set; }
 		public decimal? OrdersHeldPortalValue { get; set; }
 		public decimal? OrdersHeldMertexValue { get; set; }
 		public int OrdersTotalQuantity { get; set; }
+		public int BackOrderQuantity { get; set; }
 		public int OrdersInProgressQuantity { get; set; }
 		public int OrdersHeldPortalQuantity { get; set; }
 		public int OrdersHeldMertexQuantity { get; set; }

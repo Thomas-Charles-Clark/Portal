@@ -381,7 +381,7 @@
 		</div>
 	</div>
 	<!-- /ko -->
-	<div data-bind="kendoGrid: heldOrdersResultGridSettings"></div>
+	<div id="held-orders-grid" data-bind="kendoGrid: heldOrdersResultGridSettings"></div>
 <pre id="json-viewer" class="prettyprint lang-js mb-0" style="display: none;" data-bind="visible: jsonViewer() != null, html: jsonViewer"></pre>
 </script>
 
@@ -434,7 +434,7 @@
 			</button>
 			<!-- /ko -->
 			<!-- ko if: AllowBasketRelease -->
-			<button class="btn btn-battleship-blue" data-bind="click: $parent.releaseBasket">
+			<button class="btn btn-green" data-bind="click: $parent.releaseBasket">
 				Release Basket
 			</button>
 			<!-- /ko -->
@@ -459,7 +459,7 @@
 			</button>
 			<!-- /ko -->
 			<!-- ko if: AllowTransactionRelease -->
-			<button class="btn btn-battleship-blue" data-bind="click: $parent.releaseTransaction">
+			<button class="btn btn-green" data-bind="click: $parent.releaseTransaction">
 				Release Transaction
 			</button>
 			<!-- /ko -->
@@ -469,7 +469,7 @@
 			</button>
 			<!-- /ko -->
 			<!-- ko foreach: documents -->
-			<button class="btn btn-green" data-bind="click: function () { $parentContext.$parent.fetchDocument($data, $parent); }">
+			<button class="btn btn-flat" data-bind="click: function () { $parentContext.$parent.fetchDocument($data, $parent); }">
 				<span data-bind="text: label"></span>
 			</button>
 			<!-- /ko -->

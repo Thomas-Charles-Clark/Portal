@@ -3179,6 +3179,10 @@
             heldToDt: self.heldOrdersHeldToDt()
         };
 
+        if (typeof window.getCreditControlRoleIds === 'function') {
+            data.roleIds = window.getCreditControlRoleIds();
+        }
+
         self.heldOrdersGridAdditionalParameters(data);
 
         return data;

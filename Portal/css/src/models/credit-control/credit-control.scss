@@ -177,7 +177,7 @@ html {
         }
     }
 
-    .k-grid {
+    .k-grid:not(#held-orders-grid) {
         .k-alt:not(.k-state-selected) {
             &:hover {
                 background-color: $gray-200;
@@ -186,6 +186,14 @@ html {
 
         tr:hover {
             background-color: $gray-200;
+        }
+
+        tr.k-state-selected {
+            &:hover {
+                td {
+                    background-color: $gray-200;
+                }
+            }
         }
 
         .html-cell {
@@ -246,6 +254,7 @@ html {
             }
         }
 
+        .errata-heading,
         .credit-limit-heading,
         .totals-heading,
         .orders-heading,
@@ -262,6 +271,7 @@ html {
             border-right: 1px solid $blue-700;
         }
 
+        .errata-subheading,
         .credit-limit-subheading,
         .totals-subheading,
         .orders-subheading,
@@ -288,16 +298,18 @@ html {
         }
     }
 
+    #held-orders-grid.k-grid {
+        tr:hover {
+            background-color: unset;
+        }
+    }
+
     .k-grid-header {
         .k-with-icon {
             .k-link {
                 margin: 0;
             }
         }
-    }
-
-    .k-grid-content-locked {
-        height: 100% !important;
     }
 
     .debt-breakdown,

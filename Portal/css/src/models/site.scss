@@ -3146,7 +3146,7 @@ button.close.clear-field {
 
 tr.k-state-selected {
     > td {
-        > a:not(.k-button) {
+        > a:not(.k-button):not(.grid-btn):not(.stretched-link) {
             color: white;
         }
 
@@ -3525,32 +3525,36 @@ ul.ui-widget {
 
 .btn-green {
     background-image: none;
-    background: #d4ffda;
-    border-color: #a2e69a;
-    color: black;
+    background: tint-color($green-600, 15%);
+    border-color: $green-700;
+    color: $white;
     text-shadow: none;
     box-shadow: none;
     transition: background ease-out 300ms;
 
     &:not(.btn-primary) {
         &:hover {
-            background: #b0fcbb;
+            background: tint-color($green-600, 30%);
+            border-color: $green-700;
+            color: $white;
         }
     }
 }
 
 .btn-red {
     background-image: none;
-    background: #ffdddd;
-    border-color: #ed7b7b;
-    color: black;
+    background: $red-500;
+    border-color: $red-700;
+    color: $white;
     text-shadow: none;
     box-shadow: none;
     transition: background ease-out 300ms;
 
     &:not(.btn-primary) {
         &:hover {
-            background: #fc8d8d;
+            background: shade-color($red-500, 10%);
+            border-color: $red-700;
+            color: $white;
         }
     }
 }
@@ -4412,10 +4416,18 @@ li.L9 {
 }
 
 .btn-flat {
-    background: rgb(239, 239, 239);
-    border-color: #ccc;
-    color: inherit;
+    background: $gray-200;
+    border-color: $gray-300;
+    color: $body-color;
     text-decoration: none;
+
+    &:hover,
+    &:focus,
+    &:focus-within {
+        background: $gray-400;
+        border-color: $gray-600;
+        color: $body-color;
+    }
 }
 
 .k-header {

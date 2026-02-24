@@ -3173,7 +3173,7 @@ button.close.clear-field span {
   line-height: 30px;
 }
 
-tr.k-state-selected > td > a:not(.k-button) {
+tr.k-state-selected > td > a:not(.k-button):not(.grid-btn):not(.stretched-link) {
   color: white;
 }
 tr.k-state-selected > td > span > a {
@@ -3451,28 +3451,32 @@ ul.ui-widget .ui-menu-item .ui-menu-item-wrapper .tiny-thumb {
 
 .btn-green {
   background-image: none;
-  background: #d4ffda;
-  border-color: #a2e69a;
-  color: black;
+  background: #58b254;
+  border-color: #2b7b28;
+  color: #fff;
   text-shadow: none;
   box-shadow: none;
   transition: background ease-out 300ms;
 }
 .btn-green:not(.btn-primary):hover {
-  background: #b0fcbb;
+  background: #75bf72;
+  border-color: #2b7b28;
+  color: #fff;
 }
 
 .btn-red {
   background-image: none;
-  background: #ffdddd;
-  border-color: #ed7b7b;
-  color: black;
+  background: #dc3545;
+  border-color: #842029;
+  color: #fff;
   text-shadow: none;
   box-shadow: none;
   transition: background ease-out 300ms;
 }
 .btn-red:not(.btn-primary):hover {
-  background: #fc8d8d;
+  background: #c6303e;
+  border-color: #842029;
+  color: #fff;
 }
 
 .dl-address-book {
@@ -4108,10 +4112,15 @@ li.L9 {
 }
 
 .btn-flat {
-  background: #efefef;
-  border-color: #ccc;
-  color: inherit;
+  background: #e9ecef;
+  border-color: #dee2e6;
+  color: #212529;
   text-decoration: none;
+}
+.btn-flat:hover, .btn-flat:focus, .btn-flat:focus-within {
+  background: #ced4da;
+  border-color: #6c757d;
+  color: #212529;
 }
 
 .k-header .k-grid-filter.k-state-active {

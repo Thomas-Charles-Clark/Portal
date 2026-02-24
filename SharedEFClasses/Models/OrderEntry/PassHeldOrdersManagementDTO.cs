@@ -19,5 +19,7 @@ namespace SharedEFClasses.Models.OrderEntry
 		public DateTime? heldFromDt { get; set; }
 
 		public DateTime? heldToDt { get; set; }
+
+		public IEnumerable<int> roleIds { get; set; }
 	}
 }

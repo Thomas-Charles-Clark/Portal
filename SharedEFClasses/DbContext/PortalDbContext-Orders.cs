@@ -590,20 +590,44 @@ namespace SharedEFClasses.Models
             return results;
         }
 
-        public async Task<HeldOrderResultWrapper> FetchHeldOrders(int memberId, string marketCode, string searchTerm, string holdReasonIds, string tab, DateTime? heldFromDt, DateTime? heldToDt)
+        public async Task<HeldOrderResultWrapper> FetchHeldOrders(
+            int memberId,
+            string marketCode,
+            string searchTerm,
+            string holdReasonIds,
+            string tab,
+            DateTime? heldFromDt,
+            DateTime? heldToDt,
+            IEnumerable<int> roleIds)
         {
-            var results = new List<HeldOrderSelectResult>();
+			var roles = new DataTable();
 
-            var reader = await this.Database.Connection.QueryMultipleAsync("portal.Basket_HeldForApproval_Select", new
-            {
-                MemberID = memberId,
-                MarketCode = marketCode,
-                SearchTerm = searchTerm,
-                HoldReasonIDs = holdReasonIds,
-                Tab = tab,
-                HeldFromDT = heldFromDt,
-                HeldToDT = heldToDt
-            }, null, null, CommandType.StoredProcedure);
+			roles.Columns.Add("I", typeof(int));
+
+			if (roleIds != null)
+			{
+				foreach (var r in roleIds)
+				{
+					roles.Rows.Add(r);
+				}
+			}
+
+			var dat = new
+			{
+				MemberID = memberId,
+				MarketCode = marketCode,
+				SearchTerm = searchTerm,
+				HoldReasonIDs = holdReasonIds,
+				Tab = tab,
+				HeldFromDT = heldFromDt,
+				HeldToDT = heldToDt,
+				RoleIDs = roles
+			};
+
+
+			var results = new List<HeldOrderSelectResult>();
+
+            var reader = await this.Database.Connection.QueryMultipleAsync("portal.Basket_HeldForApproval_Select_New", dat, null, null, CommandType.StoredProcedure);
 
             return new HeldOrderResultWrapper()
             {

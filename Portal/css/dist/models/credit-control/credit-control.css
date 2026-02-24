@@ -509,6 +509,113 @@
   background-image: none;
 }
 
+.k-list-container:has(#held-order-filter-list) {
+  padding: 0;
+}
+
+.held-order-reason-popup.k-list-container {
+  padding: 0;
+  border: 0;
+}
+.held-order-reason-popup .k-nodata > div {
+  padding: 0;
+  text-align: initial;
+}
+.held-order-reason-popup #held-order-filter-list {
+  border-radius: 0 0 0.375rem 0.375rem;
+  border: 1px solid #ced4da;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list {
+  border-radius: 0 0 0.375rem 0.375rem;
+  margin-bottom: 0;
+  width: 400px;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .list-group-item {
+  padding: 0.25rem 0.5rem;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .list-group-item.k-state-hover {
+  padding: 0.25rem 0.5rem;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .list-group-item.k-state-selected {
+  color: initial;
+  background-color: initial;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list li {
+  border-radius: 0;
+  font-size: 1rem;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list li:first-of-type {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .role-group {
+  font-weight: bold;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: #084298;
+  color: #fff;
+  border-top: 1px solid #084298;
+  border-left: 1px solid #084298;
+  border-right: 1px solid #084298;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .role-group .btn {
+  padding: 0 0.5rem;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .role-group .bi {
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .role-group .bi:hover {
+  color: #fff;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .role-group span:nth-of-type(2) {
+  margin-right: auto;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .hold-reason-group {
+  padding-left: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  background-color: #e9ecef;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .hold-reason-group .btn {
+  padding: 0 0.5rem;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .hold-reason-group .bi {
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .hold-reason-group span:first-of-type {
+  margin-right: auto;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .hold-reason-group-child {
+  font-weight: normal;
+  padding: 0.5rem 1rem 0.5rem 2rem;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .hold-reason-group-child .form-check-label {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  cursor: pointer;
+  margin: 0;
+  font-weight: normal;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .hold-reason-group-child .form-check-label input {
+  margin: 0;
+  cursor: pointer;
+  top: 0;
+}
+.held-order-reason-popup #held-order-filter-list .hold-reason-group-outer-list .hold-reason-group-child .form-check-label label {
+  font-weight: normal;
+  line-height: 1.5rem;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
 html {
   min-height: 100%;
   display: flex;
@@ -630,58 +737,62 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #credit-control-main .statement-column i {
   font-size: 2rem;
 }
-#credit-control-main .k-grid .k-alt:not(.k-state-selected):hover {
+#credit-control-main .k-grid:not(#held-orders-grid) .k-alt:not(.k-state-selected):hover {
   background-color: #e9ecef;
 }
-#credit-control-main .k-grid tr:hover {
+#credit-control-main .k-grid:not(#held-orders-grid) tr:hover {
   background-color: #e9ecef;
 }
-#credit-control-main .k-grid .html-cell .alert {
+#credit-control-main .k-grid:not(#held-orders-grid) tr.k-state-selected:hover td {
+  background-color: #e9ecef;
+}
+#credit-control-main .k-grid:not(#held-orders-grid) .html-cell .alert {
   margin-bottom: 0;
   padding: 0.25rem 0.5rem;
 }
-#credit-control-main .k-grid .html-cell .alert + .alert {
+#credit-control-main .k-grid:not(#held-orders-grid) .html-cell .alert + .alert {
   margin-top: 0.25rem;
 }
-#credit-control-main .k-grid .grid-btn-cell {
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell {
   position: relative;
 }
-#credit-control-main .k-grid .grid-btn-cell:hover, #credit-control-main .k-grid .grid-btn-cell:focus, #credit-control-main .k-grid .grid-btn-cell:focus-within {
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell:hover, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell:focus, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell:focus-within {
   background-color: #e9ecef;
 }
-#credit-control-main .k-grid .grid-btn-cell .grid-btn {
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn {
   padding: 0 0.75rem;
 }
-#credit-control-main .k-grid .grid-btn-cell .grid-btn:hover, #credit-control-main .k-grid .grid-btn-cell .grid-btn:focus, #credit-control-main .k-grid .grid-btn-cell .grid-btn:focus-within {
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:hover, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:focus, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:focus-within {
   cursor: pointer;
   /*text-shadow: 0 0 6px $blue-700;*/
   color: #0d6efd;
 }
-#credit-control-main .k-grid .grid-btn-cell .grid-btn .bi {
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn .bi {
   font-size: 2.5rem;
 }
-#credit-control-main .k-grid .grid-btn-cell .grid-btn .bi.bi-people-fill {
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn .bi.bi-people-fill {
   font-size: 2.05rem;
 }
-#credit-control-main .k-grid .contacts-btn {
+#credit-control-main .k-grid:not(#held-orders-grid) .contacts-btn {
   position: relative;
 }
-#credit-control-main .k-grid .contacts-btn .badge {
+#credit-control-main .k-grid:not(#held-orders-grid) .contacts-btn .badge {
   position: absolute;
   right: 0;
   bottom: 0;
   top: 25px;
 }
-#credit-control-main .k-grid .credit-stopped:hover {
+#credit-control-main .k-grid:not(#held-orders-grid) .credit-stopped:hover {
   cursor: not-allowed;
 }
-#credit-control-main .k-grid .credit-limit-heading,
-#credit-control-main .k-grid .totals-heading,
-#credit-control-main .k-grid .orders-heading,
-#credit-control-main .k-grid .debt-breakdown-heading,
-#credit-control-main .k-grid .claim-heading,
-#credit-control-main .k-grid .other-heading,
-#credit-control-main .k-grid .sales-heading {
+#credit-control-main .k-grid:not(#held-orders-grid) .errata-heading,
+#credit-control-main .k-grid:not(#held-orders-grid) .credit-limit-heading,
+#credit-control-main .k-grid:not(#held-orders-grid) .totals-heading,
+#credit-control-main .k-grid:not(#held-orders-grid) .orders-heading,
+#credit-control-main .k-grid:not(#held-orders-grid) .debt-breakdown-heading,
+#credit-control-main .k-grid:not(#held-orders-grid) .claim-heading,
+#credit-control-main .k-grid:not(#held-orders-grid) .other-heading,
+#credit-control-main .k-grid:not(#held-orders-grid) .sales-heading {
   font-weight: bold;
   text-align: center;
   vertical-align: middle;
@@ -690,31 +801,32 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   border-left: 1px solid #084298;
   border-right: 1px solid #084298;
 }
-#credit-control-main .k-grid .credit-limit-subheading,
-#credit-control-main .k-grid .totals-subheading,
-#credit-control-main .k-grid .orders-subheading,
-#credit-control-main .k-grid .debt-breakdown-subheading,
-#credit-control-main .k-grid .claim-subheading,
-#credit-control-main .k-grid .other-subheading,
-#credit-control-main .k-grid .sales-subheading {
+#credit-control-main .k-grid:not(#held-orders-grid) .errata-subheading,
+#credit-control-main .k-grid:not(#held-orders-grid) .credit-limit-subheading,
+#credit-control-main .k-grid:not(#held-orders-grid) .totals-subheading,
+#credit-control-main .k-grid:not(#held-orders-grid) .orders-subheading,
+#credit-control-main .k-grid:not(#held-orders-grid) .debt-breakdown-subheading,
+#credit-control-main .k-grid:not(#held-orders-grid) .claim-subheading,
+#credit-control-main .k-grid:not(#held-orders-grid) .other-subheading,
+#credit-control-main .k-grid:not(#held-orders-grid) .sales-subheading {
   font-weight: bold;
   text-align: center;
   vertical-align: middle;
   background-color: #e7f1ff;
   color: #000;
 }
-#credit-control-main .k-grid .other-trade-account-associations div {
+#credit-control-main .k-grid:not(#held-orders-grid) .other-trade-account-associations div {
   white-space: nowrap;
 }
-#credit-control-main .k-grid .k-state-selected {
+#credit-control-main .k-grid:not(#held-orders-grid) .k-state-selected {
   background-color: #cfe2ff;
   color: #212529;
 }
+#credit-control-main #held-orders-grid.k-grid tr:hover {
+  background-color: unset;
+}
 #credit-control-main .k-grid-header .k-with-icon .k-link {
   margin: 0;
-}
-#credit-control-main .k-grid-content-locked {
-  height: 100% !important;
 }
 #credit-control-main .debt-breakdown,
 #credit-control-main .orders-breakdown,
@@ -982,7 +1094,7 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   color: #fff;
 }
 .selected-pod .alert-success {
-  background-color: #16764a;
+  background-color: #3fb33b;
   color: #fff;
 }
 .selected-pod .alert-success a {

@@ -642,7 +642,7 @@ namespace Portal.Controllers
         {
             var mid = dto.memberId ?? User.Identity.GetUserId<int>();
 
-            var results = await PortalDb.FetchHeldOrders(mid, dto.marketCode, dto.searchTerm, dto.holdReasonIds, "M", dto.heldFromDt, dto.heldToDt);
+            var results = await PortalDb.FetchHeldOrders(mid, dto.marketCode, dto.searchTerm, dto.holdReasonIds, "M", dto.heldFromDt, dto.heldToDt, dto.roleIds);
 
             var response = results.Data.ToList().AsQueryable().ToDataSourceResult(request);
 
@@ -674,7 +674,7 @@ namespace Portal.Controllers
         {
             memberId = memberId ?? User.Identity.GetUserId<int>();
              
-            var result = await PortalDb.FetchHeldOrders(memberId.Value, null, null, null, "O", heldFromDt, heldToDt);
+            var result = await PortalDb.FetchHeldOrders(memberId.Value, null, null, null, "O", heldFromDt, heldToDt, null);
 
             var response = result.Data.AsQueryable().ToDataSourceResult(request);
 

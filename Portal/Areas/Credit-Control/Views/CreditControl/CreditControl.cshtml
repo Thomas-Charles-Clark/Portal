@@ -72,6 +72,8 @@
 
 		window.getTabToLoad = () => "ordersToApprove";
 
+		window.getCreditControlRoleIds = () => [13, 17]
+
 	</script>
 
 	<script type="text/javascript">
@@ -102,23 +104,6 @@
 		<span>
 			@(ViewBag.Title)
 		</span>
-		@*<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
-			<a class="btn btn-secondary dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
-				<i class="bi bi-list-check"></i>
-			</a>
-			<ul class="dropdown-menu">
-				<li>
-					<a class="dropdown-item" href="#">
-						Dashboard
-					</a>
-				</li>
-				<li>
-					<a class="dropdown-item" href="#" data-bs-target="#send-statements-modal" data-bs-toggle="modal">
-						Send Statements
-					</a>
-				</li>
-			</ul>
-		</div>*@
 	</h2>
 }
 
@@ -434,7 +419,9 @@
 			</li>
 			<li class="nav-item" role="presentation">
 				<button class="nav-link" id="order-release-tab" data-bs-toggle="tab" data-bs-target="#order-release-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
-					Portal Order Release
+					Portal Order Release <span data-bind="with: selectedTradeAccount">
+						<span data-bind="text: `: ${TradeAccountCode} - ${TradeAccountName}`"></span>
+					</span>
 				</button>
 			</li>
 			<li class="nav-item" role="presentation">
@@ -540,8 +527,8 @@
 				<div id="credit-control-grid-container" data-bind="kendoGrid: gridParams"></div>
 			</div>
 			<div class="tab-pane fade" id="order-release-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-				<div id="order-release-container">
-					<!-- ko template: { name: 'held-orders-template', data: memberBasketFetcher } --><!-- /ko -->
+				<div id="order-release-container" data-bind="with: memberBasketFetcher">
+					<!-- ko template: { name: 'held-orders-template' } --><!-- /ko -->
 				</div>
 			</div>
 			<div class="tab-pane fade" id="statements-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
