@@ -13,7 +13,7 @@
 <!-- /ko -->
 <!-- ko ifnot: noResults -->
 <div id="order-book-detail-scroller-container" class="virtual-scroller-container" data-bind="with: virtualScroller">
-    <table id="order-book-detail-table" class="table table-condensed table-striped table-hover order-book-detail-table">
+    <table id="order-book-detail-table" class="table table-condensed table-striped table-hover order-book-detail-table virtual-scrolling-table">
         <colgroup>
             <!-- ko foreach: $parent.columns -->
             <col data-bind="style: { width: `${$data.width}px` }" />

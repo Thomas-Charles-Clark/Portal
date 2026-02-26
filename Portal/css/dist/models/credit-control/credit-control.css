@@ -672,6 +672,10 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   border: 1px solid #dee2e6;
   border-top: 0;
 }
+#credit-control-tab-content #credit-control-scroller-container {
+  max-height: 800px;
+}
+
 #main-credit-control-container {
   will-change: opacity;
   transition: opacity 300ms ease-in-out;

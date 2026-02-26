@@ -3342,7 +3342,7 @@ const qualityEditor = ({
             let self = Object.assign({}, rec);
             return self;
         },
-        displayModes: []
+        displayModes: ko.observable([])
     });
     
     self.launchParams = kendoMDCDropDownList({

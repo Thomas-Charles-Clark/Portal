@@ -166,21 +166,43 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
                 let currencyGrouping = Map.groupBy(data.Records, (item) => `${item.CurrencyCode}`).entries().toArray();
 
                 currencyGroup = currencyGrouping.map(cg => {
-                    let items = Map.groupBy(cg[1], (item) => `${item.ReportGroup}`).entries().toArray();
+                    let items = Map.groupBy(cg[1], (item, index) => `${item.ReportGroup}`).entries().toArray().map(e => {
+
+                        let formattingCulture = e[1][0].FormattingCulture;
+                        let currencyCode = e[1][0].CurrencyCode;
+
+                        let totals = {
+                            tradeAccountCount: formatNumber(e[1][0].TradeAccountCount, 0, formattingCulture),
+                            creditStoppedCount: formatNumber(e[1][0].CreditStoppedCount, 0, formattingCulture),
+                            twelveMonthOrderCount: formatNumber(e[1][0].TwelveMonthOrderCount, 0, formattingCulture),
+                            twelveMonthOrderValue: formatCurrency(e[1][0].TwelveMonthOrderValue, 0, formattingCulture, currencyCode)
+                        };
+                        e.splice(1, 0, totals);
+                        return e;
+                    });
+
+                    let records = Map.groupBy(items.flatMap(i => i[2]), item => item.PeriodLabel).entries().toArray();
 
                     return {
                         currencyCode: cg[0],
                         formattingCulture: cg[1][0].FormattingCulture,
-                        Totallabel: `${cg[0]}: ${formatNumber(items.flatMap(i => i[1]).reduce((a, i) => a + i.TotalOutstanding, 0), 2, items[0].FormattingCulture)}`,
-                        totals: Map.groupBy(items.flatMap(i => i[1]), item => item.PeriodLabel).entries().toArray().map(m => {
+                        tradeAccountCount: records.flatMap(m => {
+                            return m[1].reduce((accumulator, currentItem) => accumulator += currentItem.TradeAccountCount, 0);
+                        }).reduce((a, c) => a += c, 0),
+                        creditStoppedCount: records.flatMap(m => {
+                            return m[1].reduce((accumulator, currentItem) => accumulator += currentItem.CreditStoppedCount, 0);
+                        }).reduce((a, c) => a += c, 0),
+                        twelveMonthOrderCount: records[0].TwelveMonthOrderCount,
+                        twelveMonthOrderValue: records[0].TwelveMonthOrderValue,
+                        totals: records.map(m => {
                             return {
                                 PeriodLabel: m[0],
                                 Total: m[1].reduce((accumulator, currentItem) => accumulator += currentItem.TotalOutstanding, 0),
                                 FormattingCulture: m[1][0].FormattingCulture,
-                                CurrencyCode: m[1][0].CurrencyCode
+                                CurrencyCode: m[1][0].CurrencyCode,
                             }
                         }),
-                        items: items
+                        items: items,
                     };
                 });
 

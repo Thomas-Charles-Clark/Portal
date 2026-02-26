@@ -78,15 +78,11 @@ $deal-hover-color: $white;
     }
 
     .mdc-select {
-        .k-dropdown-wrap {
-            &.k-state-default {
+        &:not(.mdc-select--selected) {
+            .k-dropdown-wrap {
                 background-color: $white;
             }
-
-            &.k-state-hover {
-                background-color: $white;
-            }
-        }
+        } 
     }
 
     .mdc-validating-field {
@@ -1554,16 +1550,6 @@ $product-color: $order-form-group-color;
                     margin-bottom: 0;
                 }
             }
-        }
-    }
-}
-
-tbody.virtual-spacing {
-    tr {
-        td {
-            padding: 0;
-            border: 0;
-            box-sizing: border-box;
         }
     }
 }

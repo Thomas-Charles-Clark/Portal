@@ -303,38 +303,38 @@
 </div>
 
 @*<div class="modal fade" id="send-statements-modal" tabindex="-1">
-	<div class="modal-dialog modal-lg" id="send-statements-modal-dialog">
-		<div class="modal-content">
-			<div class="blocker" data-bind="flexFadeVisible: busy">
-				<div class="loading-spinner"></div>
-				<h4>
-					Please Wait...
-				</h4>
-			</div>
-			<div class="modal-header grey-blue">
-				<h4 class="modal-title">
-					Send Statements
-				</h4>
-				<button type="button" class="btn-close btn-close-white" aria-label="Close" data-bs-dismiss="modal"></button>
-			</div>
-			<div class="modal-body">
-				<form id="send-statements-controls" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
-					<div class="trade-account-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statementsTradeAccountParams }"></div>
-					<div class="prefilter">
-						<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
-						<span class="validation-message" data-bind="validationMessage: date"></span>
-					</div>
-				</form>
-				<div id="controls-wrapper">
-					<button class="btn btn-dark" data-bind="click: sendStatements">
-						Send Statements
-					</button>
+		<div class="modal-dialog modal-lg" id="send-statements-modal-dialog">
+			<div class="modal-content">
+				<div class="blocker" data-bind="flexFadeVisible: busy">
+					<div class="loading-spinner"></div>
+					<h4>
+						Please Wait...
+					</h4>
 				</div>
-				<div id="response-container" data-bind="html: sendResponse"></div>
+				<div class="modal-header grey-blue">
+					<h4 class="modal-title">
+						Send Statements
+					</h4>
+					<button type="button" class="btn-close btn-close-white" aria-label="Close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<form id="send-statements-controls" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
+						<div class="trade-account-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statementsTradeAccountParams }"></div>
+						<div class="prefilter">
+							<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
+							<span class="validation-message" data-bind="validationMessage: date"></span>
+						</div>
+					</form>
+					<div id="controls-wrapper">
+						<button class="btn btn-dark" data-bind="click: sendStatements">
+							Send Statements
+						</button>
+					</div>
+					<div id="response-container" data-bind="html: sendResponse"></div>
+				</div>
 			</div>
 		</div>
-	</div>
-</div>*@
+	</div>*@
 
 <div class="modal fade" id="trade-account-contacts-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
 	<div class="modal-dialog modal-fullscreen" id="trade-account-contacts-modal-dialog" data-bind="with: tradeAccountContacts">
@@ -356,6 +356,23 @@
 		</div>
 	</div>
 </div>
+
+<script type="text/html" id="main-grid-cell-template">
+	<!-- ko if: typeof field != 'undefined' -->
+	<td data-bind="html: typeof column.template === 'function' ? column.template(record) : record[column.field]"></td>
+	<!-- /ko -->
+</script>
+
+<script type="text/html" id="main-grid-row-template">
+	<!-- ko if: Object.hasOwn(column, 'columns') -->
+		<!-- ko foreach: { data: column.columns, 'as': 'column' } -->
+			<!-- ko template: { name: 'main-grid-cell-template' } --><!-- /ko -->
+		<!-- /ko -->
+	<!-- /ko -->
+	<!-- ko ifnot: Object.hasOwn(column, 'columns') -->
+		<!-- ko template: { name: 'main-grid-cell-template' } --><!-- /ko -->
+	<!-- /ko -->
+</script>
 
 <div id="main-credit-control-container" class="d-flex align-items-start w-100 opacity-100" data-bind="flexFadeVisible: true">
 	<sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top">
@@ -463,6 +480,18 @@
 														<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyOrSterlingParams }"></div>
 													</div>
 												</th>
+												<th>
+													Trade Account Count
+												</th>
+												<th>
+													Credit Stopped Count
+												</th>
+												<th>
+													Twelve Month Order Count
+												</th>
+												<th>
+													Twelve Month Order Value
+												</th>
 												<!-- ko foreach: periods -->
 												<th>
 													<span data-bind="text: $data"></span>
@@ -473,11 +502,23 @@
 										<tbody data-bind="foreach: records">
 											<tr class="totals-row">
 												<th>
-													<span data-bind="text: $data.currencyCode"></span>
+													<span data-bind="text: currencyCode"></span>
+												</th>
+												<th>
+													<span data-bind="text: formatNumber(tradeAccountCount, 0, formattingCulture)"></span>
+												</th>
+												<th>
+													<span data-bind="text: formatNumber(creditStoppedCount, 0, formattingCulture)"></span>
+												</th>
+												<th>
+													<span data-bind="text: formatNumber(twelveMonthOrderCount, 0, formattingCulture)"></span>
+												</th>
+												<th>
+													<span data-bind="text: formatCurrency(twelveMonthOrderValue, 0, formattingCulture, currencyCode)"></span>
 												</th>
 												<!-- ko foreach: totals -->
 												<th>
-													<span data-bind="text: formatCurrency(Total, 2, FormattingCulture, CurrencyCode)"></span>
+													<span data-bind="text: formatCurrency(Total, 0, FormattingCulture, CurrencyCode)"></span>
 												</th>
 												<!-- /ko -->
 											</tr>
@@ -486,9 +527,21 @@
 												<td class="indented">
 													<span data-bind="text: $data[0]">
 												</td>
-												<!-- ko foreach: $data[1] -->
 												<td>
-													<span data-bind="text: formatCurrency(TotalOutstanding, 2, FormattingCulture, CurrencyCode)"></span>
+													<span data-bind="text: $data[1].tradeAccountCount"></span>
+												</td>
+												<td>
+													<span data-bind="text: $data[1].creditStoppedCount"></span>
+												</td>
+												<td>
+													<span data-bind="text: $data[1].twelveMonthOrderCount"></span>
+												</td>
+												<td>
+													<span data-bind="text: $data[1].twelveMonthOrderValue"></span>
+												</td>
+												<!-- ko foreach: $data[2] -->
+												<td>
+													<span data-bind="text: formatCurrency(TotalOutstanding, 0, FormattingCulture, CurrencyCode)"></span>
 												</td>
 												<!-- /ko -->
 											</tr>
@@ -525,6 +578,47 @@
 					<!-- ko if: filters.initTooltips() --><!-- /ko -->
 				</div>
 				<div id="credit-control-grid-container" data-bind="kendoGrid: gridParams"></div>
+				@*<div id="credit-control-scroller-container" class="virtual-scoller-container" data-bind="with: virtualScoller">
+			<table id="credit-control-main-table" class="table  virtual-scrolling-table table-condensed table-striped table-hover">
+				<colgroup data-bind="foreach: $parent.gridColumns">
+					<col data-bind="style: { width: `${$data.width}px` }">
+				</colgroup>
+				<thead>
+					<tr>
+						<th colspan="500">
+							TODO: implement superheader grouping
+						</th>
+					</tr>
+					<tr>
+						<!-- ko foreach: $parent.gridColumns.filter(gc => gc.hidden == null || gc.hidden == false) -->
+						<th class="sortable-column" data-bind="click: $root.sortByColumn, style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
+							<span data-bind="text: columnNameDisplay"></span>
+							<!-- ko if: (Object.hasOwn($data, 'direction') && $data.direction()) -->
+							<i class="bi bi-caret-down" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
+							<!-- /ko -->
+						</th>
+						<!-- /ko -->
+					</tr>
+				</thead>
+				<tbody class="virtual-spacing">
+					<tr>
+						<td colspan="500" style="height: 0" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
+					</tr>
+				</tbody>
+				<tbody data-bind="foreach: { data: visibleItems, as: 'record' }">
+					<tr class="visible-item">
+						<!-- ko foreach: $parentContext.$parent.gridColumns -->
+						<!-- ko template: { name: 'main-grid-row-template', data: { column: $data, record: record } } --><!-- /ko -->
+						<!-- /ko -->
+					</tr>
+				</tbody>
+				<tbody class="virtual-spacing">
+					<tr class="final-row">
+						<td colspan="500" style="height: 0" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>*@
 			</div>
 			<div class="tab-pane fade" id="order-release-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
 				<div id="order-release-container" data-bind="with: memberBasketFetcher">

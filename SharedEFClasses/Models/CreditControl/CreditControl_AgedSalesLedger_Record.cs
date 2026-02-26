@@ -16,6 +16,14 @@ namespace SharedEFClasses.Models.CreditControl
 
 		public string FormattingCulture { get; set; }
 
+		public int TradeAccountCount { get; set; }
+
+		public int CreditStoppedCount { get; set; }
+
+		public int TwelveMonthOrderCount { get; set; }
+
+		public decimal TwelveMonthOrderValue { get; set; }
+
 		public decimal TotalOutstanding { get; set; }
 	}
 }

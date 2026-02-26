@@ -3114,43 +3114,43 @@ ko.bindingHandlers.matrixLoader = {
             //#region Generally Emoji sets
 
             //U+26F7
-            //Spring
-            //return [
-            //    String.fromCodePoint(0x1F490), // Bouquet of flowers
-            //    String.fromCodePoint(0x1F994), // Hedgehog
-            //    String.fromCodePoint(0x1F338), // Pink flower
-            //    String.fromCodePoint(0x1F407), // White rabbit
-            //    String.fromCodePoint(0x1F33C), // Daisy
-            //    String.fromCodePoint(0x1F343), // Leaf
-            //    String.fromCodePoint(0x1F331), // Sprouting seedling
-            //    String.fromCodePoint(0x1F337), // Tulip
-            //    String.fromCodePoint(0x1F423), // Chick hatching
-            //    String.fromCodePoint(0x1F340)  // Four-leaf clover
-            //]
+            // Spring
+            return [
+                String.fromCodePoint(0x1F490), // Bouquet of flowers
+                String.fromCodePoint(0x1F994), // Hedgehog
+                String.fromCodePoint(0x1F338), // Pink flower
+                String.fromCodePoint(0x1F407), // White rabbit
+                String.fromCodePoint(0x1F33C), // Daisy
+                String.fromCodePoint(0x1F343), // Leaf
+                String.fromCodePoint(0x1F331), // Sprouting seedling
+                String.fromCodePoint(0x1F337), // Tulip
+                String.fromCodePoint(0x1F423), // Chick hatching
+                String.fromCodePoint(0x1F340)  // Four-leaf clover
+            ]
 
             //Winter
             //return [String.fromCodePoint(0x1F341), String.fromCodePoint(0x1F342), String.fromCodePoint(0x1F343), String.fromCodePoint(0x2614), String.fromCodePoint(0x1F36C), String.fromCodePoint(0x26C4), String.fromCodePoint(0x1F3BF), String.fromCodePoint(0x1F3C2), String.fromCodePoint(0x2B50)]
 
             // Christmas
-            return [String.fromCodePoint(0x2744),
-                String.fromCodePoint(0x26C4),
-                String.fromCodePoint(0x1F381),
-                String.fromCodePoint(0x1F380), // ribbon
-                String.fromCodePoint(0x1F384), // christmas tree
-                String.fromCodePoint(0x2B50),
-                String.fromCodePoint(0x1F385),
-                String.fromCodePoint(0x1F98C),
-                String.fromCodePoint(0x1F328),
-                String.fromCodePoint(0x1F384), // christmas tree
-                String.fromCodePoint(0x2603),
-                String.fromCodePoint(0x1F941), // drum
-                String.fromCodePoint(0x26C4),
-                String.fromCodePoint(0x2728),
-                String.fromCodePoint(0x1F56F), // candle
-                String.fromCodePoint(0x1F384), // christmas tree
-                String.fromCodePoint(0x1F514), // bell
-                String.fromCodePoint(0x1F370)
-            ]
+            //return [String.fromCodePoint(0x2744),
+            //    String.fromCodePoint(0x26C4),
+            //    String.fromCodePoint(0x1F381),
+            //    String.fromCodePoint(0x1F380), // ribbon
+            //    String.fromCodePoint(0x1F384), // christmas tree
+            //    String.fromCodePoint(0x2B50),
+            //    String.fromCodePoint(0x1F385),
+            //    String.fromCodePoint(0x1F98C),
+            //    String.fromCodePoint(0x1F328),
+            //    String.fromCodePoint(0x1F384), // christmas tree
+            //    String.fromCodePoint(0x2603),
+            //    String.fromCodePoint(0x1F941), // drum
+            //    String.fromCodePoint(0x26C4),
+            //    String.fromCodePoint(0x2728),
+            //    String.fromCodePoint(0x1F56F), // candle
+            //    String.fromCodePoint(0x1F384), // christmas tree
+            //    String.fromCodePoint(0x1F514), // bell
+            //    String.fromCodePoint(0x1F370)
+            //]
 
             //Valentine's
             //return [
@@ -3254,10 +3254,10 @@ ko.bindingHandlers.matrixLoader = {
             //return '#c86e2d'; // autumn (darker)
             //return "#f0b447"; // autumn (golden yellow)
             //return '#003153'; // autumn (prussian blue)
-            return "#66b8ff"; //winter
+            // return "#66b8ff"; //winter
             //return "#ffbbd7"; //valentine's (pink)
             //return '#f8c9dd'; // spring (pink)
-            //return '#53bfea'; // spring (sky blue)
+            return '#53bfea'; // spring (sky blue)
             //return '#c1e0ff'; // summer
             //return '#1ca9c9'; // summer, Lianne's Pacific Ocean Blue
         }

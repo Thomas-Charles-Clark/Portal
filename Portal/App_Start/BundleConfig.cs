@@ -38,11 +38,11 @@ namespace Portal
             bundles.Add(new StyleBundle("~/bundles/css/components").Include(
                     $"{cssPrefix}/lib/tiny-slider/tiny-slider{cssSuffix}",
                     $"{cssPrefix}/models/order-search{cssSuffix}",
-                    $"{cssPrefix}/models/order-products-a{cssSuffix}",
-                    $"{cssPrefix}/models/order-products-b{cssSuffix}",
-                    $"{cssPrefix}/models/order-products-c{cssSuffix}",
-                    $"{cssPrefix}/models/order-products-d{cssSuffix}",
-                    $"{cssPrefix}/models/order-products-e{cssSuffix}",
+                    $"{cssPrefix}/models/order-products/order-products-a{cssSuffix}",
+                    $"{cssPrefix}/models/order-products/order-products-b{cssSuffix}",
+                    $"{cssPrefix}/models/order-products/order-products-c{cssSuffix}",
+                    $"{cssPrefix}/models/order-products/order-products-d{cssSuffix}",
+                    $"{cssPrefix}/models/order-products/order-products-e{cssSuffix}",
                     $"{cssPrefix}/models/stock-viewer{cssSuffix}",
                     $"{cssPrefix}/models/care-search{cssSuffix}",
                     $"{cssPrefix}/models/task-search{cssSuffix}",
@@ -155,11 +155,11 @@ namespace Portal
                 ).Include($"{cssPrefix}/lib/intl-tel-input/intl-tel-input{cssSuffix}", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-products").Include(
-                        $"{cssPrefix}/models/order-products-a{cssSuffix}",
-                        $"{cssPrefix}/models/order-products-b{cssSuffix}",
-                        $"{cssPrefix}/models/order-products-c{cssSuffix}",
-                        $"{cssPrefix}/models/order-products-d{cssSuffix}",
-                        $"{cssPrefix}/models/order-products-e{cssSuffix}"
+                        $"{cssPrefix}/models/order-products/order-products-a{cssSuffix}",
+                        $"{cssPrefix}/models/order-products/order-products-b{cssSuffix}",
+                        $"{cssPrefix}/models/order-products/order-products-c{cssSuffix}",
+                        $"{cssPrefix}/models/order-products/order-products-d{cssSuffix}",
+                        $"{cssPrefix}/models/order-products/order-products-e{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/product-maintenance").Include(
@@ -319,13 +319,13 @@ namespace Portal
             ));
 
             bundles.Add(new StyleBundle("~/bundles/css/contract-pricing").Include(
-                        $"{cssPrefix}/mopdels/virtual-scrolling-deferred-data{cssSuffix}",
+                        $"{cssPrefix}/mopdels/shared/virtual-scrolling-deferred-data{cssSuffix}",
                         $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
                         $"{cssPrefix}/models/contract-pricing{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/virtual-scrolling-deferred-data").Include(
-                        $"{cssPrefix}/mopdels/virtual-scrolling-deferred-data{cssSuffix}"
+                        $"{cssPrefix}/models/shared/virtual-scrolling-deferred-data{cssSuffix}"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-book").Include(
@@ -340,7 +340,7 @@ namespace Portal
             ));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-book-detail").Include(
-                $"{cssPrefix}/mopdels/virtual-scrolling-deferred-data{cssSuffix}",
+                $"{cssPrefix}/mopdels/shared/virtual-scrolling-deferred-data{cssSuffix}",
                 $"{cssPrefix}/models/full-width-app{cssSuffix}",
                 $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
                 $"{cssPrefix}/models/order-book/order-book-user-defined-filters{cssSuffix}",
@@ -354,7 +354,7 @@ namespace Portal
             ));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-book-reallocate-stock").Include(
-                $"{cssPrefix}/mopdels/virtual-scrolling-deferred-data{cssSuffix}",
+                $"{cssPrefix}/mopdels/shared/virtual-scrolling-deferred-data{cssSuffix}",
                 $"{cssPrefix}/models/full-width-app{cssSuffix}",
                 $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
                 $"{cssPrefix}/models/order-book/order-book-user-defined-filters{cssSuffix}",
@@ -368,7 +368,7 @@ namespace Portal
             ));
 
             bundles.Add(new StyleBundle("~/bundles/css/order-book-back-orders-without-purchase-orders").Include(
-                $"{cssPrefix}/mopdels/virtual-scrolling-deferred-data{cssSuffix}",
+                $"{cssPrefix}/mopdels/shared/virtual-scrolling-deferred-data{cssSuffix}",
                 $"{cssPrefix}/models/full-width-app{cssSuffix}",
                 $"{cssPrefix}/lib/tempus-dominus/tempus-dominus{cssSuffix}",
                 $"{cssPrefix}/models/order-book/order-book-user-defined-filters{cssSuffix}",
@@ -877,13 +877,13 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/contract-pricing").Include(
-                        $"{jsPrefix}/models/others/virtual-scrolling-deferred-data{jsSuffix}",
+                        $"{jsPrefix}/models/shared/virtual-scrolling-deferred-data{jsSuffix}",
                         $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/others/contract-pricing{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/virtual-scrolling-deferred-data").Include(
-                        $"{jsPrefix}/models/others/virtual-scrolling-deferred-data{jsSuffix}"
+                        $"{jsPrefix}/models/shared/virtual-scrolling-deferred-data{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/image-download-tasks").Include(
@@ -906,7 +906,7 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-book-detail").Include(
-                        $"{jsPrefix}/models/others/virtual-scrolling-deferred-data{jsSuffix}",
+                        $"{jsPrefix}/models/shared/virtual-scrolling-deferred-data{jsSuffix}",
                         $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-advanced-filters{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-summary-filter{jsSuffix}",
@@ -921,7 +921,7 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-book-reallocate-stock").Include(
-                        $"{jsPrefix}/models/others/virtual-scrolling-deferred-data{jsSuffix}",
+                        $"{jsPrefix}/models/shared/virtual-scrolling-deferred-data{jsSuffix}",
                         $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-advanced-filters{jsSuffix}",
@@ -937,7 +937,7 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/order-book-back-orders-without-purchase-orders").Include(
-                        $"{jsPrefix}/models/others/virtual-scrolling-deferred-data{jsSuffix}",
+                        $"{jsPrefix}/models/shared/virtual-scrolling-deferred-data{jsSuffix}",
                         $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/emailer{jsSuffix}",
                         $"{jsPrefix}/models/order-book/order-book-advanced-filters{jsSuffix}",
@@ -1023,7 +1023,8 @@ namespace Portal
 					                $"{jsPrefix}/models/others/trade-account-selector{jsSuffix}",
 									$"{jsPrefix}/models/others/basket-status{jsSuffix}",
 									$"{jsPrefix}/models/others/order-products-member-basket-fetcher{jsSuffix}",
-						            $"{jsPrefix}/models/credit-control/credit-control-sales-breakdown{jsSuffix}",
+									$"{jsPrefix}/models/shared/virtual-scrolling-deferred-data{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-sales-breakdown{jsSuffix}",
 						            $"{jsPrefix}/models/credit-control/credit-control-sales-breakdown-pod{jsSuffix}",
 						            $"{jsPrefix}/models/credit-control/credit-control-sales-breakdown-record{jsSuffix}",
 						            $"{jsPrefix}/models/credit-control/credit-control-other-breakdown{jsSuffix}",
@@ -1044,7 +1045,9 @@ namespace Portal
                                     $"{jsPrefix}/models/credit-control/credit-control-performance{jsSuffix}",
                                     $"{jsPrefix}/models/credit-control/credit-control-performance-pod{jsSuffix}",
                                     $"{jsPrefix}/models/credit-control/credit-control-performance-record{jsSuffix}",
-						            $"{jsPrefix}/models/credit-control/credit-control{jsSuffix}"
+                                    $"{jsPrefix}/models/credit-control/credit-control-main-grid-column{jsSuffix}",
+                                    $"{jsPrefix}/models/credit-control/credit-control-main-grid-row{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control{jsSuffix}"
                             ));
 
 			bundles.Add(new ScriptBundle("~/bundles/js/trade-account-contacts").Include(

@@ -1,0 +1,8 @@
+tbody.virtual-spacing tr th, tbody.virtual-spacing tr td {
+  padding: 0;
+}
+tbody.virtual-spacing tr td {
+  border: 0;
+  box-sizing: border-box;
+}
+/*# sourceMappingURL=virtual-scrolling-deferred-data.css.map */

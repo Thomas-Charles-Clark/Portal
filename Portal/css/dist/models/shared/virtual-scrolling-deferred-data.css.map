@@ -1,0 +1,1 @@
+{"version":3,"sources":["models/shared/virtual-scrolling-deferred-data.scss"],"names":[],"mappings":"AAIE;EACC;;AAGD;EACC;EACA","file":"virtual-scrolling-deferred-data.css","sourcesContent":["\r\n\r\ntbody.virtual-spacing {\r\n\ttr {\r\n\t\tth, td {\r\n\t\t\tpadding: 0;\r\n\t\t}\r\n\r\n\t\ttd {\r\n\t\t\tborder: 0;\r\n\t\t\tbox-sizing: border-box;\r\n\t\t}\r\n\t}\r\n}\r\n"]}

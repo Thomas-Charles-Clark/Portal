@@ -57,6 +57,10 @@ const creditControlViewModel = (() => {
         parent: self
     });
 
+    self.allSortingOperations = ko.observableArray([]);
+
+    self.activeSortingOperation = ko.observable();
+
     self.sendResponse = ko.observable();
 
     self.performance = creditControlPerformanceViewModel();
@@ -104,6 +108,29 @@ const creditControlViewModel = (() => {
     //#endregion
 
     //#region Lifted Methods
+
+    self.generateAscendingSortingOperation = (parameterName) => {
+        return {
+            direction: "asc",
+            propertyName: parameterName,
+            sortingFunction: `${parameterName}_Asc`
+        }
+    }
+
+    self.generateDescendingSortingOperation = (parameterName) => {
+        return {
+            direction: "desc",
+            propertyName: parameterName,
+            sortingFunction: `${parameterName}_Desc`
+        }
+    }
+
+    self.generateSorting = (parameterName) => {
+        return [
+            self.generateAscendingSortingOperation(parameterName),
+            self.generateDescendingSortingOperation(parameterName)
+        ]
+    }
 
     self.genericUnsavedChangesClear = (e) => {
         self.checkUnsavedChangesThenClear(e);
@@ -250,11 +277,78 @@ const creditControlViewModel = (() => {
             })
     }
 
+    self.primaryFetchParams = ko.computed(() => {
+
+        let mapped = {
+            Page: 1,
+            PageSize: 20
+        };
+
+        if (self.activeSortingOperation()) {
+            mapped.SortOrder = self.activeSortingOperation();
+        }
+
+        let additionalParameters = self.filters.getData();
+
+        let params = new URLSearchParams();
+
+        if (self.selectedPod()) {
+            additionalParameters.selectedPod = self.selectedPod().PodHandle;
+        }
+
+        let data = Object.assign(mapped, additionalParameters);
+
+        for (var propertyName in data) {
+            if (Array.isArray(data[propertyName])) {
+                data[propertyName].forEach(v => {
+                    params.append(propertyName, v);
+                });
+            } else {
+                params.append(propertyName, data[propertyName]);
+            }
+        }
+
+        // need to add the currently-sorted-by-column to an array here named Sorts thus:
+
+        /*
+            Sorts=Property_Direction&Property=Member_Direction[...]
+        */
+
+        return params.toString();
+    }, self).extend({
+        rateLimit: {
+            timeout: 100,
+            method: 'notifyWhenChangesStop'
+        }
+    });
 
     //#endregion
 
 
     //#region Components
+
+    self.virtualScrollerContainer = document.getElementById("credit-control-scroller-container");
+
+    //self.virtualScoller =  virtualScrollingDeferredDataFactory({
+    //    busy: self.busy,
+    //    tableSelector: "#credit-control-main-table",
+    //    rowHeight: 50,
+    //    primaryFetchMethod: 'GET',
+    //    primaryFetchParams: self.primaryFetchParams,
+    //    primaryFetchEndpoint: "/api/creditcontrolapi/TradeAccountSearch",
+    //    primaryFetchResultSetName: "gridData",
+    //    primaryFetchResultFn: (rec) => {
+    //        return creditControlMainGridRow(rec);
+    //    },
+    //    container: self.virtualScrollerContainer,
+    //    gridHeaderHeight: 57,
+    //    gridPositionTop: 0,
+    //    unfilledRecordFn: (rec) => {
+    //        let self = Object.assign({}, rec);
+    //        return self;
+    //    },
+    //    displayModes: self.filters.displayModes
+    //});
 
     self.memberBasketFetcher = memberBasketFetcher(self);
 
@@ -278,7 +372,7 @@ const creditControlViewModel = (() => {
         }
     }
 
-    self.gridColumns = () => [{
+    self.gridColumns = [{
         field: 'TradeAccountID',
         title: 'Trade Account ID',
         hidden: true,
@@ -676,7 +770,7 @@ const creditControlViewModel = (() => {
 
                 return result.join(SINGLE_BR);
             }
-        },{
+        }, {
             field: 'NotDueTotalValue',
             title: 'Not Due',
             headerAttributes: {
@@ -970,10 +1064,10 @@ const creditControlViewModel = (() => {
         template: '&nbsp;',
         width: 20
     }, {
-            title: self.filters.salesHistoryAnalysisPeriod() ? `Sales (${self.filters.salesHistoryAnalysisPeriod().Name})` : `Sales`,
-            headerAttributes: {
-                "class": "sales-heading sales-breakdown"
-            },
+        title: self.filters.salesHistoryAnalysisPeriod() ? `Sales (${self.filters.salesHistoryAnalysisPeriod().Name})` : `Sales`,
+        headerAttributes: {
+            "class": "sales-heading sales-breakdown"
+        },
         columns: [
             //{
             //    field: 'SalesRank',
@@ -1045,6 +1139,25 @@ const creditControlViewModel = (() => {
             }
         }]
     }];
+
+    if (Object.hasOwn(self, 'virtualScoller')) {
+        self.gridColumns = self.gridColumns.map(gc => {
+            if (Object.hasOwn(gc, 'columns')) {
+                gc.columns = gc.columns.map(cc => creditControlMainGridColumn({ rec: cc }));
+            }
+
+            return creditControlMainGridColumn({ rec: gc });
+        });
+
+        let sortFunctions = [];
+
+        self.gridColumns.forEach(cn => {
+            cn.direction = ko.observable(undefined);
+            sortFunctions.push(self.generateSorting(cn));
+        });
+
+        self.allSortingOperations(sortFunctions.flat());
+    }
 
     self.gridParams = {
         autoBind: true,
@@ -1291,6 +1404,43 @@ const creditControlViewModel = (() => {
 
 
     //#region Methods
+
+    self.sortByColumn = (detailColumn) => {
+        self.gridColumns().forEach(c => {
+            if (Object.hasOwn(c, 'columns')) {
+                c.columns.forEach(d => {
+                    d.direction(undefined);
+                })
+            } else {
+                c.direction(undefined);
+            }
+        });
+
+        let direction = detailColumn.direction();
+
+        let newDirection = null;
+
+        switch (direction) {
+            case 'asc':
+                newDirection = 'desc';
+                break;
+            case 'desc':
+                newDirection = undefined;
+                break;
+            default:
+                newDirection = 'asc';
+                break;
+        }
+
+        detailColumn.direction(newDirection);
+
+        let operation = self.allSortingOperations().find(s => s.propertyName == detailColumn.columnName && s.direction == newDirection);
+
+        if (operation)
+            self.activeSortingOperation(operation.sortingFunction);
+        else
+            self.activeSortingOperation(undefined);
+    }
 
     self.filters.tradeAccountStatusParams.dropDownListSettings.widget.subscribe(nv => {
         window.setTimeout(() => {

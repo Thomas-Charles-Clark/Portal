@@ -1,0 +1,16 @@
+Credit Control - Continuation
+
+	Need to give credit controllers the ability to toggle a trade account's CreditStop and form the history
+	See: Mertex.TradeAccount_CreditStop_Upsert
+	
+
+
+Payments
+	
+	First stage: Matt rips the process apart his side, then gives me a bunch of changes to adhere to
+	
+		
+	
+	payments.designersguild.com Review
+	
+	Look at whether or not Braintree & ApplePay cater for non-Apple-devices

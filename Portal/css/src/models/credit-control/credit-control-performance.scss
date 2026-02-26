@@ -41,10 +41,11 @@
 
 		.prefilters {
 			display: flex;
+			flex-direction: column;
 			gap: $sm-gutter;
 
 			> .prefilter {
-				flex: 0 1 240px;
+				flex: 0 1 auto;
 
 				.k-dropdown-wrap {
 					.k-input {
@@ -66,6 +67,18 @@
 
 			.performance-table {
 				margin: 0;
+
+				colgroup {
+					col {
+						&:first-of-type {
+							width: auto;
+						}
+
+						&:not(:first-of-type) {
+							width: 120px;
+						}
+					}
+				}
 			}
 
 			.performance-table {
@@ -78,7 +91,7 @@
 				}
 
 				.indented {
-					padding-left: $xxl-gutter;
+					padding-left: $l-gutter;
 				}
 
 				.totals-row {

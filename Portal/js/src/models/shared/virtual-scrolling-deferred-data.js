@@ -157,7 +157,9 @@ const virtualScrollingDeferredDataFactory = ({
         }, {
             rootMargin: "1px"
         }),
-        unfilledRecordFn:  unfilledRecordFn
+        unfilledRecordFn: unfilledRecordFn,
+        primaryFetchMethod: primaryFetchMethod ?? 'POST',
+        secondaryFetchMethod: secondaryFetchMethod ?? 'POST'
     };
 
     self.originalRowHeight = +self.rowHeight();
@@ -423,7 +425,7 @@ const virtualScrollingDeferredDataFactory = ({
             self.scrollY.valueHasMutated();
 
         } else { 
-            console.log("virtualDeferredScroller could not set rowHeight");
+            //console.log("virtualDeferredScroller could not set rowHeight");
         }
     }
 
@@ -461,13 +463,9 @@ const virtualScrollingDeferredDataFactory = ({
     self.primaryFetch = ko.computed(() => {
         //console.trace();
 
-        let data = self.primaryFetchParams();
+        if (self.primaryFetchMethod == 'GET') {
 
-        if (data) {
-
-            if (typeof data === 'string') {
-                data = JSON.parse(data);
-            }
+            let queryString = self.primaryFetchParams();
 
             if (typeof self.primaryFetchBeforeFn == 'function') {
                 self.primaryFetchBeforeFn();
@@ -481,12 +479,13 @@ const virtualScrollingDeferredDataFactory = ({
 
             self.secondaryFetchedRecords([]);
 
-            console.log('virtualScrollingDeferredDataFactory primaryFetch calling with', data);
+            console.log('virtualScrollingDeferredDataFactory primaryFetch calling with', queryString);
 
-            fetch(self.primaryFetchEndpoint, {
-                method: "POST",
+            fetch(`${self.primaryFetchEndpoint}?${queryString}`, {
+                method: self.primaryFetchMethod,
                 headers: window.fetchHeaders,
-                body: JSON.stringify(data)
+                cache: 'no-cache',
+                credentials: 'same-origin'
             })
                 .then(window.handleFetchResponse)
                 .then(data => {
@@ -505,7 +504,7 @@ const virtualScrollingDeferredDataFactory = ({
 
                     if (self.primaryFetchSortFn && self.primaryFetchSortFn()) {
                         results.sort(self.primaryFetchSortFn());
-                    } 
+                    }
 
                     self.searchResults(results);
 
@@ -519,6 +518,71 @@ const virtualScrollingDeferredDataFactory = ({
                     self.busy(false);
                     window.catchFetchError(err);
                 });
+        }
+
+        else if (self.primaryFetchMethod == 'POST') {
+
+            let data = self.primaryFetchParams();
+
+            if (data) {
+
+                if (typeof data === 'string') {
+                    data = JSON.parse(data);
+                }
+
+                if (typeof self.primaryFetchBeforeFn == 'function') {
+                    self.primaryFetchBeforeFn();
+                }
+
+                self.busy(true);
+
+                self.searchResults([]);
+
+                self.haveSearchResults(false);
+
+                self.secondaryFetchedRecords([]);
+
+                console.log('virtualScrollingDeferredDataFactory primaryFetch calling with', data);
+
+                fetch(self.primaryFetchEndpoint, {
+                    method: self.primaryFetchMethod,
+                    headers: window.fetchHeaders,
+                    body: JSON.stringify(data),
+                    cache: 'no-cache',
+                    credentials: 'same-origin'
+                })
+                    .then(window.handleFetchResponse)
+                    .then(data => {
+                        console.log('virtualScrollingDeferredDataFactory primaryFetch returned', data);
+
+                        self.busy(false);
+
+                        if (data[self.primaryFetchResultSetName].length > 0)
+                            self.haveSearchResults(true);
+
+                        window.setTimeout(() => {
+                            self.setRowHeight();
+                        }, 0);
+
+                        let results = self.processResults(data);
+
+                        if (self.primaryFetchSortFn && self.primaryFetchSortFn()) {
+                            results.sort(self.primaryFetchSortFn());
+                        }
+
+                        self.searchResults(results);
+
+                        self.haveSearchResults(true);
+
+                        if (typeof self.primaryFetchAfterFn == 'function') {
+                            self.primaryFetchAfterFn(data);
+                        }
+                    })
+                    .catch(err => {
+                        self.busy(false);
+                        window.catchFetchError(err);
+                    });
+            }
         }
     }, self);
 

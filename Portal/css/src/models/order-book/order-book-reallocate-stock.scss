@@ -1,7 +1,7 @@
 ﻿@import "../common.scss";
 
-$light-blue-background: tint-color($blue-200, 90%);
-$blue-border: 1px solid $blue-700;
+$light-blue-background: tint-color($blue-200, 90%) !default;
+$blue-border: 1px solid $blue-700 !default;
 
 #order-book-main {
     flex: 1;
@@ -16,15 +16,13 @@ $blue-border: 1px solid $blue-700;
     border-radius: 0;
 }
 
-$vertical-border: 1px solid $gray-400;
+$vertical-border: 1px solid $gray-400 !default;
 
 #order-book-detail-scroller-container {
-    /*max-height: calc(100vh - 57px);*/
     max-height: 100vh;
     overflow-y: auto;
 
-
-    #order-book-detail-table {
+    #order-book-detail-table.virtual-scrolling-table {
         table-layout: fixed;
         margin-bottom: 0;
         position: relative;
