@@ -1049,7 +1049,7 @@ const creditControlViewModel = (() => {
     self.gridParams = {
         autoBind: true,
         widget: self.gridWidget,
-        columns: self.gridColumns(),
+        columns: self.gridColumns,
         data: new kendo.data.DataSource({
             transport: {
                 read: self.gridDataSourceRead,
