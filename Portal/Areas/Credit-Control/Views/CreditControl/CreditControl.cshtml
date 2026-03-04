@@ -3,12 +3,10 @@
 	ViewBag.Title = "Credit Control";
 }
 @section styles {
-	@Styles.Render("~/bundles/css/kendo-custom")
 	@Styles.Render("~/bundles/css/generic-forms")
 	@Styles.Render("~/bundles/css/credit-control")
 	@Styles.Render("~/bundles/css/trade-account-contacts")
 	@Styles.Render("~/bundles/css/tempus-dominus")
-	@Styles.Render("~/bundles/css/mdc-custom")
 	@Styles.Render("~/bundles/css/full-width-app")
 }
 @section scripts {
@@ -358,19 +356,19 @@
 </div>
 
 <script type="text/html" id="main-grid-cell-template">
-	<!-- ko if: typeof field != 'undefined' -->
-	<td data-bind="html: typeof column.template === 'function' ? column.template(record) : record[column.field]"></td>
+	<!-- ko if: typeof column.field != 'undefined' -->
+	<td data-bind="html: typeof column.template == 'function' ? column.template(record) : column.field == '' ? column.template : record[column.field]"></td>
 	<!-- /ko -->
 </script>
 
 <script type="text/html" id="main-grid-row-template">
-	<!-- ko if: Object.hasOwn(column, 'columns') -->
-		<!-- ko foreach: { data: column.columns, 'as': 'column' } -->
-			<!-- ko template: { name: 'main-grid-cell-template' } --><!-- /ko -->
+	<!-- ko if: Object.hasOwn($data.column, 'columns') -->
+		<!-- ko foreach: { data: column.columns, 'as': 'subcolumn' } -->
+			<!-- ko template: { name: 'main-grid-cell-template', data: { column: subcolumn, record } } --><!-- /ko -->
 		<!-- /ko -->
 	<!-- /ko -->
-	<!-- ko ifnot: Object.hasOwn(column, 'columns') -->
-		<!-- ko template: { name: 'main-grid-cell-template' } --><!-- /ko -->
+	<!-- ko ifnot: Object.hasOwn($data.column, 'columns') -->
+		<!-- ko template: { name: 'main-grid-cell-template', data: { column, record } } --><!-- /ko -->
 	<!-- /ko -->
 </script>
 
@@ -467,6 +465,10 @@
 								<div class="accordion-body">
 									<table class="performance-table table table-bordered" style="display: none" , data-bind="visible: periods().length">
 										<colgroup>
+											<col />
+											<col />
+											<col />
+											<col />
 											<col />
 											<!-- ko foreach: periods -->
 											<col />
@@ -585,12 +587,21 @@
 				</colgroup>
 				<thead>
 					<tr>
-						<th colspan="500">
-							TODO: implement superheader grouping
+						<!-- ko foreach: $parent.gridColumns -->
+						<!-- ko if: typeof columns == 'undefined' -->
+						<th data-bind="style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;"></th>
+						<!-- /ko -->
+						<!-- ko if: typeof columns != 'undefined' -->
+						<!-- ko foreach: columns -->
+						<th data-bind="attr: { colspan: $parent.columns.length }, style: { '--left-offset': `${$parentContext.$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
+							<span data-bind="text: columnNameDisplay"></span>
 						</th>
+						<!-- /ko -->
+						<!-- /ko -->
+						<!-- /ko -->
 					</tr>
 					<tr>
-						<!-- ko foreach: $parent.gridColumns.filter(gc => gc.hidden == null || gc.hidden == false) -->
+						<!-- ko foreach: $parent.gridColumns -->
 						<th class="sortable-column" data-bind="click: $root.sortByColumn, style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
 							<span data-bind="text: columnNameDisplay"></span>
 							<!-- ko if: (Object.hasOwn($data, 'direction') && $data.direction()) -->

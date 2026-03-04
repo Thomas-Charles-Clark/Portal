@@ -46,11 +46,10 @@
 
 			> .prefilter {
 				flex: 0 1 auto;
+				max-width: 240px;
 
 				.k-dropdown-wrap {
-					.k-input {
-						padding: 9px 0;
-					}
+					border-radius: 4px;
 				}
 			}
 		}
@@ -67,15 +66,21 @@
 
 			.performance-table {
 				margin: 0;
+				table-layout: fixed;
 
 				colgroup {
 					col {
 						&:first-of-type {
-							width: auto;
+							max-width: 240px;
 						}
 
 						&:not(:first-of-type) {
-							width: 120px;
+							max-width: 120px;
+						}
+
+						&:last-of-type {
+							max-width: unset;
+							width: auto;
 						}
 					}
 				}

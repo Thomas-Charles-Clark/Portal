@@ -73,12 +73,12 @@
   display: inline-flex;
   align-items: center;
 }
-.mdc-text-field--html-editor-inline-no-outline .k-widget {
+.mdc-text-field--html-editor-inline-no-outline .k-editor {
   border: 0;
   flex: 1;
   box-shadow: none;
 }
-.mdc-text-field--html-editor-inline-no-outline .k-widget.k-editor-widget {
+.mdc-text-field--html-editor-inline-no-outline .k-editor.k-editor-widget {
   background-color: transparent;
   box-shadow: none;
 }
@@ -1414,6 +1414,9 @@ textarea[readonly] {
 }
 .presubmit-phase div.delivery-group-dispatch-inner + div.delivery-group-dispatch-inner {
   margin-top: 10px;
+}
+.presubmit-phase .mdc-floating-label--float-above {
+  transform: translateY(-170%) scale(0.75);
 }
 
 .delivery-group-inner {

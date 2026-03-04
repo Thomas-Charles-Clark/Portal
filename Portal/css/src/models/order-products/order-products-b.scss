@@ -1170,6 +1170,10 @@ textarea[readonly] {
             }
         }
     }
+
+    .mdc-floating-label--float-above {
+        transform: translateY(-170%) scale(0.75);
+    }
 }
 
 .delivery-group-inner {

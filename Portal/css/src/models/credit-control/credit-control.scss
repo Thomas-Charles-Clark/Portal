@@ -218,17 +218,26 @@ html {
             &:focus,
             &:focus-within {
                 background-color: $gray-200;
+                transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out !important;
             }
 
             .grid-btn {
-                padding: 0 $btn-padding-x;
+                color: $body-color;
+                position: relative;
+                transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out !important;
 
                 &:hover,
+                &:active,
                 &:focus,
                 &:focus-within {
-                    cursor: pointer;
-                    /*text-shadow: 0 0 6px $blue-700;*/
-                    color: $blue-500;
+                    &:not(.stop-btn) {
+                        color: $link-color;
+                    }
+
+                    border: none !important;
+                    box-shadow: none !important;
+                    outline: none !important;
+                    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out !important;
                 }
 
                 .bi {
@@ -237,7 +246,53 @@ html {
                     &.bi-people-fill {
                         font-size: 2.05rem;
                     }
+
+                    &.bi-octagon {
+                        will-change: background-color, color;
+                        transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out !important;
+                    }
                 }
+
+                &:hover {
+                    cursor: pointer;
+                    /*text-shadow: 0 0 6px $blue-700;*/
+
+                    .bi {
+                        &.bi-octagon:not(.bi-octagon-red) {
+                            &:before {
+                                background-color: $red-200;
+                                border-radius: 2em;
+                                color: $red-600;
+                            }
+                        }
+                    }
+                }
+
+                &:has(.bi-octagon-red) {
+                    &:hover,
+                    &:active,
+                    &:focus,
+                    &:focus-within {
+                        /*border: none;
+                        outline: none !important;
+                        box-shadow: none !important;*/
+                    }
+                }
+
+                .bi-octagon-red {
+                    position: absolute;
+                    top: -16px;
+                    left: 0;
+                    z-index: 1;
+
+                    &:before {
+                        color: $red-600;
+                    }
+                }
+            }
+
+            &.k-state-selected {
+                background-color: inherit;
             }
         }
 
@@ -246,9 +301,8 @@ html {
 
             .badge {
                 position: absolute;
-                right: 0;
-                bottom: 0;
-                top: 25px;
+                right: -10px;
+                bottom: -5px;
             }
         }
 

@@ -32,7 +32,7 @@
     //#region Computeds
 
     self.columnNameDisplay = ko.computed(() => {
-        return self.Title;
+        return self.title;
     }, self);
 
     //#endregion

@@ -264,7 +264,7 @@
 			<span>
 				<!-- ko if: Object.hasOwn($data, 'dropDownListSettings') -->
 				<!-- ko if: ko.unwrap(dropDownListSettings.dataItem) -->
-				<!-- ko if: Object.hasOwn(ko.unwrap(dropDownListSettings.dataItem), 'complexObjectName') -->
+				<!-- ko if: Object.hasOwn(ko.unwrap(dropDownListSettings.dataItem), $data.complexObjectName) -->
 				<span data-bind="html: `${ko.unwrap(dropDownListSettings.dataItem)[complexObjectName][complexObjectTextField]}`"></span>
 				<!-- /ko -->
 				<!-- ko ifnot: complexObjectName -->

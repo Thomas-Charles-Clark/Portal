@@ -23,11 +23,29 @@
     }
 }
 
+.k-grid {
+    tbody {
+        > tr:not(.k-detail-row) {
+            &:hover {
+                background-color: $white;
+            }
+        }
+    }
+
+    .k-table-body {
+        > .k-table-row:not(.k-detail-row) {
+            &.k-hover {
+                background-color: $white;
+            }
+        }
+    }
+}
+
 .k-grid-content {
     tr {
         &:hover,
         &:focus-within {
-            background-color: white;
+            background-color: $white;
 
             td:not(.translator-cell) {
                 background-color: $gray-200;
@@ -227,5 +245,25 @@
         .close {
             padding-right: $m-gutter;
         }
+    }
+}
+
+.k-window {
+    .k-editor-window {
+        .k-button-icon {
+            width: auto;
+            height: auto;
+            padding: 4px;
+            --kendo-icon-size: 1.25rem;
+        }
+        .k-window-content {
+            border-radius: $border-radius;
+        }
+    }
+}
+
+.k-button {
+    padding: 6px 14px;
+    .k-icon {
     }
 }

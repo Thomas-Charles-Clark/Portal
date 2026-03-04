@@ -105,6 +105,8 @@ const creditControlViewModel = (() => {
 
     self.salesBreakdownModal = bootstrap.Modal.getOrCreateInstance(self.salesBreakdownModalElement);
 
+    self.gridTradeAccountIds = ko.observableArray([]);
+
     //#endregion
 
     //#region Lifted Methods
@@ -198,6 +200,7 @@ const creditControlViewModel = (() => {
 
         if (self.selectedPod()) {
             additionalParameters.selectedPod = self.selectedPod().PodHandle;
+            additionalParameters.parameterJson = self.selectedPod().ParameterJSON
         }
 
         var data = Object.assign(mapped, additionalParameters);
@@ -253,8 +256,10 @@ const creditControlViewModel = (() => {
 
                         self.performance.tradeAccountCodeList(data.totalsRecord.TradeAccountCodeList);
 
+                        self.gridTradeAccountIds(data.totalsRecord.TradeAccountIDsList);
+
                         //self.gridParams.widget().setOptions({
-                        //    columns: self.gridColumns()
+                        //    columns: self.gridColumns
                         //});
                     }
 
@@ -327,7 +332,7 @@ const creditControlViewModel = (() => {
 
     //#region Components
 
-    self.virtualScrollerContainer = document.getElementById("credit-control-scroller-container");
+    //self.virtualScrollerContainer = document.getElementById("credit-control-scroller-container");
 
     //self.virtualScoller =  virtualScrollingDeferredDataFactory({
     //    busy: self.busy,
@@ -335,7 +340,7 @@ const creditControlViewModel = (() => {
     //    rowHeight: 50,
     //    primaryFetchMethod: 'GET',
     //    primaryFetchParams: self.primaryFetchParams,
-    //    primaryFetchEndpoint: "/api/creditcontrolapi/TradeAccountSearch",
+    //    primaryFetchEndpoint: "/api/creditcontrolapi/TradeAccountSearchEndless",
     //    primaryFetchResultSetName: "gridData",
     //    primaryFetchResultFn: (rec) => {
     //        return creditControlMainGridRow(rec);
@@ -351,8 +356,6 @@ const creditControlViewModel = (() => {
     //});
 
     self.memberBasketFetcher = memberBasketFetcher(self);
-
-    self.memberBasketFetcher.holdO
 
     self.formatCurrency = (e, fieldName) => {
 
@@ -373,31 +376,16 @@ const creditControlViewModel = (() => {
     }
 
     self.gridColumns = [{
-        field: 'TradeAccountID',
-        title: 'Trade Account ID',
-        hidden: true,
-        width: gridColumnWidths.oneHundred
-    }, {
         field: 'CurrencyCode',
         title: 'Curr.',
         filterable: false,
         locked: true,
-        hidden: false, //self.tradeAccounts().length == 0,
         width: gridColumnWidths.fifty
-    }, {
-        field: 'FormattingCulture',
-        title: 'Formatting Culture',
-        filterable: {
-            extra: false
-        },
-        hidden: true,
-        width: gridColumnWidths.oneTwenty
     }, {
         field: 'MarketName',
         title: 'Market',
         filterable: false,
         locked: true,
-        hidden: false, // self.tradeAccounts().length == 0,
         width: gridColumnWidths.oneHundred,
         template: (dataItem) => {
             return `<span>${dataItem.MarketName}</span>`;
@@ -407,21 +395,18 @@ const creditControlViewModel = (() => {
         title: 'Code',
         filterable: false,
         locked: true,
-        hidden: false, //self.tradeAccounts().length == 0,
         width: gridColumnWidths.ninety
     }, {
         field: 'TradeAccountName',
         title: 'Name',
         filterable: false,
         locked: true,
-        hidden: false, //self.tradeAccounts().length == 0,
         width: gridColumnWidths.oneForty
     }, {
         field: 'Status',
         title: 'Status',
         filterable: false,
         locked: true,
-        hidden: false, //self.tradeAccounts().length == 0,
         width: gridColumnWidths.twoHundred,
         attributes: {
             "class": "html-cell"
@@ -433,35 +418,7 @@ const creditControlViewModel = (() => {
                 return EMPTY_STRING;
             }
         }
-    },
-    //{
-    //    field: 'CreditStop',
-    //    title: 'On Stop',
-    //    filterable: {
-    //        extra: false,
-    //        messages: {
-    //            isTrue: 'On Stop',
-    //            isFalse: 'Not on Stop'
-    //        }
-    //    },
-    //    locked: true,
-    //    hidden: true,
-    //    width: gridColumnWidths.seventy,
-    //    attributes: {
-    //        "class": (e) => e.CreditStop ? `text-danger bold` : ``
-    //    },
-    //    template: (e) => {
-    //        if (e.CreditStop) {
-    //            return '<i class="text-danger bi bi-sign-stop-fill fs-1 credit-stopped" title="Credit Stopped"></i>';
-    //        } else {
-    //            return '';
-    //        }
-    //    },
-    //    attributes: {
-    //        "class": 'text-center'
-    //    }
-    //},
-    {
+    }, {
         field: 'Advisory',
         title: 'Advisory',
         width: gridColumnWidths.twoHundred,
@@ -470,7 +427,6 @@ const creditControlViewModel = (() => {
             defaultOperation: 'contains'
         },
         locked: true,
-        hidden: false, //self.tradeAccounts().length == 0,
         width: gridColumnWidths.twoHundred,
         attributes: {
             "class": "html-cell"
@@ -500,7 +456,7 @@ const creditControlViewModel = (() => {
             hidden: false, //self.tradeAccounts().length == 0,
             width: gridColumnWidths.eighty,
             template: (e) => {
-                return `<a href="#" class="btn grid-btn contacts-btn" data-bind="click: openContactsModal">
+                return `<a href="#" class="grid-btn contacts-btn" data-bind="click: openContactsModal">
 			<i class="bi bi-people-fill"></i>
             <span class="badge rounded-pill text-bg-primary">${e.MemberCount}</span>
 		</a>`;
@@ -519,12 +475,30 @@ const creditControlViewModel = (() => {
             width: gridColumnWidths.ninetyTwo,
             template: (e) => {
                 if (e.StatementURI) {
-                    return `<a href="#" class="btn grid-btn statement-btn" data-bind="attr: { href: StatementURI, target: '_blank' }">
+                    return `<a href="#" class="grid-btn statement-btn" data-bind="attr: { href: StatementURI, target: '_blank' }">
 				<i class="bi bi-filetype-pdf"></i>
 			</a>`;
                 } else {
                     return ``;
                 }
+            }
+        }, {
+            field: 'CreditStop',
+            title: 'Stopped',
+            headerAttributes: {
+                "class": "errata-subheading"
+            },
+            attributes: {
+                "class": "text-center grid-btn-cell"
+            },
+            sortable: true,
+            filterable: false,
+            width: gridColumnWidths.ninetyTwo,
+            template: (e) => {
+                return `<a href="#" class="grid-btn stop-btn relative" data-bind="click: toggleCreditStop">
+                    <i class="bi bi-octagon" data-bind="css: { 'bi-octagon': onStop() == false, 'bi-sign-stop-fill text-red-500': onStop() == true }"></i>
+                    <i class="bi bi-octagon bi-octagon-red d-none" data-bind="flexFadeVisible: onStop() == true"></i>
+                </a>`;
             }
         }]
     }, {
@@ -606,6 +580,221 @@ const creditControlViewModel = (() => {
             template: (e) => self.formatCurrency(e, 'DebtPlusOrdersTotal')
         }]
     }, {
+        field: '',
+        title: '',
+        attributes: {
+            'class': 'spacer-column left-border'
+        },
+        headerAttributes: {
+            'class': 'spacer-column left-border'
+        },
+        template: '&nbsp;',
+        width: 20
+    }, {
+        title: 'Debt Breakdown',
+        headerAttributes: {
+            "class": "debt-breakdown-heading debt-breakdown"
+        },
+        columns: [{
+            field: 'StatementTotalValue',
+            title: 'Total',
+            headerAttributes: {
+                "class": "debt-breakdown-subheading debt-breakdown"
+            },
+            attributes: {
+                "class": "text-end debt-breakdown"
+            },
+            width: gridColumnWidths.oneForty,
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'StatementTotalValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'TotalQuantity'));
+
+                return result.join(SINGLE_BR);
+            }
+        }, {
+            field: 'NotDueTotalValue',
+            title: 'Not Due',
+            headerAttributes: {
+                "class": "debt-breakdown-subheading debt-breakdown"
+            },
+            attributes: {
+                "class": 'text-end debt-breakdown'
+            },
+            width: gridColumnWidths.oneForty,
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'NotDueTotalValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'NotDueTotalQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
+        }, {
+            field: 'OverdueTotalValue',
+            title: 'Overdue',
+            headerAttributes: {
+                "class": "debt-breakdown-subheading debt-breakdown"
+            },
+            attributes: {
+                "class": '#: (OverdueTotalValue > 0) ? "text-danger": "" # text-end debt-breakdown'
+            },
+            width: gridColumnWidths.oneForty,
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'OverdueTotalValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'OverdueTotalQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
+        }, {
+            field: 'Debt30DayValue',
+            title: '30 Day',
+            headerAttributes: {
+                "class": "debt-breakdown-subheading debt-breakdown"
+            },
+            attributes: {
+                "class": '#: (Debt30DayValue > 0 || Debt60DayValue > 0 || Debt90DayValue > 0 || Debt120DayValue > 0) ? "text-danger": "" # text-end debt-breakdown'
+            },
+            width: gridColumnWidths.oneForty,
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'Debt30DayValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'Debt30DayQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
+        }, {
+            field: 'Debt60DayValue',
+            title: '60 Day',
+            headerAttributes: {
+                "class": "debt-breakdown-subheading debt-breakdown"
+            },
+            attributes: {
+                "class": '#: (Debt60DayValue > 0 || Debt90DayValue > 0 || Debt120DayValue > 0) ? "text-danger": "" # text-end debt-breakdown'
+            },
+            width: gridColumnWidths.oneForty,
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'Debt60DayValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'Debt60DayQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
+        }, {
+            field: 'Debt90DayValue',
+            title: '90 Day',
+            headerAttributes: {
+                "class": "debt-breakdown-subheading debt-breakdown"
+            },
+            attributes: {
+                "class": '#: (Debt90DayValue > 0 || Debt120DayValue > 0) ? "text-danger": "" # text-end debt-breakdown'
+            },
+            width: gridColumnWidths.oneForty,
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'Debt90DayValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'Debt90DayQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
+        }, {
+            field: 'Debt120DayValue',
+            title: '120 Day',
+            headerAttributes: {
+                "class": "debt-breakdown-subheading debt-breakdown"
+            },
+            attributes: {
+                "class": '#: (Debt120DayValue > 0) ? "text-danger": "" # text-end debt-breakdown'
+            },
+            width: gridColumnWidths.oneForty,
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'Debt120DayValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'Debt120DayQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
+        }, {
+            field: 'DisputedValue',
+            title: 'Disputed',
+            headerAttributes: {
+                "class": "debt-breakdown-subheading debt-breakdown"
+            },
+            attributes: {
+                "class": '#: DisputedValue > 0 ? "text-danger": "" # text-end debt-breakdown'
+            },
+            width: gridColumnWidths.oneForty,
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'DisputedValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'DisputedQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
+        }, {
+            field: 'WrittenOffValue',
+            title: 'Written Off',
+            headerAttributes: {
+                "class": "debt-breakdown-subheading debt-breakdown"
+            },
+            attributes: {
+                "class": '#: WrittenOffValue > 0 ? "text-danger": "" # text-end debt-breakdown'
+            },
+            width: gridColumnWidths.oneForty,
+            template: (e) => {
+
+                let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
+                    result.push(self.formatCurrency(e, 'WrittenOffValue'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
+                    result.push(self.formatNumber(e, 'WrittenOffQuantity'));
+
+                return result.join(SINGLE_BR)
+            }
+        }]
+     }, {
         field: '',
         title: '',
         attributes: {
@@ -728,221 +917,6 @@ const creditControlViewModel = (() => {
 
                 if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
                     result.push(self.formatNumber(e, 'BackOrderQuantity'));
-
-                return result.join(SINGLE_BR)
-            }
-        }]
-    }, {
-        field: '',
-        title: '',
-        attributes: {
-            'class': 'spacer-column left-border'
-        },
-        headerAttributes: {
-            'class': 'spacer-column left-border'
-        },
-        template: '&nbsp;',
-        width: 20
-    }, {
-        title: 'Debt Breakdown',
-        headerAttributes: {
-            "class": "debt-breakdown-heading debt-breakdown"
-        },
-        columns: [{
-            field: 'StatementTotalValue',
-            title: 'Total',
-            headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
-            },
-            attributes: {
-                "class": "text-end debt-breakdown"
-            },
-            width: gridColumnWidths.oneForty,
-            template: (e) => {
-
-                let result = [];
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
-                    result.push(self.formatCurrency(e, 'StatementTotalValue'));
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
-                    result.push(self.formatNumber(e, 'TotalQuantity'));
-
-                return result.join(SINGLE_BR);
-            }
-        }, {
-            field: 'NotDueTotalValue',
-            title: 'Not Due',
-            headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
-            },
-            attributes: {
-                "class": 'text-end debt-breakdown'
-            },
-            width: gridColumnWidths.oneForty,
-            template: (e) => {
-
-                let result = [];
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
-                    result.push(self.formatCurrency(e, 'NotDueTotalValue'));
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
-                    result.push(self.formatNumber(e, 'NotDueTotalQuantity'));
-
-                return result.join(SINGLE_BR)
-            }
-        }, {
-            field: 'OverdueTotalValue',
-            title: 'Overdue',
-            headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
-            },
-            attributes: {
-                "class": 'text-danger text-end debt-breakdown'
-            },
-            width: gridColumnWidths.oneForty,
-            template: (e) => {
-
-                let result = [];
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
-                    result.push(self.formatCurrency(e, 'OverdueTotalValue'));
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
-                    result.push(self.formatNumber(e, 'OverdueTotalQuantity'));
-
-                return result.join(SINGLE_BR)
-            }
-        }, {
-            field: 'Debt30DayValue',
-            title: '30 Day',
-            headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
-            },
-            attributes: {
-                "class": 'text-danger text-end debt-breakdown'
-            },
-            width: gridColumnWidths.oneForty,
-            template: (e) => {
-
-                let result = [];
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
-                    result.push(self.formatCurrency(e, 'Debt30DayValue'));
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
-                    result.push(self.formatNumber(e, 'Debt30DayQuantity'));
-
-                return result.join(SINGLE_BR)
-            }
-        }, {
-            field: 'Debt60DayValue',
-            title: '60 Day',
-            headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
-            },
-            attributes: {
-                "class": 'text-danger text-end debt-breakdown'
-            },
-            width: gridColumnWidths.oneForty,
-            template: (e) => {
-
-                let result = [];
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
-                    result.push(self.formatCurrency(e, 'Debt60DayValue'));
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
-                    result.push(self.formatNumber(e, 'Debt60DayQuantity'));
-
-                return result.join(SINGLE_BR)
-            }
-        }, {
-            field: 'Debt90DayValue',
-            title: '90 Day',
-            headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
-            },
-            attributes: {
-                "class": 'text-danger text-end debt-breakdown'
-            },
-            width: gridColumnWidths.oneForty,
-            template: (e) => {
-
-                let result = [];
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
-                    result.push(self.formatCurrency(e, 'Debt90DayValue'));
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
-                    result.push(self.formatNumber(e, 'Debt90DayQuantity'));
-
-                return result.join(SINGLE_BR)
-            }
-        }, {
-            field: 'Debt120DayValue',
-            title: '120 Day',
-            headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
-            },
-            attributes: {
-                "class": 'text-danger text-end debt-breakdown'
-            },
-            width: gridColumnWidths.oneForty,
-            template: (e) => {
-
-                let result = [];
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
-                    result.push(self.formatCurrency(e, 'Debt120DayValue'));
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
-                    result.push(self.formatNumber(e, 'Debt120DayQuantity'));
-
-                return result.join(SINGLE_BR)
-            }
-        }, {
-            field: 'DisputedValue',
-            title: 'Disputed',
-            headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
-            },
-            attributes: {
-                "class": 'text-danger text-end debt-breakdown'
-            },
-            width: gridColumnWidths.oneForty,
-            template: (e) => {
-
-                let result = [];
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
-                    result.push(self.formatCurrency(e, 'DisputedValue'));
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
-                    result.push(self.formatNumber(e, 'DisputedQuantity'));
-
-                return result.join(SINGLE_BR)
-            }
-        }, {
-            field: 'WrittenOffValue',
-            title: 'Written Off',
-            headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
-            },
-            attributes: {
-                "class": 'text-danger text-end debt-breakdown'
-            },
-            width: gridColumnWidths.oneForty,
-            template: (e) => {
-
-                let result = [];
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
-                    result.push(self.formatCurrency(e, 'WrittenOffValue'));
-
-                if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
-                    result.push(self.formatNumber(e, 'WrittenOffQuantity'));
 
                 return result.join(SINGLE_BR)
             }
@@ -1349,13 +1323,13 @@ const creditControlViewModel = (() => {
 
     self.filters.displayModes.subscribe(nv => {
         self.gridParams.widget().setOptions({
-            columns: self.gridColumns()
+            columns: self.gridColumns
         });
     }, self, 'arrayChange');
 
     self.filters.salesHistoryAnalysisPeriodId.subscribe(nv => {
         self.gridParams.widget().setOptions({
-            columns: self.gridColumns()
+            columns: self.gridColumns
         });
     });
 
@@ -1406,7 +1380,7 @@ const creditControlViewModel = (() => {
     //#region Methods
 
     self.sortByColumn = (detailColumn) => {
-        self.gridColumns().forEach(c => {
+        self.gridColumns.forEach(c => {
             if (Object.hasOwn(c, 'columns')) {
                 c.columns.forEach(d => {
                     d.direction(undefined);

@@ -57,5 +57,7 @@ namespace SharedEFClasses.Models.CreditControl
 		public string InvoiceCompanyCode { get; set; }
 
 		public string SortOrder { get; set; }
+
+		public string ParameterJSON { get; set; }
 	}
 }

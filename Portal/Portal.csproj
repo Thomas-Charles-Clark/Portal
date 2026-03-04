@@ -1386,14 +1386,14 @@
     <Content Include="css\dist\models\common.min.css" />
     <Content Include="css\dist\models\contract-pricing.css" />
     <Content Include="css\dist\models\contract-pricing.min.css" />
-    <Content Include="css\dist\models\credit-control\credit-control-infinite-scroll.css" />
-    <Content Include="css\dist\models\credit-control\credit-control-infinite-scroll.min.css" />
     <Content Include="css\dist\models\credit-control\credit-control-order-release.css" />
     <Content Include="css\dist\models\credit-control\credit-control-order-release.min.css" />
     <Content Include="css\dist\models\credit-control\credit-control-performance.css" />
     <Content Include="css\dist\models\credit-control\credit-control-performance.min.css" />
     <Content Include="css\dist\models\credit-control\credit-control-sidebar.css" />
     <Content Include="css\dist\models\credit-control\credit-control-sidebar.min.css" />
+    <Content Include="css\dist\models\credit-control\credit-control-virtual-scroller.css" />
+    <Content Include="css\dist\models\credit-control\credit-control-virtual-scroller.min.css" />
     <Content Include="css\dist\models\credit-control\credit-control.css" />
     <Content Include="css\dist\models\credit-control\credit-control.min.css" />
     <Content Include="css\dist\models\css-shake.css" />
@@ -3276,8 +3276,6 @@
     <Content Include="css\dist\models\suppliers\payments\supplier-payments-sidebar.min.css.map" />
     <Content Include="css\dist\models\suppliers\payments\supplier-payments.css.map" />
     <Content Include="css\dist\models\suppliers\payments\supplier-payments.min.css.map" />
-    <Content Include="css\dist\models\credit-control\credit-control-infinite-scroll.css.map" />
-    <Content Include="css\dist\models\credit-control\credit-control-infinite-scroll.min.css.map" />
     <Content Include="css\dist\models\credit-control\credit-control-order-release.css.map" />
     <Content Include="css\dist\models\credit-control\credit-control-order-release.min.css.map" />
     <Content Include="css\dist\models\credit-control\credit-control-performance.css.map" />
@@ -3306,6 +3304,10 @@
     <Content Include="css\dist\models\order-products\order-products-d.min.css.map" />
     <Content Include="css\dist\models\order-products\order-products-e.css.map" />
     <Content Include="css\dist\models\order-products\order-products-e.min.css.map" />
+    <Content Include="css\src\models\credit-control\credit-control-virtual-scroller.scss" />
+    <Content Include="css\dist\models\credit-control\credit-control-virtual-scroller.css.map" />
+    <Content Include="css\dist\models\credit-control\credit-control-virtual-scroller.min.css.map" />
+    <Content Include="css\src\models\common\common-2026.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

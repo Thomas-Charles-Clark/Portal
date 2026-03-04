@@ -74,20 +74,20 @@
 
     //#region Computeds
 
-    self.dirty = ko.computed(() => {
-        let dirt = [];
-        let records = self.data();
-        records.forEach(r => {
-            dirt.push(r.dirty());
-        });
-        if (dirt.find(r => r === true)) {
-            self.unsavedChanges(true);
-        } else {
-            self.unsavedChanges(false);
-        }
-    }, self);
+    //self.dirty = ko.computed(() => {
+    //    let dirt = [];
+    //    let records = self.data();
+    //    records.forEach(r => {
+    //        dirt.push(r.dirty());
+    //    });
+    //    if (dirt.find(r => r === true)) {
+    //        self.unsavedChanges(true);
+    //    } else {
+    //        self.unsavedChanges(false);
+    //    }
+    //}, self);
 
-    //#endregion
+    ////#endregion
 
     //#region Components
 
@@ -119,6 +119,9 @@
                 }
             })
         },
+        requestEnd: function(e) {
+            console.log('languageDropDownList requestEnd', e);
+        }
     });
 
     self.languageId.subscribe(function (newValue) {
@@ -367,65 +370,33 @@
                             type: 'boolean'
                         }
                     }
+                },
+                parse: function (response) {
+
+                    let items = [];
+
+                    for (var i = 0; i < response.value.length; i++) {
+
+                        var item = translationRecord({
+                            record: response.value[i]
+                        });
+
+                        items.push(item);
+                    }
+
+                    self.data(items);
+
+                    response.value = items;
+
+                    return response;
                 }
             },
             requestStart: function (e) {
                 console.log('requestStart', e);
-
-                //if (e.type == "read") {
-
-                //    if (self.readRequestBarrier) {
-                //        self.readRequestBarrier = false;
-                //        return;
-                //    }
-
-                //    e.preventDefault();
-
-                //    var queryOptions = {
-                //        aggregate: e.sender.aggregate(),
-                //        group: e.sender.group(),
-                //        sort: e.sender.sort(),
-                //        filter: e.sender.filter(),
-                //        page: e.sender.page(),
-                //        pageSize: e.sender.pageSize(),
-                //    };
-
-                //    if (self.selectedPod()) {
-                //        if (queryOptions.filter.filters) {
-                            
-                //        }
-                //        queryOptions.filter.filters.push({
-                //            logic: 'or',
-                //            filters: [{
-                //                field: 'MemberID',
-                //                operator: 'eq',
-                //                value: null
-                //            }, {
-                //                field: 'MemberID',
-                //                operator: 'eq',
-                //                value: 0
-                //            }]
-                //        })
-                //    }
-
-                //    self.readRequestBarrier = true;
-
-                //    e.sender.query(queryOptions);
-
-                //}
-
                 self.busy(true);
             },
             requestEnd: (e) => {
                 console.log('requestEnd', e);
-
-                if (Object.hasOwn(e, 'response') && typeof e.response != 'undefined') {
-                    self.data(e.response.value.map(r => translationRecord({
-                        record: r
-                    })));
-
-                    e.response.value = self.data();
-                }
                 self.busy(false);
                 self.unsavedChanges(false);
             },
@@ -454,13 +425,6 @@
                     })
                 }
             })(),
-            //requestEnd: function (e) {
-            //    if (e.type == "create") {
-            //        // Make a read request to expand Category. By default the OData controller doesn't expand on create.
-            //        this.read();
-            //        // is this necessary?
-            //    }
-            //},
             error: function (e) {
                 $.showError(e.xhr, e.errorThrown, e.status);
             }
@@ -503,27 +467,37 @@
                 self.refreshDashboard();
             }
         },
-        saveChanges: (e) => {
-            console.log('saveChanges', e);
+        //saveChanges: (e) => {
+        //    console.log('saveChanges', e);
 
-            let models = self.data();
+        //    let models = self.data();
 
-            let data = e.sender.dataSource.data();
+        //    let data = e.sender.dataSource.data();
 
-            models.forEach(tr => {
-                let dataItem = data.find(d => d.ResourceID == tr.ResourceID);
+        //    let anyDirty = false;
 
-                if (tr.translation() == '') {
-                    tr.translation(null);
-                }
+        //    models.forEach(tr => {
+        //        let dataItem = data.find(d => d.ResourceID == tr.ResourceID);
 
-                if (tr.dirty()) {
-                    dataItem.dirty = true;
-                    dataItem.set('Approval', tr.approval());
-                    dataItem.set('Translation', tr.translation());
-                }
-            });
-        },
+        //        if (tr.translation() == '') {
+        //            tr.translation(null);
+        //        }
+
+        //        if (tr.dirty()) {
+        //            dataItem.dirty = true;
+        //            dataItem.set('Approval', tr.approval());
+        //            dataItem.set('Translation', tr.translation());
+
+        //            anyDirty = true;
+        //        }
+        //    });
+
+        //    if (anyDirty) {
+        //        document.querySelectorAll('.k-grid-toolbar .k-button').forEach(b => {
+        //            b.classList.toggle('d-block');
+        //        })
+        //    }
+        //},
     };
 
     //#endregion
@@ -612,9 +586,9 @@ const translationRecord = ({
 } = {
     record: {}
 }) => {
-    let self = Object.assign({
+    let self = Object.assign(record, {
 
-    }, record);
+    });
 
     //#region Properties
 
@@ -627,8 +601,6 @@ const translationRecord = ({
     self.translation = ko.observable(self.Value);
 
     self.originalTranslation = self.translation();
-
-    self.dirty = ko.observable(false);
 
     //#endregion
 
@@ -738,11 +710,29 @@ const translationRecord = ({
 
     //#region Subscriptions
 
+    self.translation.subscribe(nv => {
+       
+            self.dataItem.set('Value', nv);
+            $(".k-grid-save-changes, .k-grid-cancel-changes").show();
+        
+    });
+
+    self.approval.subscribe(nv => {
+        
+            self.dataItem.set('MemberID', getUserId());
+            $(".k-grid-save-changes, .k-grid-cancel-changes").show();
+        
+    });
+
     //self.approval.subscribe(nv => {
     //    //window.setTimeout(() => {
     //    //    document.getElementById(`resource-id-${self.ResourceID}-approval`).blur();
     //    //}, 0);
     //});
+
+    //self.dirty.subscribe(nv => {
+    //    viewModel.resourceGridSettings.widget().trigger('saveChanges');
+    //})
 
     //self.dirty.subscribe(nv => {
     //    let item = self.dataItem;
@@ -758,6 +748,11 @@ const translationRecord = ({
     //    } else {
     //        item.set('MemberID', undefined);
     //    }
+
+    //    if (viewModel.resourceGridSettings.widget()) {
+    //        viewModel.resourceGridSettings.widget().trigger('saveChanges');
+    //    }
+        
     //});
 
     self.toJSON = () => {

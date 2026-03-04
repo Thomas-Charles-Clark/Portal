@@ -74,12 +74,12 @@
   display: inline-flex;
   align-items: center;
 }
-.mdc-text-field--html-editor-inline-no-outline .k-widget {
+.mdc-text-field--html-editor-inline-no-outline .k-editor {
   border: 0;
   flex: 1;
   box-shadow: none;
 }
-.mdc-text-field--html-editor-inline-no-outline .k-widget.k-editor-widget {
+.mdc-text-field--html-editor-inline-no-outline .k-editor.k-editor-widget {
   background-color: transparent;
   box-shadow: none;
 }
@@ -991,36 +991,44 @@ textarea.mdc-text-field__input {
 
 .nav.nav-pills li {
   /*
-          a,
-          button {
-              &.active {
-                  border: 1px solid #44546b;
-                  color: #fff;
-                  background-color: #4472c7;
-              }
+  a,
+  button {
+      &.active {
+          border: 1px solid #44546b;
+          color: #fff;
+          background-color: #4472c7;
+      }
 
-              &:not(.active) {
-                  border: 1px solid #7f97c1;
-                  background-color: white;
-              }
-          }*/
+      &:not(.active) {
+          border: 1px solid #7f97c1;
+          background-color: white;
+      }
+  }*/
   /*
-          a:not(.active),
-          button:not(.active) {
-              .mdc-text-field--disabled,
-              .mdc-select--disabled {
-                  .k-input-button {
-                      border: 1px solid $gray-400;
-                      background-color: $gray-100;
-                      color: $body-color;
-                  }
-              }
-          }*/
+  a:not(.active),
+  button:not(.active) {
+      .mdc-text-field--disabled,
+      .mdc-select--disabled {
+          .k-input-button {
+              border: 1px solid $gray-400;
+              background-color: $gray-100;
+              color: $body-color;
+          }
+      }
+  }*/
 }
 .nav.nav-pills li a,
 .nav.nav-pills li button {
-  color: #4472c7;
   position: relative;
+}
+.nav.nav-pills li a:not(.btn-secondary),
+.nav.nav-pills li button:not(.btn-secondary) {
+  color: #4472c7;
+}
+.nav.nav-pills li a.btn-secondary, .nav.nav-pills li a.active,
+.nav.nav-pills li button.btn-secondary,
+.nav.nav-pills li button.active {
+  color: #fff;
 }
 .nav.nav-pills li a .badge,
 .nav.nav-pills li button .badge {

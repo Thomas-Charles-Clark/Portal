@@ -1,0 +1,9 @@
+﻿@import '../common.scss';
+
+.virtual-scrolling-table {
+	> tbody {
+		td {
+			position: relative;
+		}
+	}
+}

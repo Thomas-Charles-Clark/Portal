@@ -469,7 +469,14 @@ textarea.mdc-text-field__input {
     li {
         a,
         button {
-            color: #4472c7;
+            &:not(.btn-secondary) {
+                color: #4472c7;
+            }
+            &.btn-secondary,
+            &.active {
+                color: $white;
+            }
+
             position: relative;
 
             .badge {
@@ -497,7 +504,7 @@ textarea.mdc-text-field__input {
                 }
             }
         }
-/*
+        /*
         a,
         button {
             &.active {
@@ -511,7 +518,7 @@ textarea.mdc-text-field__input {
                 background-color: white;
             }
         }*/
-/*
+        /*
         a:not(.active),
         button:not(.active) {
             .mdc-text-field--disabled,

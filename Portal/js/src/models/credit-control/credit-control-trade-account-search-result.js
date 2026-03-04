@@ -39,7 +39,9 @@
         } else {
             self[`${k[0].toLowerCase()}${k.substring(1)}`] = ko.observable(self[k]);
         }
-    })
+    });
+
+    self.onStop = ko.observable(rec.CreditStop);
 
     //#endregion
 
@@ -52,6 +54,10 @@
             rec: self
         }));
         self.fetchContacts(self.TradeAccountID);
+    }
+
+    self.toggleCreditStop = () => {
+        self.onStop(!self.onStop());
     }
 
     //#endregion

@@ -73,12 +73,12 @@
   display: inline-flex;
   align-items: center;
 }
-.mdc-text-field--html-editor-inline-no-outline .k-widget {
+.mdc-text-field--html-editor-inline-no-outline .k-editor {
   border: 0;
   flex: 1;
   box-shadow: none;
 }
-.mdc-text-field--html-editor-inline-no-outline .k-widget.k-editor-widget {
+.mdc-text-field--html-editor-inline-no-outline .k-editor.k-editor-widget {
   background-color: transparent;
   box-shadow: none;
 }
@@ -762,13 +762,20 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 }
 #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell:hover, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell:focus, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell:focus-within {
   background-color: #e9ecef;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
 }
 #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn {
-  padding: 0 0.75rem;
+  color: #212529;
+  position: relative;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
 }
-#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:hover, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:focus, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:focus-within {
-  cursor: pointer;
-  /*text-shadow: 0 0 6px $blue-700;*/
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:hover, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:active, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:focus, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:focus-within {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
+}
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:hover:not(.stop-btn), #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:active:not(.stop-btn), #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:focus:not(.stop-btn), #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:focus-within:not(.stop-btn) {
   color: #0d6efd;
 }
 #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn .bi {
@@ -777,14 +784,43 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn .bi.bi-people-fill {
   font-size: 2.05rem;
 }
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn .bi.bi-octagon {
+  will-change: background-color, color;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
+}
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:hover {
+  cursor: pointer;
+  /*text-shadow: 0 0 6px $blue-700;*/
+}
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:hover .bi.bi-octagon:not(.bi-octagon-red):before {
+  background-color: #f1aeb5;
+  border-radius: 2em;
+  color: #b02a37;
+}
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:has(.bi-octagon-red):hover, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:has(.bi-octagon-red):active, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:has(.bi-octagon-red):focus, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn:has(.bi-octagon-red):focus-within {
+  /*border: none;
+  outline: none !important;
+  box-shadow: none !important;*/
+}
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn .bi-octagon-red {
+  position: absolute;
+  top: -16px;
+  left: 0;
+  z-index: 1;
+}
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn .bi-octagon-red:before {
+  color: #b02a37;
+}
+#credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell.k-state-selected {
+  background-color: inherit;
+}
 #credit-control-main .k-grid:not(#held-orders-grid) .contacts-btn {
   position: relative;
 }
 #credit-control-main .k-grid:not(#held-orders-grid) .contacts-btn .badge {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  top: 25px;
+  right: -10px;
+  bottom: -5px;
 }
 #credit-control-main .k-grid:not(#held-orders-grid) .credit-stopped:hover {
   cursor: not-allowed;

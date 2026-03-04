@@ -73,12 +73,12 @@
   display: inline-flex;
   align-items: center;
 }
-.mdc-text-field--html-editor-inline-no-outline .k-widget {
+.mdc-text-field--html-editor-inline-no-outline .k-editor {
   border: 0;
   flex: 1;
   box-shadow: none;
 }
-.mdc-text-field--html-editor-inline-no-outline .k-widget.k-editor-widget {
+.mdc-text-field--html-editor-inline-no-outline .k-editor.k-editor-widget {
   background-color: transparent;
   box-shadow: none;
 }
@@ -1694,6 +1694,10 @@ a.supplier-link {
   margin-left: 12px;
 }
 
+#submitted-basket-modal .modal-dialog {
+  width: auto !important;
+  max-width: 1590px !important;
+}
 #submitted-basket-modal span.glyphicon {
   color: white;
   margin-left: 15px;

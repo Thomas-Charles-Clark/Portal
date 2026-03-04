@@ -192,8 +192,8 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
                         creditStoppedCount: records.flatMap(m => {
                             return m[1].reduce((accumulator, currentItem) => accumulator += currentItem.CreditStoppedCount, 0);
                         }).reduce((a, c) => a += c, 0),
-                        twelveMonthOrderCount: records[0].TwelveMonthOrderCount,
-                        twelveMonthOrderValue: records[0].TwelveMonthOrderValue,
+                        twelveMonthOrderCount: records[0][1].reduce((accumulator, currentItem) => accumulator += currentItem.TwelveMonthOrderCount, 0),
+                        twelveMonthOrderValue: records[0][1].reduce((accumulator, currentItem) => accumulator += currentItem.TwelveMonthOrderValue, 0),
                         totals: records.map(m => {
                             return {
                                 PeriodLabel: m[0],

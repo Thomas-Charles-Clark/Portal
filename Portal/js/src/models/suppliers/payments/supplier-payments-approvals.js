@@ -341,51 +341,53 @@
                 
                 console.log('approvals dataSource schema.parse returning', response);
 
-                document.querySelector('#back-orders-total-quantity').innerHTML = `${formatNumber(response.AggregateResults
-                    .find(a => a.Member === 'BackOrderQuantity').Value, 2, 'en-GB')}`;
+                if (response.AggregateResults.length) {
 
-                document.querySelector('#back-orders-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
-                    .find(a => a.Member === 'BackOrderValueGBP').Value, 2, 'en-GB', 'GBP')}`;
+                    document.querySelector('#back-orders-total-quantity').innerHTML = `${formatNumber(response.AggregateResults
+                        .find(a => a.Member === 'BackOrderQuantity').Value, 2, 'en-GB')}`;
 
-                document.querySelector('#new-collections-one-total-quantity').innerHTML = `${formatNumber(response.AggregateResults
-                    .find(a => a.Member === 'NewCollectionProductCount_1').Value, 0, 'en-GB')}`;
+                    document.querySelector('#back-orders-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
+                        .find(a => a.Member === 'BackOrderValueGBP').Value, 2, 'en-GB', 'GBP')}`;
 
-                document.querySelector('#new-collections-two-total-quantity').innerHTML = `${formatNumber(response.AggregateResults
-                    .find(a => a.Member === 'NewCollectionProductCount_2').Value, 0, 'en-GB')}`;
+                    document.querySelector('#new-collections-one-total-quantity').innerHTML = `${formatNumber(response.AggregateResults
+                        .find(a => a.Member === 'NewCollectionProductCount_1').Value, 0, 'en-GB')}`;
 
-                document.querySelector('#new-collections-three-total-quantity').innerHTML = `${formatNumber(response.AggregateResults
-                    .find(a => a.Member === 'NewCollectionProductCount_3').Value, 0, 'en-GB')}`;
+                    document.querySelector('#new-collections-two-total-quantity').innerHTML = `${formatNumber(response.AggregateResults
+                        .find(a => a.Member === 'NewCollectionProductCount_2').Value, 0, 'en-GB')}`;
 
-                document.querySelector('#supplier-invoices-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
-                    .find(a => a.Member === 'TotalValueGBP').Value, 2, 'en-GB', 'GBP')}`;
+                    document.querySelector('#new-collections-three-total-quantity').innerHTML = `${formatNumber(response.AggregateResults
+                        .find(a => a.Member === 'NewCollectionProductCount_3').Value, 0, 'en-GB')}`;
 
-                document.querySelector('#supplier-invoices-register-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
-                    .find(a => a.Member === 'RegisterValueGBP').Value, 2, 'en-GB', 'GBP')}`;
+                    document.querySelector('#supplier-invoices-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
+                        .find(a => a.Member === 'TotalValueGBP').Value, 2, 'en-GB', 'GBP')}`;
 
-                document.querySelector('#supplier-invoices-not-due-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
-                    .find(a => a.Member === 'NotDueTotalValueGBP').Value, 2, 'en-GB', 'GBP')}`;
+                    document.querySelector('#supplier-invoices-register-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
+                        .find(a => a.Member === 'RegisterValueGBP').Value, 2, 'en-GB', 'GBP')}`;
 
-                document.querySelector('#supplier-invoices-overdue-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
-                    .find(a => a.Member === 'OverdueTotalValueGBP').Value, 2, 'en-GB', 'GBP')}`;
+                    document.querySelector('#supplier-invoices-not-due-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
+                        .find(a => a.Member === 'NotDueTotalValueGBP').Value, 2, 'en-GB', 'GBP')}`;
 
-                document.querySelector('#supplier-invoices-30-day-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
-                    .find(a => a.Member === 'Debt30DayValueGBP').Value, 2, 'en-GB', 'GBP')}`;
+                    document.querySelector('#supplier-invoices-overdue-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
+                        .find(a => a.Member === 'OverdueTotalValueGBP').Value, 2, 'en-GB', 'GBP')}`;
 
-                document.querySelector('#supplier-invoices-60-day-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
-                    .find(a => a.Member === 'Debt60DayValueGBP').Value, 2, 'en-GB', 'GBP')}`;
+                    document.querySelector('#supplier-invoices-30-day-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
+                        .find(a => a.Member === 'Debt30DayValueGBP').Value, 2, 'en-GB', 'GBP')}`;
 
-                document.querySelector('#supplier-invoices-90-day-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
-                    .find(a => a.Member === 'Debt90DayValueGBP').Value, 2, 'en-GB', 'GBP')}`;
+                    document.querySelector('#supplier-invoices-60-day-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
+                        .find(a => a.Member === 'Debt60DayValueGBP').Value, 2, 'en-GB', 'GBP')}`;
 
-                document.querySelector('#supplier-invoices-120-day-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
-                    .find(a => a.Member === 'Debt120DayValueGBP').Value, 2, 'en-GB', 'GBP')}`;
+                    document.querySelector('#supplier-invoices-90-day-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
+                        .find(a => a.Member === 'Debt90DayValueGBP').Value, 2, 'en-GB', 'GBP')}`;
 
-                document.querySelector('#payment-requests-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
-                    .find(a => a.Member === 'PaymentRequestPaymentPlanTotal').Value, 2, 'en-GB', 'GBP')}`;
+                    document.querySelector('#supplier-invoices-120-day-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
+                        .find(a => a.Member === 'Debt120DayValueGBP').Value, 2, 'en-GB', 'GBP')}`;
 
-                document.querySelector('#other-requests-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
-                    .find(a => a.Member === 'PaymentRequestOtherTotal').Value, 2, 'en-GB', 'GBP')}`;
+                    document.querySelector('#payment-requests-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
+                        .find(a => a.Member === 'PaymentRequestPaymentPlanTotal').Value, 2, 'en-GB', 'GBP')}`;
 
+                    document.querySelector('#other-requests-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
+                        .find(a => a.Member === 'PaymentRequestOtherTotal').Value, 2, 'en-GB', 'GBP')}`;
+                }
 
                 return response;
             }

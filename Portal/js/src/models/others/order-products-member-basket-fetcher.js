@@ -1842,7 +1842,7 @@
     self.basketSubmissionResultGrid = {
         autoBind: true,
         widget: ko.observable(),
-        columns: self.basketSubmissionResultGridColumns,
+        columns: self.heldOrdersGridColumns,
         data: self.basketSubmissionResults,
         useKOTemplates: true,
         rowTemplate: 'held-order-row-template',

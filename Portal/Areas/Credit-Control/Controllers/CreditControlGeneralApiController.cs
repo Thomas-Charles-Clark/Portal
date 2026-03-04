@@ -86,29 +86,29 @@ namespace Portal.Areas.CreditControl.Controllers
 			}
 		}
 
-		//[HttpGet]
-		//public async Task<IHttpActionResult> TradeAccountSearch(
-		//	[FromUri] CreditControl_TradeAccount_SearchDTO dto)
-		//      {
-		//	try
-		//	{
-		//		var model = await PortalDb.CreditControl_TradeAccount_Search(dto);
+		[HttpGet]
+		public async Task<IHttpActionResult> TradeAccountSearchEndless(
+			[FromUri] CreditControl_TradeAccount_SearchDTO dto)
+		{
+			try
+			{
+				var model = await PortalDb.CreditControl_TradeAccount_Search(dto);
 
-		//		return Ok(new
-		//		{
-		//			gridData = model.Results,
-		//			dashboardPods = model.DashboardPods,
-		//			totalsRecord = model.TotalsRecord
-		//		});
-		//	}
-		//	catch(SqlException)
-		//	{
-		//		return Ok(new
-		//		{
-		//			errorMessage = "Sorry, a database timeout error occurred.<br/>Please click to close this dialog box to retry, or reload your browser tab."
-		//		});
-		//	}
-		//}
+				return Ok(new
+				{
+					gridData = model.Results,
+					dashboardPods = model.DashboardPods,
+					totalsRecord = model.TotalsRecord
+				});
+			}
+			catch (SqlException)
+			{
+				return Ok(new
+				{
+					errorMessage = "Sorry, a database timeout error occurred.<br/>Please click to close this dialog box to retry, or reload your browser tab."
+				});
+			}
+		}
 
 		[HttpPost]
 		public async Task<IHttpActionResult> FetchDebtBreakdown(

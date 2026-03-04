@@ -1487,6 +1487,11 @@ a.supplier-link {
 }
 
 #submitted-basket-modal {
+    .modal-dialog {
+        width: auto !important;
+        max-width: 1590px !important;
+    }
+
     span.glyphicon {
         color: white;
         margin-left: 15px;

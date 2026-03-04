@@ -434,6 +434,7 @@ namespace Portal
                     $"{cssPrefix}/models/credit-control/credit-control-sidebar{cssSuffix}",
                     $"{cssPrefix}/models/credit-control/credit-control-performance{cssSuffix}",
                     $"{cssPrefix}/models/credit-control/credit-control-order-release{cssSuffix}",
+                    $"{cssPrefix}/models/credit-control/credit-control-virtual-scroller{cssSuffix}",
 					$"{cssPrefix}/models/trade-account-contacts-widener{cssSuffix}"
 			));
 
@@ -450,6 +451,10 @@ namespace Portal
                     $"{cssPrefix}/models/suppliers/payments/supplier-payments{cssSuffix}",
                     $"{cssPrefix}/models/suppliers/payments/supplier-payments-sidebar{cssSuffix}",
 					$"{cssPrefix}/models/suppliers/payments/supplier-payments-approvals-basket{cssSuffix}"
+			));
+
+			bundles.Add(new StyleBundle("~/bundles/css/common-2026").Include(
+					$"{cssPrefix}/models/common/common-2026{cssSuffix}"
 			));
 
 			//  

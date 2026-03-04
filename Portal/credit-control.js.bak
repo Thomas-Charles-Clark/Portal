@@ -770,7 +770,7 @@ const creditControlViewModel = (() => {
 
                 return result.join(SINGLE_BR);
             }
-        },{
+        }, {
             field: 'NotDueTotalValue',
             title: 'Not Due',
             headerAttributes: {
@@ -1064,11 +1064,11 @@ const creditControlViewModel = (() => {
         template: '&nbsp;',
         width: 20
     }, {
-            title: self.filters.salesHistoryAnalysisPeriod() ? `Sales (${self.filters.salesHistoryAnalysisPeriod().Name})` : `Sales`,
-            headerAttributes: {
-                "class": "sales-heading sales-breakdown"
-            },
-        columns: [
+		title: self.filters.salesHistoryAnalysisPeriod() ? `Sales (${self.filters.salesHistoryAnalysisPeriod().Name})` : `Sales`,
+		headerAttributes: {
+			"class": "sales-heading sales-breakdown"
+		},
+		columns: [
             //{
             //    field: 'SalesRank',
             //    title: 'Rank',

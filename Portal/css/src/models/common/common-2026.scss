@@ -1,0 +1,30 @@
+﻿@import '../common.scss';
+
+
+.k-dropdownlist {
+	&.k-picker {
+		width: 100%;
+
+		&.k-loading {
+			width: 100%;
+			height: unset;
+			display: unset;
+			padding-left: $btn-padding-x;
+			padding-right: $btn-padding-x;
+		}
+	}
+}
+
+.k-button {
+	.k-icon {
+		color: unset;
+		align-self: unset;
+		position: static;
+	}
+}
+
+.k-button-icon {
+	width: 16px;
+	height: 16px;
+	padding: unset;
+}

@@ -1,9 +1,15 @@
 Credit Control - Continuation
 
-	Need to give credit controllers the ability to toggle a trade account's CreditStop and form the history
-	See: Mertex.TradeAccount_CreditStop_Upsert
-	
+Select Credit Controller: the filter pill has no label
 
+Performance Tab: some qualifier as to how much the... ??
+	Show to 0 dp
+	
+	Performance_Select
+		TradeAccountCount
+		CreditStoppedCount
+		TwelveMonthOrderCount
+		TwelveMonthOrderValue
 
 Payments
 	
@@ -14,3 +20,57 @@ Payments
 	payments.designersguild.com Review
 	
 	Look at whether or not Braintree & ApplePay cater for non-Apple-devices
+	
+	    self.periods(Map.groupBy(data.Records, (item) => item.PeriodLabel).entries().toArray().map(e => e[0])); // First stage of transposing the results...
+
+let currencyGrouping = Map.groupBy(data.Records, (item) => `${item.CurrencyCode}`).entries().toArray();
+
+currencyGroup = currencyGrouping.map(cg => {
+	let items = Map.groupBy(cg[1], (item, index) => `${item.ReportGroup}`).entries().toArray().map(e => {
+
+		let formattingCulture = e[1][0].FormattingCulture;
+		let currencyCode = e[1][0].CurrencyCode;
+
+		let totals = {
+			tradeAccountCount: formatNumber(e[1].reduce((accumulator, currentItem) => accumulator += currentItem.TradeAccountCount, 0), 0, formattingCulture),
+			creditStoppedCount: formatNumber(e[1].reduce((accumulator, currentItem) => accumulator += currentItem.CreditStoppedCount, 0), 0, formattingCulture),
+			twelveMonthOrderCount: formatNumber(e[1].reduce((accumulator, currentItem) => accumulator += currentItem.TwelveMonthOrderCount, 0), 0, formattingCulture),
+			twelveMonthOrderValue: formatCurrency(e[1].reduce((accumulator, currentItem) => accumulator += currentItem.TwelveMonthOrderValue, 0), 0, formattingCulture, currencyCode)
+		};
+		e.splice(1, 0, totals);
+		return e;
+	});
+
+	let records = Map.groupBy(items.flatMap(i => i[2]), item => item.PeriodLabel).entries().toArray();
+
+	return {
+		currencyCode: cg[0],
+		formattingCulture: cg[1][0].FormattingCulture,
+		tradeAccountCount: records.flatMap(m => {
+			return m[1].reduce((accumulator, currentItem) => accumulator += currentItem.TradeAccountCount, 0);
+		}).reduce((a, c) => a += c, 0),
+		creditStoppedCount: records.flatMap(m => {
+			return m[1].reduce((accumulator, currentItem) => accumulator += currentItem.CreditStoppedCount, 0);
+		}).reduce((a, c) => a += c, 0),
+		twelveMonthOrderCount: records.flatMap(m => {
+			return m[1].reduce((accumulator, currentItem) => accumulator += currentItem.TwelveMonthOrderCount, 0);
+		}).reduce((a, c) => a += c, 0),
+		twelveMonthOrderValue: records.flatMap(m => {
+			return m[1].reduce((accumulator, currentItem) => accumulator += currentItem.TwelveMonthOrderValue, 0);
+		}).reduce((a, c) => a += c, 0),
+		totals: records.map(m => {
+			return {
+				PeriodLabel: m[0],
+				Total: m[1].reduce((accumulator, currentItem) => accumulator += currentItem.TotalOutstanding, 0),
+				FormattingCulture: m[1][0].FormattingCulture,
+				CurrencyCode: m[1][0].CurrencyCode,
+			}
+		}),
+		items: items,
+	};
+});
+
+self.records(currencyGroup);
+
+self.busy(false);
+})
