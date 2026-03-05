@@ -1900,12 +1900,17 @@ ko.bindingHandlers.actualBootstrapPopover = {
                             Please wait...
                         </h4>
                     </div>`,
+            modifiers: options.modifiers,
             trigger: options.trigger || 'hover focus click',
             container: element.closest(options.container) || 'body',
             placement: options.placement || 'auto',
             fallbackPlacements: options.fallbackPlacements || ['top', 'right', 'bottom', 'left'],
             popperConfig: options.popperConfig ?? {}
         };
+
+        if (typeof options.template != 'undefined') {
+            popProps.template = options.template;
+        }
 
         if (options.solo === true) {
             if (typeof options.show === 'function') {

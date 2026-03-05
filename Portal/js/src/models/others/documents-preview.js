@@ -499,7 +499,7 @@
 
             self.overrideParameters(overrideParameters);
 
-            self.fetchDocument(undefined, undefined, overrideParameters);
+            self.fetchDocument(undefined, undefined);
         },
         dataBound: function (e) {
 
@@ -821,7 +821,7 @@
 
         da = self.date
 
-        let result = (d && (b || o || t || tid)) || (d == 7 && da != null);
+        let result = (d && (tid && (b || o || t))) || (d == 7 && da != null);
 
         return result;
     });

@@ -150,15 +150,15 @@
                     itemHeight: 34,
                     mapValueTo: 'dataItem',
                     valueMapper: function (options) {
-                        $.ajax({
-                            url: `/odata/Members/Default.MemberValueMapper(id=${options.value || "null"})`,
-                            type: 'GET',
-                            success: function (data) {
-                                options.success(data.value);
-                                if (data.value.length == 1)
-                                    viewModel.memberBasketFetcher.memberId(data.value[0].Id);
-                            }
-                        });
+						if (options.value) {
+							$.ajax({
+								url: `/odata/Members/Default.MemberValueMapper(id=${options.value || "null"})`,
+								type: 'GET',
+								success: function (data) {
+									options.success(data.value);
+								}
+							});
+                        }
                     }
                 },
                 idObservable: ko.observable(@(User.Identity.GetUserId<int>())),

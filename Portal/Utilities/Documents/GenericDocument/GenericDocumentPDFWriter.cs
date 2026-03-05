@@ -274,9 +274,53 @@ namespace Portal.Utilities.Document
                         {
                             documentHeadPhrase4.Add(new Chunk($"\n", normalFont));
                             documentHeadParagraph.Add(documentHeadPhrase4);
-                        }
+						}
 
-                        var addDocumentHeadParagraphs = false;
+						var documentHeadPhrase5 = new Phrase();
+
+						var addDocumentHeadPhrase5Newline = false;
+
+						if (input.DocumentHeader.HeaderLabel5 != null)
+						{
+							documentHeadPhrase5.AddRange(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel5}{{/b}}", normalFont));
+							addDocumentHeadPhrase5Newline = true;
+						}
+
+						if (input.DocumentHeader.HeaderValue5 != null)
+						{
+							documentHeadPhrase5.AddRange(ProcessPhrase($"{input.DocumentHeader.HeaderValue5}", normalFont));
+							addDocumentHeadPhrase5Newline = true;
+						}
+
+						if (addDocumentHeadPhrase5Newline)
+						{
+							documentHeadPhrase5.Add(new Chunk($"\n", normalFont));
+							documentHeadParagraph.Add(documentHeadPhrase5);
+						}
+
+						var documentHeadPhrase6 = new Phrase();
+
+						var addDocumentHeadPhrase6Newline = false;
+
+						if (input.DocumentHeader.HeaderLabel6 != null)
+						{
+							documentHeadPhrase6.AddRange(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel6}{{/b}}", normalFont));
+							addDocumentHeadPhrase6Newline = true;
+						}
+
+						if (input.DocumentHeader.HeaderValue6 != null)
+						{
+							documentHeadPhrase6.AddRange(ProcessPhrase($"{input.DocumentHeader.HeaderValue6}", normalFont));
+							addDocumentHeadPhrase6Newline = true;
+						}
+
+						if (addDocumentHeadPhrase6Newline)
+						{
+							documentHeadPhrase6.Add(new Chunk($"\n", normalFont));
+							documentHeadParagraph.Add(documentHeadPhrase6);
+						}
+
+						var addDocumentHeadParagraphs = false;
 
                         List<Paragraph> documentHeadParagraphCollection = new List<Paragraph>();
 
@@ -294,7 +338,9 @@ namespace Portal.Utilities.Document
                             addDocumentHeadPhrase2Newline ||
                             addDocumentHeadPhrase3Newline ||
                             addDocumentHeadPhrase4Newline ||
-                            addDocumentHeadParagraphs)
+                            addDocumentHeadPhrase5Newline ||
+                            addDocumentHeadPhrase6Newline ||
+							addDocumentHeadParagraphs)
                         {
                             var documentHeadCell = new PdfPCell();
 
@@ -595,9 +641,8 @@ namespace Portal.Utilities.Document
                     {
                         orderHeadPhrase4.Add(new Chunk($"\n", normalFont));
                         orderHeadParagraph.Add(orderHeadPhrase4);
-                    }
-
-                    var addOrderHeadParagraphs = false;
+					}
+					var addOrderHeadParagraphs = false;
 
                     List<Paragraph> orderHeadParagraphCollection = new List<Paragraph>();
 
@@ -620,7 +665,7 @@ namespace Portal.Utilities.Document
                         addOrderHeadPhrase2Newline ||
                         addOrderHeadPhrase3Newline ||
                         addOrderHeadPhrase4Newline ||
-                        addOrderHeadParagraphs)
+						addOrderHeadParagraphs)
                     {
                         var orderHeadCell = new PdfPCell();
 
@@ -1491,9 +1536,54 @@ namespace Portal.Utilities.Document
                         {
                             documentHeadPhrase4.Add(new Chunk($"\n", normalFont));
                             documentHeadParagraph.Add(documentHeadPhrase4);
-                        }
+						}
 
-                        var addDocumentHeadParagraphs = false;
+						var documentHeadPhrase5 = new Phrase();
+
+						var addDocumentHeadPhrase5Newline = false;
+
+						if (input.DocumentHeader.HeaderLabel5 != null)
+						{
+							documentHeadPhrase5.AddRange(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel5}{{/b}}", normalFont));
+							addDocumentHeadPhrase5Newline = true;
+						}
+
+						if (input.DocumentHeader.HeaderValue5 != null)
+						{
+							documentHeadPhrase5.AddRange(ProcessPhrase($"{input.DocumentHeader.HeaderValue5}", normalFont));
+							addDocumentHeadPhrase5Newline = true;
+						}
+
+						if (addDocumentHeadPhrase5Newline)
+						{
+							documentHeadPhrase5.Add(new Chunk($"\n", normalFont));
+							documentHeadParagraph.Add(documentHeadPhrase5);
+						}
+
+						var documentHeadPhrase6 = new Phrase();
+
+						var addDocumentHeadPhrase6Newline = false;
+
+						if (input.DocumentHeader.HeaderLabel6 != null)
+						{
+							documentHeadPhrase6.AddRange(ProcessPhrase($"{{b}}{input.DocumentHeader.HeaderLabel6}{{/b}}", normalFont));
+							addDocumentHeadPhrase6Newline = true;
+						}
+
+						if (input.DocumentHeader.HeaderValue6 != null)
+						{
+							documentHeadPhrase6.AddRange(ProcessPhrase($"{input.DocumentHeader.HeaderValue6}", normalFont));
+							addDocumentHeadPhrase6Newline = true;
+						}
+
+						if (addDocumentHeadPhrase6Newline)
+						{
+							documentHeadPhrase6.Add(new Chunk($"\n", normalFont));
+							documentHeadParagraph.Add(documentHeadPhrase6);
+						}
+
+
+						var addDocumentHeadParagraphs = false;
 
                         List<Paragraph> documentHeadParagraphCollection = new List<Paragraph>();
 
@@ -1511,7 +1601,9 @@ namespace Portal.Utilities.Document
                             addDocumentHeadPhrase2Newline ||
                             addDocumentHeadPhrase3Newline ||
                             addDocumentHeadPhrase4Newline ||
-                            addDocumentHeadParagraphs)
+                            addDocumentHeadPhrase5Newline ||
+                            addDocumentHeadPhrase6Newline ||
+							addDocumentHeadParagraphs)
                         {
                             var documentHeadCell = new PdfPCell();
 
@@ -1640,9 +1732,9 @@ namespace Portal.Utilities.Document
                     {
                         orderHeadPhrase4.Add(new Chunk($"\n", normalFont));
                         orderHeadParagraph.Add(orderHeadPhrase4);
-                    }
+					}
 
-                    var addOrderHeadParagraphs = false;
+					var addOrderHeadParagraphs = false;
 
                     List<Paragraph> orderHeadParagraphCollection = new List<Paragraph>();
 
@@ -1665,7 +1757,7 @@ namespace Portal.Utilities.Document
                         addOrderHeadPhrase2Newline ||
                         addOrderHeadPhrase3Newline ||
                         addOrderHeadPhrase4Newline ||
-                        addOrderHeadParagraphs)
+						addOrderHeadParagraphs)
                     {
                         var orderHeadCell = new PdfPCell();
 
@@ -2787,11 +2879,18 @@ namespace Portal.Utilities.Document
                                     {
                                         if (!string.IsNullOrEmpty(args))
                                         {
+
 #if DEBUG
                                             args = args.Replace("https://downloads.designersguild.com", "https://localhost:44360");
 #endif
-
-                                            chunk.SetAnchor(args);
+                                            if (args.StartsWith("http"))
+											{
+												chunk.SetAnchor(args);
+											}
+                                            else
+											{
+												chunk.SetLocalGoto(args);
+											}
                                         }
                                     }
                                 }
@@ -2809,6 +2908,9 @@ namespace Portal.Utilities.Document
                                     newFont.Color = new BaseColor(r, g, b);
                                 }
                                 phrase.Add(ProcessPhrase(inner, newFont));
+                                break;
+                            case "target":
+                                phrase.Add(new Chunk(inner, newFont).SetLocalDestination(args));
                                 break;
                             default:
                                 phrase.Add(ProcessPhrase(inner, newFont));

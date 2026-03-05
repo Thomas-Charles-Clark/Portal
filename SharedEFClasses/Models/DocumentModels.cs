@@ -64,8 +64,12 @@ namespace SharedEFClasses.Models.Documents
         public string OrderHeaderValue3 { get; set; }
         public string OrderHeaderLabel4 { get; set; }
         public string OrderHeaderValue4 { get; set; }
+		public string OrderHeaderLabel5 { get; set; }
+		public string OrderHeaderValue5 { get; set; }
+		public string OrderHeaderLabel6 { get; set; }
+		public string OrderHeaderValue6 { get; set; }
 
-        public string OrderTableHeader { get; set; }
+		public string OrderTableHeader { get; set; }
 
         public string OrderHeaderMemoLabel { get; set; }
 
@@ -110,7 +114,11 @@ namespace SharedEFClasses.Models.Documents
         public string HeaderValue3 { get; set; }
         public string HeaderLabel4 { get; set; }
         public string HeaderValue4 { get; set; }
-        public string HeaderParagraphsJSON { get; set; }
+		public string HeaderLabel5 { get; set; }
+		public string HeaderValue5 { get; set; }
+		public string HeaderLabel6 { get; set; }
+		public string HeaderValue6 { get; set; }
+		public string HeaderParagraphsJSON { get; set; }
         public ICollection<JsonParagraph> HeaderParagraphs
         {
             set

@@ -189,7 +189,9 @@ html {
         }
 
         tr:hover {
-            background-color: $gray-200;
+            td {
+                background-color: $gray-200;
+            }
         }
 
         tr.k-state-selected {
@@ -218,10 +220,11 @@ html {
             &:focus,
             &:focus-within {
                 background-color: $gray-200;
-                transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out !important;
+                transition: color .15s ease-in-out, border-color .15s ease-in-out !important;
             }
 
             .grid-btn {
+                display: inline-block;
                 color: $body-color;
                 position: relative;
                 transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out !important;
@@ -281,6 +284,7 @@ html {
 
                 .bi-octagon-red {
                     position: absolute;
+                    font-size: 35px;
                     top: -16px;
                     left: 0;
                     z-index: 1;
@@ -375,6 +379,10 @@ html {
     .claims-breakdown {
         cursor: pointer;
     }
+}
+
+.confirm-credit-toggle-popover {
+    width: 420px;
 }
 
 #response-container {

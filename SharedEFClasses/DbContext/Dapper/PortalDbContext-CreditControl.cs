@@ -149,5 +149,15 @@ namespace SharedEFClasses.Models
 				Records = await reply.ReadAsync<CreditControl_AgedSalesLedger_Record>()
 			};
 		}
+
+		public async Task<CreditControl_Toggle_CreditStop_Result> CreditControl_Toggle_CreditStop (CreditControl_TradeAccount_StopToggleDTO dto)
+		{
+			var reply = await this.Database.Connection.QueryMultipleAsync("[Mertex].[TradeAccount_CreditStop_Upsert]", dto, null, 60, CommandType.StoredProcedure);
+
+			return new CreditControl_Toggle_CreditStop_Result()
+			{
+				Records = await reply.ReadAsync<CreditControl_Toggle_CreditStop_Record>()
+			};
+		}
 	}
 }

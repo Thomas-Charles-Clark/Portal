@@ -553,7 +553,7 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Areas\Credit-Control\Controllers\CreditControlGeneralApiController.cs" />
+    <Compile Include="Areas\Credit-Control\Controllers\CreditControlApiController.cs" />
     <Compile Include="Areas\Credit-Control\Controllers\StatementsApiController.cs" />
     <Compile Include="Areas\Credit-Control\Controllers\CreditControlController.cs" />
     <Compile Include="Areas\Credit-Control\CreditControlAreaRegistration.cs" />

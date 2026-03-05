@@ -744,7 +744,7 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #credit-control-main .k-grid:not(#held-orders-grid) .k-alt:not(.k-state-selected):hover {
   background-color: #e9ecef;
 }
-#credit-control-main .k-grid:not(#held-orders-grid) tr:hover {
+#credit-control-main .k-grid:not(#held-orders-grid) tr:hover td {
   background-color: #e9ecef;
 }
 #credit-control-main .k-grid:not(#held-orders-grid) tr.k-state-selected:hover td {
@@ -762,9 +762,10 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 }
 #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell:hover, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell:focus, #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell:focus-within {
   background-color: #e9ecef;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
+  transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
 }
 #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn {
+  display: inline-block;
   color: #212529;
   position: relative;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
@@ -804,6 +805,7 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 }
 #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn .bi-octagon-red {
   position: absolute;
+  font-size: 35px;
   top: -16px;
   left: 0;
   z-index: 1;
@@ -872,6 +874,10 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #credit-control-main .orders-breakdown,
 #credit-control-main .claims-breakdown {
   cursor: pointer;
+}
+
+.confirm-credit-toggle-popover {
+  width: 420px;
 }
 
 #response-container .alert {

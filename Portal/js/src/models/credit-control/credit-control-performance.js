@@ -121,7 +121,6 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
             self.performanceCollapse.show();
         }
 
-        self.fetch();
     });
 
     self.reportGrouping.subscribe(nv => {
@@ -225,6 +224,7 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
 
     self.performanceCollapsableElement.addEventListener('show.bs.collapse', (event) => {
         localStorage.setItem('performance_Expanded', "true");
+        self.fetch();
     });
 
     self.performanceCollapsableElement.addEventListener('hide.bs.collapse', (event) => {
