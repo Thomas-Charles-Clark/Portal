@@ -52,6 +52,7 @@ namespace SharedEFClasses.Models.Suppliers.PaymentApproval
 
 		// Payment Requests
 		public decimal? PaymentRequestPaymentPlanTotal { get; set; }
+		public decimal? PaymentRequestGoneLegalTotal { get; set; }
 		public decimal? PaymentRequestOtherTotal { get; set; }
 
 

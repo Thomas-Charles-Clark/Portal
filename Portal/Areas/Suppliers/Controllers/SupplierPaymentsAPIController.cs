@@ -34,6 +34,7 @@ using SharedEFClasses.Models.Suppliers.PaymentRequests;
 using System.Data.SqlClient;
 using SharedEFClasses.Utilities;
 using Unity.Interception.Utilities;
+using System.Data.Entity.Infrastructure;
 
 
 namespace Portal.Areas.Suppliers.Controllers
@@ -53,7 +54,6 @@ namespace Portal.Areas.Suppliers.Controllers
 		/// <summary>
 		/// REQUESTS
 		/// </summary>
-		/// 
 
 		[HttpPost]
 		public async Task<IHttpActionResult> CreatePaymentRequest([FromBody] SupplierPaymentRequest_CreationDTO dto)
@@ -73,13 +73,13 @@ namespace Portal.Areas.Suppliers.Controllers
 				CreatedDT = DateTime.Now
 			};
 
-			PortalDb.PaymentRequests.Add(request);
-
 			try
 			{
+				PortalDb.PaymentRequests.Add(request);
+
 				await PortalDb.SaveChangesAsync();
 			}
-			catch (SqlException e)
+			catch (DbUpdateException e)
 			{
 				if (e.InnerException != null)
 				{

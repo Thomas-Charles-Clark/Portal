@@ -46,7 +46,14 @@
         grouping: true,
         group: [{
             field: 'PaymentRequestType',
-            dir: 'desc'
+            dir: 'desc',
+            compare: function (a, b) {
+                let sortOrderA = a.items[0].PaymentRequestTypeSortOrder;
+                let sortOrderB = b.items[0].PaymentRequestTypeSortOrder;
+
+                if (sortOrderA === sortOrderB) return 0;
+                return sortOrderA > sortOrderB ? 1 : -1;
+            }
         }, {
             field: 'RequesterName',
             dir: 'asc'
@@ -167,6 +174,10 @@
                     PaymentRequestType: {
                         type: 'string',
                         nullable: true
+                    },
+                    PaymentRequestTypeSortOrder: {
+                        type: 'number',
+                        nullable: false
                     },
                     PaymentRequestStatusID: {
                         type: 'number',
@@ -354,10 +365,6 @@
                 }, 0);
             }
         },
-        sort: {
-            field: 'PaymentRequestCreated',
-            dir: 'desc'
-        },
         noDataTemplate: 'Nothing to display',
         change: (e) => {
             console.log(`paymentRequests dataSource change`, e);
@@ -441,7 +448,8 @@
         groupHeaderTemplate: (dataItem) => dataItem.value ? `${dataItem.value}` : ``,
         attributes: (dataItem) => {
             return {
-                "class": "readonly" + (dataItem.Finalised ? " finalised" : "")
+                "class": "readonly" + (dataItem.Finalised ? " finalised" : ""),
+                "title": dataItem.PaymentRequestID ? `Payment Request ID: ${dataItem.PaymentRequestID}` : ''
             }
         },
         headerAttributes: {
@@ -987,6 +995,9 @@
     }, {
         field: 'RequesterComments',
         title: 'Requester Comments',
+        attributes: {
+            "class": "text-center"
+        },
         editable: (dataItem) => {
             return dataItem.ReadOnly === false;
         },
@@ -996,7 +1007,7 @@
             textarea.value = options.model[options.field];
 
             textarea.classList.add('form-control');
-            textarea.setAttribute('rows', '3');
+            textarea.setAttribute('rows', '10');
             textarea.setAttribute('id', 'textarea-editor');
 
             container[0].appendChild(textarea);
@@ -1009,12 +1020,23 @@
                 }
             })
         },
-        template: (e) => {
-            if (e.RequesterComments) {
-                return e.RequesterComments?.replace(/\n/gm, '<br/>');
-            } else {
-                return '';
-            }
+        template: (dataItem) => {
+            return `<a tabindex="0"
+                        class="bi bi-chat-dots fs-4"
+                        data-bs-html="true"
+                        data-bs-trigger="hover"
+                        data-bs-toggle="popover"
+                        data-bs-title="Requester Comments"
+                        data-bs-content="${dataItem.RequesterComments?.replace(/\n/gm, '<br/>')}"></a>`;
+        },
+        valueTemplate: (dataItem) => {
+            return `<a tabindex="0"
+                        class="bi bi-chat-dots fs-4"
+                        data-bs-html="true"
+                        data-bs-trigger="hover"
+                        data-bs-toggle="popover"
+                        data-bs-title="Requester Comments"
+                        data-bs-content="${dataItem.RequesterComments?.replace(/\n/gm, '<br/>')}"></a>`;
         }
     }, {
         field: 'ReadOnly',
@@ -1064,11 +1086,6 @@
         sortable: true,
         filterable: {
             extra: false,
-            operators: {
-                string: {
-                    contains: "Contains"
-                }
-            }
         },
         reorderable: false,
         groupable: false,
@@ -1218,6 +1235,13 @@
 
             // Revert changes in the grid, possibly? maybe not
             self.gridWidget().cancelChanges();
+        },
+        filterMenuInit: function (e) {
+            var firstOperatorDropDown = e.container.find("[data-role='dropdownlist']").first()?.data("kendoDropDownList");
+            if (firstOperatorDropDown) {
+                firstOperatorDropDown.value("contains");
+                firstOperatorDropDown.trigger("change");
+            }
         }
     };
 

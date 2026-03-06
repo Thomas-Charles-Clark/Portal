@@ -196,6 +196,34 @@
             self.supplierCurrency(undefined);
             self.supplierParams.widget().trigger('change');
         },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            let filters = [];
+
+            if (data.filter && data.filter.filters.length) {
+                let f = data.filter.filters.find(f => f.field === "Name");
+                filters.push(`(contains(tolower(Name), '${f.value.toLowerCase()}') or contains(tolower(SortName), '${f.value.toLowerCase()}') or startswith(tolower(Code), '${f.value.toLowerCase()}') or startswith(tolower(Postcode), '${f.value.toLowerCase()}'))`);
+
+                if (d.$filter) {
+                    delete d.$filter;
+                }
+            }
+
+            if (filters.length) {
+                let filterString = filters.join(' and ');
+                d.$apply = `filter(${filterString})`;
+            }
+
+            d.$count = true;
+
+            return d;
+        },
         popupSettings: {
             appendTo: '#new-request-modal'
         }

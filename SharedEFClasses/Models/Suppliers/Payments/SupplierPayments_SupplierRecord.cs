@@ -21,6 +21,8 @@ namespace SharedEFClasses.Models.Suppliers.Payments
 		public bool ProductionStopped { get; set; }
 
 		public bool ShippingStopped { get; set; }
+		
+		public bool GoodsHeld { get; set; }
 
 		public string SupplierCurrencyCode { get; set; }
 
@@ -39,5 +41,19 @@ namespace SharedEFClasses.Models.Suppliers.Payments
 		public decimal Debt90DayValue { get; set; }
 
 		public decimal Debt120DayValue { get; set; }
+
+		public decimal TotalValueGBP { get; set; }
+
+		public decimal NotDueTotalValueGBP { get; set; }
+
+		public decimal OverdueTotalValueGBP { get; set; }
+
+		public decimal Debt30DayValueGBP { get; set; }
+
+		public decimal Debt60DayValueGBP { get; set; }
+
+		public decimal Debt90DayValueGBP { get; set; }
+
+		public decimal Debt120DayValueGBP { get; set; }
 	}
 }

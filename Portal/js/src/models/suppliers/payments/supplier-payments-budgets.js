@@ -477,11 +477,6 @@
         sortable: true,
         filterable: {
             extra: false,
-            operators: {
-                string: {
-                    contains: "Contains"
-                }
-            }
         },
         reorderable: false,
         paging: true,
@@ -525,6 +520,13 @@
         },
         saveChanges: (e) => {
             console.log(`budgetGrid saveChanges`, e);
+        },
+        filterMenuInit: function (e) {
+            var firstOperatorDropDown = e.container.find("[data-role='dropdownlist']").first()?.data("kendoDropDownList");
+            if (firstOperatorDropDown) {
+                firstOperatorDropDown.value("contains");
+                firstOperatorDropDown.trigger("change");
+            }
         }
     }
 

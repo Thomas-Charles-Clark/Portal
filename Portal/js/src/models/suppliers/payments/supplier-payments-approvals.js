@@ -113,6 +113,9 @@
             field: 'PaymentRequestPaymentPlanTotal',
             aggregate: "sum"
         }, {
+            field: 'PaymentRequestGoneLegalTotal',
+            aggregate: "sum"
+        }, {
             field: 'PaymentRequestOtherTotal',
             aggregate: "sum"
         }],
@@ -123,7 +126,7 @@
 
                 let mapped = webapi.parameterMap(options.data);
 
-                let data = self.filters.toJS();
+                let data = self.filters.approvalFilters();
 
                 data.requestedByMemberId = data.memberId;
 
@@ -262,6 +265,9 @@
                     ShippingStopped: {
                         type: 'boolean'
                     },
+                    GoodsHeld: {
+                        type: 'boolean'
+                    },
                     TotalValueGBP: {
                         type: 'number',
                         nullable: false
@@ -288,6 +294,9 @@
                         type: 'number'
                     },
                     PaymentRequestPaymentPlanTotal: {
+                        type: 'number'
+                    },
+                    PaymentRequestGoneLegalTotal: {
                         type: 'number'
                     },
                     PaymentRequestOtherTotal: {
@@ -384,6 +393,9 @@
 
                     document.querySelector('#payment-requests-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
                         .find(a => a.Member === 'PaymentRequestPaymentPlanTotal').Value, 2, 'en-GB', 'GBP')}`;
+
+                    document.querySelector('#gone-legal-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
+                        .find(a => a.Member === 'PaymentRequestGoneLegalTotal').Value, 2, 'en-GB', 'GBP')}`;
 
                     document.querySelector('#other-requests-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
                         .find(a => a.Member === 'PaymentRequestOtherTotal').Value, 2, 'en-GB', 'GBP')}`;
@@ -761,7 +773,7 @@
         title: 'Problems',
         columns: [{
             field: 'ProductionStopped',
-            title: 'Production',
+            title: 'Prod.',
             headerAttributes: {
                 "class": "problems-production-column-subheader"
             },
@@ -778,14 +790,14 @@
             },
             template: (dataItem) => {
                 if (dataItem.ProductionStopped) {
-                    return `<i class="bi bi-sign-stop-fill fs-2 text-red-600"></i>`;
+                    return `<i class="bi bi-sign-stop-fill fs-1 text-red-600"></i>`;
                 } else {
                     return ``;
                 }
             }
         }, {
             field: 'ShippingStopped',
-            title: 'Shipping',
+            title: 'Ship.',
             headerAttributes: {
                 "class": "problems-shipping-column-subheader"
             },
@@ -802,7 +814,31 @@
             },
             template: (dataItem) => {
                 if (dataItem.ShippingStopped) {
-                    return `<i class="bi bi-sign-stop-fill fs-2 text-red-600"></i>`;
+                    return `<i class="bi bi-sign-stop-fill fs-1 text-red-600"></i>`;
+                } else {
+                    return ``;
+                }
+            }
+        }, {
+            field: 'Goods',
+            title: 'Goods.',
+            headerAttributes: {
+                "class": "problems-shipping-column-subheader"
+            },
+            attributes: (dataItem) => {
+                if (dataItem.ShippingStopped) {
+                    return {
+                        "class": "goods-held-column text-center bg-white"
+                    };
+                } else {
+                    return {
+                        "class": "goods-held-column"
+                    }
+                }
+            },
+            template: (dataItem) => {
+                if (dataItem.ShippingStopped) {
+                    return `<i class="bi bi-sign-stop-fill fs-1 text-red-600"></i>`;
                 } else {
                     return ``;
                 }
@@ -835,6 +871,30 @@
             template: (e) => {
                 if (e.PaymentRequestPaymentPlanTotal != null) {
                     return formatCurrency(e.PaymentRequestPaymentPlanTotal, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                } else {
+                    return '';
+                }
+            }
+        }, {
+            field: 'PaymentRequestGoneLegalTotal',
+            title: "Gone Legal<br/><span id='gone-legal-total-value-gbp'></span>",
+            headerAttributes: {
+                "class": "payment-requests-column-subheader"
+            },
+            attributes: (dataItem) => {
+                let result = {
+                    "class": "payment-requests-column"
+                };
+
+                if (dataItem.PaymentRequestGoneLegalTotal > 0) {
+                    result.class = "payment-requests-column payment-requests-positive";
+                }
+
+                return result;
+            },
+            template: (e) => {
+                if (e.PaymentRequestGoneLegalTotal != null) {
+                    return formatCurrency(e.PaymentRequestGoneLegalTotal, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
                 } else {
                     return '';
                 }
@@ -1190,11 +1250,6 @@
         sortable: true,
         filterable: {
             extra: false,
-            operators: {
-                string: {
-                    contains: "Contains"
-                }
-            }
         },
         reorderable: false,
         paging: true,
@@ -1283,12 +1338,32 @@
         saveChanges: (e) => {
             console.log(`saveChanges`, e);
         },
+        excel: {
+            allPages: true
+        },
         excelExport: (e) => {
             let now = new Date();
 
+            e.workbook.sheets[0].rows.filter(r => r.type === 'header').forEach(h => {
+                h.cells.forEach(c => {
+                    c.value = c.value.replace(/<\/?[^>]+(>|$)/g, "");
+                })
+            });
+                
             e.workbook.fileName = `Payment_Approvals_${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}.xlsx`;
 
             self.busy(false);
+
+            window.setTimeout(function () {
+                grid.refresh();
+            }, 1);
+        },
+        filterMenuInit: function (e) {
+            var firstOperatorDropDown = e.container.find("[data-role='dropdownlist']").first()?.data("kendoDropDownList");
+            if (firstOperatorDropDown) {
+                firstOperatorDropDown.value("contains");
+                firstOperatorDropDown.trigger("change");
+            }
         }
     }
 

@@ -66,12 +66,12 @@
         busy: ko.observable(false),
         data: ko.observable(),
         element: ko.observable(),
-        container: 'div.popover-container',
+        container: 'td',
         placement: 'right',
         modifiers: {
-            //offset: {
-            //    offset: "-100px,100px"
-            //}
+            offset: {
+                offset: "-10,10"
+            }
         },
         fallbackPlacements: ['right', 'bottom'],
         customClass: 'confirm-credit-toggle-popover',
@@ -84,12 +84,13 @@
                 </button>
             </div>`;
         },
-        trigger: 'click focus',
-        template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
-        //container: 'td',
+        trigger: 'click',
         solo: true,
         show: null,
-        shown: null,
+        shown: (e) => {
+            self.stopChangeReason.mdcTextField.layout();
+            self.stopChangeReason.mdcTextField.focus();
+        }, 
         hide: null,
         hidden: null,
         inserted: async function (event) {
@@ -111,11 +112,38 @@
                 //}, 0);
 
                 dat.busy(false);
+
+                window.setTimeout(() => {
+                    document.addEventListener("click", (e) => {
+                        if (e.target.closest('.confirm-credit-toggle-popover') == null) {
+                            document.querySelectorAll('[data-bind*="actualBootstrapPopover"]').forEach(e => {
+                                let p = bootstrap.Popover.getInstance(e);
+                                if (p) {
+                                    p.hide();
+                                }
+                            });
+                        }
+                    });
+                }, 0);
             }
 
         },
-        popperConfig: function (defaultBsPopperConfig) {
-            return defaultBsPopperConfig;
+        popperConfig: {
+            strategy: 'fixed', // Helps with overflow/positioning issues
+            modifiers: [
+                {
+                    name: 'flip',
+                    options: {
+                        boundary: 'viewport', // Calculations ignore the 'td' boundary
+                    },
+                },
+                {
+                    name: 'preventOverflow',
+                    options: {
+                        boundary: 'viewport',
+                    },
+                },
+            ],
         }
     };
 

@@ -12,8 +12,22 @@
 
     ko.bindingHandlers['tempusDominus'] = {
         init: (element, valueAccessor, allBindingsAccessor) => {
-            let td = new tempusDominus.TempusDominus(allBindingsAccessor().dateTimePickerOptions.bindToParentNode ? element.parentNode : element, allBindingsAccessor().dateTimePickerOptions);
+
+            let options = allBindingsAccessor().dateTimePickerOptions;
+
+
+            if (options && (Object.hasOwn(options, 'localization')) && (!Object.hasOwn(options.localization, 'startOfTheWeek'))) {
+                options.localization.startOfTheWeek = 1;
+            } else {
+                options.localization = {
+                    startOfTheWeek: 1
+                };
+            }
+
+            let td = new tempusDominus.TempusDominus(allBindingsAccessor().dateTimePickerOptions.bindToParentNode ? element.parentNode : element, options);
+
             let dateValue = ko.unwrap(valueAccessor());
+
             if (dateValue && typeof valueAccessor().isValid === 'function' && valueAccessor().isValid()) {
                 //let parsedDate = td.dates.parseInput();
                 let dt = new window.tempusDominus.DateTime(dateValue);

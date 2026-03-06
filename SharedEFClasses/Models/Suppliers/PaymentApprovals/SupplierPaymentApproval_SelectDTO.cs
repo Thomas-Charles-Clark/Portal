@@ -15,5 +15,7 @@ namespace SharedEFClasses.Models.Suppliers.PaymentApproval
 		public bool OnlyShowSuppliersWithPaymentRequests { get; set; }
 
 		public bool OnlyShowSuppliersWithOutstandingInvoices { get; set; }
+
+		public byte? PaymentRequestStatusID { get; set; }
 	}
 }

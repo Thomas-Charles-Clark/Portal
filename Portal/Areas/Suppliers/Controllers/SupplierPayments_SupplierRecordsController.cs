@@ -51,6 +51,7 @@ namespace Portal.Areas.Suppliers.Controllers
 		public async Task<IQueryable<SupplierPayments_SupplierRecord>> SuppliersGridRead([FromODataUri] SupplierPayments_Supplier_SelectDTO dto)
 		{
 			var userId = User.Identity.GetUserId<int>();
+			// don't need to be pulling this here: it's valid to call the following with a null memberId
 
 			var results = await PortalDb.SupplierPayment_Supplier_Select(dto);
 

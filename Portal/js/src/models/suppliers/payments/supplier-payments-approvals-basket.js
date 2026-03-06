@@ -572,7 +572,7 @@
     self.skipEditEvent = true;
 
     self.gridParams = {
-        autoBind: false,
+        autoBind: true,
         widget: self.gridWidget,
         columns: self.gridColumns,
         data: self.gridDataSource,
@@ -953,7 +953,9 @@
                 .then(window.handleFetchResponse)
                 .then(data => {
                     if (data.SuccessMessage) {
-                        window.showInfo('Complete', data.SuccessMessage);
+                        window.showInfo('Complete', data.SuccessMessage, () => {
+                            window.showInfo('Reminder', 'Please use the Suppliers tab to revise any stop flags as appropriate.');
+                        });
                     } else {
                         window.showError('Error', `Error No. ${data.ErrorNumber}<br/><br/>${data.ErrorMessage}`);
                     }

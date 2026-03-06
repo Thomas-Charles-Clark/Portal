@@ -520,7 +520,7 @@ const creditControlViewModel = (() => {
                 "class": "errata-subheading"
             },
             attributes: {
-                "class": "text-center grid-btn-cell relative overflow-visible"
+                "class": "text-center grid-btn-cell"
             },
             sortable: true,
             filterable: false,
@@ -533,7 +533,7 @@ const creditControlViewModel = (() => {
                 */
 
 
-                return `<a href="#" class="grid-btn stop-btn relative" data-bind="actualBootstrapPopover: { context: $data, details: popoverDetails }, click: () => { return true; }, clickBubble: false">
+                return `<a href="javascript:;" class="grid-btn stop-btn" data-bind="actualBootstrapPopover: { context: $data, details: popoverDetails }, click: () => { return true; }, clickBubble: false">
                     <i class="bi bi-octagon" data-bind="css: { 'bi-octagon': onStop() == false, 'bi-sign-stop-fill text-red-500': onStop() == true }"></i>
                     <i class="bi bi-octagon bi-octagon-red d-none" data-bind="flexFadeVisible: onStop() == true"></i>
                 </a>`;

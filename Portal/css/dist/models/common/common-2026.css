@@ -638,4 +638,14 @@
   height: 16px;
   padding: unset;
 }
+
+.mdc-select .k-widget.k-multiselect {
+  flex: 1;
+}
+
+.k-animation-container .k-nodata {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 /*# sourceMappingURL=common-2026.css.map */

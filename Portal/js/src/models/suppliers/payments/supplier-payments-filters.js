@@ -39,7 +39,13 @@
 
     self.onlyIncludeSuppliersWhereShippingStopped = ko.observable(false);
 
-    self.userId = ko.observable(getUserId());
+    self.onlyIncludeSuppliersWhereGoodsHeld = ko.observable(false);
+
+    self.paymentRequestDatabaseStatusId = ko.observable();
+
+    self.paymentRequestDatabaseStatus = ko.observable();
+
+    self.userId = ko.observable(); // getUserId()
 
     self.user = ko.observable();
 
@@ -242,6 +248,15 @@
         busy: self.busy
     }
 
+    self.onlyIncludeSuppliersWhereGoodsAreHeldParams = {
+        checkboxId: "only-with-goods",
+        label: "Only Display Suppliers where Goods are Held",
+        observable: self.onlyIncludeSuppliersWhereGoodsHeld,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: self.busy
+    }
+
     self.paymentRequestStatusParams = kendoMDCDropDownList({
         skipCascade: true,
         optionLabel: 'All Statuses',
@@ -315,6 +330,60 @@
         }
     });
 
+    self.paymentRequestDatabaseStatusParams = kendoMDCDropDownList({
+        odata: true,
+        endPoint: '/odata/PaymentRequestStatuses',
+        textField: 'Name',
+        valueField: 'PaymentRequestStatusID',
+        idObservable: self.paymentRequestDatabaseStatusId,
+        objObservable: self.paymentRequestDatabaseStatus,
+        originalValue: ko.unwrap(self.paymentRequestDatabaseStatusId),
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        optionLabel: {
+            PaymentRequestStatusID: null,
+            Name: 'All Payment Request Types'
+        },
+        clearFunction: function (e) {
+            self.paymentRequestDatabaseStatusId('')
+            self.paymentRequestDatabaseStatusParams.dropDownListSettings.widget().value(-1);
+        },
+        //revertFunction: function () {
+        //    let self = this;
+        //    self.idObservable(self.originalValue);
+        //    self.dropDownListSettings.widget().trigger('change');
+        //},
+        readOnly: false,
+        filter: false,
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'desc',
+            field: 'SortOrder'
+        },
+        select: function (e) {
+            console.log('paymentRequestDatabaseStatusParams select', e);
+        },
+        parameterMap: (data) => {
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.getElementById('payment-request-database-status-prefilter')
+        }
+    });
+
     self.errorables = [
 
     ];
@@ -327,8 +396,11 @@
 
     self.approvalFilters = ko.computed(() => {
         let result = {
-            outstandingRequests: self.onlyIncludeSuppliersWithPaymentRequests(),
-            outstandingInvoices: self.onlyShowSuppliersWithOutstandingInvoices()
+            periodId: self.paymentPeriodId(),
+            memberId: self.userId(),
+            onlyShowSuppliersWithPaymentRequests: self.onlyIncludeSuppliersWithPaymentRequests(),
+            onlyShowSuppliersWithOutstandingInvoices: self.onlyShowSuppliersWithOutstandingInvoices(),
+            paymentRequestStatusId: self.paymentRequestDatabaseStatusId()
         };
 
         return result;
@@ -358,7 +430,8 @@
             periodId: self.paymentPeriodId(),
             memberId: self.userId(),
             onlyShowSuppliersWhereProductionHasStopped: self.onlyIncludeSuppliersWhereProductionStopped(),
-            onlyShowSuppliersWhereShippingHasStopped: self.onlyIncludeSuppliersWhereShippingStopped()
+            onlyShowSuppliersWhereShippingHasStopped: self.onlyIncludeSuppliersWhereShippingStopped(),
+            onlyShowSuppliersWhereGoodsAreHeld: self.onlyIncludeSuppliersWhereGoodsHeld()
         };
 
         return result;

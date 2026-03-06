@@ -28,6 +28,8 @@ namespace SharedEFClasses.Models.Suppliers.Payments
 		
 		public decimal? PaymentRequestPaymentPlanTotal { get; set; }
 
+		public decimal? PaymentRequestGoneLegalTotal { get; set; }
+
 		public decimal? PendingApprovalTotal { get; set; }
 
 		public decimal? ApprovedTotal { get; set; }

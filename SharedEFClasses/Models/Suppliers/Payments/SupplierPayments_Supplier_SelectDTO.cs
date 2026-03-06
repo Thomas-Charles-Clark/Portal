@@ -15,5 +15,7 @@ namespace SharedEFClasses.Models.Suppliers.Payments
 		public bool OnlyShowSuppliersWhereProductionHasStopped { get; set; }
 
 		public bool OnlyShowSuppliersWhereShippingHasStopped { get; set; }
+
+		public bool OnlyShowSuppliersWhereGoodsAreHeld { get; set; }
 	}
 }

@@ -219,6 +219,11 @@ html {
 	#payment-request-status-prefilter {
 		width: 280px;
 	}
+
+	#payment-request-database-status-prefilter {
+		width: 280px;
+		position: relative;
+	}
 }
 
 #approvals-tab-pane,
@@ -271,6 +276,18 @@ html {
 					}
 				}
 			}
+		}
+	}
+}
+
+.tab-pane {
+	.popover {
+		max-width: 500px;
+		.popover-title {
+			font-size: $font-size-md;
+		}
+		.popover-body {
+			font-size: $font-size-base;
 		}
 	}
 }
@@ -464,12 +481,17 @@ html {
 
 	.problems-production-column-subheader,
 	.problems-production-column {
-		width: 64px;
+		width: 42px;
 	}
 
 	.problems-shipping-column-subheader,
 	.problems-shipping-column {
-		width: 64px;
+		width: 42px;
+	}
+
+	.goods-held-column-subheader,
+	.goods-held-column {
+		width: 42px;
 	}
 
 	.payment-requests-column-subheader,

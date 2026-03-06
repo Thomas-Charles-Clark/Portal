@@ -37,7 +37,8 @@
         grouping: true,
         serverGrouping: true,
         serverFiltering: true,
-        serverPaging: true,
+        serverPaging: false,
+        serverSorting: true,
         pageSize: 20,
         pageable: {
             pageSize: 20,
@@ -58,7 +59,7 @@
 
                     console.log('SupplierPayments.SuppliersGridRead calling with', filters);
 
-                    return `/supplier-payments-odata/SupplierPayments_SupplierRecords/SupplierPayments.SuppliersGridRead(dto=@d)?@d={"MemberID":${filters.memberId == '' ? null : filters.memberId},"PeriodID":${filters.periodId},"OnlyShowSuppliersWhereProductionHasStopped":${filters.onlyShowSuppliersWhereProductionHasStopped},"OnlyShowSuppliersWhereShippingHasStopped":${filters.onlyShowSuppliersWhereShippingHasStopped}}`;
+                    return `/supplier-payments-odata/SupplierPayments_SupplierRecords/SupplierPayments.SuppliersGridRead(dto=@d)?@d={"MemberID":${filters.memberId ?? null},"PeriodID":${filters.periodId},"OnlyShowSuppliersWhereProductionHasStopped":${filters.onlyShowSuppliersWhereProductionHasStopped},"OnlyShowSuppliersWhereShippingHasStopped":${filters.onlyShowSuppliersWhereShippingHasStopped},"OnlyShowSuppliersWhereGoodsAreHeld":${filters.onlyShowSuppliersWhereGoodsAreHeld}}`;
                 }
             },
             //read: (options) => {
@@ -173,6 +174,41 @@
                         editable: false
                     },
                     Debt120DayValue: {
+                        type: 'number',
+                        nullable: false,
+                        editable: false
+                    },
+                    TotalValueGBP: {
+                        type: 'number',
+                        nullable: false,
+                        editable: false
+                    },
+                    NotDueTotalValueGBP: {
+                        type: 'number',
+                        nullable: false,
+                        editable: false
+                    },
+                    OverdueTotalValueGBP: {
+                        type: 'number',
+                        nullable: false,
+                        editable: false
+                    },
+                    Debt30DayValueGBP: {
+                        type: 'number',
+                        nullable: false,
+                        editable: false
+                    },
+                    Debt60DayValueGBP: {
+                        type: 'number',
+                        nullable: false,
+                        editable: false
+                    },
+                    Debt90DayValueGBP: {
+                        type: 'number',
+                        nullable: false,
+                        editable: false
+                    },
+                    Debt120DayValueGBP: {
                         type: 'number',
                         nullable: false,
                         editable: false
@@ -299,6 +335,29 @@
         editor: (options, container) => {
             $(`<div data-bind="component: { name: 'mdc-checkbox-component', params: shippingStoppedParams }"></div>`)
                 .appendTo(container);
+    }
+    }, {
+        field: 'GoodsHeld',
+        title: 'Goods Held',
+        editable: true,
+        attributes: (dataItem) => {
+            if (dataItem.GoodsHeld) {
+                return {
+                    "class": "text-center"
+                };
+            } else {
+                return {
+                    "class": "text-center"
+                }
+            }
+        },
+        width: 126,
+        template: (dataItem) => {
+            return `<div data-bind="component: { name: 'mdc-checkbox-component', params: goodsHeldParams }"></div>`
+        },
+        editor: (options, container) => {
+            $(`<div data-bind="component: { name: 'mdc-checkbox-component', params: goodsHeldParams }"></div>`)
+                .appendTo(container);
         }
     }, {
         field: 'FinalisedDT',
@@ -411,11 +470,6 @@
         sortable: true,
         filterable: {
             extra: false,
-            operators: {
-                string: {
-                    contains: "Contains"
-                }
-            }
         },
         reorderable: false,
         paging: true,
@@ -475,6 +529,18 @@
 
                 }
             }
+        },
+        filterMenuInit: function (e) {
+            // Find the first operator dropdown in the filter container
+            var firstOperatorDropDown = e.container.find("[data-role='dropdownlist']").first()?.data("kendoDropDownList");
+
+            if (firstOperatorDropDown) {
+                firstOperatorDropDown.value("contains");
+                firstOperatorDropDown.trigger("change");
+            }
+        },
+        excel: {
+            allPages: true
         },
         excelExport: (e) => {
             let now = new Date();

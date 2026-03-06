@@ -24,6 +24,8 @@ namespace SharedEFClasses.Models.Suppliers.PaymentRequests
 
 		public string PaymentRequestType { get; set; }
 
+		public int PaymentRequestTypeSortOrder { get; set; }
+
 		public string PaymentRequestStatus { get; set; }
 
 		public DateTime PaymentDueDate { get; set; }

@@ -259,12 +259,15 @@
 									Payment Plans
 								</th>
 								<th>
+									Gone Legal
+								</th>
+								<th>
 									Budget
 								</th>
 								<th>
 									<!-- ko ifnot: ($parent.filters.paymentPeriod() && $parent.filters.paymentPeriod().Finalised) -->
 									<span>
-										To Pay
+										Approved to Pay
 									</span>
 									<!-- /ko -->
 									<!-- ko if: ($parent.filters.paymentPeriod() && $parent.filters.paymentPeriod().Finalised) -->
@@ -299,6 +302,9 @@
 								</td>
 								<td>
 									<span data-bind="html: PaymentRequestPaymentPlanTotal ? formatCurrency(PaymentRequestPaymentPlanTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
+								</td>
+								<td>
+									<span data-bind="html: PaymentRequestGoneLegalTotal ? formatCurrency(PaymentRequestGoneLegalTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</td>
 								<td>
 									<span data-bind="html: formatCurrency(Budget, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
@@ -337,6 +343,9 @@
 								</th>
 								<th>
 									<span data-bind="html: PaymentRequestPaymentPlanTotal ? formatCurrency(PaymentRequestPaymentPlanTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
+								</th>
+								<th>
+									<span data-bind="html: PaymentRequestGoneLegalTotal ? formatCurrency(PaymentRequestGoneLegalTotal, 2, CurrencyFormattingCulture, CurrencyCode, true) : ''"></span>
 								</th>
 								<th>
 									<span data-bind="html: formatCurrency(Budget, 2, CurrencyFormattingCulture, CurrencyCode, true)"></span>
@@ -438,6 +447,9 @@
 							<div class="prefilter">
 								<div data-bind="component: { name: 'mdc-checkbox-component', params: onlyIncludeSuppliersWhereShippingStoppedParams }"></div>
 							</div>
+							<div class="prefilter">
+								<div data-bind="component: { name: 'mdc-checkbox-component', params: onlyIncludeSuppliersWhereGoodsAreHeldParams }"></div>
+							</div>
 							<button class="btn btn-dark btn-export ms-auto" data-bind="click: $parent.suppliers.exportToExcel">
 								Export to Excel
 								<i class="bi bi-download"></i>
@@ -468,6 +480,9 @@
 					</div>
 					<div class="card-body">
 						<div class="d-flex align-items-center gap-3 prefilters" data-bind="with: filters">
+							<div class="prefilter">
+								<div id="payment-request-database-status-prefilter" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: paymentRequestDatabaseStatusParams }"></div>
+							</div>
 							<div class="prefilter">
 								<div data-bind="component: { name: 'mdc-checkbox-component', params: onlyIncludeSuppliersWithPaymentRequestsParams }"></div>
 							</div>
