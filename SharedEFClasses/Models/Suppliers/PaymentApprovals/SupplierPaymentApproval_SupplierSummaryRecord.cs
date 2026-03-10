@@ -51,10 +51,14 @@ namespace SharedEFClasses.Models.Suppliers.PaymentApproval
 		public bool ShippingStopped { get; set; }
 
 		// Payment Requests
+		public int PaymentRequestCount { get; set; }
 		public decimal? PaymentRequestPaymentPlanTotal { get; set; }
 		public decimal? PaymentRequestGoneLegalTotal { get; set; }
 		public decimal? PaymentRequestOtherTotal { get; set; }
 
+		// New fields
+		public decimal? PendingApprovalAmount { get; set; }
+		public decimal? PendingApprovalAmountGBP { get; set; }
 
 		[NotMapped]
 		public IEnumerable<SupplierPaymentApproval_SupplierDetailRecord> Details { get; set; }

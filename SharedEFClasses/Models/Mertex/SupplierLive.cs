@@ -85,6 +85,8 @@ namespace SharedEFClasses.Models.Mertex
 
         public bool ShippingStopped { get; set; }
 
+        public bool GoodsHeld { get; set; }
+        
         [ForeignKey("MertexCurrencyCode")]
         [InverseProperty("Suppliers")]
         public virtual ExchangeRate ExchangeRate { get; set; }

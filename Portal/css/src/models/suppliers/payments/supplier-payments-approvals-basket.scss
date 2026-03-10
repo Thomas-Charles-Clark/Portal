@@ -45,6 +45,7 @@
 	#basket-grid-container {
 		flex: 0 0 auto;
 		align-self: flex-start;
+		border-top: 1px solid $gray-300;
 	}
 
 	.sidebar-heading {
@@ -293,7 +294,7 @@
 		> tr {
 			p.k-reset {
 				> span:first-of-type {
-					width: 744px;
+					width: 683px;
 				}
 
 				span:nth-of-type(2) {
@@ -308,7 +309,7 @@
 			&:has(.k-table-group-td) {
 				p.k-reset {
 					> span:first-of-type {
-						width: 714px;
+						width: 653px;
 					}
 
 					span:nth-of-type(2) {
@@ -319,6 +320,10 @@
 						width: auto;
 					}
 				}
+			}
+
+			.popover-body {
+				font-size: $font-size-base;
 			}
 		}
 	}

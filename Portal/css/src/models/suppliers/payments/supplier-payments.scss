@@ -249,32 +249,22 @@ html {
 }
 
 #suppliers-tab-pane {
-
-
 	.k-grid {
-		.mdc-checkbox::before,
-		.mdc-checkbox::after {
-			background-color: $mdc-theme-error;
+		@include mdc-checkbox-red;
+	}
+}
+
+#new-request-modal-dialog {
+	.modal-body {
+		@include mdc-checkbox-red;
+
+		.k-loading {
+			display: none !important;
 		}
 
-		.mdc-checkbox {
-			.mdc-checkbox__native-control {
-				border-color: $mdc-theme-error;
-			}
-
-			.mdc-checkbox__background {
-				border-color: $mdc-theme-error;
-
-				.mdc-checkbox__checkmark {
-				}
-			}
-
-			&.mdc-checkbox--selected {
-				.mdc-checkbox__background {
-					.mdc-checkbox__checkmark {
-						background-color: $red-500;
-					}
-				}
+		.k-picker {
+			&.k-dropdownlist {
+				width: 100%;
 			}
 		}
 	}
@@ -497,6 +487,11 @@ html {
 	.payment-requests-column-subheader,
 	.payment-requests-column {
 		width: 64px;
+	}
+
+	.payment-request-count-subheader,
+	.payment-request-count-column {
+		width: 20px;
 	}
 
 	.spacer-column-header,
@@ -951,7 +946,7 @@ html {
 						font-weight: bold;
 						white-space: normal;
 						text-overflow: unset;
-						border-bottom: 0;
+						border-bottom: 1px solid $gray-400;
 
 						.k-column-title {
 							white-space: normal;

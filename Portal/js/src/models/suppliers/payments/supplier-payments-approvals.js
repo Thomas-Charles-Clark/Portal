@@ -5,12 +5,12 @@
     filters,
     refreshDashboard
 } = {
-    ready: ko.observable(false),
-    busy: ko.observable(false),
-    busyMessage: ko.observable('Please Wait'),
-    filters: {},
+        ready: ko.observable(false),
+        busy: ko.observable(false),
+        busyMessage: ko.observable('Please Wait'),
+        filters: {},
         refreshDashboard: () => { }
-}) => {
+    }) => {
 
     let self = {
         ready,
@@ -21,7 +21,7 @@
     };
 
     //#region Lifted Methods
-    
+
     self.refresh = () => {
         self.gridWidget().dataSource.query({
             page: self.gridWidget().dataSource.page(),
@@ -118,6 +118,12 @@
         }, {
             field: 'PaymentRequestOtherTotal',
             aggregate: "sum"
+        }, {
+            field: 'PendingApprovalAmountGBP',
+            aggregate: "sum"
+        }, {
+            field: 'PaymentRequestCount',
+            aggregate: "sum"
         }],
         transport: {
             read: (options) => {
@@ -150,7 +156,7 @@
                 })
                     .then(window.handleFetchResponse)
                     .then(data => {
-                    
+
                         console.log('approvalsGridRead returning', data);
 
                         self.gridWidget().setOptions({
@@ -174,7 +180,7 @@
                                 //console.log('details', data.kendoGridResult.Data[i].Details);
                             }
                         }
-                        
+
                         options.success(data.kendoGridResult);
 
 
@@ -313,6 +319,18 @@
                             SpentInSterling: { type: 'number' },
                             RemainingInSterling: { type: 'number' }
                         }]
+                    },
+                    PaymentRequestCount: {
+                        type: 'number',
+                        editable: false
+                    },
+                    PendingApprovalAmount: {
+                        type: 'number',
+                        editable: false
+                    },
+                    PendingApprovalAmountGBP: {
+                        type: 'number',
+                        editable: false
                     }
                 }
             },
@@ -347,7 +365,7 @@
 
                     response.Data[i].Details = items;
                 }
-                
+
                 console.log('approvals dataSource schema.parse returning', response);
 
                 if (response.AggregateResults.length) {
@@ -399,6 +417,12 @@
 
                     document.querySelector('#other-requests-total-value-gbp').innerHTML = `${formatCurrency(response.AggregateResults
                         .find(a => a.Member === 'PaymentRequestOtherTotal').Value, 2, 'en-GB', 'GBP')}`;
+
+                    document.querySelector('#pending-approval-amount-total-gbp').innerHTML = `${formatCurrency(response.AggregateResults
+                        .find(a => a.Member === 'PendingApprovalAmountGBP').Value, 2, 'en-GB', 'GBP')}`;
+
+                    document.querySelector('#payment-requests-count').innerHTML = `${formatNumber(response.AggregateResults
+                        .find(a => a.Member === 'PaymentRequestCount').Value, 0, 'en-GB')}`
                 }
 
                 return response;
@@ -484,7 +508,7 @@
     {
         title: `Back Orders`,
         headerAttributes: {
-            "class": "back-orders-superheader" 
+            "class": "back-orders-superheader"
         },
         columns: [{
             field: 'BackOrderQuantity',
@@ -652,7 +676,7 @@
                     dataItem.Debt60DayValue > 0 ||
                     dataItem.Debt90DayValue > 0 ||
                     dataItem.Debt120DayValue > 0) {
-                    result.class = "supplier-invoices-column supplier-invoices-overdue"; 
+                    result.class = "supplier-invoices-column supplier-invoices-overdue";
                 }
 
                 return result;
@@ -826,7 +850,7 @@
                 "class": "problems-shipping-column-subheader"
             },
             attributes: (dataItem) => {
-                if (dataItem.ShippingStopped) {
+                if (dataItem.GoodsHeld) {
                     return {
                         "class": "goods-held-column text-center bg-white"
                     };
@@ -837,7 +861,7 @@
                 }
             },
             template: (dataItem) => {
-                if (dataItem.ShippingStopped) {
+                if (dataItem.GoodsHeld) {
                     return `<i class="bi bi-sign-stop-fill fs-1 text-red-600"></i>`;
                 } else {
                     return ``;
@@ -852,8 +876,25 @@
             "class": "payment-requests-superheader"
         },
         columns: [{
+            field: 'PaymentRequestCount',
+            title: `#<br/><span id='payment-requests-count'></span>`,
+            width: 24,
+            headerAttributes: {
+                "class": "payment-requests-column-subheader payment-request-count-subheader"
+            },
+            attributes: {
+                "class": "payment-request-count-column text-center"
+            },
+            template: (e) => {
+                if (e.PaymentRequestCount != null) {
+                    return formatNumber(e.PaymentRequestCount, 0, e.SupplierCurrencyFormattingCulture);
+                } else {
+                    return '';
+                }
+            }
+        }, {
             field: 'PaymentRequestPaymentPlanTotal',
-            title: "Plans<br/><span id='payment-requests-total-value-gbp'></span>",
+            title: `Plans<br/><span id='payment-requests-total-value-gbp'></span>`,
             headerAttributes: {
                 "class": "payment-requests-column-subheader"
             },
@@ -919,6 +960,32 @@
             template: (e) => {
                 if (e.PaymentRequestOtherTotal != null) {
                     return formatCurrency(e.PaymentRequestOtherTotal, 2, e.SupplierCurrencyFormattingCulture, e.SupplierCurrencyCode);
+                } else {
+                    return '';
+                }
+            }
+        }]
+    },
+    self.spacerColumn(),
+    {
+        title: 'Approved',
+        columns: [{
+            field: 'PendingApprovalAmount',
+            title: `To Pay<br/><span id='pending-approval-amount-total-gbp'></span>`,
+            attributes: (dataItem) => {
+                if (dataItem.PendingApprovalAmount > 0) {
+                    return {
+                        "class": "payment-requests-column payment-requests-positive"
+                    }
+                } else {
+                    return {
+                        "class": "payment-requests-column"
+                    }
+                }
+            },
+            template: (dataItem) => {
+                if (dataItem.PendingApprovalAmount) {
+                    return formatCurrency(dataItem.PendingApprovalAmount, 2, dataItem.SupplierCurrencyFormattingCulture, dataItem.SupplierCurrencyCode);
                 } else {
                     return '';
                 }
@@ -1043,11 +1110,6 @@
                     hidden: true,
                     editable: false
                 }, {
-                    field: 'RequesterComments',
-                    title: 'Requester Comments',
-                    hidden: true,
-                    editable: false
-                }, {
                     field: 'DeciderComments',
                     title: 'Decider Comments',
                     hidden: true,
@@ -1069,7 +1131,36 @@
                 }, {
                     field: 'RequesterComments',
                     title: 'Request Comments',
-                    editable: false
+                    editable: false,
+                    attributes: {
+                        "class": "text-center"
+                    },
+                    template: (dataItem) => {
+                        if (dataItem.RequesterComments) {
+                            return `<a tabindex="0"
+                        class="bi bi-chat-dots fs-4"
+                        data-bs-html="true"
+                        data-bs-trigger="hover"
+                        data-bs-toggle="popover"
+                        data-bs-title="Requester Comments"
+                        data-bs-content="${dataItem.RequesterComments?.replace(/\n/gm, '<br/>')}"></a>`;
+                        } else {
+                            return '';
+                        }
+                    },
+                    valueTemplate: (dataItem) => {
+                        if (dataItem.RequesterComments) {
+                            return `<a tabindex="0"
+                        class="bi bi-chat-dots fs-4"
+                        data-bs-html="true"
+                        data-bs-trigger="hover"
+                        data-bs-toggle="popover"
+                        data-bs-title="Requester Comments"
+                        data-bs-content="${dataItem.RequesterComments?.replace(/\n/gm, '<br/>')}"></a>`;
+                        } else {
+                            return '';
+                        }
+                    }
                 }, {
                     field: "PaymentRequestStatusName",
                     title: "Type",
@@ -1165,19 +1256,19 @@
                         if (e.PayOnDate) {
                             return moment(e.PayOnDate).format('DD/MM/YYYY');
                         } else {
-                            return moment(new Date()).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
+                            return moment(new Date()).format('DD/MM/YYYY');
                         }
                     },
                     valueTemplate: (e) => {
                         if (e.PayOnDate) {
                             return moment(e.PayOnDate).format('DD/MM/YYYY');
                         } else {
-                            return moment(new Date()).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
+                            return moment(new Date()).format('DD/MM/YYYY');
                         }
                     },
                     editor: function (container, options) {
                         if (self.alreadyInBasket(options.model)) {
-                            $(`<span>${moment(options.model.PayOnDate).format('DD/MM/YYYY') }</span>`).appendTo(container);
+                            $(`<span>${moment(options.model.PayOnDate).format('DD/MM/YYYY')}</span>`).appendTo(container);
                         } else {
                             let input = $('<input name="' + options.field + '"/>');
                             input.appendTo(container);
@@ -1330,6 +1421,13 @@
                 });
             }, 0);
 
+            window.setTimeout(() => {
+                const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+                const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl, {
+                    container: popoverTriggerEl
+                }));
+            }, 0);
+
             self.refreshDashboard();
         },
         save: (data) => {
@@ -1349,7 +1447,7 @@
                     c.value = c.value.replace(/<\/?[^>]+(>|$)/g, "");
                 })
             });
-                
+
             e.workbook.fileName = `Payment_Approvals_${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}.xlsx`;
 
             self.busy(false);

@@ -12,6 +12,8 @@ namespace SharedEFClasses.Models.OrderEntry
 
 		public string marketCode { get; set; }
 
+		public string callType { get; set; } = "M";
+
 		public string searchTerm { get; set; }
 
 		public string holdReasonIds { get; set; }
@@ -19,7 +21,5 @@ namespace SharedEFClasses.Models.OrderEntry
 		public DateTime? heldFromDt { get; set; }
 
 		public DateTime? heldToDt { get; set; }
-
-		public IEnumerable<int> roleIds { get; set; }
 	}
 }

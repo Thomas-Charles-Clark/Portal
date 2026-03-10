@@ -159,5 +159,25 @@ namespace SharedEFClasses.Models
 				Records = await reply.ReadAsync<CreditControl_Toggle_CreditStop_Record>()
 			};
 		}
+
+		public async Task<CreditControl_Payments_SelectResult> CreditControl_Payments_Select(CreditControl_Payments_SelectDTO dto)
+		{
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_Payments_Select]", dto, null, 60, CommandType.StoredProcedure);
+
+			return new CreditControl_Payments_SelectResult()
+			{
+				Records = await reply.ReadAsync<CreditControl_Payments_SelectRecord>()
+			};
+		}
+
+		public async Task<CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectResult> CreditControl_OutstandingInvoicesWithUnallocatedDeposits_Select(CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectDTO dto)
+		{
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_OutstandingInvoicesWithUnallocatedDeposits_Select]", dto, null, 60, CommandType.StoredProcedure);
+
+			return new CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectResult()
+			{
+				Records = await reply.ReadAsync<CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectRecord>()
+			};
+		}
 	}
 }

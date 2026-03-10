@@ -420,30 +420,41 @@
         }
     }, {
         field: 'RequesterComments',
-        title: 'Requester Comments',
-        width: 300
-        //width: 36,
-        //template: (dataItem) => {
-        //    return `<a tabindex="0"
-        //                class="bi bi-info-circle fs-4"
-        //                data-bs-html="true"
-        //                data-bs-trigger="focus"
-        //                data-bs-toggle="popover"
-        //                data-bs-title="Requester Comments"
-        //                data-bs-content="${(dataItem.RequesterComments ?? 'None')}"></a>`;
-        //},
-        //valueTemplate: (dataItem) => {
-        //    return `<a tabindex="0"
-        //                class="bi bi-info-circle fs-4"
-        //                data-bs-html="true"
-        //                data-bs-trigger="focus"
-        //                data-bs-toggle="popover"
-        //                data-bs-title="Requester Comments"
-        //                data-bs-content="${(dataItem.RequesterComments ?? 'None')}"></a>`;
-        //},
+        title: ' ',
+        width: 40,
+        attributes: {
+            "class": "text-center"
+        },
+        template: (dataItem) => {
+            if (dataItem.RequesterComments) {
+                return `<a tabindex="0"
+                        class="bi bi-chat-dots fs-4"
+                        data-bs-html="true"
+                        data-bs-trigger="hover"
+                        data-bs-toggle="popover"
+                        data-bs-title="Requester Comments"
+                        data-bs-content="${dataItem.RequesterComments?.replace(/\n/gm, '<br/>')}"></a>`;
+            } else {
+                return ''
+            }
+        },
+        valueTemplate: (dataItem) => {
+            if (dataItem.RequesterComments) {
+                return `<a tabindex="0"
+                        class="bi bi-chat-dots fs-4"
+                        data-bs-html="true"
+                        data-bs-trigger="hover"
+                        data-bs-toggle="popover"
+                        data-bs-title="Requester Comments"
+                        data-bs-content="${dataItem.RequesterComments?.replace(/\n/gm, '<br/>')}"></a>`;
+            } else {
+                return '';
+            }
+        }
     }, {
         field: 'SupplierCode',
         title: 'Supplier',
+        width: 420,
         editable: false,
         template: (e) => {
             return `${e.SupplierCode} - ${e.SupplierName}`;
@@ -547,11 +558,41 @@
             } else {
                 return moment(new Date()).weekdayWithStartWeekday(0, 1).format('DD/MM/YYYY');
             }
+        },
+        editor: function (container, options) {
+
+            let input = $('<input name="' + options.field + '"/>');
+            input.appendTo(container);
+
+            let initialValue = options.model.PayOnDate;
+
+            if (!options.model[options.field]) {
+                options.model[options.field] = initialValue;
+                options.model.dirty = true;
+            }
+
+            input.kendoDatePicker({
+                format: "dd/MM/yyyy",
+                parseFormats: ["dd/MM/yyyy", "dd/MM/yy"],
+                value: initialValue,
+                change: function () {
+                    options.model.set(options.field, this.value());
+                }
+            });
+
+            input.on("focus", function () {
+                var inputElement = $(this);
+                setTimeout(function () {
+                    // Selects the entire text in the input box
+                    inputElement.select();
+                }, 10);
+            });
         }
     }, {
         command: [{
             name: 'Remove',
             className: 'btn-danger',
+            width: 'auto',
             click: function (e) {
                 console.log('remove', e);
                 e.preventDefault();
@@ -661,6 +702,8 @@
                     container: popoverTriggerEl
                 }));
             }, 0);
+
+
         },
         saveChanges: (e) => {
             console.log('paymentApprovalsBasket saveChanges', e);

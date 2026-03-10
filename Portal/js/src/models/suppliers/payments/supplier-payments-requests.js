@@ -1021,22 +1021,30 @@
             })
         },
         template: (dataItem) => {
-            return `<a tabindex="0"
+            if (dataItem.RequesterComments) {
+                return `<a tabindex="0"
                         class="bi bi-chat-dots fs-4"
                         data-bs-html="true"
                         data-bs-trigger="hover"
                         data-bs-toggle="popover"
                         data-bs-title="Requester Comments"
                         data-bs-content="${dataItem.RequesterComments?.replace(/\n/gm, '<br/>')}"></a>`;
+            } else {
+                return '';
+            }
         },
         valueTemplate: (dataItem) => {
-            return `<a tabindex="0"
+            if (dataItem.RequesterComments) {
+                return `<a tabindex="0"
                         class="bi bi-chat-dots fs-4"
                         data-bs-html="true"
                         data-bs-trigger="hover"
                         data-bs-toggle="popover"
                         data-bs-title="Requester Comments"
                         data-bs-content="${dataItem.RequesterComments?.replace(/\n/gm, '<br/>')}"></a>`;
+            } else {
+                return '';
+            }
         }
     }, {
         field: 'ReadOnly',

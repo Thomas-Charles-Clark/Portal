@@ -80,6 +80,10 @@
 
                 self.busy(false);
             })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            });
     }
 
     //#endregion

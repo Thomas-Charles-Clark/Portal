@@ -58,6 +58,34 @@ $mdc-error-color: #db0028;
 
 $readonly-background: repeating-linear-gradient(-45deg, rgb(0 0 0 / 5%), transparent 1rem, rgba(0, 0, 0, 0.05) 1rem, transparent 2rem);
 
+@mixin mdc-checkbox-red {
+    .mdc-checkbox::before,
+    .mdc-checkbox::after {
+        background-color: $mdc-theme-error;
+    }
+
+    .mdc-checkbox {
+        .mdc-checkbox__native-control {
+            border-color: $mdc-theme-error;
+        }
+
+        .mdc-checkbox__background {
+            border-color: $mdc-theme-error;
+
+            .mdc-checkbox__checkmark {
+            }
+        }
+
+        &.mdc-checkbox--selected {
+            .mdc-checkbox__background {
+                .mdc-checkbox__checkmark {
+                    background-color: $red-500;
+                }
+            }
+        }
+    }
+}
+
 .input-group-lg {
     .btn {
         font-size: 1rem;
@@ -718,7 +746,7 @@ $readonly-background: repeating-linear-gradient(-45deg, rgb(0 0 0 / 5%), transpa
     .k-nodata {
         > div {
             padding: 0;
-            text-align: initial;
+            text-align: center !important;
         }
     }
 

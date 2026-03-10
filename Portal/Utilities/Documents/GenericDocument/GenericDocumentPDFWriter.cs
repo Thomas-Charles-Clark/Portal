@@ -677,7 +677,7 @@ namespace Portal.Utilities.Document
 
                         if (addOrderHeadParagraphs)
                         {
-                            orderHeadParagraph.SpacingAfter = 12.0f;
+                            orderHeadParagraph.SpacingAfter = 6.0f;
                         }
 
                         orderHeadCell.AddElement(orderHeadParagraph);
@@ -695,7 +695,7 @@ namespace Portal.Utilities.Document
 
                         orderHeadTable.AddCell(orderHeadCell);
 
-                        orderHeadTable.SpacingAfter = 20.0f;
+                        orderHeadTable.SpacingAfter = 5.0f;
 
                         document.Add(orderHeadTable);
                     }
@@ -1769,7 +1769,7 @@ namespace Portal.Utilities.Document
 
                         if (addOrderHeadParagraphs)
                         {
-                            orderHeadParagraph.SpacingAfter = 12.0f;
+                            orderHeadParagraph.SpacingAfter = 6.0f;
                         }
 
                         orderHeadCell.AddElement(orderHeadParagraph);
@@ -1787,7 +1787,7 @@ namespace Portal.Utilities.Document
 
                         orderHeadTable.AddCell(orderHeadCell);
 
-                        orderHeadTable.SpacingAfter = 20.0f;
+                        orderHeadTable.SpacingAfter = 5.0f;
 
                         document.Add(orderHeadTable);
                     }
@@ -2910,7 +2910,7 @@ namespace Portal.Utilities.Document
                                 phrase.Add(ProcessPhrase(inner, newFont));
                                 break;
                             case "target":
-                                phrase.Add(new Chunk(inner, newFont).SetLocalDestination(args));
+                                phrase.Add(new Chunk(String.IsNullOrEmpty(inner) ? " " : inner, newFont).SetLocalDestination(args));
                                 break;
                             default:
                                 phrase.Add(ProcessPhrase(inner, newFont));

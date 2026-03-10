@@ -39,8 +39,6 @@ namespace Portal.Areas.Suppliers.Controllers
 		[EnableQuery]
 		public async Task<IQueryable<SupplierPayments_SupplierRecord>> GetSupplierPayments_SupplierRecords([FromODataUri] SupplierPayments_Supplier_SelectDTO dto)
 		{
-			var userId = User.Identity.GetUserId<int>();
-
 			var results = await PortalDb.SupplierPayment_Supplier_Select(dto);
 
 			return results.Records.AsQueryable();
@@ -50,9 +48,6 @@ namespace Portal.Areas.Suppliers.Controllers
 		[EnableQuery]
 		public async Task<IQueryable<SupplierPayments_SupplierRecord>> SuppliersGridRead([FromODataUri] SupplierPayments_Supplier_SelectDTO dto)
 		{
-			var userId = User.Identity.GetUserId<int>();
-			// don't need to be pulling this here: it's valid to call the following with a null memberId
-
 			var results = await PortalDb.SupplierPayment_Supplier_Select(dto);
 
 			return results.Records.AsQueryable();
@@ -82,6 +77,8 @@ namespace Portal.Areas.Suppliers.Controllers
 				original.ProductionStopped = entity.ProductionStopped;
 
 				original.ShippingStopped = entity.ShippingStopped;
+
+				original.GoodsHeld = entity.GoodsHeld;
 
 				await PortalDb.SaveChangesAsync();
 			}

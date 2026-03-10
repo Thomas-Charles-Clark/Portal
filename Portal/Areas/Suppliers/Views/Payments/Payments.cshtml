@@ -145,6 +145,26 @@
 							<div data-bind="component: { name: 'tempus-dominus-date-picker-component', params: paymentDueDateParams }"></div>
 						</div>
 						<div class="mb-3" data-bind="component: { name: 'kendo-mdc-dropdown-component', params: supplierParams }"></div>
+						<div class="mb-3 justify-content-between" style="display: none" data-bind="flexFadeVisible: () => { return supplier() == null }">
+							<div class="d-flex align-items-center gap-2">
+								<label class="text-end">
+									Production Stopped
+								</label>
+								<div data-bind="component: { name: 'mdc-checkbox-component', params: supplierProductionStoppedParams }"></div>
+							</div>
+							<div class="d-flex align-items-center gap-2">
+								<label>
+									Shipping Stopped
+								</label>
+								<div data-bind="component: { name: 'mdc-checkbox-component', params: supplierShippingStoppedParams }"></div>
+							</div>
+							<div class="d-flex align-items-center gap-2">
+								<label>
+									Goods Held
+								</label>
+								<div data-bind="component: { name: 'mdc-checkbox-component', params: supplierGoodsHeldParams }"></div>
+							</div>
+						</div>
 						<div class="d-flex justify-content-end align-items-center gap-3 mb-3">
 							<label class="mb-0">
 								Amount

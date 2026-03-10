@@ -519,7 +519,7 @@
 }
 .held-order-reason-popup .k-nodata > div {
   padding: 0;
-  text-align: initial;
+  text-align: center !important;
 }
 .held-order-reason-popup #held-order-filter-list {
   border-radius: 0 0 0.375rem 0.375rem;
@@ -806,7 +806,7 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #credit-control-main .k-grid:not(#held-orders-grid) .grid-btn-cell .grid-btn .bi-octagon-red {
   position: absolute;
   font-size: 35px;
-  top: -16px;
+  top: 0;
   left: 0;
   z-index: 1;
 }

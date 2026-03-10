@@ -66,12 +66,11 @@
         busy: ko.observable(false),
         data: ko.observable(),
         element: ko.observable(),
-        container: 'td',
         placement: 'right',
         modifiers: {
-            offset: {
-                offset: "-10,10"
-            }
+            //offset: {
+            //    offset: "-10,10"
+            //}
         },
         fallbackPlacements: ['right', 'bottom'],
         customClass: 'confirm-credit-toggle-popover',
@@ -88,8 +87,12 @@
         solo: true,
         show: null,
         shown: (e) => {
-            self.stopChangeReason.mdcTextField.layout();
-            self.stopChangeReason.mdcTextField.focus();
+            window.setTimeout(() => {
+                self.stopChangeReason.mdcTextField.layout();
+                window.setTimeout(() => {
+                    self.stopChangeReason.mdcTextField.focus();
+                }, 0);
+            }, 0);
         }, 
         hide: null,
         hidden: null,
@@ -113,6 +116,15 @@
 
                 dat.busy(false);
 
+                event.target.closest('.k-grid-content').addEventListener('scroll', (event) => {
+                    document.querySelectorAll('[data-bind*="actualBootstrapPopover"]').forEach(e => {
+                        let p = bootstrap.Popover.getInstance(e);
+                        if (p) {
+                            p.hide();
+                        }
+                    });
+                });
+
                 window.setTimeout(() => {
                     document.addEventListener("click", (e) => {
                         if (e.target.closest('.confirm-credit-toggle-popover') == null) {
@@ -124,27 +136,19 @@
                             });
                         }
                     });
+                    document.addEventListener('scroll', () => {
+                        document.querySelectorAll('[data-bind*="actualBootstrapPopover"]').forEach(e => {
+                            let p = bootstrap.Popover.getInstance(e);
+                            if (p) {
+                                p.hide();
+                            }
+                        });
+                    })
                 }, 0);
             }
 
         },
-        popperConfig: {
-            strategy: 'fixed', // Helps with overflow/positioning issues
-            modifiers: [
-                {
-                    name: 'flip',
-                    options: {
-                        boundary: 'viewport', // Calculations ignore the 'td' boundary
-                    },
-                },
-                {
-                    name: 'preventOverflow',
-                    options: {
-                        boundary: 'viewport',
-                    },
-                },
-            ],
-        }
+        popperConfig: (defaultPopperConfig) => defaultPopperConfig
     };
 
     //#endregion

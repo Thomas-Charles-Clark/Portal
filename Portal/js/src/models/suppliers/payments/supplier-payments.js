@@ -139,42 +139,104 @@
 
     //#region Events
 
-    document.querySelectorAll('#tabs-container .nav .nav-link').forEach(e => {
-        switch (e.dataset['bsTarget']) {
+    document.querySelectorAll('#tabs-container .nav .nav-link').forEach(element => {
+        switch (element.dataset['bsTarget']) {
             case '#payment-requests-tab-pane':
-                e.addEventListener('show.bs.tab', () => {
-                    if (self.requests.gridWidget())
-                        self.requests.refresh();
+
+                element.addEventListener('show.bs.tab', (event) => {
+
+                    if ((self.suppliers.gridWidget() && self.suppliers.gridWidget().dataSource.hasChanges()) ||
+                        (self.budgets.gridWidget() && self.budgets.gridWidget().dataSource.hasChanges()) ||
+                        (self.approvals.gridWidget() && self.approvals.gridWidget().dataSource.hasChanges()) || 
+                        (self.approvals.basket.gridWidget() && self.approvals.basket.gridWidget().dataSource.hasChanges())) {
+                        event.preventDefault();
+                        window.showInfo('Unsaved Changes', 'You have unsaved changes. Please cancel or save them before performing any other action.');
+                    } else {
+                        if (self.requests.gridWidget())
+                            self.requests.refresh();
+                    }
                 });
+
                 break;
             case '#suppliers-tab-pane':
-                e.addEventListener('show.bs.tab', () => {
-                    if (self.suppliers.gridWidget())
-                        self.suppliers.refresh();
+                element.addEventListener('show.bs.tab', (event) => {
+
+                    if ((self.requests.gridWidget() && self.requests.gridWidget().dataSource.hasChanges()) ||
+                        (self.budgets.gridWidget() && self.budgets.gridWidget().dataSource.hasChanges()) ||
+                        (self.approvals.gridWidget() && self.approvals.gridWidget().dataSource.hasChanges()) ||
+                        (self.approvals.basket.gridWidget() && self.approvals.basket.gridWidget().dataSource.hasChanges())) {
+                        event.preventDefault();
+                        window.showInfo('Unsaved Changes', 'You have unsaved changes. Please cancel or save them before performing any other action.');
+                    } else {
+                        if (self.suppliers.gridWidget())
+                            self.suppliers.refresh();
+                    }
                 });
                 break;
             case '#budget-tab-pane':
-                e.addEventListener('show.bs.tab', () => {
-                    if (self.budgets.gridWidget())
-                        self.budgets.refresh();
+                element.addEventListener('show.bs.tab', (event) => {
+
+                    if ((self.requests.gridWidget() && self.requests.gridWidget().dataSource.hasChanges()) ||
+                        (self.suppliers.gridWidget() && self.suppliers.gridWidget().dataSource.hasChanges()) ||
+                        (self.approvals.gridWidget() && self.approvals.gridWidget().dataSource.hasChanges()) ||
+                        (self.approvals.basket.gridWidget() && self.approvals.basket.gridWidget().dataSource.hasChanges())) {
+                        event.preventDefault();
+                        window.showInfo('Unsaved Changes', 'You have unsaved changes. Please cancel or save them before performing any other action.');
+                    } else {
+                        if (self.budgets.gridWidget())
+                            self.budgets.refresh();
+                    }
+
                 });
                 break;
             case '#approvals-tab-pane':
-                e.addEventListener('show.bs.tab', () => {
-                    if (self.approvals.gridWidget())
-                        self.approvals.refresh();
+                element.addEventListener('show.bs.tab', (event) => {
+
+                    if ((self.requests.gridWidget() && self.requests.gridWidget().dataSource.hasChanges()) ||
+                        (self.suppliers.gridWidget() && self.suppliers.gridWidget().dataSource.hasChanges()) ||
+                        (self.budgets.gridWidget() && self.budgets.gridWidget().dataSource.hasChanges()) ||
+                        (self.approvals.basket.gridWidget() && self.approvals.basket.gridWidget().dataSource.hasChanges())) {
+                        event.preventDefault();
+                        window.showInfo('Unsaved Changes', 'You have unsaved changes. Please cancel or save them before performing any other action.');
+                    } else {
+                        if (self.approvals.gridWidget())
+                            self.approvals.refresh();
+                    }
+
                 });
                 break;
             case '#history-summary-tab-pane':
-                e.addEventListener('show.bs.tab', () => {
-                    if (self.historySummary.gridWidget())
-                        self.historySummary.refresh();
+                element.addEventListener('show.bs.tab', (event) => {
+
+                    if ((self.requests.gridWidget() && self.requests.gridWidget().dataSource.hasChanges()) ||
+                        (self.suppliers.gridWidget() && self.suppliers.gridWidget().dataSource.hasChanges()) ||
+                        (self.budgets.gridWidget() && self.budgets.gridWidget().dataSource.hasChanges()) ||
+                        (self.approvals.gridWidget() && self.approvals.gridWidget().dataSource.hasChanges()) ||
+                        (self.approvals.basket.gridWidget() && self.approvals.basket.gridWidget().dataSource.hasChanges())) {
+                        event.preventDefault();
+                        window.showInfo('Unsaved Changes', 'You have unsaved changes. Please cancel or save them before performing any other action.');
+                    } else {
+                        if (self.historySummary.gridWidget())
+                            self.historySummary.refresh();
+                    }
+
                 });
                 break;
             case '#history-detail-tab-pane':
-                e.addEventListener('show.bs.tab', () => {
-                    if (self.historyDetails.gridWidget())
-                        self.historyDetails.refresh();
+                element.addEventListener('show.bs.tab', (event) => {
+
+                    if ((self.requests.gridWidget() && self.requests.gridWidget().dataSource.hasChanges()) ||
+                        (self.suppliers.gridWidget() && self.suppliers.gridWidget().dataSource.hasChanges()) ||
+                        (self.budgets.gridWidget() && self.budgets.gridWidget().dataSource.hasChanges()) ||
+                        (self.approvals.gridWidget() && self.approvals.gridWidget().dataSource.hasChanges()) ||
+                        (self.approvals.basket.gridWidget() && self.approvals.basket.gridWidget().dataSource.hasChanges())) {
+                        event.preventDefault();
+                        window.showInfo('Unsaved Changes', 'You have unsaved changes. Please cancel or save them before performing any other action.');
+                    } else {
+                        if (self.historyDetails.gridWidget())
+                            self.historyDetails.refresh();
+                    }
+
                 });
                 break;
             default:

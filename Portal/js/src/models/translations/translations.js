@@ -424,6 +424,8 @@
                         value: prefilter
                     })
                 }
+
+                return filter;
             })(),
             error: function (e) {
                 $.showError(e.xhr, e.errorThrown, e.status);

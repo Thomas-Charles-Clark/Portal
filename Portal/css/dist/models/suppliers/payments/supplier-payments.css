@@ -794,6 +794,26 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   background-color: #dc3545;
 }
 
+#new-request-modal-dialog .modal-body .mdc-checkbox::before,
+#new-request-modal-dialog .modal-body .mdc-checkbox::after {
+  background-color: #db0028;
+}
+#new-request-modal-dialog .modal-body .mdc-checkbox .mdc-checkbox__native-control {
+  border-color: #db0028;
+}
+#new-request-modal-dialog .modal-body .mdc-checkbox .mdc-checkbox__background {
+  border-color: #db0028;
+}
+#new-request-modal-dialog .modal-body .mdc-checkbox.mdc-checkbox--selected .mdc-checkbox__background .mdc-checkbox__checkmark {
+  background-color: #dc3545;
+}
+#new-request-modal-dialog .modal-body .k-loading {
+  display: none !important;
+}
+#new-request-modal-dialog .modal-body .k-picker.k-dropdownlist {
+  width: 100%;
+}
+
 .tab-pane .popover {
   max-width: 500px;
 }
@@ -950,6 +970,10 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 .k-grid .payment-requests-column-subheader,
 .k-grid .payment-requests-column {
   width: 64px;
+}
+.k-grid .payment-request-count-subheader,
+.k-grid .payment-request-count-column {
+  width: 20px;
 }
 .k-grid .spacer-column-header,
 .k-grid .spacer-column {
@@ -1240,7 +1264,7 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   font-weight: bold;
   white-space: normal;
   text-overflow: unset;
-  border-bottom: 0;
+  border-bottom: 1px solid #ced4da;
 }
 .k-grid.supplier-payments-grid-container table thead.k-grid-header .k-header .k-column-title {
   white-space: normal;

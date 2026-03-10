@@ -428,7 +428,7 @@
     self.supplierFilters = ko.computed(() => {
         let result = {
             periodId: self.paymentPeriodId(),
-            memberId: self.userId(),
+            memberId: self.userId() ? self.userId() : null,
             onlyShowSuppliersWhereProductionHasStopped: self.onlyIncludeSuppliersWhereProductionStopped(),
             onlyShowSuppliersWhereShippingHasStopped: self.onlyIncludeSuppliersWhereShippingStopped(),
             onlyShowSuppliersWhereGoodsAreHeld: self.onlyIncludeSuppliersWhereGoodsHeld()

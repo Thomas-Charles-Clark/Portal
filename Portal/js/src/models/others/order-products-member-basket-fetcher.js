@@ -215,6 +215,12 @@
         field: 'DocumentSendHistory',
         title: 'Document Send History',
         filterable: false
+    }, {
+        field: 'PaidOnline',
+        title: 'Paid Online',
+        filterable: {
+            extra: false
+        }
     }];
 
     self.basketSubmissionResultGridColumns = [{
@@ -462,6 +468,16 @@
 
 
     //#region Methods
+
+    self.refresh = () => {
+        self.gridWidget().dataSource.query({
+            page: self.gridWidget().dataSource.page(),
+            pageSize: self.gridWidget().dataSource.pageSize(),
+            filter: self.gridWidget().dataSource.filter(),
+            sort: self.gridWidget().dataSource.sort(),
+            group: self.gridWidget().dataSource.group()
+        });
+    }
 
     self.clearHoldReasonIds = () => {
         // this is attached to the checkboxes in the dropdown
@@ -2812,7 +2828,8 @@
                     TransactionID: { type: 'number' },
                     Imported: { type: 'bool' },
                     HeldSince: { type: 'date' },
-                    DocumentSendHistory: { type: 'string' }
+                    DocumentSendHistory: { type: 'string' },
+                    PaidOnline: { type: 'string' }
                 }
             }
         }),
@@ -3168,7 +3185,7 @@
         }
     });
 
-    self.heldOrdersGridParmetersComputed = ko.computed(() => {
+    self.heldOrdersGridParametersComputed = ko.computed(() => {
 
         let data = {
             memberId: self.memberId(),
@@ -3179,8 +3196,12 @@
             heldToDt: self.heldOrdersHeldToDt()
         };
 
-        if (typeof window.getCreditControlRoleIds === 'function') {
-            data.roleIds = window.getCreditControlRoleIds();
+        if (typeof self.creditControllerId === 'function') {
+            data.creditControllerCode = ko.unwrap(self.creditControllerId);
+        }
+        
+        if (typeof window.isCreditControlApp === 'function') {
+            data.callType = window.isCreditControlApp();
         }
 
         self.heldOrdersGridAdditionalParameters(data);

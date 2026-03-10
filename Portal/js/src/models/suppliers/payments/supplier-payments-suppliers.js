@@ -59,7 +59,7 @@
 
                     console.log('SupplierPayments.SuppliersGridRead calling with', filters);
 
-                    return `/supplier-payments-odata/SupplierPayments_SupplierRecords/SupplierPayments.SuppliersGridRead(dto=@d)?@d={"MemberID":${filters.memberId ?? null},"PeriodID":${filters.periodId},"OnlyShowSuppliersWhereProductionHasStopped":${filters.onlyShowSuppliersWhereProductionHasStopped},"OnlyShowSuppliersWhereShippingHasStopped":${filters.onlyShowSuppliersWhereShippingHasStopped},"OnlyShowSuppliersWhereGoodsAreHeld":${filters.onlyShowSuppliersWhereGoodsAreHeld}}`;
+                    return `/supplier-payments-odata/SupplierPayments_SupplierRecords/SupplierPayments.SuppliersGridRead(dto=@d)?@d={"MemberID":${filters.memberId},"PeriodID":${filters.periodId},"OnlyShowSuppliersWhereProductionHasStopped":${filters.onlyShowSuppliersWhereProductionHasStopped},"OnlyShowSuppliersWhereShippingHasStopped":${filters.onlyShowSuppliersWhereShippingHasStopped},"OnlyShowSuppliersWhereGoodsAreHeld":${filters.onlyShowSuppliersWhereGoodsAreHeld}}`;
                 }
             },
             //read: (options) => {
@@ -526,6 +526,7 @@
 
                     delete item.productionStoppedParams;
                     delete item.shippingStoppedParams;
+                    delete item.goodsHeldParams;
 
                 }
             }

@@ -519,7 +519,7 @@
 }
 .held-order-reason-popup .k-nodata > div {
   padding: 0;
-  text-align: initial;
+  text-align: center !important;
 }
 .held-order-reason-popup #held-order-filter-list {
   border-radius: 0 0 0.375rem 0.375rem;
@@ -624,6 +624,12 @@
 #order-release-pane .prefilters .prefilter {
   flex: 0 1 240px;
 }
+#order-release-pane .prefilters #held-orders-hold-reason-filter .k-multiselect {
+  width: 100%;
+}
+#order-release-pane .prefilters #held-orders-hold-reason-filter .k-multiselect::after {
+  top: 9px;
+}
 #order-release-pane .prefilters #held-orders-search-term-filter {
   flex: 1 1 490px;
 }
@@ -718,6 +724,12 @@
 }
 #order-release-pane #order-release-container .k-grid-content td button {
   display: block;
+}
+#order-release-pane #order-release-container .k-grid-content td .alert {
+  margin-bottom: 0;
+}
+#order-release-pane #order-release-container .k-grid-content td .alert + .alert {
+  margin-top: 1rem;
 }
 #order-release-pane .btn.btn-battleship-blue {
   background-image: none;

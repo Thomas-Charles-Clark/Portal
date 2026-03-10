@@ -83,6 +83,12 @@
 
     self.requesterComments = ko.observable();
 
+    self.supplierProductionStopped = ko.observable(false);
+
+    self.supplierShippingStopped = ko.observable(false);
+
+    self.supplierGoodsHeld = ko.observable(false);
+
     self.emptyArray = [];
 
     //#endregion
@@ -190,6 +196,9 @@
         select: (e) => {
             console.log('supplierParams.select', e);
             self.supplierCurrency(e.dataItem.Currency);
+            self.supplierShippingStopped(e.dataItem.ShippingStopped);
+            self.supplierProductionStopped(e.dataItem.ProductionStopped);
+            self.supplierGoodsHeld(e.dataItem.GoodsHeld);
         },
         clearFunction: (e) => {
             self.supplierCode('');
@@ -394,7 +403,7 @@
                         return d;
 
                     }
-                },
+                }
             }),
             change: function (e) {
                 console.log('change', e);
@@ -412,6 +421,11 @@
                 } else {
                     return '';
                 }
+            },
+            dataBound: (e) => {
+                window.setTimeout(() => {
+                    console.log('supplierPaymentRequest dataBound', e);
+                }, 301);
             },
             popup: {
                 appendTo: '#new-request-modal'
@@ -473,6 +487,27 @@
         visible: ko.observable(true)
     }
 
+    self.supplierProductionStoppedParams = {
+        observable: self.supplierProductionStopped,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: self.busy
+    };
+
+    self.supplierShippingStoppedParams = {
+        observable: self.supplierShippingStopped,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: self.busy
+    };
+
+    self.supplierGoodsHeldParams = {
+        observable: self.supplierGoodsHeld,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: self.busy
+    };
+
     self.errors = new ko.validation.group([
         self.paymentRequestStatusId,
         self.supplierCode,
@@ -509,7 +544,10 @@
             amountInCurrency: self.amountInCurrency(),
             purchaseOrderIds: self.purchaseOrderIds(),
             proformaNumber: self.proformaNumber() == '' ? null : self.proformaNumber(),
-            requesterComments: self.requesterComments() == '' ? null : self.requesterComments()
+            requesterComments: self.requesterComments() == '' ? null : self.requesterComments(),
+            productionStopped: self.supplierProductionStopped(),
+            shippingStopped: self.supplierShippingStopped(),
+            goodsHeld: self.supplierGoodsHeld()
         }
     }
 

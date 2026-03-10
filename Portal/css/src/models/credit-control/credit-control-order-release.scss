@@ -10,6 +10,16 @@
 			flex: 0 1 240px;
 		}
 
+		#held-orders-hold-reason-filter {
+			.k-multiselect {
+				width: 100%;
+
+				&::after {
+					top: 9px;
+				}
+			}
+		}
+
 		#held-orders-search-term-filter {
 			flex: 1 1 490px;
 		}
@@ -130,6 +140,14 @@
 			td {
 				button {
 					display: block;
+				}
+
+				.alert {
+					margin-bottom: 0;
+				}
+
+				.alert + .alert {
+					margin-top: $l-gutter;
 				}
 			}
 		}

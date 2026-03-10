@@ -29,8 +29,10 @@ namespace SharedEFClasses.Models.Suppliers.PaymentApprovals
 		public string SupplierName { get; set; }
 
 		public string RequesterName { get; set; }
-
+	
 		public string RequesterEmail { get; set; }
+
+		public string RequesterComments { get; set; }
 
 		public string FormattingCulture { get; set; }
 

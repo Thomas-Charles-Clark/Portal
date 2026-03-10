@@ -591,27 +591,14 @@ namespace SharedEFClasses.Models
         }
 
         public async Task<HeldOrderResultWrapper> FetchHeldOrders(
-            int memberId,
+            int? memberId,
             string marketCode,
             string searchTerm,
             string holdReasonIds,
             string tab,
             DateTime? heldFromDt,
-            DateTime? heldToDt,
-            IEnumerable<int> roleIds)
+            DateTime? heldToDt)
         {
-			var roles = new DataTable();
-
-			roles.Columns.Add("I", typeof(int));
-
-			if (roleIds != null)
-			{
-				foreach (var r in roleIds)
-				{
-					roles.Rows.Add(r);
-				}
-			}
-
 			var dat = new
 			{
 				MemberID = memberId,
@@ -620,14 +607,12 @@ namespace SharedEFClasses.Models
 				HoldReasonIDs = holdReasonIds,
 				Tab = tab,
 				HeldFromDT = heldFromDt,
-				HeldToDT = heldToDt,
-				RoleIDs = roles
+				HeldToDT = heldToDt
 			};
-
 
 			var results = new List<HeldOrderSelectResult>();
 
-            var reader = await this.Database.Connection.QueryMultipleAsync("portal.Basket_HeldForApproval_Select_New", dat, null, null, CommandType.StoredProcedure);
+            var reader = await this.Database.Connection.QueryMultipleAsync("portal.Basket_HeldForApproval_Select", dat, null, null, CommandType.StoredProcedure);
 
             return new HeldOrderResultWrapper()
             {

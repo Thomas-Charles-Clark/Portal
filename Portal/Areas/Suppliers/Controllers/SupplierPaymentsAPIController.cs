@@ -73,6 +73,36 @@ namespace Portal.Areas.Suppliers.Controllers
 				CreatedDT = DateTime.Now
 			};
 
+			var supplier = PortalDb.Suppliers_Live.Single(s => s.Code == dto.SupplierCode);
+
+			var updateSupplierRecord = false;
+
+			if (supplier.ProductionStopped != dto.ProductionStopped)
+			{
+				supplier.ProductionStopped = dto.ProductionStopped;
+
+				updateSupplierRecord = true;
+			}
+
+			if (supplier.ShippingStopped != dto.ShippingStopped)
+			{
+				supplier.ShippingStopped = dto.ShippingStopped;
+
+				updateSupplierRecord = true;
+			}
+
+			if (supplier.GoodsHeld != dto.GoodsHeld)
+			{
+				supplier.GoodsHeld = dto.GoodsHeld;
+
+				updateSupplierRecord = true;
+			}
+
+			if (updateSupplierRecord)
+			{
+				await PortalDb.SaveChangesAsync();
+			}
+
 			try
 			{
 				PortalDb.PaymentRequests.Add(request);

@@ -26,6 +26,12 @@ namespace SharedEFClasses.Models.Suppliers.PaymentRequests
 
 		public int? RequestedByMemberID { get; set; }
 
+		public bool ProductionStopped { get; set; }
+
+		public bool ShippingStopped { get; set; }
+
+		public bool GoodsHeld { get; set; }
+
 		public int PeriodID
 		{
 			get

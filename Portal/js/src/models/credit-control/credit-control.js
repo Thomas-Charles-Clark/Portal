@@ -119,7 +119,7 @@ const creditControlViewModel = (() => {
             tradeAccountCode: tradeAccountSearchResult.TradeAccountCode,
             creditStopped: !tradeAccountSearchResult.CreditStop,
             memberId: 0, // this is overridden on the server
-            reason: tradeAccountSearchResult.stopChangeReason
+            reason: ko.unwrap(tradeAccountSearchResult.stopChangeReason)
         }
 
         console.log('calling toggleCreditStop with', data);
@@ -135,6 +135,12 @@ const creditControlViewModel = (() => {
             .then(data => {
                 self.busy(false);
                 tradeAccountSearchResult.onStop(!tradeAccountSearchResult.onStop());
+                document.querySelectorAll('[data-bind*="actualBootstrapPopover"]').forEach(e => {
+                    let p = bootstrap.Popover.getInstance(e);
+                    if (p) {
+                        p.hide();
+                    }
+                });
             })
             .catch(err => {
                 self.busy(false);
@@ -520,7 +526,7 @@ const creditControlViewModel = (() => {
                 "class": "errata-subheading"
             },
             attributes: {
-                "class": "text-center grid-btn-cell"
+                "class": "text-center grid-btn-cell relative"
             },
             sortable: true,
             filterable: false,
@@ -832,7 +838,7 @@ const creditControlViewModel = (() => {
                 return result.join(SINGLE_BR)
             }
         }]
-     }, {
+    }, {
         field: '',
         title: '',
         attributes: {
@@ -1171,13 +1177,17 @@ const creditControlViewModel = (() => {
         self.allSortingOperations(sortFunctions.flat());
     }
 
+    self.memberBasketFetcher.heldOrdersGridParametersComputed.subscribe(nv => {
+        self.memberBasketFetcher.refresh();
+    });
+
     self.gridParams = {
         autoBind: true,
         widget: self.gridWidget,
         columns: self.gridColumns,
         data: new kendo.data.DataSource({
             transport: {
-                read: self.gridDataSourceRead,
+                read: self.gridDataSourceRead
             },
             batch: false,
             sortable: true,
@@ -1202,6 +1212,7 @@ const creditControlViewModel = (() => {
                 model: {
                     id: 'TradeAccountID',
                     fields: {
+                        UniVerseAccount: { type: 'string' },
                         TradeAccountID: { type: 'number' },
                         CurrencyCode: { type: 'string' },
                         FormattingCulture: { type: 'string' },
@@ -1269,9 +1280,6 @@ const creditControlViewModel = (() => {
         noRecords: {
             template: () => `No Results. Please search using the filters to the left.`//: ${$("#grid").data("kendoGrid").dataSource.page()}`
         },
-        scrollable: {
-            endless: true
-        },
         sortable: true,
         filterable: {
             extra: false,
@@ -1287,7 +1295,7 @@ const creditControlViewModel = (() => {
         excel: {
             allPages: true
         },
-        height: 'calc(100vh - 230px)',
+        height: '800px',
         selectable: 'cell',
         change: function (event) {
             console.log('change', event, event.sender.select());
@@ -1377,6 +1385,8 @@ const creditControlViewModel = (() => {
             pageSize: (self.gridParams.widget() && self.gridParams.widget().dataSource.pageSize())
         });
     });
+
+    self.filters.getCreditControlOrderReleaseParameters()
 
     self.selectedTradeAccount.subscribe(nv => {
         self.busy(true);
@@ -1538,6 +1548,10 @@ const creditControlViewModel = (() => {
 
                 self.debtBreakdownModal.show();
             })
+            .catch(err => {
+                self.busy(false);
+                window.catchFetchError(err);
+            });
     }
 
     self.fetchOrdersBreakdown = (data, event) => {

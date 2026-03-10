@@ -560,7 +560,7 @@ namespace Portal
             var tradeAccountsForCreditControlFilterFunction = odataBuilder.EntityType<TradeAccountLive>()
                 .Collection
                 .Function("GetTradeAccountsForCreditControl")
-                .ReturnsCollectionFromEntitySet<TradeAccountLive>("TradeAccounts_Live");
+                .ReturnsCollection<TradeAccountLive>();
 
 			tradeAccountsForCreditControlFilterFunction.Parameter<bool>("includeDeletedAccounts");
 			tradeAccountsForCreditControlFilterFunction.Parameter<bool>("includeClosedAccounts");

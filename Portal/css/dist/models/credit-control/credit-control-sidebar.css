@@ -519,7 +519,7 @@
 }
 .held-order-reason-popup .k-nodata > div {
   padding: 0;
-  text-align: initial;
+  text-align: center !important;
 }
 .held-order-reason-popup #held-order-filter-list {
   border-radius: 0 0 0.375rem 0.375rem;
@@ -651,7 +651,7 @@
   display: flex;
   height: 28px;
   align-items: center;
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
 #filters-sidebar #credit-control-prefilters .prefilter .mdc-validating-field {
   height: 100%;
@@ -660,6 +660,8 @@
   flex: 0;
 }
 #filters-sidebar #credit-control-prefilters .prefilter .k-list .k-item {
+  display: flex;
+  align-items: center;
   white-space: nowrap;
 }
 #filters-sidebar #credit-control-prefilters #credit-control-trade-account-prefilter {

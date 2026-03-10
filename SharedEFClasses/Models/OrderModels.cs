@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 
+using Org.BouncyCastle.Asn1.Mozilla;
+
 using SharedEFClasses.Models.Fenwick;
 using SharedEFClasses.Models.General;
 using SharedEFClasses.Models.Mertexer;
@@ -1280,6 +1282,8 @@ namespace SharedEFClasses.Models.Orders
         //public bool MertexVATLookupSuccessful { get; set; }
 
         public int TradeAccountID { get; set; }
+
+        public string PaidOnline { get; set; }
 
         public TradeAccount TradeAccount { get; set; }
         public Market MertexMarket { get; set; }

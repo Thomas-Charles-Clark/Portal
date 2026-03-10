@@ -408,6 +408,12 @@
     <Compile Include="Models\CreditControlRegion_SalesMarket.cs" />
     <Compile Include="Models\CreditControl\CreditControl_AgedSalesLedger_Record.cs" />
     <Compile Include="Models\CreditControl\CreditControl_AgedSalesLedger_Result.cs" />
+    <Compile Include="Models\CreditControl\CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectRecord.cs" />
+    <Compile Include="Models\CreditControl\CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectDTO.cs" />
+    <Compile Include="Models\CreditControl\CreditControl_Payments_SelectDTO.cs" />
+    <Compile Include="Models\CreditControl\CreditControl_Payments_SelectRecord.cs" />
+    <Compile Include="Models\CreditControl\CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectResult.cs" />
+    <Compile Include="Models\CreditControl\CreditControl_Payments_SelectResult.cs" />
     <Compile Include="Models\CreditControl\CreditControl_Toggle_CreditStop_Record.cs" />
     <Compile Include="Models\CreditControl\CreditControl_Toggle_CreditStop_Result.cs" />
     <Compile Include="Models\CreditControl\CreditControl_TradeAccount_PerformanceDTO.cs" />

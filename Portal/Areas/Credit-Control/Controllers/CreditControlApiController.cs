@@ -113,6 +113,10 @@ namespace Portal.Areas.CreditControl.Controllers
 		[HttpPost]
 		public async Task<IHttpActionResult> ToggleCreditStop([FromBody] CreditControl_TradeAccount_StopToggleDTO dto)
 		{
+			var mid = User.Identity.GetUserId<int>();
+
+			dto.MemberID = mid;
+
 			var result = await PortalDb.CreditControl_Toggle_CreditStop(dto);
 
 			return Ok(result);

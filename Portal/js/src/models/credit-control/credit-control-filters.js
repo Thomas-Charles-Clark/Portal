@@ -333,6 +333,8 @@
                 d.$apply = `filter(${filterString})`;
             }
 
+            delete d.$filter;
+
             if (!d.$apply) {
                 delete d.$apply;
             } else {
@@ -341,6 +343,9 @@
 
             return d;
 
+        },
+        popupSettings: {
+            appendTo: '#credit-control-trade-account-prefilter'
         }
     });
 
@@ -904,6 +909,12 @@
             date: typeof self.date() == 'object' ? self.date().toUTCString() : self.date()
         };
     }
+
+    self.getCreditControlOrderReleaseParameters = ko.computed(() => {
+        return {
+            creditControllerId: self.creditControllerId() ? self.creditControllerId() : null
+        }
+    }, self)
 
     self.getSelectedFilters = ko.computed(() => {
         let results = Object.keys(self)

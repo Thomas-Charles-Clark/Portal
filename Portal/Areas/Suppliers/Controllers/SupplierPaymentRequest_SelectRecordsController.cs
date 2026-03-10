@@ -97,6 +97,8 @@ namespace Portal.Areas.Suppliers.Controllers
 
 				original.AmountInCurrency = entity.RequestAmount;
 
+				original.RequesterComments = entity.RequesterComments;
+
 				await PortalDb.SaveChangesAsync();
 
 				var extantPOHeads = PortalDb.PaymentRequest_PurchaseOrderHeads.Where(p => p.PaymentRequestID == key).ToList();
