@@ -1845,6 +1845,12 @@
     <Content Include="js\src\lib\tiny-slider\tiny-slider.js" />
     <Content Include="js\src\models\credit-control\credit-control-main-grid-row.js" />
     <Content Include="js\src\models\credit-control\credit-control-main-grid-column.js" />
+    <Content Include="js\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits-pod.js" />
+    <Content Include="js\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits-record.js" />
+    <Content Include="js\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits.js" />
+    <Content Include="js\src\models\credit-control\credit-control-payment-pod.js" />
+    <Content Include="js\src\models\credit-control\credit-control-payment-record.js" />
+    <Content Include="js\src\models\credit-control\credit-control-payments.js" />
     <Content Include="js\src\models\others\address.js" />
     <Content Include="js\src\models\others\alternative-products.js" />
     <Content Include="js\src\models\others\application-groups.js" />
@@ -3308,6 +3314,8 @@
     <Content Include="css\dist\models\credit-control\credit-control-virtual-scroller.css.map" />
     <Content Include="css\dist\models\credit-control\credit-control-virtual-scroller.min.css.map" />
     <Content Include="css\src\models\common\common-2026.scss" />
+    <Content Include="css\src\models\credit-control\credit-control-payments.scss" />
+    <Content Include="css\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

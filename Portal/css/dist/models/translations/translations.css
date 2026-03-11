@@ -519,7 +519,7 @@
 }
 .held-order-reason-popup .k-nodata > div {
   padding: 0;
-  text-align: initial;
+  text-align: center !important;
 }
 .held-order-reason-popup #held-order-filter-list {
   border-radius: 0 0 0.375rem 0.375rem;
@@ -665,6 +665,7 @@
 .k-grid-content tr td.translator-cell {
   cursor: pointer;
   padding: 0;
+  font-family: "Open Sans";
 }
 .k-grid-content tr td.translator-cell:focus, .k-grid-content tr td.translator-cell:focus-within {
   background-color: #fff;
@@ -752,6 +753,15 @@
 .approval-check.pending:hover, .approval-check.pending:focus, .approval-check.pending:focus-within {
   cursor: pointer;
 }
+#translate-resources-container .k-loading,
+#translate-resources-container .k-loading-mask {
+  display: none !important;
+}
+
+.k-editor {
+  font-family: "Open Sans", Arial;
+}
+
 .mdc-text-field--html-editor {
   display: block;
 }

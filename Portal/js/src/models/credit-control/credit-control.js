@@ -39,10 +39,13 @@ const creditControlViewModel = (() => {
     self.refresh = () => {
         console.log('creditControlViewModel refresh called');
 
-        self.gridParams.widget().dataSource.query({
-            page: self.gridParams.widget().dataSource.page() ?? 1,
-            pageSize: self.gridParams.widget().dataSource.pageSize() ?? 0
-        });
+        self.gridWidget().dataSource.query({
+            page: self.gridWidget().dataSource.page(),
+            pageSize: self.gridWidget().dataSource.pageSize(),
+            filter: self.gridWidget().dataSource.filter(),
+            sort: self.gridWidget().dataSource.sort(),
+            group: self.gridWidget().dataSource.group()
+        }); 
     }
 
     self.selectedPod = ko.observable();
@@ -53,7 +56,7 @@ const creditControlViewModel = (() => {
     }
 
     self.filters = creditControlFiltersViewModel({
-        params: {},
+        params: window.getPredefinedFilterParams(),
         parent: self
     });
 
@@ -64,6 +67,10 @@ const creditControlViewModel = (() => {
     self.sendResponse = ko.observable();
 
     self.performance = creditControlPerformanceViewModel();
+
+    self.payments = creditControlPaymentsViewModel();
+
+    self.outstandingInvoices = creditControlOutstandingInvoicesWithUnallocatedDepositsViewModel();
 
     self.gridWidget = ko.observable();
 
@@ -124,6 +131,13 @@ const creditControlViewModel = (() => {
 
         console.log('calling toggleCreditStop with', data);
 
+        document.querySelectorAll('[data-bind*="actualBootstrapPopover"]').forEach(e => {
+            let p = bootstrap.Popover.getInstance(e);
+            if (p) {
+                p.hide();
+            }
+        });
+
         fetch('/api/CreditControlAPI/ToggleCreditStop', {
             method: 'POST',
             headers: window.fetchHeaders,
@@ -135,12 +149,7 @@ const creditControlViewModel = (() => {
             .then(data => {
                 self.busy(false);
                 tradeAccountSearchResult.onStop(!tradeAccountSearchResult.onStop());
-                document.querySelectorAll('[data-bind*="actualBootstrapPopover"]').forEach(e => {
-                    let p = bootstrap.Popover.getInstance(e);
-                    if (p) {
-                        p.hide();
-                    }
-                });
+                self.refresh();
             })
             .catch(err => {
                 self.busy(false);

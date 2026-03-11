@@ -398,6 +398,16 @@
             requestEnd: (e) => {
                 console.log('requestEnd', e);
                 self.busy(false);
+
+                if (e.type == 'update') {
+                    e.sender.data().forEach(k => {
+                        console.log(k, k.postSave());
+                    });
+                }
+
+                $('.k-grid-toolbar .k-button').removeClass('d-flex');
+                $('.k-grid-toolbar .k-button').addClass('d-none');
+
                 self.unsavedChanges(false);
             },
             filter: (() => {
@@ -457,49 +467,41 @@
         dataBinding: (e) => {
             console.log('dataBinding', e);
         },
-        dataBound: (e) => {
-            console.log('dataBound', e);
-
-            e.sender.dataSource.data().forEach(dataItem => {
-                let item = self.data().find(da => da.ResourceID == dataItem.ResourceID);
-                item.dataItem = dataItem;
-            });
+        dataBound: (e, t) => {
+            console.log('dataBound', e, t);
 
             if (self.ready()) {
                 self.refreshDashboard();
             }
+
+            window.setTimeout(() => {
+                $(".k-grid-save-changes, .k-grid-cancel-changes").removeClass('d-flex');
+                $(".k-grid-save-changes, .k-grid-cancel-changes").addClass('d-none');
+            }, 0);
         },
-        //saveChanges: (e) => {
-        //    console.log('saveChanges', e);
+        saveChanges: (e) => {
+            console.log('saveChanges', e);
 
-        //    let models = self.data();
+            self.busy(true);
 
-        //    let data = e.sender.dataSource.data();
+            let models = self.data();
 
-        //    let anyDirty = false;
+            let data = e.sender.dataSource.data();
 
-        //    models.forEach(tr => {
-        //        let dataItem = data.find(d => d.ResourceID == tr.ResourceID);
+            models.forEach(tr => {
+                let dataItem = data.find(d => d.ResourceID == tr.ResourceID);
 
-        //        if (tr.translation() == '') {
-        //            tr.translation(null);
-        //        }
+                if (tr.translation() == '') {
+                    tr.translation(null);
+                }
 
-        //        if (tr.dirty()) {
-        //            dataItem.dirty = true;
-        //            dataItem.set('Approval', tr.approval());
-        //            dataItem.set('Translation', tr.translation());
-
-        //            anyDirty = true;
-        //        }
-        //    });
-
-        //    if (anyDirty) {
-        //        document.querySelectorAll('.k-grid-toolbar .k-button').forEach(b => {
-        //            b.classList.toggle('d-block');
-        //        })
-        //    }
-        //},
+                if (tr.dirty()) {
+                    dataItem.dirty = true;
+                    dataItem.set('Approval', tr.approval());
+                    dataItem.set('Translation', tr.translation());
+                }
+            });
+        },
     };
 
     //#endregion
@@ -683,7 +685,20 @@ const translationRecord = ({
                 "deleteRow",
                 "deleteColumn",
                 "viewHtml"
-            ]
+            ],
+            serialization: {
+                custom: function (html) {
+                    // Replace opening <p> tags with nothing and closing </p> with <br>
+                    // or any other logic required for your specific format
+                    let result = html.replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, "<br />");
+
+                    if (result.endsWith("<br />")) {
+                        result = result.substring(0, result.length - 6);
+                    }
+
+                    return result;
+                }
+            }
         }
     }
 
@@ -713,17 +728,13 @@ const translationRecord = ({
     //#region Subscriptions
 
     self.translation.subscribe(nv => {
-       
-            self.dataItem.set('Value', nv);
-            $(".k-grid-save-changes, .k-grid-cancel-changes").show();
-        
+        $(".k-grid-save-changes, .k-grid-cancel-changes").removeClass('d-none');
+        $(".k-grid-save-changes, .k-grid-cancel-changes").addClass('d-flex');
     });
 
     self.approval.subscribe(nv => {
-        
-            self.dataItem.set('MemberID', getUserId());
-            $(".k-grid-save-changes, .k-grid-cancel-changes").show();
-        
+        $(".k-grid-save-changes, .k-grid-cancel-changes").removeClass('d-none');
+        $(".k-grid-save-changes, .k-grid-cancel-changes").addClass('d-flex');
     });
 
     //self.approval.subscribe(nv => {
@@ -751,11 +762,22 @@ const translationRecord = ({
     //        item.set('MemberID', undefined);
     //    }
 
-    //    if (viewModel.resourceGridSettings.widget()) {
-    //        viewModel.resourceGridSettings.widget().trigger('saveChanges');
-    //    }
-        
+    //    //if (viewModel.resourceGridSettings.widget()) {
+    //    //    viewModel.resourceGridSettings.widget().trigger('saveChanges');
+    //    //}
     //});
+
+    self.postSave = () => {
+        self.originalApproval = self.approval();
+        self.originalTranslation = self.translation();
+        self.translation.valueHasMutated();
+        return self.dirty();
+    }
+
+    self.cancelChanges = () => {
+        self.approval(self.originalApproval);
+        self.translation(self.originalTranslation);
+    }
 
     self.toJSON = () => {
         return {

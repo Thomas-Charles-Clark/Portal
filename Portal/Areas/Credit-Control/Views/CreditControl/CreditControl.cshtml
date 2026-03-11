@@ -17,7 +17,7 @@
 	@Scripts.Render("~/bundles/js/trade-account-contacts")
 	@Scripts.Render("~/bundles/js/tempus-dominus")
 
-	<script type="text/javascript">
+<script type="text/javascript">
 		window.getCreditControllerCode = () => {
 			return '@(Model.CreditControllerCode)'
 		}
@@ -72,7 +72,28 @@
 
 		window.isCreditControlApp = () => "C";
 
-	</script>
+		@if (User.Identity.GetUserId<int>() == 8)
+		{
+			<text>
+			window.getPredefinedFilterParams = () =>
+			{
+				return {
+					tradeAccountCode: 'K0098'
+				}
+			}
+			</text>
+		}
+		else
+		{
+			<text>
+			window.getPredefinedFilterParams = () =>
+			{
+				return {}
+			}
+			</text>
+		}
+
+</script>
 
 	<script type="text/javascript">
 
@@ -444,6 +465,16 @@
 					Statements
 				</button>
 			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" id="paying-off-with-proforma-tab" data-bs-toggle="tab" data-bs-target="#paying-off-with-proforma-tab-pane" type="button" role="tab" aria-controls="paying-off-with-proforma-tab-pane" aria-selected="false">
+					Pay off Invoices with Proforma Deposits
+				</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" id="proforma-online-payment-history-tab" data-bs-toggle="tab" data-bs-target="#proforma-online-payment-history-pane" type="button" role="tab" aria-controls="proforma-online-payment-history-pane" aria-selected="false">
+					Proforma Online Payment History
+				</button>
+			</li>
 		</ul>
 		<div class="tab-content" id="credit-control-tab-content">
 			<div class="tab-pane fade show active" id="dashboard-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
@@ -650,6 +681,16 @@
 					</button>
 				</div>
 				<div id="response-container" data-bind="html: sendResponse"></div>
+			</div>
+			<div id="paying-off-with-proforma-tab-pane" class="tab-pane fade">
+				<h4 class="my-4">
+					Paying off Invoices with Proforma Deposits goes here <i class="ms-3 bi bi-chevron-down"></i>
+				</h4>
+			</div>
+			<div id="proforma-online-payment-history-pane" class="tab-pane fade">
+				<h4 class="my-4">
+					Online Proforma Payment History goes here <i class="ms-3 bi bi-chevron-compact-down"></i>
+				</h4>
 			</div>
 		</div>
 	</main>

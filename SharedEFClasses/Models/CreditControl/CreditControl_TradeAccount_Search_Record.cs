@@ -11,6 +11,7 @@ namespace SharedEFClasses.Models.CreditControl
 	public class CreditControl_TradeAccount_Search_Record
 	{
 		public string UniVerseAccount { get; set; }
+		public string CreditStopHistory { get; set; }
 		public int TradeAccountID { get; set; }
 		public string CurrencyCode { get; set; }
 		public string FormattingCulture { get; set; }

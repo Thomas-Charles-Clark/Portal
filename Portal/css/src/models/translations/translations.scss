@@ -79,6 +79,7 @@
         td.translator-cell {
             cursor: pointer;
             padding: 0;
+            font-family: 'Open Sans';
 
             &:focus,
             &:focus-within {
@@ -199,6 +200,16 @@
     }
 }
 
+#translate-resources-container {
+    .k-loading,
+    .k-loading-mask {
+        display: none !important;
+    }
+}
+
+.k-editor {
+    font-family: 'Open Sans', Arial;
+}
 
 .mdc-text-field--html-editor {
     display: block;

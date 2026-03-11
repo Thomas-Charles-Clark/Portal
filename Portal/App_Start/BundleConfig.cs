@@ -434,7 +434,8 @@ namespace Portal
                     $"{cssPrefix}/models/credit-control/credit-control-sidebar{cssSuffix}",
                     $"{cssPrefix}/models/credit-control/credit-control-performance{cssSuffix}",
                     $"{cssPrefix}/models/credit-control/credit-control-order-release{cssSuffix}",
-                    $"{cssPrefix}/models/credit-control/credit-control-virtual-scroller{cssSuffix}",
+                    $"{cssPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits{cssSuffix}",
+					$"{cssPrefix}/models/credit-control/credit-control-virtual-scroller{cssSuffix}",
 					$"{cssPrefix}/models/trade-account-contacts-widener{cssSuffix}"
 			));
 
@@ -1050,7 +1051,13 @@ namespace Portal
                                     $"{jsPrefix}/models/credit-control/credit-control-performance{jsSuffix}",
                                     $"{jsPrefix}/models/credit-control/credit-control-performance-pod{jsSuffix}",
                                     $"{jsPrefix}/models/credit-control/credit-control-performance-record{jsSuffix}",
-                                    $"{jsPrefix}/models/credit-control/credit-control-main-grid-column{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-payments{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-payment-pod{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-payment-record{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits-record{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits-pod{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-main-grid-column{jsSuffix}",
                                     $"{jsPrefix}/models/credit-control/credit-control-main-grid-row{jsSuffix}",
 									$"{jsPrefix}/models/credit-control/credit-control{jsSuffix}"
                             ));

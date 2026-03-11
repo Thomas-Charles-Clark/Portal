@@ -32,6 +32,8 @@
         }
     });
 
+    self.onStopHistoryRecords = ko.observableArray(JSON.parse(rec.CreditStopHistory));
+
     Object.keys(rec).forEach(k => {
         if (k.endsWith('Value')) {
             self[`${k[0].toLowerCase()}${k.substring(1)}`] = ko.observable(self[k]).extend({
@@ -76,7 +78,57 @@
         customClass: 'confirm-credit-toggle-popover',
         content: (element) => {
             let e = ko.dataFor(element);
-            return `<div class="mb-3" data-bind="component: { name: 'mdc-text-area-component', params: stopChangeReasonParams }"></div>
+            return `<div id="credit-control-history-table-wrapper">
+                <table class="table table-bordered credit-control-history-table">
+                    <colgroup>
+                        <col />
+                        <col />
+                        <col />
+                        <col />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>
+                                Changed
+                            </th>
+                            <th>
+                                To
+                            </th>
+                            <th>
+                                By
+                            </th>
+                            <th>
+                                Why
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: onStopHistoryRecords">
+                        <tr>
+                            <td>
+                                <span data-bind="text: moment(ChangedDT).format('DD/MM/YYYY HH:mm')"></span>
+                            </td>
+                            <td class="credit-history-indicator">
+                                <!-- ko if: ChangedTo -->
+                                <i class="bi bi-exclamation-octagon-fill"></i>
+                                <!-- /ko -->
+                                <!-- ko ifnot: ChangedTo -->
+                                <i class="bi bi-hand-thumbs-up-fill"></i>
+                                <!-- /ko -->
+                            </td>
+                            <td>
+                                <span data-bind="text: ChangedBy"></span>
+                            </td>
+                            <td>
+                                <div data-bind="html: Reason"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            <h5 class="my-4 bold" data-bind="css: { 'text-danger': !CreditStop }">
+                You&apos;re about to <span data-bind="text: CreditStop ? 'remove the Credit Stop flag from this account' : 'set the Credit Stop flag on this account'"></span>
+            </h4>
+            <div class="mb-3" data-bind="component: { name: 'mdc-text-area-component', params: stopChangeReasonParams }"></div>
             <div class="d-flex justify-content-end align-items-center">
                 <button class="btn btn-secondary" data-bind="click: toggleCreditStop">
                     Confirm
@@ -91,7 +143,7 @@
                 self.stopChangeReason.mdcTextField.layout();
                 window.setTimeout(() => {
                     self.stopChangeReason.mdcTextField.focus();
-                }, 0);
+                }, 100);
             }, 0);
         }, 
         hide: null,

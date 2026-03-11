@@ -54,6 +54,15 @@
 		});
 
 		window.addEventListener('load', function () {
+
+			var defaultTools = kendo.ui.Editor.defaultTools;
+
+			// Makes Enter key insert <br> instead of <p>
+			defaultTools["insertLineBreak"].options.shift = false;
+
+			// Disables the default paragraph insertion tool
+			delete defaultTools["insertParagraph"].options;
+
 			ko.applyBindings(viewModel, document.body);
 			window.setTimeout(() => {
 				if (window.getLanguageId()) {

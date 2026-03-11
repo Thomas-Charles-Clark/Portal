@@ -34,7 +34,7 @@ namespace SharedEFClasses.Models
             });
 
             foreach (var bid in dto.BasketItemIDs)
-            {
+            { 
                 basketItemIds.Rows.Add(bid);
             }
 
