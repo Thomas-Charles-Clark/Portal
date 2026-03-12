@@ -14,6 +14,8 @@ using Microsoft.AspNet.OData;
 using SharedEFClasses;
 using SharedEFClasses.Models.Resources;
 using System.Text.RegularExpressions;
+using Microsoft.AspNet.OData.Routing;
+using System.IO;
 
 namespace Portal.Controllers
 {
@@ -100,6 +102,8 @@ namespace Portal.Controllers
 
                 dbrec.ModifiedDT = DateTime.Now;
 
+                entity.ApprovedByHuman = true;
+
                 await PortalDb.SaveChangesAsync();
             }
 
@@ -107,7 +111,7 @@ namespace Portal.Controllers
         }
 
         [AcceptVerbs("PATCH", "MERGE")]
-        public async Task<IHttpActionResult> Patch([FromODataUri]short resourceId, [FromODataUri]byte languageId, Delta<Resource_Language> patch)
+        public async Task<IHttpActionResult> Patch([FromODataUri]short resourceId, [FromODataUri]byte languageId, [FromODataUri]int memberId, Delta<Resource_Language> patch)
         {
             object id;
 
@@ -132,7 +136,9 @@ namespace Portal.Controllers
             }
             else
             {
-                patch.TryGetPropertyValue("Value", out object value);
+                originalEntity.MemberID = memberId;
+
+				patch.TryGetPropertyValue("Value", out object value);
 
                 if (value != null)
                 {
@@ -141,7 +147,11 @@ namespace Portal.Controllers
 				}
 
                 patch.TrySetPropertyValue("ModifiedDT", DateTime.Now);
+                
                 patch.Patch(originalEntity);
+
+                patch.TrySetPropertyValue("ApprovedByHuman", true);
+
                 await PortalDb.SaveChangesAsync();
             }
 

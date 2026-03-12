@@ -9,6 +9,10 @@
 
     self.busyMessage = ko.observable('Please Wait');
 
+    self.gridWidget = ko.observable();
+
+    self.dashboardPods = ko.observableArray([]);
+
     //#endregion
 
 
@@ -41,7 +45,9 @@
 
     //#region Methods
 
+    self.refresh = () => {
 
+    }
 
     //#endregion
 

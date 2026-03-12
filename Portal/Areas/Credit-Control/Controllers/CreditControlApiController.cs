@@ -87,6 +87,66 @@ namespace Portal.Areas.CreditControl.Controllers
 		}
 
 		[HttpGet]
+		public async Task<IHttpActionResult> OnlinePaymentHistory(
+			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+			[FromUri] CreditControl_Payments_SelectDTO dto)
+		{
+			try
+			{
+				DateTime? toDt = DateTime.Now;
+
+				DateTime? fromDt = null;
+
+				switch (dto.DateRangeID)
+				{
+					case 12: /* Last 12 Months */
+						fromDt = DateTime.Now.AddYears(-1);
+						break;
+					case 6: /* Last 6 Months */
+						fromDt = DateTime.Now.AddMonths(-6);
+						break;
+					case 3: /* This Month */
+						fromDt = DateTime.Now.AddMonths(-3);
+						break;
+					case 1: /* This Month */
+						fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
+						break;
+					case 30: /* Last 30 Days */
+						fromDt = DateTime.Now.AddDays(-30);
+						break;
+					case -1: /* "Custom" */
+						toDt = dto.To;
+						fromDt = dto.From;
+						break;
+					case -2: /* "All Time" noop */
+						break;
+				}
+
+				dto.From = fromDt;
+				dto.To = toDt;
+
+				var model = await PortalDb.CreditControl_Payments_Select((CreditControl_Payments_SelectDTO)dto);
+
+				request.Page = 1; // This is a super weird and stupid hack but...
+
+				var gridData = model.Records.ToDataSourceResult(request);
+
+				return Ok(new
+				{
+					gridData = gridData
+				});
+			}
+			catch (SqlException)
+			{
+				return Ok(new
+				{
+					errorMessage = "Sorry, a database timeout error occurred.<br/>Please click to close this dialog box to retry, or reload your browser tab."
+				});
+			}
+		}
+
+
+		[HttpGet]
 		public async Task<IHttpActionResult> TradeAccountSearchEndless(
 			[FromUri] CreditControl_TradeAccount_SearchDTO dto)
 		{

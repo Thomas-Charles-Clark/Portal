@@ -916,6 +916,12 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   flex: 1 0 calc(20% - 3rem);
 }
 
+.prefilters {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
 #trade-account-contacts-modal-dialog {
   margin-top: 0;
 }
@@ -999,6 +1005,11 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 
 .k-loading-mask {
   display: none !important;
+}
+
+.k-animation-container .trade-account-droplist {
+  width: 420px !important;
+  min-width: 420px !important;
 }
 
 #selected-filter-pills {

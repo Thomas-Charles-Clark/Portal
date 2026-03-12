@@ -432,8 +432,9 @@ namespace Portal
             bundles.Add(new StyleBundle("~/bundles/css/credit-control").Include(
                     $"{cssPrefix}/models/credit-control/credit-control{cssSuffix}",
                     $"{cssPrefix}/models/credit-control/credit-control-sidebar{cssSuffix}",
+                    $"{cssPrefix}/models/credit-control/credit-control-payments{cssSuffix}",
                     $"{cssPrefix}/models/credit-control/credit-control-performance{cssSuffix}",
-                    $"{cssPrefix}/models/credit-control/credit-control-order-release{cssSuffix}",
+					$"{cssPrefix}/models/credit-control/credit-control-order-release{cssSuffix}",
                     $"{cssPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits{cssSuffix}",
 					$"{cssPrefix}/models/credit-control/credit-control-virtual-scroller{cssSuffix}",
 					$"{cssPrefix}/models/trade-account-contacts-widener{cssSuffix}"
@@ -1051,9 +1052,9 @@ namespace Portal
                                     $"{jsPrefix}/models/credit-control/credit-control-performance{jsSuffix}",
                                     $"{jsPrefix}/models/credit-control/credit-control-performance-pod{jsSuffix}",
                                     $"{jsPrefix}/models/credit-control/credit-control-performance-record{jsSuffix}",
-									$"{jsPrefix}/models/credit-control/credit-control-payments{jsSuffix}",
-									$"{jsPrefix}/models/credit-control/credit-control-payment-pod{jsSuffix}",
-									$"{jsPrefix}/models/credit-control/credit-control-payment-record{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-payments-history{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-payments-history-pod{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-payments-history-record{jsSuffix}",
 									$"{jsPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits{jsSuffix}",
 									$"{jsPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits-record{jsSuffix}",
 									$"{jsPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits-pod{jsSuffix}",

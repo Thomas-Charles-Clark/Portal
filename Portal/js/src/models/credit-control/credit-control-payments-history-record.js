@@ -1,5 +1,11 @@
-﻿const creditControlPaymentViewModel = ({ } = {}) => {
-    let self = {};
+﻿const creditControlPaymentsHistoryRecordViewModel = ({
+    
+} = {
+
+}) => {
+    let self = {
+
+    };
 
     //#region Properties
 

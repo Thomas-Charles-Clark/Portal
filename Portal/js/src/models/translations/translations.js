@@ -400,9 +400,19 @@
                 self.busy(false);
 
                 if (e.type == 'update') {
+
                     e.sender.data().forEach(k => {
+
                         console.log(k, k.postSave());
+
+                        k.dirty = false;
+
+                        let d = self.data().find(i => i.ResourceID == k.ResourceID);
+
+                        console.log(`ResourceID ${d.ResourceID} is now ${d.postSave()}`);
+
                     });
+
                 }
 
                 $('.k-grid-toolbar .k-button').removeClass('d-flex');
@@ -475,9 +485,28 @@
             }
 
             window.setTimeout(() => {
+
+                $(".k-grid").on("mousedown", ".k-grid-cancel-changes", function (event) {
+
+                    self.busy(true);
+
+                    e.sender.dataSource.data().forEach(d => {
+                        d.cancelChanges();
+                    });
+
+                    $(".k-grid-save-changes, .k-grid-cancel-changes").removeClass('d-flex');
+                    $(".k-grid-save-changes, .k-grid-cancel-changes").addClass('d-none');
+
+                    self.busy(false);
+                });
+
                 $(".k-grid-save-changes, .k-grid-cancel-changes").removeClass('d-flex');
                 $(".k-grid-save-changes, .k-grid-cancel-changes").addClass('d-none');
+                self.busy(false);
+
             }, 0);
+
+
         },
         saveChanges: (e) => {
             console.log('saveChanges', e);
@@ -499,6 +528,8 @@
                     dataItem.dirty = true;
                     dataItem.set('Approval', tr.approval());
                     dataItem.set('Translation', tr.translation());
+                } else {
+                    dataItem.dirty = false;
                 }
             });
         },
@@ -707,9 +738,10 @@ const translationRecord = ({
     //#region Computeds
 
     self.dirty = ko.computed(() => {
-        return (self.approval() != self.originalApproval) ||
-            (self.translation() != self.originalTranslation);
-    })
+        var result = (self.approval() != self.originalApproval) || (self.translation() != self.originalTranslation);
+
+        return result;
+    });
 
     self.approvalTitle = ko.computed(() => {
         let dtSuffix = '';
@@ -730,6 +762,8 @@ const translationRecord = ({
     self.translation.subscribe(nv => {
         $(".k-grid-save-changes, .k-grid-cancel-changes").removeClass('d-none');
         $(".k-grid-save-changes, .k-grid-cancel-changes").addClass('d-flex');
+        self.approval(true);
+        self.approvalParams.disable(true);
     });
 
     self.approval.subscribe(nv => {
@@ -771,7 +805,11 @@ const translationRecord = ({
         self.originalApproval = self.approval();
         self.originalTranslation = self.translation();
         self.translation.valueHasMutated();
-        return self.dirty();
+        self.approval.valueHasMutated();
+
+        let dirty = self.dirty();
+
+        return dirty;
     }
 
     self.cancelChanges = () => {

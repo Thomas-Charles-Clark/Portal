@@ -8,9 +8,9 @@ namespace SharedEFClasses.Models.CreditControl
 {
 	public class CreditControl_AgedSalesLedger_Record
 	{
-		public string PeriodLabel { get; set; }
+		public string ColumnLabel { get; set; }
 
-		public string ReportGroup { get; set; }
+		public string RowLabel { get; set; }
 
 		public string CurrencyCode { get; set; }
 
@@ -24,6 +24,6 @@ namespace SharedEFClasses.Models.CreditControl
 
 		public decimal TwelveMonthOrderValue { get; set; }
 
-		public decimal TotalOutstanding { get; set; }
+		public decimal Value { get; set; }
 	}
 }

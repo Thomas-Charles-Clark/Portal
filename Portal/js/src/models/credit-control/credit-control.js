@@ -68,7 +68,9 @@ const creditControlViewModel = (() => {
 
     self.performance = creditControlPerformanceViewModel();
 
-    self.payments = creditControlPaymentsViewModel();
+    self.paymentsHistory = creditControlPaymentsHistoryViewModel({
+        filters: self.filters
+    });
 
     self.outstandingInvoices = creditControlOutstandingInvoicesWithUnallocatedDepositsViewModel();
 
@@ -81,6 +83,26 @@ const creditControlViewModel = (() => {
     self.tradeAccountContacts = tradeAccountContactsViewModel({});
 
     self.selectedTradeAccount = ko.observable();
+
+    self.dashboardTab = document.querySelector('#dashboard-tab');
+
+    self.dashboardCollapse = bootstrap.Collapse.getOrCreateInstance(self.dashboardTab);
+
+    self.orderReleaseTab = document.querySelector('#order-release-tab');
+
+    self.orderReleaseCollapse = bootstrap.Collapse.getOrCreateInstance(self.orderReleaseTab);
+
+    self.statementsTab = document.querySelector('#statements-tab');
+
+    self.statementsCollapse = bootstrap.Collapse.getOrCreateInstance(self.statementsTab);
+
+    self.payOffInvoicesTab = document.querySelector('#paying-off-with-proforma-tab');
+
+    self.payOffInvoicesCollapse = bootstrap.Collapse.getOrCreateInstance(self.payOffInvoicesTab);
+
+    self.onlinePaymentHistoryTab = document.querySelector('#online-payment-history-tab');
+
+    self.onlinePaymentHistoryCollapse = bootstrap.Collapse.getOrCreateInstance(self.onlinePaymentHistoryTab);
 
     self.debtBreakdown = ko.observable();
 
@@ -400,6 +422,12 @@ const creditControlViewModel = (() => {
     //    },
     //    displayModes: self.filters.displayModes
     //});
+
+    self.paymentHistory = creditControlPaymentsHistoryViewModel({
+        filters: self.filters
+    });
+
+    self.payment
 
     self.memberBasketFetcher = memberBasketFetcher(self);
 
@@ -1681,6 +1709,18 @@ const creditControlViewModel = (() => {
 
     self.ordersBreakdownModalElement.addEventListener('bs.modal.hidden', () => {
         self.ordersBreakdown(undefined);
+    });
+
+    self.dashboardTab.addEventListener('shown.bs.tab', (event) => {
+        self.refresh();
+    });
+
+    self.payOffInvoicesTab.addEventListener('shown.bs.tab', (event) => {
+        self.outstandingInvoices.refresh();
+    });
+
+    self.onlinePaymentHistoryTab.addEventListener('shown.bs.tab', (event) => {
+        self.paymentHistory.refresh();
     });
 
     //#endregion

@@ -1848,9 +1848,9 @@
     <Content Include="js\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits-pod.js" />
     <Content Include="js\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits-record.js" />
     <Content Include="js\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits.js" />
-    <Content Include="js\src\models\credit-control\credit-control-payment-pod.js" />
-    <Content Include="js\src\models\credit-control\credit-control-payment-record.js" />
-    <Content Include="js\src\models\credit-control\credit-control-payments.js" />
+    <Content Include="js\src\models\credit-control\credit-control-payments-history-pod.js" />
+    <Content Include="js\src\models\credit-control\credit-control-payments-history-record.js" />
+    <Content Include="js\src\models\credit-control\credit-control-payments-history.js" />
     <Content Include="js\src\models\others\address.js" />
     <Content Include="js\src\models\others\alternative-products.js" />
     <Content Include="js\src\models\others\application-groups.js" />

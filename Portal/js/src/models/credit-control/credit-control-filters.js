@@ -1,4 +1,34 @@
-﻿const creditControlFiltersViewModel = ({
+﻿const paymentHistoryDateRanges = [{
+    dateRangeId: '-2',
+    name: 'All Time',
+    class: null
+}, {
+    dateRangeId: '30',
+    name: 'Last 30 Days',
+    class: null
+}, {
+    dateRangeId: '1',
+    name: 'This Month',
+    class: null
+}, {
+    dateRangeId: '3',
+    name: 'Last 3 Months',
+    class: null
+}, {
+    dateRangeId: '6',
+    name: 'Last 6 Months',
+    class: null
+}, {
+    dateRangeId: '12',
+    name: 'Last 12 Months',
+    class: null
+}, {
+    dateRangeId: '-1',
+    name: 'Custom',
+    class: null
+}];
+
+const creditControlFiltersViewModel = ({
     params,
     parent
 } = {
@@ -76,6 +106,52 @@
     displayModes = displayModes == null ? [DISPLAY_MODE_QUANTITY] : JSON.parse(displayModes);
 
     self.displayModes = ko.observableArray(displayModes);
+
+    self.paymentHistoryDateRangeId = ko.observable('30');
+
+    self.paymentHistoryDateRange = ko.observable(paymentHistoryDateRanges.find(d => d.dateRangeId == '30'));
+
+    self.paymentHistoryDateRanges = paymentHistoryDateRanges;
+
+    self.paymentHistoryTradeAccountCode = ko.observable('');
+
+    self.paymentHistoryTradeAccount = ko.observable();
+
+    self.paymentHistorySearchTerm = ko.observable();
+
+    self.paymentHistoryFromDate = ko.observable();
+
+    self.paymentHistoryToDate = ko.observable();
+
+    self.validatePaymentHistorySearchNow = ko.observable(true);
+
+    self.paymentHistoryFromDate.extend({
+        date: {
+            params: true,
+            message: 'From must be a date'
+        },
+        required: {
+            params: true,
+            onlyIf: function () {
+                return self.validatePaymentHistorySearchNow() && self.paymentHistoryDateRangeId() == -1 && self.paymentHistoryToDate() != null
+            },
+            message: 'Please provide a From Date'
+        }
+    });
+
+    self.paymentHistoryFromDate.extend({
+        date: {
+            params: true,
+            message: 'To must be a date'
+        }
+    });
+
+    self.paymentHistoryToDate.extend({
+        date: {
+            params: true,
+            message: 'To must be a date'
+        }
+    });
 
     //#endregion
 
@@ -799,6 +875,279 @@
     //    }
     //});
 
+    self.paymentHistoryTradeAccountParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Trade Account',
+        odata: true,
+        endPoint: () => `/odata/TradeAccounts_Live/Default.GetTradeAccountsForCreditControl(includeClosedAccounts=${ko.unwrap(self.includeClosedTradeAccounts)}, includeDeletedAccounts=${ko.unwrap(self.includeDeletedTradeAccounts)})`,
+        textField: 'ShortLabel',
+        valueField: 'Code',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/TradeAccounts_Live/Default.TradeAccountLiveValueMapper(tradeAccountCode='${options.value}')`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        template: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        valueTemplate: (e) => {
+            if ((e.ShortLabel != '') && (e.Code != null))
+                return `<span title="${e.ShortLabel}">Trade Account: ${e.ShortLabel}</span>`
+            else
+                return '';
+        },
+        idObservable: self.tradeAccountCode,
+        objObservable: self.tradeAccount,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: [{
+            dir: 'asc',
+            field: 'Code'
+        }, {
+            dir: 'asc',
+            field: 'Name'
+        }],
+        select: function (e) {
+            console.log('statementsTradeAccountParams select', e);
+        },
+        requestStart: function (e) {
+
+        },
+        open: function (e) {
+            e.sender.list.addClass("trade-account-droplist");
+        },
+        clearFunction: () => {
+            self.statementsTradeAccountCode('');
+            self.statementsTradeAccount(undefined);
+            self.statementsTradeAccountParams.dropDownListSettings.widget().value('');
+            self.statementsTradeAccountParams.dropDownListSettings.widget().trigger('change');
+        },
+        parameterMap: (data) => {
+
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            let filters = [];
+
+            if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "ShortLabel")) {
+                let f = data.filter.filters.find(f => f.field === "ShortLabel");
+                filters.push(`(contains(Name,'${f.value}') or startswith(Code,'${f.value}'))`);
+            }
+
+            if (d.$filter) {
+                delete d.$filter;
+            }
+
+            // regardless whether or not a filter has a selection it must be refreshed if ANOTHER filter changes.
+            // the implementation beneath is *not quite* sufficient  
+
+            if (filters.length) {
+                let filterString = filters.join(' and ');
+                d.$apply = `filter(${filterString})`;
+            }
+
+            if (!d.$apply) {
+                delete d.$apply;
+            }
+
+            return d;
+        },
+        popupSettings: {
+            appendTo: document.querySelector("#send-statements-modal .modal-body")
+        }
+    });
+
+    self.paymentHistorySearchTermParams = {
+        label: "Search Term",
+        observable: self.paymentHistorySearchTerm,
+        focusObservable: ko.observable(),
+        busy: ko.observable(),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        useNativeValidation: false, // this feeds through to mdc objects and affects them
+        decorateInputElement: true,
+        insertValidationMessages: false,
+        enterKey: () => {
+            //self.gridSettings.widget().dataSource.read();
+        }
+    }
+
+    self.paymentHistoryDateRangeParams = kendoMDCDropDownList({
+        skipCascade: false,
+        label: 'Date Range',
+        data: self.paymentHistoryDateRanges,
+        textField: 'name',
+        valueField: 'dateRangeId',
+        idObservable: self.paymentHistoryDateRangeId,
+        objObservable: self.paymentHistoryDateRange,
+        template: (e) => `<span class="date-range ${e.class}">${e.name}</span>`,
+        valueTemplate: (e) => `<span class="date-range ${e.class}">${e.name}</span>`,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(false),
+        revertible: ko.observable(false),
+        readOnly: false,
+        autoBind: true,
+        autoWidth: true,
+        clearFunction: () => {
+            self.paymentHistoryDateRangeId('');
+        },
+        afterClear: () => {
+
+        },
+        popupSettings: {
+            appendTo: document.querySelector(`#payment-history-date-type-prefilter`)
+        },
+    });
+
+    self.paymentHistoryFromDateParams = {
+        label: "From",
+        observable: self.paymentHistoryFromDate,
+        originalValue: self.paymentHistoryFromDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'months',
+                cellSize: '3rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false
+        },
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.paymentHistoryFromDate(undefined);
+            self.paymentHistoryFromDateParams.observable.tempusDominus.clear();
+            self.paymentHistoryFromDateParams.observable.tempusDominus.updateOptions({
+                display: {
+                    viewMode: 'months'
+                }
+            });
+        },
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.paymentHistoryFromDateParams.observable(self.paymentHistoryFromDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+        popupSettings: {
+            appendTo: '#paymetn-history-from-date'
+        }
+    };
+
+    self.paymentHistoryToDateParams = {
+        label: "To",
+        observable: self.paymentHistoryToDate,
+        originalValue: self.paymentHistoryToDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'months',
+                cellSize: '3rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false
+        },
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.paymentHistoryToDate(undefined);
+            self.paymentHistoryToDateParams.observable.tempusDominus.clear();
+            self.paymentHistoryToDateParams.observable.tempusDominus.updateOptions({
+                display: {
+                    viewMode: 'months'
+                }
+            });
+        },
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.paymentHistoryToDateParams.observable(self.paymentHistoryToDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+        popupSettings: {
+            appendTo: '#payment-history-to-date'
+        }
+    };
+
     //#endregion
 
 
@@ -812,26 +1161,24 @@
         }
     });
 
-    //self.tradeAccountCode.subscribe(nv => {
-    //    self.refreshParent();
-    //})
-
-    //self.date.subscribe(nv => {
-    //    self.refreshParent();
-    //});
-
-    //self.debtFunderCode.subscribe(nv => {
-    //    self.refreshParent();
-    //});
-
-    //self.currencyId.subscribe(nv => {
-    //    self.refreshParent();
-    //});
-
     //#endregion
 
 
     //#region Computeds
+
+    self.paymentHistoryFromPreceedsTo = ko.pureComputed(() => {
+        if (self.paymentHistoryFromDate() && self.paymentHistoryToDate()) {
+            return self.paymentHistoryFromDate().getTime() <= self.paymentHistoryToDate().getTime();
+        }
+    }, self).extend({
+        equal: {
+            params: true,
+            onlyIf: function () {
+                return self.paymentHistoryFromDate() && self.paymentHistoryToDate()
+            },
+            message: 'From Date must preceed To Date'
+        }
+    }, self);
 
     self.getData = ko.computed(() => {
 
@@ -923,6 +1270,7 @@
                     && (k != 'initialParams')
                     && (k != 'dateParams')
                     && (k != 'statementsTradeAccountParams')
+                    && (k != 'paymentHistoryTradeAccountParams')
                     && (k != 'includeClosedTradeAccountsParams')
                     && (k != 'salesHistoryAnalysisPeriodsParams')
                     && (k.indexOf('Params') > -1)
@@ -988,6 +1336,25 @@
         }
 
         return filtersCount;
+    }, self);
+
+    self.onlinePaymentHistoryFilters = ko.computed(() => {
+
+        let data = {
+            dateRangeId: self.paymentHistoryDateRangeId(),
+            from: self.paymentHistoryFromDate() ?? null,
+            to: self.paymentHistoryToDate() ?? null
+        }
+
+        if (self.paymentHistorySearchTerm()) {
+            data.searchTerm = self.paymentHistorySearchTerm();
+        }
+
+        if (self.tradeAccountCode()) {
+            data.tradeAccountCode = self.tradeAccountCode()
+        }
+
+        return data;
     }, self);
 
     //#endregion

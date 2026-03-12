@@ -162,7 +162,12 @@ namespace SharedEFClasses.Models
 
 		public async Task<CreditControl_Payments_SelectResult> CreditControl_Payments_Select(CreditControl_Payments_SelectDTO dto)
 		{
-			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_Payments_Select]", dto, null, 60, CommandType.StoredProcedure);
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_Payments_Select]", new { 
+				dto.From,
+				dto.To,
+				dto.TradeAccountCode,
+				dto.SearchTerm
+			}, null, 60, CommandType.StoredProcedure);
 
 			return new CreditControl_Payments_SelectResult()
 			{

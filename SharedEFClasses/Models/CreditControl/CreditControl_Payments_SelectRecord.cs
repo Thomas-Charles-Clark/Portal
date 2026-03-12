@@ -13,7 +13,7 @@ namespace SharedEFClasses.Models.CreditControl
 		[Key]
 		public int PaymentRequestID { get; set; }
 
-		public string PaymentRequestGUID { get; set; }
+		public Guid PaymentRequestGUID { get; set; }
 
 		public string PaymentURI { get; set; }
 

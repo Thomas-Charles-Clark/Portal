@@ -1,4 +1,4 @@
-﻿const creditControlPaymentsViewModel = ({ } = {}) => {
+﻿const creditControlPaymentsHistoryPodViewModel = ({ } = {}) => {
     let self = {};
 
     //#region Properties

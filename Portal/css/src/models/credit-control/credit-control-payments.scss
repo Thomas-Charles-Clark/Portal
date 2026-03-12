@@ -1,1 +1,30 @@
 ﻿@import '../common.scss';
+
+#online-payment-history-pane {
+	.prefilters {
+		> div:first-of-type {
+			min-width: 280px;
+		}
+		> div:last-of-type {
+			min-width: 280px;
+			flex: 1 1 420px;
+		}
+	}
+	
+	.k-grid-norecords {
+		width: 100%;
+		height: calc(100% - 2px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.alert {
+		margin-bottom: 0;
+
+		& + .alert {
+			margin-top: $l-gutter;
+		}
+	}
+}
+

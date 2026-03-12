@@ -8,6 +8,8 @@ namespace SharedEFClasses.Models.CreditControl
 {
 	public class CreditControl_Payments_SelectDTO
 	{
+		public sbyte? DateRangeID { get; set; }
+
 		public string SearchTerm { get; set; }
 
 		public string TradeAccountCode { get; set; }

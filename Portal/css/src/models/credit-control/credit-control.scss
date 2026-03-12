@@ -440,6 +440,12 @@ html {
     }
 }
 
+.prefilters {
+    display: flex;
+    gap: $l-gutter;
+    align-items: center;
+}
+
 #trade-account-contacts-modal-dialog {
     margin-top: 0;
 
@@ -544,6 +550,13 @@ html {
 
 .k-loading-mask {
     display: none !important;
+}
+
+.k-animation-container {
+    .trade-account-droplist {
+        width: 420px !important;
+        min-width: 420px !important;
+    }
 }
 
 #selected-filter-pills {

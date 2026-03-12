@@ -160,12 +160,14 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
             .then(data => {
                 console.log('fetchPerformance returned', data);
 
-                self.periods(Map.groupBy(data.Records, (item) => item.PeriodLabel).entries().toArray().map(e => e[0])); // First stage of transposing the results...
+                self.periods(Map.groupBy(data.Records, (item) => item.ColumnLabel).entries().toArray().map(e => e[0]).sort((a, b) => {
+                    return a.ColumnSortOrder > b.ColumnSortOrder ? 1 : -1;
+                })); // First stage of transposing the results...
 
                 let currencyGrouping = Map.groupBy(data.Records, (item) => `${item.CurrencyCode}`).entries().toArray();
 
                 currencyGroup = currencyGrouping.map(cg => {
-                    let items = Map.groupBy(cg[1], (item, index) => `${item.ReportGroup}`).entries().toArray().map(e => {
+                    let items = Map.groupBy(cg[1], (item, index) => `${item.RowLabel}`).entries().toArray().map(e => {
 
                         let formattingCulture = e[1][0].FormattingCulture;
                         let currencyCode = e[1][0].CurrencyCode;
@@ -180,7 +182,7 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
                         return e;
                     });
 
-                    let records = Map.groupBy(items.flatMap(i => i[2]), item => item.PeriodLabel).entries().toArray();
+                    let records = Map.groupBy(items.flatMap(i => i[2]), item => item.ColumnLabel).entries().toArray();
 
                     return {
                         currencyCode: cg[0],
@@ -195,8 +197,8 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
                         twelveMonthOrderValue: records[0][1].reduce((accumulator, currentItem) => accumulator += currentItem.TwelveMonthOrderValue, 0),
                         totals: records.map(m => {
                             return {
-                                PeriodLabel: m[0],
-                                Total: m[1].reduce((accumulator, currentItem) => accumulator += currentItem.TotalOutstanding, 0),
+                                ColumnLabel: m[0],
+                                Total: m[1].reduce((accumulator, currentItem) => accumulator += currentItem.Value, 0),
                                 FormattingCulture: m[1][0].FormattingCulture,
                                 CurrencyCode: m[1][0].CurrencyCode,
                             }
