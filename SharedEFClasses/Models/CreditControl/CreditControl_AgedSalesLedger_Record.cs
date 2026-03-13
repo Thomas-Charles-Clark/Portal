@@ -8,22 +8,16 @@ namespace SharedEFClasses.Models.CreditControl
 {
 	public class CreditControl_AgedSalesLedger_Record
 	{
-		public string ColumnLabel { get; set; }
-
 		public string RowLabel { get; set; }
 
-		public string CurrencyCode { get; set; }
+		public int RowSortOrder { get; set; }
 
-		public string FormattingCulture { get; set; }
+		public bool IsTotalRow { get; set; }
 
-		public int TradeAccountCount { get; set; }
+		public string ColumnLabel { get; set; }
 
-		public int CreditStoppedCount { get; set; }
+		public int ColumnSortOrder { get; set; }
 
-		public int TwelveMonthOrderCount { get; set; }
-
-		public decimal TwelveMonthOrderValue { get; set; }
-
-		public decimal Value { get; set; }
+		public string Value { get; set; }
 	}
 }

@@ -166,7 +166,9 @@ namespace SharedEFClasses.Models
 				dto.From,
 				dto.To,
 				dto.TradeAccountCode,
-				dto.SearchTerm
+				dto.SearchTerm,
+				dto.CurrencyCode,
+				dto.AccountID
 			}, null, 60, CommandType.StoredProcedure);
 
 			return new CreditControl_Payments_SelectResult()

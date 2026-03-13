@@ -37,6 +37,7 @@ using SharedEFClasses.Models.Suppliers.PaymentRequests;
 using SharedEFClasses.Models.Suppliers.PaymentApprovals;
 using SharedEFClasses.Models.Suppliers.PaymentApproval;
 using SharedEFClasses.Models.Suppliers.Payments;
+using SharedEFClasses.Models.Banking;
 
 namespace Portal
 {
@@ -165,6 +166,8 @@ namespace Portal
 			odataBuilder.EntitySet<PaymentRequest>("PaymentRequests");
 			odataBuilder.EntitySet<PaymentPeriod>("PaymentPeriods");
 			odataBuilder.EntitySet<PaymentBudget>("PaymentBudgets");
+			odataBuilder.EntitySet<SharedEFClasses.Models.Banking.BankingAccount>("BankingAccounts");
+			odataBuilder.EntitySet<SharedEFClasses.Models.Banking.BankingCurrency> ("BankingCurrencies");
 
 			var paymentRequests = odataBuilder.EntityType<PaymentRequest>();
 
@@ -195,6 +198,23 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_DeliveryType)).AddProperty(typeof(Mertex_DeliveryType).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SupplierLive)).AddProperty(typeof(SupplierLive).GetProperty("AddressDisplaySingleLine"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(PaymentRequest)).AddProperty(typeof(PaymentRequest).GetProperty("AmountApprovedInCurrency"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(BankingAccount)).AddProperty(typeof(SharedEFClasses.Models.Banking.BankingAccount).GetProperty("Label"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SharedEFClasses.Models.Banking.BankingCurrency)).AddProperty(typeof(SharedEFClasses.Models.Banking.BankingCurrency).GetProperty("Label"));
+
+
+			var bankingCurrencyValueMapperFunction = odataBuilder.EntityType<BankingCurrency>()
+				.Collection
+				.Function("BankingCurrencyValueMapper")
+				.ReturnsCollectionFromEntitySet<BankingCurrency>("BankingCurrencies");
+
+			bankingCurrencyValueMapperFunction.Parameter<int>("accountId");
+
+			var bankingAccountValueMapperFunction = odataBuilder.EntityType<BankingAccount>()
+				.Collection
+				.Function("BankingAccountValueMapper")
+				.ReturnsCollectionFromEntitySet<BankingAccount>("BankingAccounts");
+
+			bankingAccountValueMapperFunction.Parameter<int>("accountId");
 
 
 			var paymentBudgetValueMapperFunction = odataBuilder.EntityType<PaymentBudget>()

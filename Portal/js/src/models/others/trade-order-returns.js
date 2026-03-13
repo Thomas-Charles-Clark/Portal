@@ -556,7 +556,7 @@
             onlyIf: function () {
                 return self.customFromDate() && self.customToDate()
             },
-            message: 'From Date must preceed To Date'
+            message: 'From Date must precede To Date'
         }
     });
 

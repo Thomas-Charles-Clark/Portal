@@ -45,8 +45,9 @@
 			gap: $sm-gutter;
 
 			> .prefilter {
-				flex: 0 1 auto;
-				max-width: 240px;
+				flex: 1 1 auto;
+				max-width: 100%;
+				align-self: stretch;
 
 				.k-dropdown-wrap {
 					border-radius: 4px;

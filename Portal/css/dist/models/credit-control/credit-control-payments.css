@@ -616,6 +616,12 @@
   cursor: pointer;
 }
 
+#online-payment-history-pane .prefilters {
+  align-items: flex-start;
+}
+#online-payment-history-pane .prefilters .prefilter {
+  position: relative;
+}
 #online-payment-history-pane .prefilters > div:first-of-type {
   min-width: 280px;
 }
@@ -623,12 +629,60 @@
   min-width: 280px;
   flex: 1 1 420px;
 }
+#online-payment-history-pane .prefilters .date-prefilters {
+  display: flex;
+  gap: 1rem;
+}
+#online-payment-history-pane .prefilters .date-prefilters > div:first-of-type {
+  min-width: 180px;
+}
+#online-payment-history-pane .prefilters .date-prefilters > div {
+  min-width: 180px;
+  width: 180px;
+}
+#online-payment-history-pane .prefilters .date-prefilters .validation-message {
+  text-align: center;
+  width: 100%;
+}
+#online-payment-history-pane .prefilters #banking-account-prefilter {
+  min-width: 240px;
+  width: 240px;
+}
+#online-payment-history-pane .prefilters #banking-account-prefilter .k-animation-container {
+  width: 500px !important;
+  min-width: unset;
+  max-width: unset;
+}
+#online-payment-history-pane .prefilters #banking-account-prefilter .k-animation-container .k-list-container {
+  width: 100% !important;
+}
+#online-payment-history-pane .prefilters #banking-currency-prefilter {
+  min-width: 240px;
+  width: 240px;
+}
+#online-payment-history-pane .prefilters #banking-currency-prefilter .k-animation-container {
+  width: auto !important;
+}
+#online-payment-history-pane .prefilters #banking-currency-prefilter .k-animation-container .k-list-container {
+  width: 100% !important;
+}
 #online-payment-history-pane .k-grid-norecords {
   width: 100%;
   height: calc(100% - 2px);
+  min-height: 420px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+#online-payment-history-pane a {
+  color: #212529;
+  transition: color 150ms ease-in-out;
+}
+#online-payment-history-pane a:hover, #online-payment-history-pane a:focus, #online-payment-history-pane a:focus-within, #online-payment-history-pane a:active {
+  color: #0d6efd;
+}
+#online-payment-history-pane a .bi {
+  font-size: 3rem;
 }
 #online-payment-history-pane .alert {
   margin-bottom: 0;

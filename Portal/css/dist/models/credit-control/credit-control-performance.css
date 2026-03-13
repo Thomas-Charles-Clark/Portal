@@ -651,8 +651,9 @@
   gap: 0.5rem;
 }
 #performance-container #performance-accordion .prefilters > .prefilter {
-  flex: 0 1 auto;
-  max-width: 240px;
+  flex: 1 1 auto;
+  max-width: 100%;
+  align-self: stretch;
 }
 #performance-container #performance-accordion .prefilters > .prefilter .k-dropdown-wrap {
   border-radius: 4px;

@@ -1,8 +1,12 @@
-﻿const creditControlPaymentsHistoryViewModel = ({ filters
+﻿const creditControlPaymentsHistoryViewModel = ({
+    busy,
+    filters
 } = {
-        filters: {}
-    }) => {
+    busy: ko.observable(false),
+    filters: {}
+}) => {
     let self = {
+        busy,
         filters
     };
 
@@ -10,7 +14,7 @@
 
     self.ready = ko.observable(false);
 
-    self.busy = ko.observable(false);
+    self.busy = busy;
 
     self.busyMessage = ko.observable('Please Wait');
 
@@ -40,11 +44,11 @@
             extra: false
         }
     }, {
-        field: "PaymentURI",
-        title: "Payment URI",
+        field: "OrderIDs",
+        title: "Order IDs",
+        width: 140,
         attributes: {
             "class": "",
-            "title": `PaymentRequestGuid: #: PaymentRequestGUID #`
         },
         headerAttributes: {
             "class": ""
@@ -52,10 +56,13 @@
         filterable: {
             extra: false
         },
-        template: `<a target="_blank" href="#: PaymentURI #">Payment Link</a>`
+        template: (dataItem) => {
+            return dataItem.OrderIDs?.split(',').join('<br/>')
+        }
     }, {
         field: "PaymentRequestType",
         title: "Request Type",
+        width: 180,
         attributes: {
             "class": ""
         },
@@ -66,8 +73,49 @@
             extra: false
         }
     }, {
+        field: "Amount",
+        title: "Amount",
+        width: 140,
+        attributes: {
+            "class": ""
+        },
+        headerAttributes: {
+            "class": ""
+        },
+        filterable: {
+            extra: false
+        },
+        template: `#: Amount ? formatCurrency(Amount, 2, FormattingCulture, CurrencyCode) : '' #`
+    }, {
+        field: "PaymentURI",
+        title: "Pay",
+        width: 64,
+        attributes: {
+            "class": "relative",
+            "title": 'View Payment Page'
+        },
+        headerAttributes: {
+            "class": ""
+        },
+        filterable: false,
+        template: `<a target="_blank" href="#: PaymentURI #" class="stretched-link"><i class="bi bi-credit-card-2-front-fill"></i></a>`
+    }, {
+        field: "DocumentURI",
+        title: "Doc",
+        width: 64,
+        attributes: {
+            "class": "relative",
+            title: "View Document"
+        },
+        headerAttributes: {
+            "class": ""
+        },
+        filterable: false,
+        template: `<a target="_blank" href="#: DocumentURI #" class="stretched-link"><i class="bi bi-file-earmark-pdf"></i></a>`
+    }, {
         field: "Status",
-        title: "Status",
+        title: "Payment Status",
+        width: 520,
         attributes: {
             "class": ""
         },
@@ -81,32 +129,6 @@
             return dataItem.Status;
         }
     }, {
-        field: "Amount",
-        title: "Amount",
-        attributes: {
-            "class": ""
-        },
-        headerAttributes: {
-            "class": ""
-        },
-        filterable: {
-            extra: false
-        },
-        template: `#: Amount ? formatCurrency(Amount, 2, FormattingCulture, CurrencyCode) : '' #`
-    }, {
-        field: "DocumentURI",
-        title: "Document",
-        attributes: {
-            "class": ""
-        },
-        headerAttributes: {
-            "class": ""
-        },
-        filterable: {
-            extra: false
-        },
-        template: `<a target="_blank" href="#: DocumentURI #">Document Link</a>`
-    }, {
         field: "ModifiedDT",
         title: "Last Modified",
         attributes: {
@@ -118,10 +140,10 @@
         filterable: {
             extra: false
         },
-        template: `#: ModifiedDT ? moment(ModifiedDT).format('MM/DD/YYYY HH:mm') : ''#`
+        template: `#: ModifiedDT ? moment(ModifiedDT).format('DD/MM/YYYY HH:mm') : ''#`
     }, {
-        field: "",
-        title: "",
+        field: "Receipts",
+        title: "Receipts",
         attributes: {
             "class": ""
         },
@@ -130,6 +152,24 @@
         },
         filterable: {
             extra: false
+        },
+        template: (dataItem) => {
+            return dataItem.Receipts ?? '';
+        }
+    }, {
+        field: "DepositAccountDetails",
+        title: "Deposit Account Details",
+        attributes: {
+            "class": ""
+        },
+        headerAttributes: {
+            "class": ""
+        },
+        filterable: {
+            extra: false
+        },
+        template: (dataItem) => {
+            return dataItem.DepositAccountDetails ?? '';
         }
     }];
 
@@ -183,7 +223,7 @@
                         window.showInfo('Sorry', data.errorMessage);
 
                     } else {
-                        document.querySelector('#info-modal').removeEventListener('hide.bs.modal', self.refresh);
+                        document.querySelector('#info-modal')?.removeEventListener('hide.bs.modal', self.refresh);
 
                         //self.previouslySelectedDashboardPod = self.selectedPod()?.PodHandle;
 
@@ -252,6 +292,7 @@
                         Amount: { type: 'string' },
                         DocumentURI: { type: 'string' },
                         ModifiedDT: { type: 'date' },
+                        OrderIDs: { type: 'string' },
                         TradeAccountLabel: { type: 'string' }
                     }
                 }

@@ -31,6 +31,12 @@ namespace SharedEFClasses.Models.CreditControl
 
 		public DateTime? ModifiedDT { get; set; }
 
+		public string OrderIDs { get; set; }
+
 		public string TradeAccountLabel { get; set; }
+
+		public string Receipts { get; set; }
+
+		public string DepositAccountDetails { get; set; }
 	}
 }

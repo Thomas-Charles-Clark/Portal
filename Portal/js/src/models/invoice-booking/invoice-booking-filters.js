@@ -120,14 +120,14 @@ const invoiceBookingFiltersViewModel = (params = {
     self.documentToDate = ko.observable();
 
     self.dateRangeId = ko.observable('30');
-    self.dateRange = ko.observable(paymentHistoryDateRanges.find(d => d.dateRangeId == '30'));
+    self.dateRange = ko.observable(dateRanges.find(d => d.dateRangeId == '30'));
 
     self.documentDateRangeId = ko.observable('30');
 
-    self.dateRanges = paymentHistoryDateRanges;
+    self.dateRanges = dateRanges;
 
     self.documentDateRanges = documentDateRanges;
-    self.documentDateRange = ko.observable(paymentHistoryDateRanges.find(d => d.dateRangeId == '30'))
+    self.documentDateRange = ko.observable(dateRanges.find(d => d.dateRangeId == '30'))
 
     self.validateSearchNow = ko.observable(true);
 
@@ -1132,7 +1132,7 @@ const invoiceBookingFiltersViewModel = (params = {
             onlyIf: function () {
                 return self.fromDate() && self.toDate()
             },
-            message: 'From Date must preceed To Date'
+            message: 'From Date must precede To Date'
         }
     }, self);
 

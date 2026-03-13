@@ -593,7 +593,7 @@ const documentsSentReportFiltersViewModel = ({
             onlyIf: function () {
                 return self.documentFromDate() && self.documentToDate()
             },
-            message: 'From Date must preceed To Date'
+            message: 'From Date must precede To Date'
         }
     }, self);
 

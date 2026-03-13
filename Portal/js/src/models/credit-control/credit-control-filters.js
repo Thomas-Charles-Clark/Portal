@@ -119,9 +119,11 @@ const creditControlFiltersViewModel = ({
 
     self.paymentHistorySearchTerm = ko.observable();
 
+    let now = new Date();
+
     self.paymentHistoryFromDate = ko.observable();
 
-    self.paymentHistoryToDate = ko.observable();
+    self.paymentHistoryToDate = ko.observable(now);
 
     self.validatePaymentHistorySearchNow = ko.observable(true);
 
@@ -152,6 +154,14 @@ const creditControlFiltersViewModel = ({
             message: 'To must be a date'
         }
     });
+
+    self.paymentHistoryBankingAccountId = ko.observable(params?.paymentHistoryBankingAccountId ?? '');
+
+    self.paymentHistoryBankingAccount = ko.observable(params?.paymentHistoryBankingAccount ?? undefined);
+
+    self.paymentHistoryBankingCurrencyCode = ko.observable(params.paymentHistoryBankingCurrencyCode ?? '');
+
+    self.paymentHistoryBankingCurrency = ko.observable(params?.paymentHistoryBankingCurrency ?? undefined);
 
     //#endregion
 
@@ -938,10 +948,10 @@ const creditControlFiltersViewModel = ({
             e.sender.list.addClass("trade-account-droplist");
         },
         clearFunction: () => {
-            self.statementsTradeAccountCode('');
-            self.statementsTradeAccount(undefined);
-            self.statementsTradeAccountParams.dropDownListSettings.widget().value('');
-            self.statementsTradeAccountParams.dropDownListSettings.widget().trigger('change');
+            self.paymentHistoryTradeAccountCode('');
+            self.paymentHistoryTradeAccount(undefined);
+            self.paymentHistoryTradeAccountParams.dropDownListSettings.widget().value('');
+            self.paymentHistoryTradeAccountParams.dropDownListSettings.widget().trigger('change');
         },
         parameterMap: (data) => {
 
@@ -1062,7 +1072,8 @@ const creditControlFiltersViewModel = ({
                 cellSize: '3rem'
             },
             restrictions: {
-                disabledDates: []
+                disabledDates: [],
+                maxDate: new Date(),
             },
             allowInputToggle: true,
             useCurrent: false,
@@ -1126,16 +1137,16 @@ const creditControlFiltersViewModel = ({
             keepInvalid: true,
             debug: false
         },
-        clearable: ko.observable(true),
-        clearFunction: () => {
-            self.paymentHistoryToDate(undefined);
-            self.paymentHistoryToDateParams.observable.tempusDominus.clear();
-            self.paymentHistoryToDateParams.observable.tempusDominus.updateOptions({
-                display: {
-                    viewMode: 'months'
-                }
-            });
-        },
+        clearable: ko.observable(false),
+        //clearFunction: () => {
+        //    self.paymentHistoryToDate(undefined);
+        //    self.paymentHistoryToDateParams.observable.tempusDominus.clear();
+        //    self.paymentHistoryToDateParams.observable.tempusDominus.updateOptions({
+        //        display: {
+        //            viewMode: 'months'
+        //        }
+        //    });
+        //},
         revertible: ko.observable(true),
         revertFunction: () => {
             self.paymentHistoryToDateParams.observable(self.paymentHistoryToDateParams.originalValue);
@@ -1147,6 +1158,68 @@ const creditControlFiltersViewModel = ({
             appendTo: '#payment-history-to-date'
         }
     };
+
+    self.paymentHistoryBankAccountParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Bank Account',
+        odata: true,
+        endPoint: '/odata/BankingAccounts',
+        textField: 'Label',
+        valueField: 'AccountID',
+        idObservable: self.paymentHistoryBankingAccountId,
+        objObservable: self.paymentHistoryBankingAccount,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        autoBind: true,
+        autoWidth: true,
+        height: 192,
+        sort: {
+            dir: 'asc',
+            field: 'Description'
+        },
+        select: function (e) {
+            console.log('bankingAccountParams select', e);
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById(`banking-account-prefilter`)
+        }
+    });
+
+    self.paymentHistoryCurrencyParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Currency',
+        odata: true,
+        endPoint: '/odata/BankingCurrencies',
+        textField: 'Label',
+        valueField: 'AccountID',
+        idObservable: self.paymentHistoryBankingCurrencyCode,
+        objObservable: self.paymentHistoryBankingCurrency,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        autoBind: true,
+        autoWidth: true,
+        height: 320,
+        sort: {
+            dir: 'asc',
+            field: 'Code'
+        },
+        select: function (e) {
+            console.log('bankingCurrencyParams select', e);
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById(`banking-currency-prefilter`)
+        }
+    });
 
     //#endregion
 
@@ -1176,7 +1249,7 @@ const creditControlFiltersViewModel = ({
             onlyIf: function () {
                 return self.paymentHistoryFromDate() && self.paymentHistoryToDate()
             },
-            message: 'From Date must preceed To Date'
+            message: 'From Date must precede To Date'
         }
     }, self);
 
@@ -1270,9 +1343,9 @@ const creditControlFiltersViewModel = ({
                     && (k != 'initialParams')
                     && (k != 'dateParams')
                     && (k != 'statementsTradeAccountParams')
-                    && (k != 'paymentHistoryTradeAccountParams')
                     && (k != 'includeClosedTradeAccountsParams')
                     && (k != 'salesHistoryAnalysisPeriodsParams')
+                    && (k.indexOf('paymentHistory') == -1)
                     && (k.indexOf('Params') > -1)
                     && (k.indexOf('Params') == k.length - 6);
             }).map(k => self[k])
@@ -1342,8 +1415,10 @@ const creditControlFiltersViewModel = ({
 
         let data = {
             dateRangeId: self.paymentHistoryDateRangeId(),
-            from: self.paymentHistoryFromDate() ?? null,
-            to: self.paymentHistoryToDate() ?? null
+            from: self.paymentHistoryFromDate()?.toUTCString() ?? null,
+            to: self.paymentHistoryToDate()?.toUTCString() ?? null,
+            accountId: self.paymentHistoryBankingAccountId(),
+            currencyCode: self.paymentHistoryBankingCurrencyCode()
         }
 
         if (self.paymentHistorySearchTerm()) {
@@ -1355,7 +1430,12 @@ const creditControlFiltersViewModel = ({
         }
 
         return data;
-    }, self);
+    }, self).extend({
+        rateLimit: {
+            timeout: 300,
+            method: 'notifyWhenChangesStop'
+        }
+    });
 
     //#endregion
 

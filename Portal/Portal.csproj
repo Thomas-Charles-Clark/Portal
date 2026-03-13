@@ -681,6 +681,8 @@
     <Compile Include="Areas\Trade-Accounts\ViewModels\TradeAccountContactsViewModel.cs" />
     <Compile Include="Areas\Translations\Controllers\TranslateResourcesApiController.cs" />
     <Compile Include="Controllers\IncomingEmailAttachmentController.cs" />
+    <Compile Include="Controllers\ODataControllers\BankingCurrenciesController.cs" />
+    <Compile Include="Controllers\ODataControllers\BankingAccountsController.cs" />
     <Compile Include="Controllers\ODataControllers\PaymentPeriodsController.cs" />
     <Compile Include="Controllers\ODataControllers\PaymentBudgetsController.cs" />
     <Compile Include="Controllers\ODataControllers\PurchaseOrderHeadsController.cs" />
@@ -6935,10 +6937,6 @@
     <ProjectReference Include="..\Tasks\Tasks.csproj">
       <Project>{89c5b7bd-18f3-4725-ba65-252dc71779f3}</Project>
       <Name>Tasks</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Webtex\Webtex.csproj">
-      <Project>{712d1e70-bfcf-4f36-88af-d59defcfdecc}</Project>
-      <Name>Webtex</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

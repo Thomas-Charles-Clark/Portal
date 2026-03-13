@@ -307,7 +307,7 @@ const creditControlViewModel = (() => {
                         window.showInfo('Sorry', data.errorMessage);
 
                     } else {
-                        document.querySelector('#info-modal').removeEventListener('hide.bs.modal', self.refresh);
+                        document.querySelector('#info-modal')?.removeEventListener('hide.bs.modal', self.refresh);
                         self.previouslySelectedDashboardPod = self.selectedPod()?.PodHandle;
 
                         self.dashboardPods(data.dashboardPods.map(dp => creditControlDashboardPodViewModel({
@@ -424,6 +424,7 @@ const creditControlViewModel = (() => {
     //});
 
     self.paymentHistory = creditControlPaymentsHistoryViewModel({
+        busy: self.busy,
         filters: self.filters
     });
 

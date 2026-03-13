@@ -449,7 +449,7 @@
 	<main id="credit-control-main">
 		<ul class="nav nav-tabs" id="credit-control-tabs" role="tablist">
 			<li class="nav-item" role="presentation">
-				<button class="nav-link" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard-tab-pane" type="button" role="tab" aria-controls="dashboard-tab-pane" aria-selected="true">
+				<button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard-tab-pane" type="button" role="tab" aria-controls="dashboard-tab-pane" aria-selected="true">
 					Dashboard
 				</button>
 			</li>
@@ -471,13 +471,13 @@
 				</button>
 			</li>
 			<li class="nav-item" role="presentation">
-				<button class="nav-link active" id="online-payment-history-tab" data-bs-toggle="tab" data-bs-target="#online-payment-history-pane" type="button" role="tab" aria-controls="online-payment-history-pane" aria-selected="false">
+				<button class="nav-link" id="online-payment-history-tab" data-bs-toggle="tab" data-bs-target="#online-payment-history-pane" type="button" role="tab" aria-controls="online-payment-history-pane" aria-selected="false">
 					Online Payment History
 				</button>
 			</li>
 		</ul>
 		<div class="tab-content" id="credit-control-tab-content">
-			<div class="tab-pane fade" id="dashboard-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+			<div class="tab-pane fade show active" id="dashboard-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
 				<div id="performance-container">
 					<div class="accordion" id="performance-accordion">
 						<div class="accordion-item relative" data-bind="with: performance">
@@ -496,11 +496,7 @@
 								<div class="accordion-body">
 									<table class="performance-table table table-bordered" style="display: none" , data-bind="visible: periods().length">
 										<colgroup>
-											<col />
-											<col />
-											<col />
-											<col />
-											<col />
+											<col width="240" />
 											<!-- ko foreach: periods -->
 											<col />
 											<!-- /ko -->
@@ -513,72 +509,59 @@
 														<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyOrSterlingParams }"></div>
 													</div>
 												</th>
-												<th>
-													Trade Account Count
-												</th>
-												<th>
-													Credit Stopped Count
-												</th>
-												<th>
-													Twelve Month Order Count
-												</th>
-												<th>
-													Twelve Month Order Value
-												</th>
 												<!-- ko foreach: periods -->
 												<th>
-													<span data-bind="text: $data"></span>
+													<span data-bind="text: columnLabel"></span>
 												</th>
 												<!-- /ko -->
 											</tr>
 										</thead>
-										<tbody data-bind="foreach: records">
-											<tr class="totals-row">
+										<tbody data-bind="foreach: rowGrouping">
+											<tr data-bind="css: { 'totals-row': isTotalRow }">
+												<!-- ko if: isTotalRow -->
 												<th>
-													<span data-bind="text: currencyCode"></span>
+													<span data-bind="text: rowLabel"></span>
 												</th>
+												<!-- ko foreach: $parent.periods() -->
 												<th>
-													<span data-bind="text: formatNumber(tradeAccountCount, 0, formattingCulture)"></span>
-												</th>
-												<th>
-													<span data-bind="text: formatNumber(creditStoppedCount, 0, formattingCulture)"></span>
-												</th>
-												<th>
-													<span data-bind="text: formatNumber(twelveMonthOrderCount, 0, formattingCulture)"></span>
-												</th>
-												<th>
-													<span data-bind="text: formatCurrency(twelveMonthOrderValue, 0, formattingCulture, currencyCode)"></span>
-												</th>
-												<!-- ko foreach: totals -->
-												<th>
-													<span data-bind="text: formatCurrency(Total, 0, FormattingCulture, CurrencyCode)"></span>
+													<span data-bind="text: $parentContext.$parent.performanceCellLookup($parent.rowIndex, columnIndex)?.Value ?? ''"></span>
 												</th>
 												<!-- /ko -->
-											</tr>
-											<!-- ko foreach: $data.items -->
-											<tr>
-												<td class="indented">
-													<span data-bind="text: $data[0]">
-												</td>
+												<!-- /ko -->
+												<!-- ko ifnot: isTotalRow -->
 												<td>
-													<span data-bind="text: $data[1].tradeAccountCount"></span>
+													<span data-bind="text: rowLabel"></span>
 												</td>
+												<!-- ko foreach: $parent.periods() -->
 												<td>
-													<span data-bind="text: $data[1].creditStoppedCount"></span>
-												</td>
-												<td>
-													<span data-bind="text: $data[1].twelveMonthOrderCount"></span>
-												</td>
-												<td>
-													<span data-bind="text: $data[1].twelveMonthOrderValue"></span>
-												</td>
-												<!-- ko foreach: $data[2] -->
-												<td>
-													<span data-bind="text: formatCurrency(Value, 0, FormattingCulture, CurrencyCode)"></span>
+													<span data-bind="text: $parentContext.$parent.performanceCellLookup($parent.rowIndex, columnIndex)?.Value ?? ''"></span>
 												</td>
 												<!-- /ko -->
+												<!-- /ko -->
+		@*
+		<!-- ko ifnot: $data[0].isTotalRow -->
+		<td>
+			<span data-bind="text: $data[0].rowLabel"
+		</td>
+		<!-- /ko -->
+		<!-- ko foreach: $data[1] -->
+		<th>
+			<span data-bind="text: Value"></span>
+		</th>
+		<!-- /ko -->
+		<!-- /ko -->
+		<!-- ko ifnot: $data[0].IsTotalRow -->
+		<td class="indented">
+			<span data-bind="text: $data[0]">
+		</td>]
+		<!-- ko template: { name: 'performance-cell-template', data: { rowIndex:  } } -->
+		<!-- ko foreach: $data[1] -->
+		<td>
+			<span data-bind="text: Value"></span>
+		</td>
+		<!-- /ko -->
+		<!-- /ko -->*@
 											</tr>
-											<!-- /ko -->
 										</tbody>
 									</table>
 								</div>
@@ -687,21 +670,27 @@
 					Paying off Invoices with Proforma Deposits goes here <i class="ms-3 bi bi-chevron-down"></i>
 				</h4>
 			</div>
-			<div id="online-payment-history-pane" class="tab-pane fade show active">
+			<div id="online-payment-history-pane" class="tab-pane fade">
 				<div class="prefilters mb-3" data-bind="with: filters">
 					<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentHistoryTradeAccountParams }"></div>
-					<div id="payment-history-date-type-prefilter" class="date-prefilter prefilter relative">
-						<div class="date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentHistoryDateRangeParams }"></div>
-					</div>
-					<div id="payment-history-from-date" class="prefilter" style="display: none" data-bind="visible: paymentHistoryDateRangeId() == -1">
-						<div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: paymentHistoryFromDateParams }"></div>
-					</div>
-					<div  id="payment-history-to-date" class="prefilter" style="display: none" data-bind="visible: paymentHistoryDateRangeId() == -1">
-						<div class="to-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: paymentHistoryToDateParams }"></div>
+					<div id="payment-history-date-prefilter-container" class="prefilter">
+						<div class="date-prefilters">
+							<div id="payment-history-date-type-prefilter" class="date-prefilter prefilter relative">
+								<div class="date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentHistoryDateRangeParams }"></div>
+							</div>
+							<div id="payment-history-from-date" class="prefilter" style="display: none" data-bind="visible: paymentHistoryDateRangeId() == -1">
+								<div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: paymentHistoryFromDateParams }"></div>
+							</div>
+							<div id="payment-history-to-date" class="prefilter" style="display: none" data-bind="visible: paymentHistoryDateRangeId() == -1">
+								<div class="to-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: paymentHistoryToDateParams }"></div>
+							</div>
+						</div>
 						<span class="validation-message text-danger" data-bind="validationMessage: paymentHistoryFromDate"></span>
 						<span class="validation-message text-danger" data-bind="validationMessage: paymentHistoryToDate"></span>
 						<span class="validation-message text-danger" data-bind="validationMessage: paymentHistoryFromPreceedsTo"></span>
 					</div>
+					<div id="banking-account-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentHistoryBankAccountParams }"></div>
+					<div id="banking-currency-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentHistoryCurrencyParams }"></div>
 					<div class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: paymentHistorySearchTermParams }"></div>
 				</div>
 				<div data-bind="kendoGrid: paymentHistory.gridParams"></div>

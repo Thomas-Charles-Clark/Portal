@@ -32,6 +32,8 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
 
     self.busyMessage = ko.observable('Please Wait...');
 
+    self.rowGrouping = ko.observableArray([]);
+
     self.records = ko.observableArray([]);
 
     self.selectedPod = ko.observable();
@@ -160,57 +162,35 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
             .then(data => {
                 console.log('fetchPerformance returned', data);
 
-                self.periods(Map.groupBy(data.Records, (item) => item.ColumnLabel).entries().toArray().map(e => e[0]).sort((a, b) => {
-                    return a.ColumnSortOrder > b.ColumnSortOrder ? 1 : -1;
-                })); // First stage of transposing the results...
+                self.periods(Map.groupBy(data.Records, (item) => JSON.stringify({
+                    columnLabel: item.ColumnLabel,
+                    columnIndex: item.ColumnSortOrder
+                })).keys().toArray().map(k => JSON.parse(k))); // First stage of transposing the results...
 
-                let currencyGrouping = Map.groupBy(data.Records, (item) => `${item.CurrencyCode}`).entries().toArray();
+                let rowGrouping = Map.groupBy(data.Records, (item) => JSON.stringify({
+                    rowLabel: item.RowLabel,
+                    rowIndex: item.RowSortOrder,
+                    isTotalRow: item.IsTotalRow
+                })).entries().toArray().map(k => JSON.parse(k[0]))
 
-                currencyGroup = currencyGrouping.map(cg => {
-                    let items = Map.groupBy(cg[1], (item, index) => `${item.RowLabel}`).entries().toArray().map(e => {
+                self.rowGrouping(rowGrouping);
 
-                        let formattingCulture = e[1][0].FormattingCulture;
-                        let currencyCode = e[1][0].CurrencyCode;
-
-                        let totals = {
-                            tradeAccountCount: formatNumber(e[1][0].TradeAccountCount, 0, formattingCulture),
-                            creditStoppedCount: formatNumber(e[1][0].CreditStoppedCount, 0, formattingCulture),
-                            twelveMonthOrderCount: formatNumber(e[1][0].TwelveMonthOrderCount, 0, formattingCulture),
-                            twelveMonthOrderValue: formatCurrency(e[1][0].TwelveMonthOrderValue, 0, formattingCulture, currencyCode)
-                        };
-                        e.splice(1, 0, totals);
-                        return e;
-                    });
-
-                    let records = Map.groupBy(items.flatMap(i => i[2]), item => item.ColumnLabel).entries().toArray();
-
-                    return {
-                        currencyCode: cg[0],
-                        formattingCulture: cg[1][0].FormattingCulture,
-                        tradeAccountCount: records.flatMap(m => {
-                            return m[1].reduce((accumulator, currentItem) => accumulator += currentItem.TradeAccountCount, 0);
-                        }).reduce((a, c) => a += c, 0),
-                        creditStoppedCount: records.flatMap(m => {
-                            return m[1].reduce((accumulator, currentItem) => accumulator += currentItem.CreditStoppedCount, 0);
-                        }).reduce((a, c) => a += c, 0),
-                        twelveMonthOrderCount: records[0][1].reduce((accumulator, currentItem) => accumulator += currentItem.TwelveMonthOrderCount, 0),
-                        twelveMonthOrderValue: records[0][1].reduce((accumulator, currentItem) => accumulator += currentItem.TwelveMonthOrderValue, 0),
-                        totals: records.map(m => {
-                            return {
-                                ColumnLabel: m[0],
-                                Total: m[1].reduce((accumulator, currentItem) => accumulator += currentItem.Value, 0),
-                                FormattingCulture: m[1][0].FormattingCulture,
-                                CurrencyCode: m[1][0].CurrencyCode,
-                            }
-                        }),
-                        items: items,
-                    };
-                });
-
-                self.records(currencyGroup);
+                self.records(data.Records);
 
                 self.busy(false);
             })
+    }
+
+    self.performanceCellLookup = (rowIndex, columnIndex) => {
+        //console.log('performanceCellLookup called with', [rowIndex, columnIndex]);
+
+        let result = self.records().find(r => {
+            return r.RowSortOrder == rowIndex && r.ColumnSortOrder == columnIndex
+        });
+
+        //console.log('performanceCellLookup returning', result);
+
+        return result;
     }
 
     self.revert = () => {

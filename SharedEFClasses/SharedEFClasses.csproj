@@ -390,6 +390,8 @@
     <Compile Include="Models\ArchiveResponse.cs" />
     <Compile Include="Models\Attribute\Attribute.cs" />
     <Compile Include="Models\AttributeGroup\AttributeGroup.cs" />
+    <Compile Include="Models\Banking\BankingAccount.cs" />
+    <Compile Include="Models\Banking\BankingCurrency.cs" />
     <Compile Include="Models\BasketStatusModels.cs" />
     <Compile Include="Models\Basket\BasketItemSplitSelectResult.cs" />
     <Compile Include="Models\ContractPricing\ContractManagement_ContractImpact_SelectResult.cs" />

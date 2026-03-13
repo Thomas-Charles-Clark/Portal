@@ -566,7 +566,7 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
             onlyIf: function () {
                 return self.fromDate() && self.toDate()
             },
-            message: 'From Date must preceed To Date'
+            message: 'From Date must precede To Date'
         }
     }, self);
 

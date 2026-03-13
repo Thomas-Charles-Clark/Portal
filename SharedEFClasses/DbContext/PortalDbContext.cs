@@ -662,6 +662,14 @@ namespace SharedEFClasses.Models
 
         #endregion
 
+        #region Banking
+
+        public virtual DbSet<Banking.BankingAccount> BankingAccounts { get; set; }
+
+        public virtual DbSet<Banking.BankingCurrency> BankingCurrencies { get; set; }
+
+        #endregion
+
         #endregion
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
