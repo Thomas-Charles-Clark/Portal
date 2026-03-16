@@ -72,8 +72,6 @@ const creditControlViewModel = (() => {
         filters: self.filters
     });
 
-    self.outstandingInvoices = creditControlOutstandingInvoicesWithUnallocatedDepositsViewModel();
-
     self.gridWidget = ko.observable();
 
     self.dashboardPods = ko.observableArray([]);
@@ -428,7 +426,10 @@ const creditControlViewModel = (() => {
         filters: self.filters
     });
 
-    self.payment
+    self.outstandingInvoices = creditControlOutstandingInvoicesWithUnallocatedDepositsViewModel({
+        busy: self.busy,
+        filters: self.filters
+    });
 
     self.memberBasketFetcher = memberBasketFetcher(self);
 

@@ -615,4 +615,67 @@
   margin-bottom: 0;
   cursor: pointer;
 }
+
+#paying-off-with-proforma-tab-pane .prefilters {
+  align-items: flex-start;
+}
+#paying-off-with-proforma-tab-pane .prefilters .prefilter {
+  position: relative;
+}
+#paying-off-with-proforma-tab-pane .prefilters > div:first-of-type {
+  min-width: 280px;
+}
+#paying-off-with-proforma-tab-pane .prefilters > div:last-of-type {
+  min-width: 280px;
+  flex: 1 1 420px;
+}
+#paying-off-with-proforma-tab-pane .prefilters .date-prefilters {
+  display: flex;
+  gap: 1rem;
+}
+#paying-off-with-proforma-tab-pane .prefilters .date-prefilters > div:first-of-type {
+  min-width: 180px;
+}
+#paying-off-with-proforma-tab-pane .prefilters .date-prefilters > div {
+  min-width: 180px;
+  width: 180px;
+}
+#paying-off-with-proforma-tab-pane .prefilters .date-prefilters .validation-message {
+  text-align: center;
+  width: 100%;
+}
+#paying-off-with-proforma-tab-pane .prefilters #outstanding-invoices-banking-currency-prefilter {
+  min-width: 240px;
+  width: 240px;
+}
+#paying-off-with-proforma-tab-pane .prefilters #outstanding-invoices-banking-currency-prefilter .k-animation-container {
+  width: auto !important;
+}
+#paying-off-with-proforma-tab-pane .prefilters #outstanding-invoices-banking-currency-prefilter .k-animation-container .k-list-container {
+  width: 100% !important;
+}
+#paying-off-with-proforma-tab-pane .k-grid-norecords {
+  width: 100%;
+  height: calc(100% - 2px);
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#paying-off-with-proforma-tab-pane a {
+  color: #212529;
+  transition: color 150ms ease-in-out;
+}
+#paying-off-with-proforma-tab-pane a:hover, #paying-off-with-proforma-tab-pane a:focus, #paying-off-with-proforma-tab-pane a:focus-within, #paying-off-with-proforma-tab-pane a:active {
+  color: #0d6efd;
+}
+#paying-off-with-proforma-tab-pane a .bi {
+  font-size: 3rem;
+}
+#paying-off-with-proforma-tab-pane .alert {
+  margin-bottom: 0;
+}
+#paying-off-with-proforma-tab-pane .alert + .alert {
+  margin-top: 1rem;
+}
 /*# sourceMappingURL=credit-control-outstanding-invoices-with-unallocated-deposits.css.map */

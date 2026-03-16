@@ -3326,6 +3326,7 @@
     </None>
     <Content Include="Libraries\UPSCollection.dll" />
     <Content Include="Libraries\UPSShippingWebService.dll" />
+    <Content Include="robots-all.txt" />
     <Content Include="robots.txt" />
     <Content Include="Areas\Tagging\Views\web.config" />
     <Content Include="Areas\Tasks\Views\Dashboard\TasksDashboard.cshtml" />

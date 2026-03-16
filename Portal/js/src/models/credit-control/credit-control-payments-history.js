@@ -57,7 +57,10 @@
             extra: false
         },
         template: (dataItem) => {
-            return dataItem.OrderIDs?.split(',').join('<br/>')
+            if (dataItem.OrderIDs?.length)
+                return dataItem.OrderIDs?.split(',').join('<br/>')
+            else
+                return '';
         }
     }, {
         field: "PaymentRequestType",
@@ -131,6 +134,7 @@
     }, {
         field: "ModifiedDT",
         title: "Last Modified",
+        width: 180,
         attributes: {
             "class": ""
         },
@@ -144,6 +148,7 @@
     }, {
         field: "Receipts",
         title: "Receipts",
+        width: 520,
         attributes: {
             "class": ""
         },

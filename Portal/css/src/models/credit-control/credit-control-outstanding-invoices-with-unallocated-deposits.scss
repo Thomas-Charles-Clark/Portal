@@ -1,1 +1,86 @@
 ﻿@import '../common.scss';
+
+#paying-off-with-proforma-tab-pane {
+	.prefilters {
+		align-items: flex-start;
+
+		.prefilter {
+			position: relative;
+		}
+
+		> div:first-of-type {
+			min-width: 280px;
+		}
+
+		> div:last-of-type {
+			min-width: 280px;
+			flex: 1 1 420px;
+		}
+
+		.date-prefilters {
+			display: flex;
+			gap: $l-gutter;
+
+			> div:first-of-type {
+				min-width: 180px;
+			}
+
+			> div {
+				min-width: 180px;
+				width: 180px;
+			}
+
+			.validation-message {
+				text-align: center;
+				width: 100%;
+			}
+		}
+
+		#outstanding-invoices-banking-currency-prefilter {
+			min-width: 240px;
+			width: 240px;
+
+			.k-animation-container {
+				width: auto !important;
+
+				.k-list-container {
+					width: 100% !important;
+				}
+			}
+		}
+	}
+
+	.k-grid-norecords {
+		width: 100%;
+		height: calc(100% - 2px);
+		min-height: 420px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	a {
+		color: $body-color;
+		transition: color 150ms ease-in-out;
+
+		&:hover,
+		&:focus,
+		&:focus-within,
+		&:active {
+			color: $link-color;
+		}
+
+		.bi {
+			font-size: 3rem;
+		}
+	}
+
+	.alert {
+		margin-bottom: 0;
+
+		& + .alert {
+			margin-top: $l-gutter;
+		}
+	}
+}
+

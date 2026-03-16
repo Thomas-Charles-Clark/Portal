@@ -666,9 +666,28 @@
 				<div id="response-container" data-bind="html: sendResponse"></div>
 			</div>
 			<div id="paying-off-with-proforma-tab-pane" class="tab-pane fade">
-				<h4 class="my-4">
-					Paying off Invoices with Proforma Deposits goes here <i class="ms-3 bi bi-chevron-down"></i>
-				</h4>
+				<div class="prefilters mb-3" data-bind="with: filters">
+					<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: outstandingInvoicesTradeAccountParams }"></div>
+					<div id="outstanding-invoices-date-prefilter-container" class="prefilter">
+						<div class="date-prefilters">
+							<div id="outstanding-invoices-date-type-prefilter" class="date-prefilter prefilter relative">
+								<div class="date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: outstandingInvoicesDateRangeParams }"></div>
+							</div>
+							<div id="outstanding-invoices-from-date" class="prefilter" style="display: none" data-bind="visible: outstandingInvoicesDateRangeId() == -1">
+								<div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: outstandingInvoicesFromDateParams }"></div>
+							</div>
+							<div id="outstanding-invoices-to-date" class="prefilter" style="display: none" data-bind="visible: outstandingInvoicesDateRangeId() == -1">
+								<div class="to-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: outstandingInvoicesToDateParams }"></div>
+							</div>
+						</div>
+						<span class="validation-message text-danger" data-bind="validationMessage: outstandingInvoicesFromDate"></span>
+						<span class="validation-message text-danger" data-bind="validationMessage: outstandingInvoicesToDate"></span>
+						<span class="validation-message text-danger" data-bind="validationMessage: outstandingInvoicesFromPrecedesTo"></span>
+					</div>
+					<div id="outstanding-invoices-banking-currency-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: outstandingInvoicesCurrencyParams }"></div>
+					<div class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: outstandingInvoicesSearchTermParams }"></div>
+				</div>
+				<div data-bind="kendoGrid: outstandingInvoices.gridParams"></div>
 			</div>
 			<div id="online-payment-history-pane" class="tab-pane fade">
 				<div class="prefilters mb-3" data-bind="with: filters">
@@ -687,10 +706,10 @@
 						</div>
 						<span class="validation-message text-danger" data-bind="validationMessage: paymentHistoryFromDate"></span>
 						<span class="validation-message text-danger" data-bind="validationMessage: paymentHistoryToDate"></span>
-						<span class="validation-message text-danger" data-bind="validationMessage: paymentHistoryFromPreceedsTo"></span>
+						<span class="validation-message text-danger" data-bind="validationMessage: paymentHistoryFromPrecedesTo"></span>
 					</div>
-					<div id="banking-account-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentHistoryBankAccountParams }"></div>
-					<div id="banking-currency-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentHistoryCurrencyParams }"></div>
+					<div id="payment-history-banking-account-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentHistoryBankAccountParams }"></div>
+					<div id="payment-history-banking-currency-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentHistoryCurrencyParams }"></div>
 					<div class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: paymentHistorySearchTermParams }"></div>
 				</div>
 				<div data-bind="kendoGrid: paymentHistory.gridParams"></div>

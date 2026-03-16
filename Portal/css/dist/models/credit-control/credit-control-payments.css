@@ -644,26 +644,26 @@
   text-align: center;
   width: 100%;
 }
-#online-payment-history-pane .prefilters #banking-account-prefilter {
+#online-payment-history-pane .prefilters #payment-history-banking-account-prefilter {
   min-width: 240px;
   width: 240px;
 }
-#online-payment-history-pane .prefilters #banking-account-prefilter .k-animation-container {
+#online-payment-history-pane .prefilters #payment-history-banking-account-prefilter .k-animation-container {
   width: 500px !important;
   min-width: unset;
   max-width: unset;
 }
-#online-payment-history-pane .prefilters #banking-account-prefilter .k-animation-container .k-list-container {
+#online-payment-history-pane .prefilters #payment-history-banking-account-prefilter .k-animation-container .k-list-container {
   width: 100% !important;
 }
-#online-payment-history-pane .prefilters #banking-currency-prefilter {
+#online-payment-history-pane .prefilters #payment-history-banking-currency-prefilter {
   min-width: 240px;
   width: 240px;
 }
-#online-payment-history-pane .prefilters #banking-currency-prefilter .k-animation-container {
+#online-payment-history-pane .prefilters #payment-history-banking-currency-prefilter .k-animation-container {
   width: auto !important;
 }
-#online-payment-history-pane .prefilters #banking-currency-prefilter .k-animation-container .k-list-container {
+#online-payment-history-pane .prefilters #payment-history-banking-currency-prefilter .k-animation-container .k-list-container {
   width: 100% !important;
 }
 #online-payment-history-pane .k-grid-norecords {

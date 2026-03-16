@@ -43,6 +43,8 @@ const creditControlFiltersViewModel = ({
 
     //#region Properties
 
+    let now = new Date();
+
     self.busy = parent.busy;
 
     self.validateNow = ko.observable(false);
@@ -119,8 +121,6 @@ const creditControlFiltersViewModel = ({
 
     self.paymentHistorySearchTerm = ko.observable();
 
-    let now = new Date();
-
     self.paymentHistoryFromDate = ko.observable();
 
     self.paymentHistoryToDate = ko.observable(now);
@@ -162,6 +162,58 @@ const creditControlFiltersViewModel = ({
     self.paymentHistoryBankingCurrencyCode = ko.observable(params.paymentHistoryBankingCurrencyCode ?? '');
 
     self.paymentHistoryBankingCurrency = ko.observable(params?.paymentHistoryBankingCurrency ?? undefined);
+
+
+    self.outstandingInvoicesDateRangeId = ko.observable('30');
+
+    self.outstandingInvoicesDateRange = ko.observable(paymentHistoryDateRanges.find(d => d.dateRangeId == '30'));
+
+    self.outstandingInvoicesDateRanges = paymentHistoryDateRanges;
+
+    self.outstandingInvoicesTradeAccountCode = ko.observable('');
+
+    self.outstandingInvoicesTradeAccount = ko.observable();
+
+    self.outstandingInvoicesSearchTerm = ko.observable();
+
+    self.outstandingInvoicesFromDate = ko.observable();
+
+    self.outstandingInvoicesToDate = ko.observable(now);
+
+    self.validateoutstandingInvoicesSearchNow = ko.observable(true);
+
+    self.outstandingInvoicesFromDate.extend({
+        date: {
+            params: true,
+            message: 'From must be a date'
+        },
+        required: {
+            params: true,
+            onlyIf: function () {
+                return self.validateoutstandingInvoicesSearchNow() && self.outstandingInvoicesDateRangeId() == -1 && self.outstandingInvoicesToDate() != null
+            },
+            message: 'Please provide a From Date'
+        }
+    });
+
+    self.outstandingInvoicesFromDate.extend({
+        date: {
+            params: true,
+            message: 'To must be a date'
+        }
+    });
+
+    self.outstandingInvoicesToDate.extend({
+        date: {
+            params: true,
+            message: 'To must be a date'
+        }
+    });
+
+    self.outstandingInvoicesBankingCurrencyCode = ko.observable(params.outstandingInvoicesBankingCurrencyCode ?? '');
+
+    self.outstandingInvoicesBankingCurrency = ko.observable(params?.outstandingInvoicesBankingCurrency ?? undefined);
+
 
     //#endregion
 
@@ -988,9 +1040,6 @@ const creditControlFiltersViewModel = ({
             }
 
             return d;
-        },
-        popupSettings: {
-            appendTo: document.querySelector("#send-statements-modal .modal-body")
         }
     });
 
@@ -1098,7 +1147,7 @@ const creditControlFiltersViewModel = ({
         insertValidationMessages: false,
         decorateInputElement: true,
         popupSettings: {
-            appendTo: '#paymetn-history-from-date'
+            appendTo: '#payment-history-from-date'
         }
     };
 
@@ -1221,6 +1270,308 @@ const creditControlFiltersViewModel = ({
         }
     });
 
+    self.outstandingInvoicesTradeAccountParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Trade Account',
+        odata: true,
+        endPoint: () => `/odata/TradeAccounts_Live/Default.GetTradeAccountsForCreditControl(includeClosedAccounts=${ko.unwrap(self.includeClosedTradeAccounts)}, includeDeletedAccounts=${ko.unwrap(self.includeDeletedTradeAccounts)})`,
+        textField: 'ShortLabel',
+        valueField: 'Code',
+        virtual: true,
+        pageSize: 40,
+        virtualOptions: {
+            itemHeight: 34,
+            mapValueTo: 'dataItem',
+            valueMapper: function (options) {
+                if (options.value) {
+                    $.ajax({
+                        url: `/odata/TradeAccounts_Live/Default.TradeAccountLiveValueMapper(tradeAccountCode='${options.value}')`,
+                        type: 'GET',
+                        success: function (data) {
+                            options.success(data.value);
+                        }
+                    });
+                } else {
+                    options.success();
+                }
+            }
+        },
+        template: (e) => {
+            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+        },
+        valueTemplate: (e) => {
+            if ((e.ShortLabel != '') && (e.Code != null))
+                return `<span title="${e.ShortLabel}">Trade Account: ${e.ShortLabel}</span>`
+            else
+                return '';
+        },
+        idObservable: self.tradeAccountCode,
+        objObservable: self.tradeAccount,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: [{
+            dir: 'asc',
+            field: 'Code'
+        }, {
+            dir: 'asc',
+            field: 'Name'
+        }],
+        select: function (e) {
+            console.log('outstandingInvoices TradeAccountParams select', e);
+        },
+        requestStart: function (e) {
+
+        },
+        open: function (e) {
+            e.sender.list.addClass("trade-account-droplist");
+        },
+        clearFunction: () => {
+            self.paymentHistoryTradeAccountCode('');
+            self.paymentHistoryTradeAccount(undefined);
+            self.paymentHistoryTradeAccountParams.dropDownListSettings.widget().value('');
+            self.paymentHistoryTradeAccountParams.dropDownListSettings.widget().trigger('change');
+        },
+        parameterMap: (data) => {
+
+            //Generate parameters in odata v4 format
+            let d = kendo.data.transports['odata-v4'].parameterMap(data);
+
+            delete d.$inlinecount; // <-- remove inlinecount
+            delete d.$format; // <-- remove format
+            delete d.$callback; // <-- remove callback
+
+            d.$count = true;
+
+            let filters = [];
+
+            if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "ShortLabel")) {
+                let f = data.filter.filters.find(f => f.field === "ShortLabel");
+                filters.push(`(contains(Name,'${f.value}') or startswith(Code,'${f.value}'))`);
+            }
+
+            if (d.$filter) {
+                delete d.$filter;
+            }
+
+            // regardless whether or not a filter has a selection it must be refreshed if ANOTHER filter changes.
+            // the implementation beneath is *not quite* sufficient  
+
+            if (filters.length) {
+                let filterString = filters.join(' and ');
+                d.$apply = `filter(${filterString})`;
+            }
+
+            if (!d.$apply) {
+                delete d.$apply;
+            }
+
+            return d;
+        }
+    });
+
+    self.outstandingInvoicesSearchTermParams = {
+        label: "Search Term",
+        observable: self.outstandingInvoicesSearchTerm,
+        focusObservable: ko.observable(),
+        busy: ko.observable(),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        clearFunction: function () {
+            var self = this;
+            self.observable(undefined);
+            $(self.observable.DOMElement).focus();
+        },
+        useNativeValidation: false, // this feeds through to mdc objects and affects them
+        decorateInputElement: true,
+        insertValidationMessages: false,
+        enterKey: () => {
+            //self.gridSettings.widget().dataSource.read();
+        }
+    }
+
+    self.outstandingInvoicesDateRangeParams = kendoMDCDropDownList({
+        skipCascade: false,
+        label: 'Date Range',
+        data: self.outstandingInvoicesDateRanges,
+        textField: 'name',
+        valueField: 'dateRangeId',
+        idObservable: self.outstandingInvoicesDateRangeId,
+        objObservable: self.outstandingInvoicesDateRange,
+        template: (e) => `<span class="date-range ${e.class}">${e.name}</span>`,
+        valueTemplate: (e) => `<span class="date-range ${e.class}">${e.name}</span>`,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(false),
+        revertible: ko.observable(false),
+        readOnly: false,
+        autoBind: true,
+        autoWidth: true,
+        clearFunction: () => {
+            self.outstandingInvoicesDateRangeId('');
+        },
+        afterClear: () => {
+
+        },
+        popupSettings: {
+            appendTo: document.querySelector(`#outstanding-invoices-date-type-prefilter`)
+        },
+    });
+
+    self.outstandingInvoicesFromDateParams = {
+        label: "From",
+        observable: self.outstandingInvoicesFromDate,
+        originalValue: self.outstandingInvoicesFromDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'months',
+                cellSize: '3rem'
+            },
+            restrictions: {
+                disabledDates: [],
+                maxDate: new Date(),
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false
+        },
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.outstandingInvoicesFromDate(undefined);
+            self.outstandingInvoicesFromDateParams.observable.tempusDominus.clear();
+            self.outstandingInvoicesFromDateParams.observable.tempusDominus.updateOptions({
+                display: {
+                    viewMode: 'months'
+                }
+            });
+        },
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.outstandingInvoicesFromDateParams.observable(self.outstandingInvoicesFromDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+        popupSettings: {
+            appendTo: '#outstanding-invoices-from-date'
+        }
+    };
+
+    self.outstandingInvoicesToDateParams = {
+        label: "To",
+        observable: self.outstandingInvoicesToDate,
+        originalValue: self.outstandingInvoicesToDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'months',
+                cellSize: '3rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false
+        },
+        clearable: ko.observable(false),
+        //clearFunction: () => {
+        //    self.outstandingInvoicesToDate(undefined);
+        //    self.outstandingInvoicesToDateParams.observable.tempusDominus.clear();
+        //    self.outstandingInvoicesToDateParams.observable.tempusDominus.updateOptions({
+        //        display: {
+        //            viewMode: 'months'
+        //        }
+        //    });
+        //},
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.outstandingInvoicesToDateParams.observable(self.outstandingInvoicesToDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+        popupSettings: {
+            appendTo: '#outstanding-invoices-to-date'
+        }
+    };
+
+    self.outstandingInvoicesCurrencyParams = kendoMDCDropDownList({
+        skipCascade: true,
+        label: 'Currency',
+        odata: true,
+        endPoint: '/odata/BankingCurrencies',
+        textField: 'Label',
+        valueField: 'AccountID',
+        idObservable: self.outstandingInvoicesBankingCurrencyCode,
+        objObservable: self.outstandingInvoicesBankingCurrency,
+        locked: ko.observable(false),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        autoBind: true,
+        autoWidth: true,
+        height: 320,
+        sort: {
+            dir: 'asc',
+            field: 'Code'
+        },
+        select: function (e) {
+            console.log('bankingCurrencyParams select', e);
+        },
+        clearFunction: self.genericUnsavedChangesClear,
+        popupSettings: {
+            appendTo: document.getElementById(`outstanding-invoices-banking-currency-prefilter`)
+        }
+    });
+
     //#endregion
 
 
@@ -1239,7 +1590,7 @@ const creditControlFiltersViewModel = ({
 
     //#region Computeds
 
-    self.paymentHistoryFromPreceedsTo = ko.pureComputed(() => {
+    self.paymentHistoryFromPrecedesTo = ko.pureComputed(() => {
         if (self.paymentHistoryFromDate() && self.paymentHistoryToDate()) {
             return self.paymentHistoryFromDate().getTime() <= self.paymentHistoryToDate().getTime();
         }
@@ -1248,6 +1599,20 @@ const creditControlFiltersViewModel = ({
             params: true,
             onlyIf: function () {
                 return self.paymentHistoryFromDate() && self.paymentHistoryToDate()
+            },
+            message: 'From Date must precede To Date'
+        }
+    }, self);
+
+    self.outstandingInvoicesFromPrecedesTo = ko.pureComputed(() => {
+        if (self.outstandingInvoicesFromDate() && self.outstandingInvoicesToDate()) {
+            return self.outstandingInvoicesFromDate().getTime() <= self.outstandingInvoicesToDate().getTime();
+        }
+    }, self).extend({
+        equal: {
+            params: true,
+            onlyIf: function () {
+                return self.outstandingInvoicesFromDate() && self.outstandingInvoicesToDate()
             },
             message: 'From Date must precede To Date'
         }
@@ -1346,6 +1711,7 @@ const creditControlFiltersViewModel = ({
                     && (k != 'includeClosedTradeAccountsParams')
                     && (k != 'salesHistoryAnalysisPeriodsParams')
                     && (k.indexOf('paymentHistory') == -1)
+                    && (k.indexOf('outstanding') == -1)
                     && (k.indexOf('Params') > -1)
                     && (k.indexOf('Params') == k.length - 6);
             }).map(k => self[k])
@@ -1436,6 +1802,27 @@ const creditControlFiltersViewModel = ({
             method: 'notifyWhenChangesStop'
         }
     });
+
+    self.outstandingInvoicesWithUnallocatedDepositsFilters = ko.computed(() => {
+
+        let data = {
+            dateRangeId: self.outstandingInvoicesDateRangeId(),
+            from: self.outstandingInvoicesFromDate()?.toUTCString() ?? null,
+            to: self.outstandingInvoicesToDate()?.toUTCString() ?? null,
+            currencyCode: self.outstandingInvoicesBankingCurrencyCode()
+        }
+
+        if (self.outstandingInvoicesSearchTerm()) {
+            data.searchTerm = self.outstandingInvoicesSearchTerm();
+        }
+
+        if (self.tradeAccountCode()) {
+            data.tradeAccountCode = self.tradeAccountCode()
+        }
+
+        return data;
+
+    }, self);
 
     //#endregion
 

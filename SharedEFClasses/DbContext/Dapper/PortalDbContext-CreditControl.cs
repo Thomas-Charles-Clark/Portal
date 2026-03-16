@@ -179,7 +179,14 @@ namespace SharedEFClasses.Models
 
 		public async Task<CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectResult> CreditControl_OutstandingInvoicesWithUnallocatedDeposits_Select(CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectDTO dto)
 		{
-			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_OutstandingInvoicesWithUnallocatedDeposits_Select]", dto, null, 60, CommandType.StoredProcedure);
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_OutstandingInvoicesWithUnallocatedDeposits_Select]", new
+			{
+				dto.From,
+				dto.To,
+				dto.TradeAccountCode,
+				dto.SearchTerm,
+				dto.CurrencyCode
+			}, null, 60, CommandType.StoredProcedure);
 
 			return new CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectResult()
 			{
