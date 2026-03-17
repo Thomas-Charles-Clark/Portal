@@ -35,7 +35,7 @@ namespace SharedEFClasses.Models.CreditControl
 
 		public string TradeAccountLabel { get; set; }
 
-		public string Receipts { get; set; }
+		public string ReceiptDetails { get; set; }
 
 		public string DepositAccountDetails { get; set; }
 	}

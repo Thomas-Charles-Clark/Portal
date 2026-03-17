@@ -8,7 +8,7 @@ namespace SharedEFClasses.Models.CreditControl
 {
 	public class CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectDTO
 	{
-		public sbyte? DateRangeID { get; set; }
+		public string DateRangeID { get; set; }
 
 		public string SearchTerm { get; set; }
 

@@ -10,7 +10,7 @@ namespace SharedEFClasses.Models.CreditControl
 {
 	public class CreditControl_Payments_SelectDTO
 	{
-		public sbyte? DateRangeID { get; set; }
+		public string DateRangeID { get; set; }
 
 		public string SearchTerm { get; set; }
 
@@ -23,5 +23,7 @@ namespace SharedEFClasses.Models.CreditControl
 		public DateTime? From { get; set; }
 
 		public DateTime? To { get; set; }
+
+		public string PaymentStatus { get; set; }
 	}
 }

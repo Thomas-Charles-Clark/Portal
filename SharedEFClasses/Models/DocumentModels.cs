@@ -51,6 +51,8 @@ namespace SharedEFClasses.Models.Documents
         public string HeaderOrderIdentifierLabel { get; set; }
         public string HeaderOrderIdentifierValue { get; set; }
 		public string LogoFileName { get; set; }
+        public bool Void { get; set; }
+        public string VoidLabel { get; set; }
 	}
 
     public class DocumentOrderHeader

@@ -99,31 +99,39 @@ namespace Portal.Areas.CreditControl.Controllers
 
 				switch (dto.DateRangeID)
 				{
-					case 12: /* Last 12 Months */
+					case "12M": /* Last 12 Months */
 						fromDt = DateTime.Now.AddYears(-1);
 						break;
-					case 6: /* Last 6 Months */
+					case "6M": /* Last 6 Months */
 						fromDt = DateTime.Now.AddMonths(-6);
 						break;
-					case 3: /* This Month */
+					case "3M": /* This Month */
 						fromDt = DateTime.Now.AddMonths(-3);
 						break;
-					case 1: /* This Month */
+					case "1M": /* This Month */
 						fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
 						break;
-					case 30: /* Last 30 Days */
+					case "30": /* Last 30 Days */
 						fromDt = DateTime.Now.AddDays(-30);
 						break;
-					case -1: /* "Custom" */
+					case "1":
+						toDt = DateTime.Now;
+						fromDt = DateTime.Now.AddDays(-1);
+						break;
+					case "0":
+						toDt = DateTime.Now.AddDays(1);
+						fromDt = DateTime.Now.AddDays(0);
+						break;
+					case "-1": /* "Custom" */
 						toDt = dto.To;
 						fromDt = dto.From;
 						break;
-					case -2: /* "All Time" noop */
+					case "-2": /* "All Time" noop */
 						break;
 				}
 
-				dto.From = fromDt;
-				dto.To = toDt;
+				dto.From = fromDt?.Date;
+				dto.To = toDt?.Date;
 
 				var model = await PortalDb.CreditControl_Payments_Select(dto);
 
@@ -159,31 +167,39 @@ namespace Portal.Areas.CreditControl.Controllers
 
 				switch (dto.DateRangeID)
 				{
-					case 12: /* Last 12 Months */
+					case "12M": /* Last 12 Months */
 						fromDt = DateTime.Now.AddYears(-1);
 						break;
-					case 6: /* Last 6 Months */
+					case "6M": /* Last 6 Months */
 						fromDt = DateTime.Now.AddMonths(-6);
 						break;
-					case 3: /* This Month */
+					case "3M": /* This Month */
 						fromDt = DateTime.Now.AddMonths(-3);
 						break;
-					case 1: /* This Month */
+					case "1M": /* This Month */
 						fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
 						break;
-					case 30: /* Last 30 Days */
+					case "30": /* Last 30 Days */
 						fromDt = DateTime.Now.AddDays(-30);
 						break;
-					case -1: /* "Custom" */
+					case "1":
+						toDt = DateTime.Now;
+						fromDt = DateTime.Now.AddDays(-1);
+						break;
+					case "0":
+						toDt = DateTime.Now.AddDays(1);
+						fromDt = DateTime.Now.AddDays(0);
+						break;
+					case "-1": /* "Custom" */
 						toDt = dto.To;
 						fromDt = dto.From;
 						break;
-					case -2: /* "All Time" noop */
+					case "-2": /* "All Time" noop */
 						break;
 				}
 
-				dto.From = fromDt;
-				dto.To = toDt;
+				dto.From = fromDt?.Date;
+				dto.To = toDt?.Date;
 
 				var model = await PortalDb.CreditControl_OutstandingInvoicesWithUnallocatedDeposits_Select(dto);
 

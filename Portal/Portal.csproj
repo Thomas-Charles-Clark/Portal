@@ -3318,6 +3318,8 @@
     <Content Include="css\src\models\common\common-2026.scss" />
     <Content Include="css\src\models\credit-control\credit-control-payments.scss" />
     <Content Include="css\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits.scss" />
+    <Content Include="css\dist\fonts\src\trixie-web-pro-heavy.ttf" />
+    <Content Include="css\src\fonts\src\trixie-web-pro-heavy.ttf" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

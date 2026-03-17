@@ -16,6 +16,7 @@ using SharedEFClasses.Models.Documents;
 using SharedEFClasses.Models;
 using System.Diagnostics;
 using OpenXmlPowerTools;
+using iTextSharp.text.html;
 
 namespace Portal.Utilities.Document
 {
@@ -55,6 +56,8 @@ namespace Portal.Utilities.Document
 			var finalStream = new MemoryStream();
 
 			BaseFont gillSansMt = BaseFont.CreateFont(rootPath + "Content/fonts/Gill-Sans-MT.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
+
+			BaseFont trixieHeavy = BaseFont.CreateFont(rootPath + "css/dist/fonts/src/trixie-web-pro-heavy.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
 
 			stopWatch.Start();
 
@@ -103,6 +106,10 @@ namespace Portal.Utilities.Document
 			var footerNormalFont = FontFactory.GetFont("Arial", standardSize - 2, Font.NORMAL, BaseColor.BLACK);
 
 			var footerBoldFont = FontFactory.GetFont("Arial", standardSize - 2, Font.BOLD, BaseColor.BLACK);
+
+			var voidColor = new BaseColor(System.Drawing.ColorTranslator.FromHtml("#dc3545"));
+
+			var voidStampFont = new Font(trixieHeavy, 128, Font.NORMAL, voidColor);
 
 			System.Drawing.Image dgImage = System.Drawing.Image.FromFile(AppDomain.CurrentDomain.BaseDirectory + $"/Content/Images/Logos/{inputWrapper?.Document?.DocumentPreHeader?.LogoFileName ?? "designers-guild.jpg"}");
 
@@ -2744,18 +2751,74 @@ namespace Portal.Utilities.Document
 
 			PdfStamper stamper = new PdfStamper(reader, stamperStream); // create a stamper reading output using stamperStream
 
-			var count = input.OrderHeaders.Any() ? input.OrderHeaders.Count : reader.NumberOfPages; // for all the pages in the final document...
+			//var count = reader.NumberOfPages; // for all the pages in the final document...
 
-			for (var i = 1; i <= count; i++) // for each page found in reader
+			if (input.DocumentPreHeader.Void)
 			{
-				counter++;
+				var count = reader.NumberOfPages; // for all the pages in the final document...
 
-				var c = stamper.GetOverContent(i); // get the page
+				for (var i = 1; i <= count; i++) // for each page found in reader
+				{
+					counter++;
 
-				var headerTable = new PdfPTable(2);
+					var pageSize = reader.GetPageSize(i);
 
-				headerTable = GetPageNumberTable(inputWrapper.DocumentType, dgLogo, i, count, input.DocumentPreHeader, normalFont, boldFont);
-				//headerTable.WriteSelectedRows(0, -1, 25, 812, c); // write stuff to it
+					var c = stamper.GetOverContent(i); // get the page
+
+					if (input.DocumentPreHeader.Void)
+					{
+						var voidTable = new PdfPTable(1);
+
+						voidTable.TotalWidth = (input.DocumentPreHeader.VoidLabel.Length + 2) * 500;
+						voidTable.LockedWidth = true;
+
+						var voidTextCell = new PdfPCell(new Phrase(input.DocumentPreHeader.VoidLabel?.ToUpperInvariant(), voidStampFont))
+						{
+							BorderColor = voidColor,
+							BorderWidth = 12,
+							UseBorderPadding = false,
+							VerticalAlignment = Element.ALIGN_MIDDLE,
+							HorizontalAlignment = Element.ALIGN_CENTER,
+							UseAscender = true,
+							UseDescender = true,
+							PaddingTop = 6.0f,
+							PaddingBottom = 6.0f,
+							BorderWidthLeft = 0.0f,
+							BorderWidthRight = 0.0f
+						};
+
+						voidTable.AddCell(voidTextCell);
+
+						var voidPdfTemplate = c.CreateTemplate(voidTable.TotalWidth, voidTable.TotalHeight);
+
+						voidTable.WriteSelectedRows(0, -1, 0, voidTable.TotalHeight, voidPdfTemplate);
+
+						var angle = 45.0f;
+
+						var radians = angle * (Math.PI / 180);
+
+						var cos = (float)Math.Cos(radians);
+
+						var sin = (float)Math.Sin(radians);
+
+						float pageCenterX = pageSize.Width / 2;
+						float pageCenterY = pageSize.Height / 2;
+
+						float tableWidth = voidTable.TotalWidth;
+						float tableHeight = voidTable.TotalHeight;
+
+						float e = pageCenterX - ((tableWidth / 2) * cos - (tableHeight / 2) * sin);
+						float f = pageCenterY - ((tableWidth / 2) * sin + (tableHeight / 2) * cos);
+
+						c.AddTemplate(voidPdfTemplate, cos, sin, -sin, cos, e, f);
+					}
+
+					//var headerTable = new PdfPTable(2);
+
+					//headerTable = GetPageNumberTable(inputWrapper.DocumentType, dgLogo, i, count, input.DocumentPreHeader, normalFont, boldFont);
+
+					//headerTable.WriteSelectedRows(0, -1, 25, 812, c); // write stuff to it
+				}
 			}
 
 			stamper.Close(); // close the stamper

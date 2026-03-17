@@ -46,7 +46,7 @@
     }, {
         field: "OrderIDs",
         title: "Order IDs",
-        width: 140,
+        width: 240,
         attributes: {
             "class": "",
         },
@@ -78,7 +78,7 @@
     }, {
         field: "Amount",
         title: "Amount",
-        width: 140,
+        width: 120,
         attributes: {
             "class": ""
         },
@@ -114,11 +114,36 @@
             "class": ""
         },
         filterable: false,
-        template: `<a target="_blank" href="#: DocumentURI #" class="stretched-link"><i class="bi bi-file-earmark-pdf"></i></a>`
+        template: (dataItem) => {
+            if (dataItem.DocumentURI) {
+                return `<a target="_blank" href="${dataItem.DocumentURI}" class="stretched-link"><i class="bi bi-file-earmark-pdf"></i></a>`
+            } else {
+                return '';
+            }
+        }
+    }, {
+        field: "DocumentURI",
+        title: "Share",
+        width: 64,
+        attributes: {
+            "class": "relative",
+            title: "Share Document"
+        },
+        headerAttributes: {
+            "class": ""
+        },
+        filterable: false,
+        template: (dataItem) => {
+            if (dataItem.DocumentURI) {
+                return `<a target="_blank" href="${dataItem.DocumentURI.replace('api/documentsapi/GetDocument', 'documents/view')}" class="stretched-link"><span class="material-icons">ios_share</i></a>`;
+            } else {
+                return '';
+            }
+        }
     }, {
         field: "Status",
         title: "Payment Status",
-        width: 520,
+        width: 460,
         attributes: {
             "class": ""
         },
@@ -132,23 +157,9 @@
             return dataItem.Status;
         }
     }, {
-        field: "ModifiedDT",
-        title: "Last Modified",
-        width: 180,
-        attributes: {
-            "class": ""
-        },
-        headerAttributes: {
-            "class": ""
-        },
-        filterable: {
-            extra: false
-        },
-        template: `#: ModifiedDT ? moment(ModifiedDT).format('DD/MM/YYYY HH:mm') : ''#`
-    }, {
-        field: "Receipts",
+        field: "ReceiptDetails",
         title: "Receipts",
-        width: 520,
+        width: 320,
         attributes: {
             "class": ""
         },
@@ -159,11 +170,12 @@
             extra: false
         },
         template: (dataItem) => {
-            return dataItem.Receipts ?? '';
+            return dataItem.ReceiptDetails ?? '';
         }
     }, {
         field: "DepositAccountDetails",
         title: "Deposit Account Details",
+        width: 240,
         attributes: {
             "class": ""
         },
@@ -176,7 +188,21 @@
         template: (dataItem) => {
             return dataItem.DepositAccountDetails ?? '';
         }
-    }];
+    }, {
+        field: "ModifiedDT",
+        title: "Last Modified",
+        width: 140,
+        attributes: {
+            "class": ""
+        },
+        headerAttributes: {
+            "class": ""
+        },
+        filterable: {
+            extra: false
+        },
+        template: `#: ModifiedDT ? moment(ModifiedDT).format('DD/MM/YYYY HH:mm') : ''#`
+    },];
 
     self.gridDataSourceRead = (options) => {
         var webapi = new kendo.data.transports.webapi({ prefix: "" });

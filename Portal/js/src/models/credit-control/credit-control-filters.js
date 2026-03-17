@@ -3,23 +3,31 @@
     name: 'All Time',
     class: null
 }, {
+    dateRangeId: '0',
+    name: 'Today',
+    class: null
+}, {
+    dateRangeId: '1',
+    name: 'Yesterday',
+    class: null
+}, {
     dateRangeId: '30',
     name: 'Last 30 Days',
     class: null
 }, {
-    dateRangeId: '1',
+    dateRangeId: '1M',
     name: 'This Month',
     class: null
 }, {
-    dateRangeId: '3',
+    dateRangeId: '3M',
     name: 'Last 3 Months',
     class: null
 }, {
-    dateRangeId: '6',
+    dateRangeId: '6M',
     name: 'Last 6 Months',
     class: null
 }, {
-    dateRangeId: '12',
+    dateRangeId: '12M',
     name: 'Last 12 Months',
     class: null
 }, {
@@ -27,6 +35,14 @@
     name: 'Custom',
     class: null
 }];
+
+const paymentHistoryPaymentStatuses = [{
+    name: 'Completed',
+    value: 'Completed'
+}, {
+    name: 'Pending',
+    value: 'Pending'
+}]
 
 const creditControlFiltersViewModel = ({
     params,
@@ -109,7 +125,7 @@ const creditControlFiltersViewModel = ({
 
     self.displayModes = ko.observableArray(displayModes);
 
-    self.paymentHistoryDateRangeId = ko.observable('30');
+    self.paymentHistoryDateRangeId = ko.observable('0');
 
     self.paymentHistoryDateRange = ko.observable(paymentHistoryDateRanges.find(d => d.dateRangeId == '30'));
 
@@ -163,8 +179,13 @@ const creditControlFiltersViewModel = ({
 
     self.paymentHistoryBankingCurrency = ko.observable(params?.paymentHistoryBankingCurrency ?? undefined);
 
+    self.paymentHistoryPaymentStatusId = ko.observable(params?.paymentHistoryPaymentStatusId ?? '');
 
-    self.outstandingInvoicesDateRangeId = ko.observable('30');
+    self.paymentHistoryPaymentStatus = ko.observable(params?.paymentHistoryPaymentStatus ?? undefined);
+
+    self.paymentHistoryPaymentStatuses = paymentHistoryPaymentStatuses;
+
+    self.outstandingInvoicesDateRangeId = ko.observable('0');
 
     self.outstandingInvoicesDateRange = ko.observable(paymentHistoryDateRanges.find(d => d.dateRangeId == '30'));
 
@@ -1270,6 +1291,33 @@ const creditControlFiltersViewModel = ({
         }
     });
 
+    self.paymentHistoryPaymentStatusParams = kendoMDCDropDownList({
+        skipCascade: false,
+        label: 'Payment Status',
+        data: self.paymentHistoryPaymentStatuses,
+        textField: 'name',
+        valueField: 'value',
+        idObservable: self.paymentHistoryPaymentStatusId,
+        objObservable: self.paymentHistoryPaymentStatus,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        autoBind: true,
+        autoWidth: true,
+        clearFunction: () => {
+            self.paymentHistoryPaymentStatusId('');
+            self.paymentHistoryPaymentStatus(undefined);
+        },
+        afterClear: () => {
+
+        },
+        popupSettings: {
+            appendTo: document.querySelector(`#payment-history-payment-status-prefilter`)
+        },
+    });
+
     self.outstandingInvoicesTradeAccountParams = kendoMDCDropDownList({
         skipCascade: true,
         label: 'Trade Account',
@@ -1784,8 +1832,9 @@ const creditControlFiltersViewModel = ({
             from: self.paymentHistoryFromDate()?.toUTCString() ?? null,
             to: self.paymentHistoryToDate()?.toUTCString() ?? null,
             accountId: self.paymentHistoryBankingAccountId(),
-            currencyCode: self.paymentHistoryBankingCurrencyCode()
-        }
+            currencyCode: self.paymentHistoryBankingCurrencyCode(),
+            paymentStatus: self.paymentHistoryPaymentStatusId()
+        } 
 
         if (self.paymentHistorySearchTerm()) {
             data.searchTerm = self.paymentHistorySearchTerm();

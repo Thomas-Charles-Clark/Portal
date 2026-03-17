@@ -36,6 +36,11 @@
 			}
 		}
 
+		#payment-history-payment-status-prefilter {
+			min-width: 240px;
+			width: 240px;
+		}
+
 		#payment-history-banking-account-prefilter {
 			min-width: 240px;
 			width: 240px;
@@ -85,7 +90,8 @@
 			color: $link-color;
 		}
 
-		.bi {
+		.bi,
+		.material-icons {
 			font-size: 3rem;
 		}
 	}
