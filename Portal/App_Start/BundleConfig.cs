@@ -414,7 +414,7 @@ namespace Portal
             ));
 
             bundles.Add(new StyleBundle("~/bundles/css/neiman-marcus-order-status").Include(
-                $"{cssPrefix}/models/neiman-marcus-order-status{cssSuffix}"
+                $"{cssPrefix}/models/neiman-marcus/neiman-marcus-order-status{cssSuffix}"
             ));
 
             bundles.Add(new StyleBundle("~/bundles/css/full-width-app").Include(
@@ -1006,7 +1006,7 @@ namespace Portal
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/neiman-marcus-order-status").Include(
-                        $"{jsPrefix}/models/others/neiman-marcus-order-status{jsSuffix}"
+                        $"{jsPrefix}/models/neiman-marcus/neiman-marcus-order-status{jsSuffix}"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/advertiser-maintenance").Include(

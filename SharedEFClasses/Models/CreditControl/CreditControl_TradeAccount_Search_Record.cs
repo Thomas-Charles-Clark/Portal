@@ -35,6 +35,7 @@ namespace SharedEFClasses.Models.CreditControl
 		public int OrdersInProgressQuantity { get; set; }
 		public int OrdersHeldPortalQuantity { get; set; }
 		public int OrdersHeldMertexQuantity { get; set; }
+		public decimal? TotalValue { get; set; }
 		public decimal? NotDueTotalValue { get; set; }
 		public decimal? OverdueTotalValue { get; set; }
 		public decimal? Debt30DayValue { get; set; }
@@ -49,6 +50,20 @@ namespace SharedEFClasses.Models.CreditControl
 		public decimal? Debt60DayQuantity { get; set; }
 		public decimal? Debt90DayQuantity { get; set; } 
 		public decimal? Debt120DayQuantity { get; set; }
+		public decimal? TotalValue_Advertising { get; set; }
+		public decimal? NotDueTotalQuantity_Advertising { get; set; }
+		public decimal? OverdueTotalQuantity_Advertising { get; set; }
+		public decimal? Debt30DayQuantity_Advertising { get; set; }
+		public decimal? Debt60DayQuantity_Advertising { get; set; }
+		public decimal? Debt90DayQuantity_Advertising { get; set; }
+		public decimal? Debt120DayQuantity_Advertising { get; set; }
+		public decimal? TotalValue_Product { get; set; }
+		public decimal? NotDueTotalQuantity_Product { get; set; }
+		public decimal? OverdueTotalQuantity_Product { get; set; }
+		public decimal? Debt30DayQuantity_Product { get; set; }
+		public decimal? Debt60DayQuantity_Product { get; set; }
+		public decimal? Debt90DayQuantity_Product { get; set; }
+		public decimal? Debt120DayQuantity_Product { get; set; }
 		public int? ClaimCount { get; set; }
 		public decimal? ClaimValue { get; set; }
 		public decimal? DisputedQuantity { get; set; }

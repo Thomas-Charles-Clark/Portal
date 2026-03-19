@@ -118,11 +118,7 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
     //#region Subscriptions
 
     self.tradeAccountCodeList.subscribe(nv => {
-
-        if (localStorage.getItem('performance_Expanded') === "true") {
-            self.performanceCollapse.show();
-        }
-
+        self.fetch();
     });
 
     self.reportGrouping.subscribe(nv => {
@@ -141,44 +137,48 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
     //#region Methods
 
     self.fetch = () => {
-        self.busy(true);
 
-        let data = {
-            reportGrouping: self.reportGrouping() == '' ? null : self.reportGrouping(),
-            currencyOrSterling: self.currencyOrSterling() == '' ? null : self.currencyOrSterling(),
-            tradeAccountCodeList: self.tradeAccountCodeList().split(',')
-        };
+        if (self.tradeAccountCodeList().length > 0) {
 
-        console.log('fetchPerformance calling with', data);
+            self.busy(true)
 
-        fetch("/api/CreditControlAPI/FetchAgedSalesLedger", {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            body: JSON.stringify(data)
-        })
-            .then(window.handleFetchResponse)
-            .then(data => {
-                console.log('fetchPerformance returned', data);
+            let data = {
+                reportGrouping: self.reportGrouping() == '' ? null : self.reportGrouping(),
+                currencyOrSterling: self.currencyOrSterling() == '' ? null : self.currencyOrSterling(),
+                tradeAccountCodeList: self.tradeAccountCodeList().split(',')
+            };
 
-                self.periods(Map.groupBy(data.Records, (item) => JSON.stringify({
-                    columnLabel: item.ColumnLabel,
-                    columnIndex: item.ColumnSortOrder
-                })).keys().toArray().map(k => JSON.parse(k))); // First stage of transposing the results...
+            console.log('fetchPerformance calling with', data);
 
-                let rowGrouping = Map.groupBy(data.Records, (item) => JSON.stringify({
-                    rowLabel: item.RowLabel,
-                    rowIndex: item.RowSortOrder,
-                    isTotalRow: item.IsTotalRow
-                })).entries().toArray().map(k => JSON.parse(k[0]))
-
-                self.rowGrouping(rowGrouping);
-
-                self.records(data.Records);
-
-                self.busy(false);
+            fetch("/api/CreditControlAPI/FetchAgedSalesLedger", {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                body: JSON.stringify(data)
             })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    console.log('fetchPerformance returned', data);
+
+                    self.periods(Map.groupBy(data.Records, (item) => JSON.stringify({
+                        columnLabel: item.ColumnLabel,
+                        columnIndex: item.ColumnSortOrder
+                    })).keys().toArray().map(k => JSON.parse(k))); // First stage of transposing the results...
+
+                    let rowGrouping = Map.groupBy(data.Records, (item) => JSON.stringify({
+                        rowLabel: item.RowLabel,
+                        rowIndex: item.RowSortOrder,
+                        isTotalRow: item.IsTotalRow
+                    })).entries().toArray().map(k => JSON.parse(k[0]))
+
+                    self.rowGrouping(rowGrouping);
+
+                    self.records(data.Records);
+
+                    self.busy(false);
+                })
+        }
     }
 
     self.performanceCellLookup = (rowIndex, columnIndex) => {
@@ -196,6 +196,12 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
     self.revert = () => {
         self.reportGrouping(CREDIT_CONTROLLER);
         self.currencyOrSterling(CURRENCY);
+    }
+
+    self.init = () => {
+        if (localStorage.getItem('performance_Expanded') === "true") {
+            self.performanceCollapse.show();
+        }
     }
 
     //#endregion

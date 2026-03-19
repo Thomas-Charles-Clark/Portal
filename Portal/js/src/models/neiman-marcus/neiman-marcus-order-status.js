@@ -13,6 +13,9 @@
 }, {
     dateRangeId: -1,
     name: 'Custom'
+}, {
+    dateRangeId: -2,
+    name: 'All Time'
 }];
 
 const orderStatuses = [{
@@ -44,15 +47,15 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
 
     self.validateSearchNow = ko.observable(true);
 
-    self.orderStatusId = ko.observable('');
+    self.orderStatusId = ko.observable('I');
 
     self.orderStatuses = orderStatuses;
 
-    self.fromDate = ko.observable(new Date(moment(new Date()).add(-6, 'months')));
+    self.fromDate = ko.observable();
 
-    self.toDate = ko.observable(new Date());
+    self.toDate = ko.observable();
 
-    self.dateRangeId = ko.observable(6);
+    self.dateRangeId = ko.observable(-2);
 
     self.dateRanges = dateRanges;
 
@@ -99,7 +102,7 @@ const neimanMarcusOrderStatusViewModel = ({ } = {}) => {
     }
 
     self.groupHeaderTemplate = (item) => {
-        console.log(item);
+        //console.log(item);
         let first = item.items[0];
         return `<span>DSCO Order ID: <span class="font-normal">${first.DSCO_OrderID}</span><span class="ms-5">NM Order ID: <span class="font-normal">${(first.NeimanMarcus_OrderID ?? 'pending')}</span></span><span class="ms-5">Order Date: <span class="font-normal">${moment(first.OrderDT).format('DD/MM/YYYY HH:mm:ss')}</span></span>`;
     }

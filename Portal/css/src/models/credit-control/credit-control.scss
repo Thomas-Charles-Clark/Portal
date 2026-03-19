@@ -473,12 +473,13 @@ html {
         background-color: $white;
         color: $body-color;
         border-color: $gray-500;
+        border-radius: 6px;
         transition: background-color 150ms ease-in-out, color 150ms ease-in-out, border-color 150ms ease-in-out;
 
         a {
             color: $primary;
-        } 
-        
+        }
+
         &:hover, &:focus, &:focus-within {
             .card-body {
                 h4, h5 {
@@ -521,8 +522,7 @@ html {
             &.alert {
                 margin-bottom: 0;
                 border: 0;
-                border-radius: $alert-border-radius;
-
+                border-radius: 4px;
             }
 
             h4 {
@@ -743,6 +743,11 @@ html {
 }
 
 .selected-pod {
+    box-shadow: 0 0 6px 4px rgba(0, 0, 0, 0.3);
+
+    h4 {
+        text-decoration: underline !important;
+    }
 
     .alert-primary {
         background-color: shade-color($blue-600, 5%);

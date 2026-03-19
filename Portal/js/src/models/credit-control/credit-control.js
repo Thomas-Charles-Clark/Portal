@@ -20,7 +20,9 @@
     SINGLE_BR = '<br/>',
     DOUBLE_BR = '<br/><br/>',
     DISPLAY_MODE_QUANTITY = 1,
-    DISPLAY_MODE_VALUE = 2
+    DISPLAY_MODE_VALUE = 2,
+    DISPLAY_MODE_ADVERTISING = 3,
+    DISPLAY_MODE_PRODUCT = 4;
 
 
 const creditControlViewModel = (() => {
@@ -29,6 +31,10 @@ const creditControlViewModel = (() => {
     //#region Properties
 
     self.busy = ko.observable(true);
+
+    self.busy.subscribe(nv => {
+        console.log('viewModel.busy', nv);
+    });
 
     self.busyMessage = ko.observable('Please wait...');
 
@@ -679,7 +685,7 @@ const creditControlViewModel = (() => {
             "class": "debt-breakdown-heading debt-breakdown"
         },
         columns: [{
-            field: 'StatementTotalValue',
+            field: 'TotalValue',
             title: 'Total',
             headerAttributes: {
                 "class": "debt-breakdown-subheading debt-breakdown"
@@ -692,8 +698,14 @@ const creditControlViewModel = (() => {
 
                 let result = [];
 
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_ADVERTISING) > -1)
+                    result.push(self.formatCurrency(e, 'TotalValue_Advertising'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_PRODUCT) > -1)
+                    result.push(self.formatCurrency(e, 'TotalValue_Product'));
+
                 if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
-                    result.push(self.formatCurrency(e, 'StatementTotalValue'));
+                    result.push(self.formatCurrency(e, 'TotalValue'));
 
                 if (self.filters.displayModes().indexOf(DISPLAY_MODE_QUANTITY) > -1)
                     result.push(self.formatNumber(e, 'TotalQuantity'));
@@ -713,6 +725,12 @@ const creditControlViewModel = (() => {
             template: (e) => {
 
                 let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_ADVERTISING) > -1)
+                    result.push(self.formatCurrency(e, 'TotalValue_Advertising'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_PRODUCT) > -1)
+                    result.push(self.formatCurrency(e, 'TotalValue_Product'));
 
                 if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
                     result.push(self.formatCurrency(e, 'NotDueTotalValue'));
@@ -736,6 +754,12 @@ const creditControlViewModel = (() => {
 
                 let result = [];
 
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_ADVERTISING) > -1)
+                    result.push(self.formatCurrency(e, 'OverdueTotalValue_Advertising'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_PRODUCT) > -1)
+                    result.push(self.formatCurrency(e, 'OverdueTotalValue_Product'));
+
                 if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
                     result.push(self.formatCurrency(e, 'OverdueTotalValue'));
 
@@ -757,6 +781,12 @@ const creditControlViewModel = (() => {
             template: (e) => {
 
                 let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_ADVERTISING) > -1)
+                    result.push(self.formatCurrency(e, 'Debt30DayValue_Advertising'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_PRODUCT) > -1)
+                    result.push(self.formatCurrency(e, 'Debt30DayValue_Product'));
 
                 if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
                     result.push(self.formatCurrency(e, 'Debt30DayValue'));
@@ -780,6 +810,12 @@ const creditControlViewModel = (() => {
 
                 let result = [];
 
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_ADVERTISING) > -1)
+                    result.push(self.formatCurrency(e, 'Debt60DayValue_Advertising'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_PRODUCT) > -1)
+                    result.push(self.formatCurrency(e, 'Debt60DayValue_Product'));
+
                 if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
                     result.push(self.formatCurrency(e, 'Debt60DayValue'));
 
@@ -801,6 +837,12 @@ const creditControlViewModel = (() => {
             template: (e) => {
 
                 let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_ADVERTISING) > -1)
+                    result.push(self.formatCurrency(e, 'Debt90DayValue_Advertising'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_PRODUCT) > -1)
+                    result.push(self.formatCurrency(e, 'Debt90DayValue_Product'));
 
                 if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
                     result.push(self.formatCurrency(e, 'Debt90DayValue'));
@@ -824,6 +866,12 @@ const creditControlViewModel = (() => {
 
                 let result = [];
 
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_ADVERTISING) > -1)
+                    result.push(self.formatCurrency(e, 'Debt120DayValue_Advertising'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_PRODUCT) > -1)
+                    result.push(self.formatCurrency(e, 'Debt120DayValue_Product'));
+
                 if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
                     result.push(self.formatCurrency(e, 'Debt120DayValue'));
 
@@ -846,6 +894,12 @@ const creditControlViewModel = (() => {
 
                 let result = [];
 
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_ADVERTISING) > -1)
+                    result.push(self.formatCurrency(e, 'DisputedValue_Advertising'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_PRODUCT) > -1)
+                    result.push(self.formatCurrency(e, 'DisputedValue_Product'));
+
                 if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
                     result.push(self.formatCurrency(e, 'DisputedValue'));
 
@@ -867,6 +921,12 @@ const creditControlViewModel = (() => {
             template: (e) => {
 
                 let result = [];
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_ADVERTISING) > -1)
+                    result.push(self.formatCurrency(e, 'WrittenOffValue_Advertising'));
+
+                if (self.filters.displayModes().indexOf(DISPLAY_MODE_ADVERTISING) > -1)
+                    result.push(self.formatCurrency(e, 'WrittenOffValue_Product'));
 
                 if (self.filters.displayModes().indexOf(DISPLAY_MODE_VALUE) > -1)
                     result.push(self.formatCurrency(e, 'WrittenOffValue'));
@@ -1275,6 +1335,7 @@ const creditControlViewModel = (() => {
                         OrdersInProgressQuantity: { type: 'number' },
                         OrdersHeldPortalQuantity: { type: 'number' },
                         OrdersHeldMertexQuantity: { type: 'number' },
+                        TotalValue: { type: 'number' },
                         NotDueTotalValue: { type: 'number' },
                         OverdueTotalValue: { type: 'number' },
                         Debt30DayValue: { type: 'number' },
@@ -1283,6 +1344,7 @@ const creditControlViewModel = (() => {
                         Debt120DayValue: { type: 'number' },
                         DisputedValue: { type: 'number' },
                         WrittenOffValue: { type: 'number' },
+                        TotalQuantity: { type: 'number' },
                         NotDueTotalQuantity: { type: 'number' },
                         NotDueTotalQuantity: { type: 'number' },
                         OverdueTotalQuantity: { type: 'number' },
@@ -1292,9 +1354,26 @@ const creditControlViewModel = (() => {
                         Debt120DayQuantity: { type: 'number' },
                         DisputedQuantity: { type: 'number' },
                         WrittenOffQuantity: { type: 'number' },
+                        TotalValue_Advertising: { type: 'number' },
+                        NotDueTotalValue_Advertising: { type: 'number' },
+                        OverdueTotalValue_Advertising: { type: 'number' },
+                        Debt30DayValue_Advertising: { type: 'number' },
+                        Debt60DayValue_Advertising: { type: 'number' },
+                        Debt90DayValue_Advertising: { type: 'number' },
+                        Debt120DayValue_Advertising: { type: 'number' },
+                        DisputedValue_Advertising: { type: 'number' },
+                        WrittenOffValue_Advertising: { type: 'number' },
+                        TotalValue_Product: { type: 'number' },
+                        NotDueTotalValue_Product: { type: 'number' },
+                        OverdueTotalValue_Product: { type: 'number' },
+                        Debt30DayValue_Product: { type: 'number' },
+                        Debt60DayValue_Product: { type: 'number' },
+                        Debt90DayValue_Product: { type: 'number' },
+                        Debt120DayValue_Product: { type: 'number' },
+                        DisputedValue_Product: { type: 'number' },
+                        WrittenOffValue_Product: { type: 'number' },
                         StatementURI: { type: 'string' },
                         StatementTotalValue: { type: 'number' },
-                        StatementTotalQuantity: { type: 'number' },
                         CreditsValue: { type: 'number' },
                         DepositsValue: { type: 'number' },
                         OverpaymentsValue: { type: 'number' },
@@ -1713,17 +1792,19 @@ const creditControlViewModel = (() => {
         self.ordersBreakdown(undefined);
     });
 
-    self.dashboardTab.addEventListener('shown.bs.tab', (event) => {
+    self.dashboardTab.addEventListener('click', (event) => {
         self.refresh();
     });
 
-    self.payOffInvoicesTab.addEventListener('shown.bs.tab', (event) => {
+    self.payOffInvoicesTab.addEventListener('click', (event) => {
         self.outstandingInvoices.refresh();
     });
 
-    self.onlinePaymentHistoryTab.addEventListener('shown.bs.tab', (event) => {
+    self.onlinePaymentHistoryTab.addEventListener('click', (event) => {
         self.paymentHistory.refresh();
     });
+
+    self.performance.init();
 
     //#endregion
 

@@ -318,6 +318,28 @@
 			</button>
 		</li>
 		<li style="padding-left: 2rem;">
+			<label class="form-check" data-bind="attr: { 'for': `display-mode-advertising` }, click: function() { return true }, clickBubble: false">
+				<input class="form-check-input" type="checkbox" data-bind="checked: displayModes,
+                checkedValue: DISPLAY_MODE_ADVERTISING,
+                attr: {
+                    id: `display-mode-advertising`,
+                    disabled: false
+                }" />
+				<span data-bind="text: 'Advertising Value'"></span>
+			</label>
+		</li>
+		<li style="padding-left: 2rem;">
+			<label class="form-check" data-bind="attr: { 'for': `display-mode-product` }, click: function() { return true }, clickBubble: false">
+				<input class="form-check-input" type="checkbox" data-bind="checked: displayModes,
+                checkedValue: DISPLAY_MODE_PRODUCT,
+                attr: {
+                    id: `display-mode-product`,
+                    disabled: false
+                }" />
+				<span data-bind="text: 'Product Value'"></span>
+			</label>
+		</li>
+		<li style="padding-left: 2rem;">
 			<label class="form-check" data-bind="attr: { 'for': `display-mode-value` }, click: function() { return true }, clickBubble: false">
 				<input class="form-check-input" type="checkbox" data-bind="checked: displayModes,
                 checkedValue: DISPLAY_MODE_VALUE,
@@ -325,7 +347,7 @@
                     id: `display-mode-value`,
                     disabled: false
                 }" />
-				<span data-bind="text: 'Value'"></span>
+				<span data-bind="text: 'Total Value'"></span>
 			</label>
 		</li>
 		<li style="padding-left: 2rem;">
@@ -336,7 +358,7 @@
                     id: `display-mode-quantity`,
                     disabled: false
                 }" />
-				<span data-bind="text: 'Quantity'"></span>
+				<span data-bind="text: 'Total Quantity'"></span>
 			</label>
 		</li>
 	</ul>

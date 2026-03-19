@@ -42,6 +42,11 @@ namespace SharedEFClasses.Models
                     toDt = dto.toDate;
                     fromDt = dto.fromDate;
                     break;
+                case -2:
+                    toDt = null;
+                    fromDt = null;
+                    break;
+                default: break;
             }
 
             var reply = await this.Database.Connection.QueryMultipleAsync("[NeimanMarcus].[Order_Inspect]", new
@@ -61,3 +66,4 @@ namespace SharedEFClasses.Models
         }
     }
 }
+ 

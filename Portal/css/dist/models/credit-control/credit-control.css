@@ -948,6 +948,7 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   background-color: #fff;
   color: #212529;
   border-color: #adb5bd;
+  border-radius: 6px;
   transition: background-color 150ms ease-in-out, color 150ms ease-in-out, border-color 150ms ease-in-out;
 }
 .dashboard .dashboard-pod a {
@@ -987,7 +988,7 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 .dashboard .dashboard-pod .card-body.alert {
   margin-bottom: 0;
   border: 0;
-  border-radius: 0.375rem;
+  border-radius: 4px;
 }
 .dashboard .dashboard-pod .card-body h4 {
   font-weight: bold;
@@ -1154,6 +1155,12 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   line-height: 1.75rem;
 }
 
+.selected-pod {
+  box-shadow: 0 0 6px 4px rgba(0, 0, 0, 0.3);
+}
+.selected-pod h4 {
+  text-decoration: underline !important;
+}
 .selected-pod .alert-primary {
   background-color: #0a54c0;
   color: #fff;

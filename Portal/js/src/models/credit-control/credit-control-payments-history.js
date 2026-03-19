@@ -46,7 +46,7 @@
     }, {
         field: "OrderIDs",
         title: "Order IDs",
-        width: 240,
+        width: 160,
         attributes: {
             "class": "",
         },
@@ -61,6 +61,26 @@
                 return dataItem.OrderIDs?.split(',').join('<br/>')
             else
                 return '';
+        }
+    }, {
+        field: "OrderStatus",
+        title: "Order Status",
+        width: 460,
+        attributes: {
+            "class": ""
+        },
+        headerAttributes: {
+            "class": ""
+        },
+        filterable: {
+            extra: false
+        },
+        template: (dataItem) => {
+            if (dataItem.OrderStatus) {
+                return dataItem.OrderStatus;
+            } else {
+                return '';
+            }
         }
     }, {
         field: "PaymentRequestType",
@@ -141,7 +161,7 @@
             }
         }
     }, {
-        field: "Status",
+        field: "PaymentStatus",
         title: "Payment Status",
         width: 460,
         attributes: {
@@ -154,7 +174,11 @@
             extra: false
         },
         template: (dataItem) => {
-            return dataItem.Status;
+            if (dataItem.PaymentStatus) {
+                return dataItem.PaymentStatus;
+            } else {
+                return '';
+            }
         }
     }, {
         field: "ReceiptDetails",
@@ -284,7 +308,7 @@
     }
 
     self.gridParams = {
-        autoBind: true,
+        autoBind: false,
         widget: self.gridWidget,
         columns: self.gridColumns,
         data: new kendo.data.DataSource({
@@ -317,7 +341,8 @@
                         PaymentRequestGUID: { type: 'string' },
                         PaymentURI: { type: 'string' },
                         PaymentRequestType: { type: 'string' },
-                        Status: { type: 'string' },
+                        PaymentStatus: { type: 'string' },
+                        OrderStatus: { type: 'string' },
                         CurrencyCode: { type: 'string' },
                         FormattingCulture: { type: 'string' },
                         Amount: { type: 'string' },

@@ -19,7 +19,9 @@ namespace SharedEFClasses.Models.CreditControl
 
 		public string PaymentRequestType { get; set; }
 
-		public string Status { get; set; }
+		public string PaymentStatus { get; set; }
+
+		public string OrderStatus { get; set; }
 
 		public string CurrencyCode { get; set; }
 

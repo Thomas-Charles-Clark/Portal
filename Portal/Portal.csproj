@@ -1965,7 +1965,7 @@
     <Content Include="js\src\models\translations\translations.js" />
     <Content Include="js\src\models\translations\translations-new-2026-unfinished.js" />
     <Content Include="js\src\models\_example-view-model.js" />
-    <Content Include="js\src\models\others\neiman-marcus-order-status.js" />
+    <Content Include="js\src\models\neiman-marcus\neiman-marcus-order-status.js" />
     <Content Include="js\src\models\others\notifications.js" />
     <Content Include="js\src\models\order-book\order-book-advanced-filters.js" />
     <Content Include="js\src\models\order-book\order-book-date-filters.js" />
@@ -3221,7 +3221,7 @@
     <Content Include="css\src\models\order-products\order-products-b.scss" />
     <Content Include="css\src\models\order-products\order-products-d.scss" />
     <Content Include="css\src\models\marylebone-boxing.scss" />
-    <Content Include="css\src\models\neiman-marcus-order-status.scss" />
+    <Content Include="css\src\models\neiman-marcus\neiman-marcus-order-status.scss" />
     <Content Include="css\src\models\order-book\order-book-back-orders-without-purchase-orders.scss" />
     <Content Include="css\src\models\invoice-booking.scss" />
     <Content Include="css\src\models\order-book\order-book-orders.scss" />

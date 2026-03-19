@@ -279,7 +279,7 @@
     }
 
     self.gridParams = {
-        autoBind: true,
+        autoBind: false,
         widget: self.gridWidget,
         columns: self.gridColumns,
         data: new kendo.data.DataSource({

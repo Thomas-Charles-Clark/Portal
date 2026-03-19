@@ -1,4 +1,4 @@
-﻿@import "common.scss";
+﻿@import "../common.scss";
 
 #neiman-marcus-tabs-content {
     border: 1px solid $gray-300;
@@ -146,6 +146,7 @@ $shadow-cancelled: 0 0 2px 0 shade-color($gray-300, 8%) inset;
 
         .k-dropdown-wrap {
             border: none;
+            height: 100%;
         }
     }
 }
