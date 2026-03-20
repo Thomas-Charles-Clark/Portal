@@ -166,6 +166,7 @@ namespace Portal
 			odataBuilder.EntitySet<PaymentRequest>("PaymentRequests");
 			odataBuilder.EntitySet<PaymentPeriod>("PaymentPeriods");
 			odataBuilder.EntitySet<PaymentBudget>("PaymentBudgets");
+			odataBuilder.EntitySet<CreditControllerLive>("CreditControllers");
 			odataBuilder.EntitySet<SharedEFClasses.Models.Banking.BankingAccount>("BankingAccounts");
 			odataBuilder.EntitySet<SharedEFClasses.Models.Banking.BankingCurrency> ("BankingCurrencies");
 
@@ -201,6 +202,13 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(BankingAccount)).AddProperty(typeof(SharedEFClasses.Models.Banking.BankingAccount).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SharedEFClasses.Models.Banking.BankingCurrency)).AddProperty(typeof(SharedEFClasses.Models.Banking.BankingCurrency).GetProperty("Label"));
 
+
+			var creditControllerValueMapperFunction = odataBuilder.EntityType<CreditControllerLive>()
+				.Collection
+				.Function("CreditControllerValueMapper")
+				.ReturnsCollectionFromEntitySet<CreditControllerLive>("CreditControllers");
+
+			creditControllerValueMapperFunction.Parameter<string>("creditControllerCode");
 
 			var bankingCurrencyValueMapperFunction = odataBuilder.EntityType<BankingCurrency>()
 				.Collection

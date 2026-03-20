@@ -1131,6 +1131,8 @@
     <Content Include="Content\css-shake.css" />
     <Content Include="Content\images\backgrounds\gift-voucher-background.jpg" />
     <Content Include="Content\images\icons\bootstrap-kendo-loading-light.gif" />
+    <Content Include="Content\images\icons\braintree-logo-sm.png" />
+    <Content Include="Content\images\icons\braintree-logo.png" />
     <Content Include="Content\images\icons\flags%402x.png" />
     <Content Include="Content\images\icons\flags.png" />
     <Content Include="Content\images\icons\m1.png" />

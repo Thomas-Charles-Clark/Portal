@@ -42,11 +42,31 @@
         },
         filterable: {
             extra: false
+        },
+        width: 180,
+        template: (dataItem) => {
+            return dataItem.TradeAccountLabel
+        }
+    }, {
+        field: "CreditController",
+        title: "Credit Controller",
+        attributes: {
+            "class": "",
+        },
+        headerAttributes: {
+            "class": ""
+        },
+        filterable: {
+            extra: false
+        },
+        width: 140,
+        template: (dataItem) => {
+            return dataItem.CreditController
         }
     }, {
         field: "OrderIDs",
         title: "Order IDs",
-        width: 160,
+        width: 100,
         attributes: {
             "class": "",
         },
@@ -65,7 +85,7 @@
     }, {
         field: "OrderStatus",
         title: "Order Status",
-        width: 460,
+        width: 400,
         attributes: {
             "class": ""
         },
@@ -98,7 +118,7 @@
     }, {
         field: "Amount",
         title: "Amount",
-        width: 120,
+        width: 100,
         attributes: {
             "class": ""
         },
@@ -109,38 +129,6 @@
             extra: false
         },
         template: `#: Amount ? formatCurrency(Amount, 2, FormattingCulture, CurrencyCode) : '' #`
-    }, {
-        field: "PaymentURI",
-        title: "Pay",
-        width: 64,
-        attributes: {
-            "class": "relative",
-            "title": 'View Payment Page'
-        },
-        headerAttributes: {
-            "class": ""
-        },
-        filterable: false,
-        template: `<a target="_blank" href="#: PaymentURI #" class="stretched-link"><i class="bi bi-credit-card-2-front-fill"></i></a>`
-    }, {
-        field: "DocumentURI",
-        title: "Doc",
-        width: 64,
-        attributes: {
-            "class": "relative",
-            title: "View Document"
-        },
-        headerAttributes: {
-            "class": ""
-        },
-        filterable: false,
-        template: (dataItem) => {
-            if (dataItem.DocumentURI) {
-                return `<a target="_blank" href="${dataItem.DocumentURI}" class="stretched-link"><i class="bi bi-file-earmark-pdf"></i></a>`
-            } else {
-                return '';
-            }
-        }
     }, {
         field: "DocumentURI",
         title: "Share",
@@ -161,9 +149,65 @@
             }
         }
     }, {
+        field: "DocumentURI",
+        title: "Doc",
+        width: 64,
+        attributes: {
+            "class": "relative",
+            title: "View Document"
+        },
+        headerAttributes: {
+            "class": ""
+        },
+        filterable: false,
+        template: (dataItem) => {
+            if (dataItem.DocumentURI) {
+                return `<a target="_blank" href="${dataItem.DocumentURI}" class="stretched-link"><i class="bi bi-file-earmark-pdf"></i></a>`
+            } else {
+                return '';
+            }
+        }
+    }, {
+        field: "PaymentURI",
+        title: "Pay",
+        width: 64,
+        attributes: {
+            "class": "relative",
+            "title": 'View Payment Page'
+        },
+        headerAttributes: {
+            "class": ""
+        },
+        filterable: false,
+        template: `<a target="_blank" href="#: PaymentURI #" class="stretched-link"><i class="bi bi-credit-card-2-front-fill"></i></a>`
+    },  {
+        field: "BraintreeTransactionURI",
+        title: "Brain",
+        width: 64,
+        attributes: {
+            "class": "relative",
+            title: "View in Braintree"
+        },
+        headerAttributes: {
+            "class": ""
+        },
+        filterable: false,
+        template: (dataItem) => {
+            if (dataItem.BraintreeTransactionURI) {
+                return `<a target="_blank" href="${dataItem.BraintreeTransactionURI}" class="stretched-link">
+                    <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org">
+                        <rect width="42" height="42" rx="4"></rect>
+                        <path d="M10.1 34h12.4c6.3 0 10-2.6 10-7.4 0-3-2.2-5.2-5.3-6 2.1-0.9 3.9-2.6 3.9-5.6 0-6.1-3.4-8-8.9-8H10.1v3.8h2.8v18.4h-2.8V34zm6.9-15.1V11.8h4.7c3.4 0 5.1 1.2 5.1 3.5 0 2.3-1.8 3.5-5.1 3.5H17zm0 11.3v-7.6h4.8c4.1 0 6.2 1.3 6.2 3.8 0 2.5-2 3.8-5.9 3.8h-5.1z" fill="#fff"></path>
+                    </svg>
+                </a>`
+            } else {
+                return '';
+            }
+        }
+    }, {
         field: "PaymentStatus",
         title: "Payment Status",
-        width: 460,
+        width: 400,
         attributes: {
             "class": ""
         },
@@ -349,7 +393,8 @@
                         DocumentURI: { type: 'string' },
                         ModifiedDT: { type: 'date' },
                         OrderIDs: { type: 'string' },
-                        TradeAccountLabel: { type: 'string' }
+                        TradeAccountLabel: { type: 'string' },
+                        CreditController: { type: 'string' }
                     }
                 }
             }),

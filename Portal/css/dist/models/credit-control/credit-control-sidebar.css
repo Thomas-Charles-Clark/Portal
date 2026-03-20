@@ -626,7 +626,8 @@
   transition: width 150ms linear;
   /*transition-delay: 150ms;*/
   width: 50px;
-  border-right: 1px solid #dee2e6;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
   /*
          .mdc-validating-field {
              display: none;

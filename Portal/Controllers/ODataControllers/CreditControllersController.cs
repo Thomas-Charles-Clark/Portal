@@ -43,7 +43,7 @@ namespace Portal.Controllers
 
         [EnableQuery(MaxNodeCount = 200)]
         [HttpGet]
-        public IQueryable<CreditControllerLive> CreditControllersValueMapper(string creditControllerCode)
+        public IQueryable<CreditControllerLive> CreditControllerValueMapper(string creditControllerCode)
         {
             return new PortalDbContext().CreditControllersLive.Where(p => p.Code == creditControllerCode).AsQueryable();
         }

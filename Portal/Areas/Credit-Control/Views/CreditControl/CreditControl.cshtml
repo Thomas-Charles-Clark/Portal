@@ -394,58 +394,6 @@
 </script>
 
 <div id="main-credit-control-container" class="d-flex align-items-start w-100 opacity-100" data-bind="flexFadeVisible: true">
-	<sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top">
-		<div class="sidebar-inner">
-			<div class="sidebar-header" data-bind="click: filters.togglePinning">
-				<button type="button" class="btn btn-light" title="Toggle Pinning">
-					<i class="bi bi-pin-angle-fill fs-5"></i>
-				</button>
-				<label class="filters-count" data-bind="html: filters.countDisplay"></label>
-			</div>
-			<div id="sidebar-collapse" class="sidebar-body">
-				<form id="credit-control-prefilters" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
-					<div class="prefilter-group">
-						<h5 class="sidebar-heading">
-							Customers
-						</h5>
-						<div id="credit-control-sales-markets-prefilter" class="prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: salesMarketsParams }"></div>
-						<div id="credit-control-sales-representative-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesRepresentativeParams }"></div>
-						<div id="credit-control-sales-agent-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAgentParams }"></div>
-						<div id="credit-control-sales-area-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAreaParams }"></div>
-						<div id="credit-control-country-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: countryParams }"></div>
-						<div id="credit-control-credit-controller-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: creditControllerParams }"></div>
-						<div id="credit-control-trade-account-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeParams }"></div>
-						<div id="credit-control-trade-account-type-group-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeGroupParams }"></div>
-						<div id="credit-control-trade-account-group-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountGroupParams }"></div>
-						<div id="credit-control-trade-account-company" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountCompanyParams }"></div>
-						<div id="credit-control-payment-terms-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
-						<div id="credit-control-payment-terms-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsTypeParams }"></div>
-						<div id="credit-control-credit-stopped-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: creditStoppedParams }"></div>
-						<div id="credit-control-trade-account-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
-						<div id="credit-control-debt-funder-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: debtFunderParams }"></div>
-						<div id="credit-control-currency-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyParams }"></div>
-						<div id="credit-control-trade-account-status-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountStatusParams }"></div>
-					</div>
-					<div class="prefilter-group">
-						<h5 class="sidebar-heading">
-							Invoice
-						</h5>
-						<div id="invoice-company-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: invoiceCompanyParams }"></div>
-					</div>
-					<div class="prefilter-group">
-						<h5 class="sidebar-heading">
-							Sales Analysis
-						</h5>
-						<div id="sales-history-analysis-period-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesHistoryAnalysisPeriodsParams }"></div>
-					</div>
-				</form>
-				<button type="button" class="btn btn-secondary gap-3 mt-5" data-bind="click: filters.reset">
-					Reset Filters
-					<i class="bi bi-arrow-counterclockwise"></i>
-				</button>
-			</div>
-		</div>
-	</sidebar>
 	<main id="credit-control-main">
 		<ul class="nav nav-tabs" id="credit-control-tabs" role="tablist">
 			<li class="nav-item" role="presentation">
@@ -478,172 +426,228 @@
 		</ul>
 		<div class="tab-content" id="credit-control-tab-content">
 			<div class="tab-pane fade show active" id="dashboard-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-				<div id="performance-container">
-					<div class="accordion" id="performance-accordion">
-						<div class="accordion-item relative" data-bind="with: performance">
-							<h2 class="accordion-header">
-								<button id="performance-collapse-btn" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#performance-collapse" aria-expanded="false" aria-controls="performance-collapse">
-									<span>
-										Performance
-									</span>
+				<div id="dashboard-tab-flex-container">
+					<sidebar id="filters-sidebar" class="collapse collapse-horizontal sidebar sticky-top">
+						<div class="sidebar-inner">
+							<div class="sidebar-header" data-bind="click: filters.togglePinning">
+								<button type="button" class="btn btn-light" title="Toggle Pinning">
+									<i class="bi bi-pin-angle-fill fs-5"></i>
 								</button>
-							</h2>
-							<div id="performance-collapse" class="accordion-collapse collapse" data-bs-parent="#performance-accordion">
-								<div class="blocker" data-bind="flexFadeVisible: busy">
-									<h4 class="loading-title" data-bind="text: busyMessage"></h4>
-									<div class="loading-spinner"></div>
-								</div>
-								<div class="accordion-body">
-									<table class="performance-table table table-bordered" style="display: none" , data-bind="visible: periods().length">
-										<colgroup>
-											<col width="240" />
-											<!-- ko foreach: periods -->
-											<col />
+								<label class="filters-count" data-bind="html: filters.countDisplay"></label>
+							</div>
+							<div id="sidebar-collapse" class="sidebar-body">
+								<form id="credit-control-prefilters" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
+									<div class="prefilter-group">
+										<h5 class="sidebar-heading">
+											Customers
+										</h5>
+										<div id="credit-control-sales-markets-prefilter" class="prefilter" data-bind="component: { name: 'mdc-bootstrap-multiselect-component', params: salesMarketsParams }"></div>
+										<div id="credit-control-sales-representative-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesRepresentativeParams }"></div>
+										<div id="credit-control-sales-agent-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAgentParams }"></div>
+										<div id="credit-control-sales-area-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesAreaParams }"></div>
+										<div id="credit-control-country-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: countryParams }"></div>
+										<div id="credit-control-credit-controller-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: creditControllerParams }"></div>
+										<div id="credit-control-trade-account-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeParams }"></div>
+										<div id="credit-control-trade-account-type-group-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeGroupParams }"></div>
+										<div id="credit-control-trade-account-group-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountGroupParams }"></div>
+										<div id="credit-control-trade-account-company" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountCompanyParams }"></div>
+										<div id="credit-control-payment-terms-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
+										<div id="credit-control-payment-terms-type-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsTypeParams }"></div>
+										<div id="credit-control-credit-stopped-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: creditStoppedParams }"></div>
+										<div id="credit-control-trade-account-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
+										<div id="credit-control-debt-funder-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: debtFunderParams }"></div>
+										<div id="credit-control-currency-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyParams }"></div>
+										<div id="credit-control-trade-account-status-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountStatusParams }"></div>
+									</div>
+									<div class="prefilter-group">
+										<h5 class="sidebar-heading">
+											Invoice
+										</h5>
+										<div id="invoice-company-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: invoiceCompanyParams }"></div>
+									</div>
+									<div class="prefilter-group">
+										<h5 class="sidebar-heading">
+											Sales Analysis
+										</h5>
+										<div id="sales-history-analysis-period-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: salesHistoryAnalysisPeriodsParams }"></div>
+									</div>
+								</form>
+								<button type="button" class="btn btn-secondary gap-3 mt-5" data-bind="click: filters.reset">
+									Reset Filters
+									<i class="bi bi-arrow-counterclockwise"></i>
+								</button>
+							</div>
+						</div>
+					</sidebar>
+					<div id="tab-dashboard-main">
+						<div id="performance-container">
+							<div class="accordion" id="performance-accordion">
+								<div class="accordion-item relative" data-bind="with: performance">
+									<h2 class="accordion-header">
+										<button id="performance-collapse-btn" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#performance-collapse" aria-expanded="false" aria-controls="performance-collapse">
+											<span>
+												Performance
+											</span>
+										</button>
+									</h2>
+									<div id="performance-collapse" class="accordion-collapse collapse" data-bs-parent="#performance-accordion">
+										<div class="blocker" data-bind="flexFadeVisible: busy">
+											<h4 class="loading-title" data-bind="text: busyMessage"></h4>
+											<div class="loading-spinner"></div>
+										</div>
+										<div class="accordion-body">
+											<table class="performance-table table table-bordered" style="display: none" , data-bind="visible: periods().length">
+												<colgroup>
+													<col width="240" />
+													<!-- ko foreach: periods -->
+													<col />
+													<!-- /ko -->
+												</colgroup>
+												<thead>
+													<tr>
+														<th>
+															<div class="prefilters">
+																<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: reportingGroupParams }"></div>
+																<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyOrSterlingParams }"></div>
+															</div>
+														</th>
+														<!-- ko foreach: periods -->
+														<th>
+															<span data-bind="text: columnLabel"></span>
+														</th>
+														<!-- /ko -->
+													</tr>
+												</thead>
+												<tbody data-bind="foreach: rowGrouping">
+													<tr data-bind="css: { 'totals-row': isTotalRow }">
+														<!-- ko if: isTotalRow -->
+														<th>
+															<span data-bind="text: rowLabel"></span>
+														</th>
+														<!-- ko foreach: $parent.periods() -->
+														<th>
+															<span data-bind="text: $parentContext.$parent.performanceCellLookup($parent.rowIndex, columnIndex)?.Value ?? ''"></span>
+														</th>
+														<!-- /ko -->
+														<!-- /ko -->
+														<!-- ko ifnot: isTotalRow -->
+														<td>
+															<span data-bind="text: rowLabel"></span>
+														</td>
+														<!-- ko foreach: $parent.periods() -->
+														<td>
+															<span data-bind="text: $parentContext.$parent.performanceCellLookup($parent.rowIndex, columnIndex)?.Value ?? ''"></span>
+														</td>
+														<!-- /ko -->
+														<!-- /ko -->
+														@*
+											<!-- ko ifnot: $data[0].isTotalRow -->
+											<td>
+												<span data-bind="text: $data[0].rowLabel"
+											</td>
 											<!-- /ko -->
-										</colgroup>
-										<thead>
-											<tr>
-												<th>
-													<div class="prefilters">
-														<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: reportingGroupParams }"></div>
-														<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: currencyOrSterlingParams }"></div>
-													</div>
-												</th>
-												<!-- ko foreach: periods -->
-												<th>
-													<span data-bind="text: columnLabel"></span>
-												</th>
-												<!-- /ko -->
-											</tr>
-										</thead>
-										<tbody data-bind="foreach: rowGrouping">
-											<tr data-bind="css: { 'totals-row': isTotalRow }">
-												<!-- ko if: isTotalRow -->
-												<th>
-													<span data-bind="text: rowLabel"></span>
-												</th>
-												<!-- ko foreach: $parent.periods() -->
-												<th>
-													<span data-bind="text: $parentContext.$parent.performanceCellLookup($parent.rowIndex, columnIndex)?.Value ?? ''"></span>
-												</th>
-												<!-- /ko -->
-												<!-- /ko -->
-												<!-- ko ifnot: isTotalRow -->
-												<td>
-													<span data-bind="text: rowLabel"></span>
-												</td>
-												<!-- ko foreach: $parent.periods() -->
-												<td>
-													<span data-bind="text: $parentContext.$parent.performanceCellLookup($parent.rowIndex, columnIndex)?.Value ?? ''"></span>
-												</td>
-												<!-- /ko -->
-												<!-- /ko -->
-		@*
-		<!-- ko ifnot: $data[0].isTotalRow -->
-		<td>
-			<span data-bind="text: $data[0].rowLabel"
-		</td>
-		<!-- /ko -->
-		<!-- ko foreach: $data[1] -->
-		<th>
-			<span data-bind="text: Value"></span>
-		</th>
-		<!-- /ko -->
-		<!-- /ko -->
-		<!-- ko ifnot: $data[0].IsTotalRow -->
-		<td class="indented">
-			<span data-bind="text: $data[0]">
-		</td>]
-		<!-- ko template: { name: 'performance-cell-template', data: { rowIndex:  } } -->
-		<!-- ko foreach: $data[1] -->
-		<td>
-			<span data-bind="text: Value"></span>
-		</td>
-		<!-- /ko -->
-		<!-- /ko -->*@
-											</tr>
-										</tbody>
-									</table>
+											<!-- ko foreach: $data[1] -->
+											<th>
+												<span data-bind="text: Value"></span>
+											</th>
+											<!-- /ko -->
+											<!-- /ko -->
+											<!-- ko ifnot: $data[0].IsTotalRow -->
+											<td class="indented">
+												<span data-bind="text: $data[0]">
+											</td>]
+											<!-- ko template: { name: 'performance-cell-template', data: { rowIndex:  } } -->
+											<!-- ko foreach: $data[1] -->
+											<td>
+												<span data-bind="text: Value"></span>
+											</td>
+											<!-- /ko -->
+											<!-- /ko -->*@
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				</div>
-				<div class="dashboard" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
-					<div class="dashboard-pod card" data-bind="css: { 'selected-pod': $parent.selectedPod() == $data }">
-						<div class="card-body" data-bind="class: Classes">
-							<h4 data-bind="html: Heading"></h4>
-							<div data-bind="html: Stats"></div>
-							<a href="#" class="stretched-link" data-bind="click: $parent.dashboardClick"></a>
+						<div class="dashboard" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
+							<div class="dashboard-pod card" data-bind="css: { 'selected-pod': $parent.selectedPod() == $data }">
+								<div class="card-body" data-bind="class: Classes">
+									<h4 data-bind="html: Heading"></h4>
+									<div data-bind="html: Stats"></div>
+									<a href="#" class="stretched-link" data-bind="click: $parent.dashboardClick"></a>
+								</div>
+							</div>
 						</div>
-					</div>
-				</div>
-				<div id="selected-filter-pills">
-					<!-- ko template: { name: 'filter-pills-template', data: filters } --><!-- /ko -->
-					<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
-						<a class="btn btn-secondary dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
-							<i class="bi bi-list-check"></i>
-						</a>
-						<!-- ko template: { name: 'credit-control-quantity-value-dropdown-container', data: filters } --><!-- /ko -->
-					</div>
-					<button class="btn btn-dark btn-export ms-auto" data-bind="click: exportToExcel">
-						Export to Excel
-						<i class="bi bi-download"></i>
-						<i class="bi bi-filetype-xlsx"></i>
-					</button>
-					<!-- ko if: filters.initTooltips() --><!-- /ko -->
-				</div>
-				<div id="credit-control-grid-container" data-bind="kendoGrid: gridParams"></div>
-				@*<div id="credit-control-scroller-container" class="virtual-scoller-container" data-bind="with: virtualScoller">
-			<table id="credit-control-main-table" class="table  virtual-scrolling-table table-condensed table-striped table-hover">
-				<colgroup data-bind="foreach: $parent.gridColumns">
-					<col data-bind="style: { width: `${$data.width}px` }">
-				</colgroup>
-				<thead>
-					<tr>
-						<!-- ko foreach: $parent.gridColumns -->
-						<!-- ko if: typeof columns == 'undefined' -->
-						<th data-bind="style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;"></th>
-						<!-- /ko -->
-						<!-- ko if: typeof columns != 'undefined' -->
-						<!-- ko foreach: columns -->
-						<th data-bind="attr: { colspan: $parent.columns.length }, style: { '--left-offset': `${$parentContext.$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
-							<span data-bind="text: columnNameDisplay"></span>
-						</th>
-						<!-- /ko -->
-						<!-- /ko -->
-						<!-- /ko -->
-					</tr>
-					<tr>
-						<!-- ko foreach: $parent.gridColumns -->
-						<th class="sortable-column" data-bind="click: $root.sortByColumn, style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
-							<span data-bind="text: columnNameDisplay"></span>
-							<!-- ko if: (Object.hasOwn($data, 'direction') && $data.direction()) -->
-							<i class="bi bi-caret-down" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
+						<div id="selected-filter-pills">
+							<!-- ko template: { name: 'filter-pills-template', data: filters } --><!-- /ko -->
+							<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
+								<a class="btn btn-secondary dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
+									<i class="bi bi-list-check"></i>
+								</a>
+								<!-- ko template: { name: 'credit-control-quantity-value-dropdown-container', data: filters } --><!-- /ko -->
+							</div>
+							<button class="btn btn-dark btn-export ms-auto" data-bind="click: exportToExcel">
+								Export to Excel
+								<i class="bi bi-download"></i>
+								<i class="bi bi-filetype-xlsx"></i>
+							</button>
+							<!-- ko if: filters.initTooltips() --><!-- /ko -->
+						</div>
+						<div id="credit-control-grid-container" data-bind="kendoGrid: gridParams"></div>
+						@*<div id="credit-control-scroller-container" class="virtual-scoller-container" data-bind="with: virtualScoller">
+				<table id="credit-control-main-table" class="table  virtual-scrolling-table table-condensed table-striped table-hover">
+					<colgroup data-bind="foreach: $parent.gridColumns">
+						<col data-bind="style: { width: `${$data.width}px` }">
+					</colgroup>
+					<thead>
+						<tr>
+							<!-- ko foreach: $parent.gridColumns -->
+							<!-- ko if: typeof columns == 'undefined' -->
+							<th data-bind="style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;"></th>
 							<!-- /ko -->
-						</th>
-						<!-- /ko -->
-					</tr>
-				</thead>
-				<tbody class="virtual-spacing">
-					<tr>
-						<td colspan="500" style="height: 0" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
-					</tr>
-				</tbody>
-				<tbody data-bind="foreach: { data: visibleItems, as: 'record' }">
-					<tr class="visible-item">
-						<!-- ko foreach: $parentContext.$parent.gridColumns -->
-						<!-- ko template: { name: 'main-grid-row-template', data: { column: $data, record: record } } --><!-- /ko -->
-						<!-- /ko -->
-					</tr>
-				</tbody>
-				<tbody class="virtual-spacing">
-					<tr class="final-row">
-						<td colspan="500" style="height: 0" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>*@
+							<!-- ko if: typeof columns != 'undefined' -->
+							<!-- ko foreach: columns -->
+							<th data-bind="attr: { colspan: $parent.columns.length }, style: { '--left-offset': `${$parentContext.$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
+								<span data-bind="text: columnNameDisplay"></span>
+							</th>
+							<!-- /ko -->
+							<!-- /ko -->
+							<!-- /ko -->
+						</tr>
+						<tr>
+							<!-- ko foreach: $parent.gridColumns -->
+							<th class="sortable-column" data-bind="click: $root.sortByColumn, style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
+								<span data-bind="text: columnNameDisplay"></span>
+								<!-- ko if: (Object.hasOwn($data, 'direction') && $data.direction()) -->
+								<i class="bi bi-caret-down" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
+								<!-- /ko -->
+							</th>
+							<!-- /ko -->
+						</tr>
+					</thead>
+					<tbody class="virtual-spacing">
+						<tr>
+							<td colspan="500" style="height: 0" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
+						</tr>
+					</tbody>
+					<tbody data-bind="foreach: { data: visibleItems, as: 'record' }">
+						<tr class="visible-item">
+							<!-- ko foreach: $parentContext.$parent.gridColumns -->
+							<!-- ko template: { name: 'main-grid-row-template', data: { column: $data, record: record } } --><!-- /ko -->
+							<!-- /ko -->
+						</tr>
+					</tbody>
+					<tbody class="virtual-spacing">
+						<tr class="final-row">
+							<td colspan="500" style="height: 0" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>*@
+					</div>
+				</div>
 			</div>
 			<div class="tab-pane fade" id="order-release-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
 				<div id="order-release-container" data-bind="with: memberBasketFetcher">
@@ -692,6 +696,7 @@
 			<div id="online-payment-history-pane" class="tab-pane fade">
 				<div class="prefilters mb-3" data-bind="with: filters">
 					<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentHistoryTradeAccountParams }"></div>
+					<div id="payment-history-credit-controller-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentHistoryCreditControllerParams }"></div>
 					<div id="payment-history-payment-status-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: paymentHistoryPaymentStatusParams }"></div>
 					<div id="payment-history-date-prefilter-container" class="prefilter">
 						<div class="date-prefilters">

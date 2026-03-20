@@ -185,6 +185,12 @@ const creditControlFiltersViewModel = ({
 
     self.paymentHistoryPaymentStatuses = paymentHistoryPaymentStatuses;
 
+    self.paymentHistoryCreditControllerId = ko.observable(params.creditController ?? '');
+
+    self.paymentHistoryCreditController = ko.observable();
+
+    self.paymentHistoryCreditControllerAwaitingBinding = ko.observable(params.creditController != null && params.creditController != '');
+
     self.outstandingInvoicesDateRangeId = ko.observable('0');
 
     self.outstandingInvoicesDateRange = ko.observable(paymentHistoryDateRanges.find(d => d.dateRangeId == '30'));
@@ -234,7 +240,6 @@ const creditControlFiltersViewModel = ({
     self.outstandingInvoicesBankingCurrencyCode = ko.observable(params.outstandingInvoicesBankingCurrencyCode ?? '');
 
     self.outstandingInvoicesBankingCurrency = ko.observable(params?.outstandingInvoicesBankingCurrency ?? undefined);
-
 
     //#endregion
 
@@ -1318,6 +1323,42 @@ const creditControlFiltersViewModel = ({
         },
     });
 
+    self.paymentHistoryCreditControllerParams = kendoMDCDropDownList({
+        skipCascade: true,
+        odata: true,
+        endPoint: '/odata/CreditControllers',
+        label: 'Credit Controller',
+        textField: 'Name',
+        valueField: 'Code',
+        template: `#: Name # #: Name && Code ? '(' + Code + ')' : '' #`,
+        valueTemplate: `#: Name # #: Name && Code ? '(' + Code + ')' : '' #`,
+        idObservable: self.paymentHistoryCreditControllerId,
+        objObservable: self.paymentHistoryCreditController,
+        locked: ko.observable(typeof window.lockCreditController == 'function' ? window.lockCreditController() : self.paymentHistoryCreditControllerId() != ''),
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(true),
+        revertible: ko.observable(false),
+        readOnly: false,
+        filter: 'contains',
+        autoBind: true,
+        height: 340,
+        sort: {
+            dir: 'asc',
+            field: 'Name'
+        },
+        select: function (e) {
+            console.log('paymentHistoryCreditController select', e);
+        },
+        clearFunction: () => {
+            self.paymentHistoryCreditControllerParams.dropDownListSettings.widget().value('');
+            self.paymentHistoryCreditControllerParams.dropDownListSettings.widget().trigger('change');
+        },
+        popupSettings: {
+            appendTo: document.getElementById(`payment-history-credit-controller-prefilter`)
+        }
+    });
+
     self.outstandingInvoicesTradeAccountParams = kendoMDCDropDownList({
         skipCascade: true,
         label: 'Trade Account',
@@ -1381,10 +1422,10 @@ const creditControlFiltersViewModel = ({
             e.sender.list.addClass("trade-account-droplist");
         },
         clearFunction: () => {
-            self.paymentHistoryTradeAccountCode('');
-            self.paymentHistoryTradeAccount(undefined);
-            self.paymentHistoryTradeAccountParams.dropDownListSettings.widget().value('');
-            self.paymentHistoryTradeAccountParams.dropDownListSettings.widget().trigger('change');
+            self.tradeAccountCode('');
+            self.tradeAccount(undefined);
+            self.outstandingInvoicesTradeAccountParams.dropDownListSettings.widget().value('');
+            self.outstandingInvoicesTradeAccountParams.dropDownListSettings.widget().trigger('change');
         },
         parameterMap: (data) => {
 
@@ -1842,6 +1883,10 @@ const creditControlFiltersViewModel = ({
 
         if (self.tradeAccountCode()) {
             data.tradeAccountCode = self.tradeAccountCode()
+        }
+
+        if (self.paymentHistoryCreditControllerId()) {
+            data.creditControllerCode = self.paymentHistoryCreditControllerId()
         }
 
         return data;

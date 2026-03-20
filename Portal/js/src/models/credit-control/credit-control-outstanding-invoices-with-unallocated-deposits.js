@@ -43,10 +43,12 @@
         },
         filterable: {
             extra: false
-        }
+        },
+        locked: true,
     }, {
         field: "TradeAccountLabel",
         title: "Trade Account",
+        width: 260,
         attributes: {
             "class": "",
         },
@@ -55,7 +57,8 @@
         },
         filterable: {
             extra: false
-        }
+        },
+        locked: true,
     }, {
         field: "SalesLedgerKey",
         title: "Sales Ledger Key",
@@ -68,7 +71,8 @@
         },
         filterable: {
             extra: false
-        }
+        },
+        locked: true,
     }, {
         field: "Age",
         title: "Age",
@@ -81,7 +85,8 @@
         },
         filterable: {
             extra: false
-        }
+        },
+        locked: true,
     }, {
         field: "OriginalValueInCurrency",
         title: "Original Value",
@@ -295,6 +300,7 @@
             serverPaging: true,
             serverAggregates: false,
             serverSorting: true,
+            height: '800px',
             pageSize: 20,
             pageable: {
                 pageSize: 20,

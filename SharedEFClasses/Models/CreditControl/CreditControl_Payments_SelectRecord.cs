@@ -35,10 +35,14 @@ namespace SharedEFClasses.Models.CreditControl
 
 		public string OrderIDs { get; set; }
 
-		public string TradeAccountLabel { get; set; }
+		public string TradeAccountLabel { get; set; } 
+
+		public string CreditController { get; set; }
 
 		public string ReceiptDetails { get; set; }
 
 		public string DepositAccountDetails { get; set; }
+
+		public string BraintreeTransactionURI { get; set; }
 	}
 }

@@ -25,5 +25,7 @@ namespace SharedEFClasses.Models.CreditControl
 		public DateTime? To { get; set; }
 
 		public string PaymentStatus { get; set; }
+
+		public string CreditControllerCode { get; set; }
 	}
 }

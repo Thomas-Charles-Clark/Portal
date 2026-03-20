@@ -36,6 +36,11 @@
 			}
 		}
 
+		#payment-history-credit-controller-prefilter {
+			min-width: 260px;
+			width: 260px;
+		}
+
 		#payment-history-payment-status-prefilter {
 			min-width: 240px;
 			width: 240px;
@@ -88,11 +93,21 @@
 		&:focus-within,
 		&:active {
 			color: $link-color;
+
+			rect {
+				fill: $link-color;
+			}
 		}
 
 		.bi,
 		.material-icons {
 			font-size: 3rem;
+		}
+
+		svg {
+			rect {
+				fill: $body-color;
+			}
 		}
 	}
 
