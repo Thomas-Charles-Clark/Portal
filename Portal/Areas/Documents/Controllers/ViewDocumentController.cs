@@ -94,5 +94,73 @@ namespace Portal.Areas.Orders.Controllers
 
 			return File(fileBytes, "application/pdf", Path.GetFileName(filePath));
 		}
-    }
+
+        [AllowAnonymous]
+		public FileResult Download(PassDocumentBase64Identifier objDoc64)
+		{
+			var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+			byte[] byteArray = Convert.FromBase64String(objDoc64.d);
+
+			string jsonBack = Encoding.UTF8.GetString(byteArray);
+
+			var objDoc = JsonConvert.DeserializeObject<PassDocumentIdentifier>(jsonBack);
+
+			objDoc.memberId = user.MemberID;
+
+			var result = PortalDb.SelectDocument(objDoc);
+
+			var stream = GenericDocumentPDFWriter.GenerateDocument(System.Web.Hosting.HostingEnvironment.MapPath("~"), result);
+
+			var to = result.Document.DocumentEmail.EmailTo;
+			var subject = result.Document.DocumentEmail.EmailSubject;
+			var body = result.Document.DocumentEmail.EmailBody;
+
+			var docSendHist = PortalDb.FetchDocumentSendHistory(new PassDocumentSendFetch()
+			{
+				basketId = objDoc.basketId,
+				documentType = (short)objDoc.documentType,
+				orderHeadId = objDoc.orderHeadId,
+				transactionId = objDoc.transactionId
+			});
+
+            var code = PortalDb.TradeAccounts.SingleOrDefault(t => t.TradeAccountID == objDoc.tradeAccountId)?.Code;
+
+            return File(stream.ToArray(), "application/pdf", $"{(String.IsNullOrEmpty(code) ? "" : $"{code}_")}{(Path.GetFileName(result.Document.DocumentPreHeader?.HeaderDocumentType?.Replace(" ", "_")))}.pdf");
+		}
+
+		[AllowAnonymous]
+		public ActionResult Render(PassDocumentBase64Identifier objDoc64)
+		{
+			var user = UserManager.FindById(User.Identity.GetUserId<int>());
+
+			byte[] byteArray = Convert.FromBase64String(objDoc64.d);
+
+			string jsonBack = Encoding.UTF8.GetString(byteArray);
+
+			var objDoc = JsonConvert.DeserializeObject<PassDocumentIdentifier>(jsonBack);
+
+			objDoc.memberId = user.MemberID;
+
+			var result = PortalDb.SelectDocument(objDoc);
+
+			var stream = GenericDocumentPDFWriter.GenerateDocument(System.Web.Hosting.HostingEnvironment.MapPath("~"), result);
+
+			var to = result.Document.DocumentEmail.EmailTo;
+			var subject = result.Document.DocumentEmail.EmailSubject;
+			var body = result.Document.DocumentEmail.EmailBody;
+
+			var docSendHist = PortalDb.FetchDocumentSendHistory(new PassDocumentSendFetch()
+			{
+				basketId = objDoc.basketId,
+				documentType = (short)objDoc.documentType,
+				orderHeadId = objDoc.orderHeadId,
+				transactionId = objDoc.transactionId
+			});
+
+			var code = PortalDb.TradeAccounts.SingleOrDefault(t => t.TradeAccountID == objDoc.tradeAccountId)?.Code;
+
+			return File(stream.ToArray(), "application/pdf");
+		}
+	}
 }

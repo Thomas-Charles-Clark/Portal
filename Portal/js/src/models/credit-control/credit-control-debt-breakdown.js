@@ -30,6 +30,8 @@
 
     self.selectedPod = ko.observable();
 
+    self.modalElement = document.querySelector('#debt-breakdown-modal');
+
     //#endregion
 
 
@@ -116,8 +118,8 @@
             template: (e) => moment(e.DueDT).format('DD/MM/YYYY')
         }, {
             field: 'OriginalValueInCurrency',
-            title: 'Original Value (in Currency)',
-            template: (e) => e.OriginalValueInCurrency != null ? formatCurrency(e.OriginalValueInCurrency, 2, self.formattingCulture, self.currencyCode) : '',
+            title: 'Original Value',
+            template: (e) => e.OriginalValueInCurrency ? e.OriginalValueInCurrency : '',
             attributes: {
                 'class': 'text-end'
             },
@@ -126,8 +128,8 @@
             }
         }, {
             field: 'OutstandingAmountInCurrency',
-            title: 'Outstanding Amount (in Currency)',
-            template: (e) => e.OutstandingAmountInCurrency != null ? formatCurrency(e.OutstandingAmountInCurrency, 2, self.formattingCulture, self.currencyCode) : '',
+            title: 'Outstanding Amount',
+            template: (e) => e.OutstandingAmountInCurrency ? e.OutstandingAmountInCurrency : '',
             attributes: {
                 'class': 'text-end'
             },

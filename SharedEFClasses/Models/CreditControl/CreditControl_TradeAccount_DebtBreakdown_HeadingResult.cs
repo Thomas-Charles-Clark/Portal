@@ -15,5 +15,7 @@ namespace SharedEFClasses.Models.CreditControl
 		public string CurrencyCode { get; set; }
 
 		public string FormattingCode { get; set; }
+
+		public string OverviewMessage { get; set; }
 	}
 }

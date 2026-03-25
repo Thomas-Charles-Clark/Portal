@@ -469,13 +469,13 @@
 
     //#region Methods
 
-    self.refresh = () => {
-        self.gridWidget().dataSource.query({
-            page: self.gridWidget().dataSource.page(),
-            pageSize: self.gridWidget().dataSource.pageSize(),
-            filter: self.gridWidget().dataSource.filter(),
-            sort: self.gridWidget().dataSource.sort(),
-            group: self.gridWidget().dataSource.group()
+    self.heldOrdersRefresh = () => {
+        self.heldOrdersGridWidget().dataSource.query({
+            page: self.heldOrdersGridWidget().dataSource.page(),
+            pageSize: self.heldOrdersGridWidget().dataSource.pageSize(),
+            filter: self.heldOrdersGridWidget().dataSource.filter(),
+            sort: self.heldOrdersGridWidget().dataSource.sort(),
+            group: self.heldOrdersGridWidget().dataSource.group()
         });
     }
 

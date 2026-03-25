@@ -1,0 +1,112 @@
+﻿@import "../common.scss";
+
+#debt-breakdown-modal {
+	.debt-breakdown-heading-btn-container {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: $l-gutter;
+
+		.badge {
+			font-size: $m-gutter;
+		}
+
+		&:hover,
+		&:focus,
+		&:focus-within {
+			transition: color .15s ease-in-out, border-color .15s ease-in-out !important;
+		}
+
+		.grid-btn {
+			display: inline-block;
+			color: $body-color;
+			position: relative;
+			transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out !important;
+
+			&:hover,
+			&:active,
+			&:focus,
+			&:focus-within {
+				&:not(.stop-btn) {
+					color: $link-color;
+				}
+
+				border: none !important;
+				box-shadow: none !important;
+				outline: none !important;
+				transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out !important;
+			}
+
+			.bi {
+				font-size: 2.5rem;
+
+				&.bi-people-fill {
+					font-size: 2.05rem;
+				}
+
+				&.bi-octagon {
+					will-change: background-color, color;
+					transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out !important;
+				}
+			}
+
+			&:hover {
+				cursor: pointer;
+				/*text-shadow: 0 0 6px $blue-700;*/
+
+				.bi {
+					&.bi-octagon:not(.bi-octagon-red) {
+						&:before {
+							background-color: $red-200;
+							border-radius: 2em;
+							color: $red-600;
+						}
+					}
+				}
+			}
+
+			&:has(.bi-octagon-red) {
+				&:hover,
+				&:active,
+				&:focus,
+				&:focus-within {
+					/*border: none;
+                        outline: none !important;
+                        box-shadow: none !important;*/
+				}
+			}
+
+			.bi-octagon-red {
+				position: absolute;
+				font-size: 35px;
+				top: 0;
+				left: 0;
+				z-index: 1;
+
+				&:before {
+					color: $red-600;
+				}
+			}
+		}
+
+		&.k-state-selected {
+			background-color: inherit;
+		}
+	}
+
+	.contacts-btn {
+		position: relative;
+
+		.badge {
+			position: absolute;
+			right: -10px;
+			bottom: -5px;
+		}
+	}
+
+	.credit-stopped {
+		&:hover {
+			cursor: not-allowed
+		}
+	}
+}

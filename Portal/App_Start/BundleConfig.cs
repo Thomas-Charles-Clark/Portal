@@ -437,6 +437,8 @@ namespace Portal
 					$"{cssPrefix}/models/credit-control/credit-control-order-release{cssSuffix}",
                     $"{cssPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits{cssSuffix}",
 					$"{cssPrefix}/models/credit-control/credit-control-virtual-scroller{cssSuffix}",
+					$"{cssPrefix}/models/credit-control/credit-control-debt-breakdown{cssSuffix}",
+					$"{cssPrefix}/models/credit-control/credit-control-manage-ledger{cssSuffix}",
 					$"{cssPrefix}/models/trade-account-contacts-widener{cssSuffix}"
 			));
 

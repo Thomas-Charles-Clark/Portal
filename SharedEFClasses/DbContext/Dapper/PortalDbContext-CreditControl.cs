@@ -78,7 +78,49 @@ namespace SharedEFClasses.Models
 
 		public async Task<CreditControl_TradeAccount_DebtBreakdown_Result> CreditControl_TradeAccount_DebtBreakdown_Select(CreditControl_TradeAccount_DebtBreakdownDTO dto)
 		{
-			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_DebtBreakdown_Select]", dto, null, 300, CommandType.StoredProcedure);
+			var SalesMarketIDs = new DataTable();
+
+			SalesMarketIDs.Columns.Add("ID", typeof(byte));
+
+			if (dto.SalesMarketIDs != null)
+			{
+				foreach (var sm in dto.SalesMarketIDs)
+				{
+					SalesMarketIDs.Rows.Add(sm);
+				}
+			}
+
+			var dat = new
+			{
+				SalesMarketIDs,
+				dto.SalesRepresentativeID,
+				dto.SalesAgentID,
+				dto.SalesAreaID,
+				dto.CountryID,
+				dto.TradeAccountCode,
+				dto.TradeAccountGroupID,
+				dto.TradeAccountTypeID,
+				dto.TradeAccountTypeGroupID,
+				dto.PaymentTermsID,
+				dto.PaymentTermsTypeID,
+				dto.CreditStopped,
+				dto.CreditControllerCode,
+				dto.Open,
+				dto.SearchTerm,
+				dto.SalesHistoryAnalysisPeriod,
+				dto.LanguageID,
+				dto.DebtFunderCode,
+				dto.CurrencyID,
+				dto.SelectedPOD,
+				dto.PageSize,
+				dto.Page,
+				dto.TradeAccountCompanyCode,
+				dto.InvoiceCompanyCode,
+				dto.SortOrder,
+				dto.TradeAccountID
+			};
+
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_DebtBreakdown_Select]", dat, null, 300, CommandType.StoredProcedure);
 
 			return new CreditControl_TradeAccount_DebtBreakdown_Result()
 			{

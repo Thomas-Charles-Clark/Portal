@@ -8,12 +8,56 @@ namespace SharedEFClasses.Models.CreditControl
 {
 	public class CreditControl_TradeAccount_DebtBreakdownDTO
 	{
-		public int TradeAccountID { get; set; }
+		public IEnumerable<byte> SalesMarketIDs { get; set; }
+
+		public short? SalesRepresentativeID { get; set; }
+
+		public short? SalesAgentID { get; set; }
+
+		public short? SalesAreaID { get; set; }
+
+		public short? CountryID { get; set; }
+
+		public int? TradeAccountGroupID { get; set; }
+
+		public short? TradeAccountTypeID { get; set; }
+
+		public string TradeAccountCode { get; set; }
+
+		public byte? PaymentTermsID { get; set; }
+
+		public byte? PaymentTermsTypeID { get; set; }
+
+		public bool? CreditStopped { get; set; }
+
+		public byte? TradeAccountTypeGroupID { get; set; }
+
+		public string CreditControllerCode { get; set; }
+
+		public byte? CurrencyID { get; set; }
+
+		public string DebtFunderCode { get; set; }
+
+		public string TradeAccountCompanyCode { get; set; }
+
+		public bool? Open { get; set; }
+
+		public string SearchTerm { get; set; }
+
+		public string SalesHistoryAnalysisPeriod { get; set; }
+
+		public string InvoiceCompanyCode { get; set; }
+
+		public byte? LanguageID { get; set; }
 
 		public string SelectedPOD { get; set; }
 
-		public int? DebtAgeBracket { get; set; }
+		public int? TradeAccountID { get; set; }
 
-		public bool? Disputed { get; set; }
+		public int Page { get; set; }
+
+		public int? PageSize { get; set; }
+
+		public string SortOrder { get; set; }
 	}
 }

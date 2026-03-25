@@ -51,6 +51,8 @@
 
     self.tradeAccountId = ko.observable(typeof getTradeAccountId === 'function' ? getTradeAccountId() : '');
 
+    self.tradeAccount = ko.observable();
+
     self.basketId = ko.observable(typeof getBasketId === 'function' ? getBasketId() : undefined);
 
     self.orderHeadId = ko.observable(typeof getOrderHeadId === 'function' ? getOrderHeadId() : undefined);
@@ -224,7 +226,7 @@
     });
 
     self.tradeAccountParams = kendoMDCDropDownList({
-        skipCascade: true,
+        skipCascade: false,
         label: 'Trade Account',
         odata: true,
         endPoint: '/odata/TradeAccounts',
@@ -259,7 +261,7 @@
                 return '';
         },
         idObservable: self.tradeAccountId,
-        objObservable: ko.observable(),
+        objObservable: self.tradeAccount,
         locked: ko.observable(false),
         enable: ko.observable(true),
         disable: ko.observable(false),
@@ -828,7 +830,6 @@
 
     self.link = ko.pureComputed(function () {
 
-
         let objJson = {
             documentType: self.documentId(),
             languageId: self.languageId(),
@@ -857,6 +858,14 @@
 
     self.userLink = ko.pureComputed(function () {
         return window.location.origin + '/documents/view?' + self.link()?.replace(/%3D/gm, '=');
+    }, self);
+
+    self.renderDocument = ko.pureComputed(function () {
+        return window.location.origin + `/documents/view/render?${(self.link()?.replace(/%3D/gm, '='))}`
+    }, self);
+
+    self.directDownloadLink = ko.pureComputed(function () {
+        return window.location.origin + `/documents/view/download?${(self.link()?.replace(/%3D/gm, '='))}`
     }, self);
 
     self.adminLink = ko.pureComputed(function () {
@@ -922,6 +931,19 @@
         navigator.permissions.query({ name: "clipboard-write" }).then(result => {
             if (result.state == "granted" || result.state == "prompt") {
                 navigator.clipboard.writeText(self.userLink());
+                $('#user-copied-ok').stop(false, false).fadeIn('fast');
+                window.setTimeout(function () {
+                    $('#user-copied-ok').stop(false, false).fadeOut('slow');
+                }, 500);
+            }
+        });
+    }
+
+    self.copyDirectDownloadLink = function (e) {
+        e.preventDefault();
+        navigator.permissions.query({ name: "clipboard-write" }).then(result => {
+            if (result.state == "granted" || result.state == "prompt") {
+                navigator.clipboard.writeText(self.directDownloadLink());
                 $('#user-copied-ok').stop(false, false).fadeIn('fast');
                 window.setTimeout(function () {
                     $('#user-copied-ok').stop(false, false).fadeOut('slow');

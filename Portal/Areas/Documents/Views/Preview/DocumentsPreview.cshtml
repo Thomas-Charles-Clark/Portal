@@ -173,28 +173,38 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <div id="interaction-flex-container">
-                    <div>
-                        <a id="send-email-anchor" href="#send-email" class="document-anchor" data-toggle="collapse">
-                            Email Document
-                        </a>
-                        <a href="javascript:;" class="document-anchor copy-link" data-bind="attr: { href: adminLink }, click: function (data, event) { copyAdminLink(event); }">
-                            <span id="admin-copied-ok" class="copied-ok text-success margin-right-15">
-                                Copied to Clipboard
-                            </span>
-                            Copy Admin Link
-                        </a>
-                    </div>
-                    <div>
-                        <a href="#send-history" class="document-anchor" data-toggle="collapse">
-                            Document Send History
-                        </a>
-                        <a href="javascript:;" class="document-anchor copy-link" data-bind="attr: { href: userLink }, click: function (data, event) { copyUserLink(event); }">
-                            <span id="user-copied-ok" class="copied-ok text-success margin-right-15">
-                                Copied to Clipboard
-                            </span>
-                            Copy User Link
-                        </a>
-                    </div>
+					<div>
+						<a id="send-email-anchor" href="#send-email" class="document-anchor" data-toggle="collapse">
+							Email Document
+						</a>
+						<div style="display: inline-flex; gap: 2rem; align-items: center;">
+							<a href="javascript:;" class="document-anchor copy-link" data-bind="attr: { href: renderDocument, target: '_blank'  }">
+								View Document
+							</a>
+							<a href="javascript:;" class="document-anchor copy-link" data-bind="attr: { href: adminLink }, click: function (data, event) { copyAdminLink(event); }">
+								<span id="admin-copied-ok" class="copied-ok text-success margin-right-15">
+									Copied to Clipboard
+								</span>
+								Copy Admin Link
+							</a>
+						</div>
+					</div>
+					<div>
+						<a href="#send-history" class="document-anchor" data-toggle="collapse">
+							Document Send History
+						</a>
+						<div style="display: inline-flex; gap: 2rem; align-items: center;">
+							<a href="javascript:;" class="document-anchor copy-link" data-bind="attr: { href: directDownloadLink }">
+								Direct Download
+							</a>
+							<a href="javascript:;" class="document-anchor copy-link" data-bind="attr: { href: directDownloadLink }, click: function (data, event) { copyDirectDownloadLink(event); }">
+								<span id="user-copied-ok" class="copied-ok text-success margin-right-15">
+									Copied to Clipboard
+								</span>
+								Copy User Link
+							</a>
+						</div>
+					</div>
                 </div>
                 <div id="send-email" class="collapse">
                     <!-- ko component: { name: 'emailer-component', params: emailer } --><!-- /ko -->

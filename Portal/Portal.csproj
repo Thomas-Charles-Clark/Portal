@@ -3322,6 +3322,8 @@
     <Content Include="css\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits.scss" />
     <Content Include="css\dist\fonts\src\trixie-web-pro-heavy.ttf" />
     <Content Include="css\src\fonts\src\trixie-web-pro-heavy.ttf" />
+    <Content Include="css\src\models\credit-control\credit-control-debt-breakdown.scss" />
+    <Content Include="css\src\models\credit-control\credit-control-manage-ledger.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -138,9 +138,9 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
 
     self.fetch = () => {
 
-        if (self.tradeAccountCodeList().length > 0) {
+        if (self.tradeAccountCodeList()?.length > 0) {
 
-            self.busy(true)
+            self.busy(true);
 
             let data = {
                 reportGrouping: self.reportGrouping() == '' ? null : self.reportGrouping(),
@@ -178,6 +178,12 @@ const creditControlPerformanceViewModel = ({ } = {}) => {
 
                     self.busy(false);
                 })
+        } else {
+            self.periods([]);
+
+            self.rowGrouping([]);
+
+            self.records([]);
         }
     }
 

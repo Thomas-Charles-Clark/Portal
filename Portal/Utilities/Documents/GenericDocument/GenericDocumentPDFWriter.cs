@@ -55,9 +55,9 @@ namespace Portal.Utilities.Document
 
 			var finalStream = new MemoryStream();
 
-			BaseFont gillSansMt = BaseFont.CreateFont(rootPath + "Content/fonts/Gill-Sans-MT.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
+			BaseFont gillSansMt = BaseFont.CreateFont(rootPath + "Content/fonts/Gill-Sans-MT.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
-			BaseFont trixieHeavy = BaseFont.CreateFont(rootPath + "css/dist/fonts/src/trixie-web-pro-heavy.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
+			BaseFont trixieHeavy = BaseFont.CreateFont(rootPath + "css/dist/fonts/src/trixie-web-pro-heavy.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
 			stopWatch.Start();
 
@@ -2842,6 +2842,8 @@ namespace Portal.Utilities.Document
 			{
 				Phrase phrase = new Phrase();
 
+				line = System.Net.WebUtility.HtmlDecode(line);
+
 				foreach (Match match in ProcessPhraseMasterRegex.Matches(line))
 				{
 					string value = match.Value;
@@ -3050,6 +3052,8 @@ namespace Portal.Utilities.Document
 					{
 						var line = lines[i];
 
+						line = System.Net.WebUtility.HtmlDecode(line);
+
 						// right... how do we parse for smart tags then, smartguy?
 
 						// each line will be formed of one or more Chunks.
@@ -3120,6 +3124,12 @@ namespace Portal.Utilities.Document
 
 			var OrderHeadCountPhrase = new Phrase();
 
+			if (!String.IsNullOrEmpty(preHeader.HeaderDocumentType))
+				preHeader.HeaderDocumentType = System.Net.WebUtility.HtmlDecode(preHeader.HeaderDocumentType);
+
+			if (!String.IsNullOrEmpty(preHeader.HeaderOfLabel))
+				preHeader.HeaderOfLabel = System.Net.WebUtility.HtmlDecode(preHeader.HeaderOfLabel);
+
 			if ((int)documentType != (int)PortalPDFDocument.TradeAccountStatement)
 			{
 				var DocumentTypeLabelChunk = new Chunk($"{preHeader.HeaderDocumentType}: ", boldFont);
@@ -3142,6 +3152,12 @@ namespace Portal.Utilities.Document
 			Phrase OrderLabelPhrase = null;
 			Phrase OrderIDPhrase = null;
 
+			if (!String.IsNullOrEmpty(preHeader.HeaderOrderIdentifierValue))
+				preHeader.HeaderOrderIdentifierValue = System.Net.WebUtility.HtmlDecode(preHeader.HeaderOrderIdentifierValue);
+
+			if (!String.IsNullOrEmpty(preHeader.HeaderOrderIdentifierLabel))
+				preHeader.HeaderOrderIdentifierLabel = System.Net.WebUtility.HtmlDecode(preHeader.HeaderOrderIdentifierLabel);
+
 			if ((int)documentType != (int)PortalPDFDocument.TradeAccountStatement)
 			{
 				OrderIDPhrase = ProcessPhrase($"{{b}}{preHeader.HeaderOrderIdentifierValue ?? orderIdentifier}{{/b}} ({Receipts.PageLabel} {x} {Receipts.Of} {y})", normalFont);
@@ -3157,6 +3173,12 @@ namespace Portal.Utilities.Document
 			var OrderNumberPhrase = new Phrase();
 			OrderNumberPhrase.Add(OrderLabelPhrase);
 			OrderNumberPhrase.Add(OrderIDPhrase);
+
+			if (!String.IsNullOrEmpty(preHeader.HeaderDate))
+				preHeader.HeaderDate = System.Net.WebUtility.HtmlDecode(preHeader.HeaderDate);
+
+			if (!String.IsNullOrEmpty(preHeader.HeaderDateLabel))
+				preHeader.HeaderDateLabel = System.Net.WebUtility.HtmlDecode(preHeader.HeaderDateLabel);
 
 			var DateChunk = new Chunk($"{preHeader.HeaderDate}\n", normalFont);
 			var DateLabelChunk = new Chunk($"{preHeader.HeaderDateLabel}: ", boldFont);

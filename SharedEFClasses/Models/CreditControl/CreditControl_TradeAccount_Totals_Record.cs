@@ -23,7 +23,7 @@ namespace SharedEFClasses.Models.CreditControl
 		{
 			get
 			{
-				return TradeAccountIDList.Split(new char[] { ',' }).Select(p => Convert.ToInt32(p));
+				return TradeAccountIDList?.Split(new char[] { ',' }).Select(p => Convert.ToInt32(p)) ?? new List<int>();
 			}
 		}
 
@@ -31,7 +31,7 @@ namespace SharedEFClasses.Models.CreditControl
 		{
 			get
 			{
-				return TradeAccountCodeList.Split(new char[] { ',' });
+				return TradeAccountCodeList?.Split(new char[] { ',' })?.ToList() ?? new List<string>();
 			}
 		}
 	}

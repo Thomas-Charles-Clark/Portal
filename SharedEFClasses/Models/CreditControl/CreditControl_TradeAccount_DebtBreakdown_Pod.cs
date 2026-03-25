@@ -10,6 +10,7 @@ namespace SharedEFClasses.Models.CreditControl
 {
 	public class CreditControl_TradeAccount_DebtBreakdown_Pod
 	{
+		public string Group { get; set; }
 		public string Classes { get; set; }
 		public int SortOrder { get; set; }
 		public string Heading { get; set; }

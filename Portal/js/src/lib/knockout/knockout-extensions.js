@@ -1941,8 +1941,6 @@ ko.bindingHandlers.actualBootstrapPopover = {
 
         var pop = new bootstrap.Popover(element, popProps);
 
-
-
         params.details.popover = pop;
         params.details.popoverElement = element;
 

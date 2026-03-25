@@ -14,8 +14,18 @@ namespace SharedEFClasses.Models.CreditControl
 		public string InvoiceURI { get; set; }
 		public DateTime InvoiceDate { get; set; }
 		public DateTime DueDate { get; set; }
-		public decimal OriginalValueInCurrency { get; set; }
-		public decimal OutstandingAmountInCurrency { get; set; }
-		public bool Disputed { get; set; }
+		public string OriginalValueInCurrency { get; set; }
+		public string OutstandingAmountInCurrency { get; set; }
+		public string CreditsValue { get; set; }
+		public string CreditInfo { get; set; }
+		public string DepositsValue { get; set; }
+		public string DepositsInfo { get; set; }
+		public string OverPaymentsValue { get; set; }
+		public string OverPayemntsInfo { get; set; }
+		public string RefundsValue { get; set; }
+		public string RefundsInfo { get; set; }
+		public string ProformaPaymentsValue { get; set; }
+		public string ProformaPaymentsInfo { get; set; }
+		public int TotalRowCount { get; set; }
 	}
 }

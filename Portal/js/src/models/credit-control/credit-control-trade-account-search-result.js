@@ -2,9 +2,9 @@
     rec,
     parent
 } = {
-        rec: {},
-        parent: {}
-    }) => {
+    rec: {},
+    parent: {}
+}) => {
     let self = Object.assign({
         selectionObservable: parent.tradeAccountContacts.selectedTradeAccount,
         fetchContacts: parent.tradeAccountContacts.fetchContacts,
@@ -74,7 +74,6 @@
             //    offset: "-10,10"
             //}
         },
-        fallbackPlacements: ['right', 'bottom'],
         customClass: 'confirm-credit-toggle-popover',
         content: (element) => {
             let e = ko.dataFor(element);
@@ -195,10 +194,9 @@
                                 p.hide();
                             }
                         });
-                    })
+                    });
                 }, 0);
             }
-
         },
         popperConfig: (defaultPopperConfig) => defaultPopperConfig
     };

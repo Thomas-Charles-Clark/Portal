@@ -577,14 +577,7 @@ const creditControlViewModel = (() => {
             filterable: false,
             width: gridColumnWidths.ninetyTwo,
             template: (e) => {
-                /* 
-                
-                data-bind="actualBootstrapPopover: { context: $data, details: bootstrapPopoverDetails }, click: () => { return true; }, clickBubble: false"
-                
-                */
-
-
-                return `<a href="javascript:;" class="grid-btn stop-btn" data-bind="actualBootstrapPopover: { context: $data, details: popoverDetails }, click: () => { return true; }, clickBubble: false">
+                return `<a href="javascript:;" class="grid-btn stop-btn" data-bind="actualBootstrapPopover: { details: popoverDetails }, click: () => { return true; }, clickBubble: false">
                     <i class="bi bi-octagon" data-bind="css: { 'bi-octagon': onStop() == false, 'bi-sign-stop-fill text-red-500': onStop() == true }"></i>
                     <i class="bi bi-octagon bi-octagon-red d-none" data-bind="flexFadeVisible: onStop() == true"></i>
                 </a>`;
@@ -1277,7 +1270,7 @@ const creditControlViewModel = (() => {
     }
 
     self.memberBasketFetcher.heldOrdersGridParametersComputed.subscribe(nv => {
-        self.memberBasketFetcher.refresh();
+        self.memberBasketFetcher.heldOrdersRefresh();
     });
 
     self.gridParams = {
@@ -1388,6 +1381,14 @@ const creditControlViewModel = (() => {
             }),
             requestStart: (e) => {
                 self.busy(true);
+
+                // Target the unlocked content area and clear its rows
+                // This was because the locked grid is cleared and the unlocked content wasn't
+                // The setTimeout was because without it the call to .empty was clearing the unlocked
+                // content before the locked content was cleared!
+                window.setTimeout(() => {
+                    $("#credit-control-grid-container .k-grid-content table tbody").empty();
+                }, 1);
             },
             requestEnd: (e) => {
                 self.busy(false);
@@ -1422,7 +1423,7 @@ const creditControlViewModel = (() => {
 
                 let classList = event.sender.select()[0].classList;
 
-                let dataItem = event.sender.dataItem(event.sender.select().closest('tr'));
+                let dataItem = ko.dataFor(event.sender.select()[0]);//event.sender.dataItem(event.sender.select().closest('tr'));
 
                 if (classList.contains('debt-breakdown')) {
                     self.fetchDebtBreakdown(dataItem);
@@ -1486,9 +1487,7 @@ const creditControlViewModel = (() => {
     //#region Subscriptions
 
     self.filters.displayModes.subscribe(nv => {
-        self.gridParams.widget().setOptions({
-            columns: self.gridColumns
-        });
+        self.gridParams.widget().refresh();
     }, self, 'arrayChange');
 
     self.filters.salesHistoryAnalysisPeriodId.subscribe(nv => {
@@ -1642,8 +1641,14 @@ const creditControlViewModel = (() => {
         }
     }
 
-    self.fetchDebtBreakdown = (data, event) => {
+    self.fetchDebtBreakdown = (tradeAccount, event) => {
         self.busy(true);
+
+        let data = {
+            tradeAccountId: tradeAccount.TradeAccountID,
+            page: 1,
+            pageSize: 10
+        };
 
         console.log('fetchDebtBreakdown calling with', data);
 
@@ -1658,7 +1663,7 @@ const creditControlViewModel = (() => {
             .then(result => {
                 console.log('fetchDebtBreakdown returned', result);
                 self.debtBreakdown(creditControlDebtBreakdownViewModel({
-                    callee: data,
+                    callee: tradeAccount,
                     rec: result
                 }));
 
@@ -1786,6 +1791,10 @@ const creditControlViewModel = (() => {
 
     self.debtBreakdownModalElement.addEventListener('bs.modal.hidden', () => {
         self.debtBreakdown(undefined);
+    });
+
+    self.debtBreakdownModalElement.addEventListener('bs.modal.shown', () => {
+        
     });
 
     self.ordersBreakdownModalElement.addEventListener('bs.modal.hidden', () => {

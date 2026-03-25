@@ -156,6 +156,8 @@ namespace SharedEFClasses.Models.TradeAccounts
 
         public bool PurchaseOrderLineNumberRequired { get; set; }
 
+        public Guid GUID { get; set; }
+
         [Column("CreditStop")]
         public bool CreditStopped { get; set; }
 
