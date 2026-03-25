@@ -124,7 +124,7 @@ namespace SharedEFClasses.Models
 
 			return new CreditControl_TradeAccount_DebtBreakdown_Result()
 			{
-				Heading = await reply.ReadSingleAsync<CreditControl_TradeAccount_DebtBreakdown_HeadingResult>(),
+				Heading = await reply.ReadSingleOrDefaultAsync<CreditControl_TradeAccount_DebtBreakdown_HeadingResult>(),
 				Pods = await reply.ReadAsync<CreditControl_TradeAccount_DebtBreakdown_Pod>(),
 				Records = await reply.ReadAsync<CreditControl_TradeAccount_DebtBreakdown_Record>()
 			};

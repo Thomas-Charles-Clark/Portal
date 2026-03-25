@@ -46,15 +46,18 @@ const paymentHistoryPaymentStatuses = [{
 
 const creditControlFiltersViewModel = ({
     params,
-    parent
+    parent,
+    prefix
 } = {
-    params: {},
-    parent: {}
-}) => {
+        params: {},
+        parent: {},
+        prefix: ''
+    }) => {
     let self = {
         refreshParent: parent.refresh,
         selectedPod: parent.selectedPod,
-        clearSelectedPod: parent.clearSelectedPod
+        clearSelectedPod: parent.clearSelectedPod,
+        prefix: prefix
     };
 
     //#region Properties
@@ -72,11 +75,6 @@ const creditControlFiltersViewModel = ({
             message: 'Please specify a date'
         }
     }); // this is for Statement Sending only, and must be removed from the main filtering thingies
-
-    self.sidebarElement = document.getElementById('filters-sidebar');
-
-    self.sidebarCollapseElement = document.getElementById('sidebar-collapse');
-    self.sidebarCollapse = bootstrap.Collapse.getOrCreateInstance(self.sidebarCollapseElement);
 
     self.includeClosedTradeAccounts = ko.observable(true);
     self.includeDeletedTradeAccounts = ko.observable(false);
@@ -109,7 +107,7 @@ const creditControlFiltersViewModel = ({
 
     self = Object.assign(tradeAccountContactsFiltersViewModel({
         params: Object.assign({
-            filtersPrefix: 'credit-control-',
+            prefix: self.prefix,
             tradeAccountStatusId: true,
             tradeAccountStatus: tradeAccountStatuses[0],
             creditController: window.getCreditControllerCode()
@@ -306,7 +304,7 @@ const creditControlFiltersViewModel = ({
     //#region Components
 
     self.includeClosedTradeAccountsParams = {
-        checkboxId: 'include-closed-trade-accounts',
+        checkboxId: `${self.prefix}include-closed-trade-accounts`,
         label: 'Include Closed?',
         observable: self.includeClosedTradeAccounts,
         useNativeValidation: false,
@@ -316,7 +314,7 @@ const creditControlFiltersViewModel = ({
     }
 
     self.includeDeletedTradeAccountsParams = {
-        checkboxId: 'include-deleted-trade-accounts',
+        checkboxId: `${self.prefix}include-deleted-trade-accounts`,
         label: 'Include Deleted?',
         observable: self.includeDeletedTradeAccounts,
         useNativeValidation: false,
@@ -507,9 +505,6 @@ const creditControlFiltersViewModel = ({
 
             return d;
 
-        },
-        popupSettings: {
-            appendTo: '#credit-control-trade-account-prefilter'
         }
     });
 
@@ -615,7 +610,7 @@ const creditControlFiltersViewModel = ({
             return d;
         },
         popupSettings: {
-            appendTo: document.querySelector("#send-statements-modal .modal-body")
+            appendTo: document.querySelector(`#${self.prefix}send-statements`)
         }
     });
 
@@ -781,6 +776,9 @@ const creditControlFiltersViewModel = ({
             autoClose: false,
             optionLabel: ' ',
             filter: 'startswith'
+        },
+        popupSettings: {
+            appendTo: `#${prefix}-sales-history-analysis-period-prefilter`
         }
     }
 
@@ -854,7 +852,7 @@ const creditControlFiltersViewModel = ({
         dataBound: (e) => self.paymentTermsAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.debtFunderGroupBy),
         popupSettings: {
-            appendTo: document.getElementById(`${self.filtersPrefix}debt-funder-prefilter`)
+            appendTo: document.querySelector(`#${self.prefix}debt-funder-prefilter`)
         }
     });
 
@@ -910,7 +908,7 @@ const creditControlFiltersViewModel = ({
         dataBound: (e) => self.paymentTermsAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.currencyGroupBy),
         popupSettings: {
-            appendTo: document.getElementById(`${self.filtersPrefix}currency-prefilter`)
+            appendTo: document.querySelector(`#${self.prefix}currency-prefilter`)
         }
     });
 
@@ -1115,7 +1113,7 @@ const creditControlFiltersViewModel = ({
 
         },
         popupSettings: {
-            appendTo: document.querySelector(`#payment-history-date-type-prefilter`)
+            appendTo: document.querySelector(`#${self.prefix}payment-history-date-type-prefilter`)
         },
     });
 
@@ -1173,7 +1171,7 @@ const creditControlFiltersViewModel = ({
         insertValidationMessages: false,
         decorateInputElement: true,
         popupSettings: {
-            appendTo: '#payment-history-from-date'
+            appendTo: `#${self.prefix}payment-history-from-date`
         }
     };
 
@@ -1230,7 +1228,7 @@ const creditControlFiltersViewModel = ({
         insertValidationMessages: false,
         decorateInputElement: true,
         popupSettings: {
-            appendTo: '#payment-history-to-date'
+            appendTo: `#${self.prefix}payment-history-to-date`
         }
     };
 
@@ -1261,7 +1259,7 @@ const creditControlFiltersViewModel = ({
         },
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
-            appendTo: document.getElementById(`banking-account-prefilter`)
+            appendTo: document.querySelector(`#${self.prefix}banking-account-prefilter`)
         }
     });
 
@@ -1292,7 +1290,7 @@ const creditControlFiltersViewModel = ({
         },
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
-            appendTo: document.getElementById(`banking-currency-prefilter`)
+            appendTo: document.querySelector(`#${self.prefix}banking-currency-prefilter`)
         }
     });
 
@@ -1319,7 +1317,7 @@ const creditControlFiltersViewModel = ({
 
         },
         popupSettings: {
-            appendTo: document.querySelector(`#payment-history-payment-status-prefilter`)
+            appendTo: document.querySelector(`#${self.prefix}payment-history-payment-status-prefilter`)
         },
     });
 
@@ -1355,7 +1353,7 @@ const creditControlFiltersViewModel = ({
             self.paymentHistoryCreditControllerParams.dropDownListSettings.widget().trigger('change');
         },
         popupSettings: {
-            appendTo: document.getElementById(`payment-history-credit-controller-prefilter`)
+            appendTo: document.querySelector(`#${self.prefix}payment-history-credit-controller-prefilter`)
         }
     });
 
@@ -1511,7 +1509,7 @@ const creditControlFiltersViewModel = ({
 
         },
         popupSettings: {
-            appendTo: document.querySelector(`#outstanding-invoices-date-type-prefilter`)
+            appendTo: document.querySelector(`#${self.prefix}outstanding-invoices-date-type-prefilter`)
         },
     });
 
@@ -1569,7 +1567,7 @@ const creditControlFiltersViewModel = ({
         insertValidationMessages: false,
         decorateInputElement: true,
         popupSettings: {
-            appendTo: '#outstanding-invoices-from-date'
+            appendTo: `#${self.prefix}outstanding-invoices-from-date`
         }
     };
 
@@ -1626,7 +1624,7 @@ const creditControlFiltersViewModel = ({
         insertValidationMessages: false,
         decorateInputElement: true,
         popupSettings: {
-            appendTo: '#outstanding-invoices-to-date'
+            appendTo: `#${self.prefix}outstanding-invoices-to-date`
         }
     };
 
@@ -1657,7 +1655,7 @@ const creditControlFiltersViewModel = ({
         },
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
-            appendTo: document.getElementById(`outstanding-invoices-banking-currency-prefilter`)
+            appendTo: document.querySelector(`#${self.prefix}outstanding-invoices-banking-currency-prefilter`)
         }
     });
 
@@ -1935,12 +1933,12 @@ const creditControlFiltersViewModel = ({
     //#region Methods
 
     self.togglePinning = (data, event) => {
-        self.sidebarElement.classList.toggle('pinned');
+        document.querySelector(`#${self.prefix}sidebar`).classList.toggle('pinned');
         event && event.target.closest('button') && event.target.closest('button').blur();
     }
 
     self.reset = () => {
-        console.log('creditControlFilters reset called');
+        console.log(`${self.prefix}filters reset called`);
 
         let selection = self.getSelectedFilters();
 

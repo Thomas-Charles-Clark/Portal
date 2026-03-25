@@ -1,6 +1,6 @@
 ﻿@import '../common.scss';
 
-#filters-sidebar {
+.sidebar {
 	display: flex;
 	align-self: stretch;
 	position: relative;
@@ -31,7 +31,7 @@
 
 
 
-	#credit-control-prefilters {
+	.sidebar-prefilters {
 
 		.prefilter {
 			position: relative;
@@ -57,7 +57,7 @@
 			}
 		}
 
-		#credit-control-trade-account-prefilter {
+		.trade-account-prefilter {
 			grid-column-start: 1;
 			grid-column-end: 3;
 		}
@@ -65,15 +65,6 @@
 		#credit-control-date-prefilter {
 			grid-column-start: 3;
 			grid-column-end: 4;
-		}
-
-		.date-prefilter {
-			display: block;
-			width: 100%;
-		}
-
-		.date-picker {
-			flex: 1;
 		}
 	}
 
@@ -88,7 +79,7 @@
 		transition: all 150ms ease-in-out;
 	}
 
-	#sidebar-collapse {
+	.sidebar-body {
 		opacity: 0;
 		transition: opacity 150ms ease-in-out;
 		margin-top: -42px;
@@ -186,7 +177,7 @@
 			position: static;
 		}
 
-		#sidebar-collapse {
+		.sidebar-body {
 			opacity: 1;
 		}
 
@@ -248,29 +239,6 @@
 
 	.sidebar-body {
 		flex-grow: 1;
-	}
-
-	.mdc-text-field:not(.mdc-text-field--textarea),
-	.mdc-select,
-	.mdc-text-field:not(.mdc-text-field--textarea) {
-		height: 28px;
-		line-height: 28px;
-	}
-
-	.mdc-floating-label {
-		font-size: $font-size-sm;
-		top: 4px;
-	}
-
-	.k-dropdown-wrap {
-		&.k-state-default {
-
-			span.k-input {
-				font-size: $font-size-sm;
-				position: relative;
-				top: -1px;
-			}
-		}
 	}
 
 	.mdc-select--selected {

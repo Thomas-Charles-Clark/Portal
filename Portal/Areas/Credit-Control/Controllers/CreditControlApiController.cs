@@ -267,6 +267,46 @@ namespace Portal.Areas.CreditControl.Controllers
 			return Ok(result);
 		}
 
+		[HttpGet]
+		public async Task<IHttpActionResult> FetchDebtBreakdown(
+			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+			[FromUri] CreditControl_TradeAccount_DebtBreakdownDTO dto)
+		{
+			try
+			{
+				if (request.Sorts.Any())
+				{
+					var sort = request.Sorts.First();
+
+					dto.SortOrder = $"{sort.Member}_{(sort.SortDirection == ListSortDirection.Ascending ? "Asc" : "Desc")}";
+				}
+
+				var model = await PortalDb.CreditControl_TradeAccount_DebtBreakdown_Select(dto);
+
+				request.Page = 1; // This is a super weird and stupid hack but...
+
+				var gridData = model.Records.ToDataSourceResult(request);
+
+				gridData.Total = model.Records.FirstOrDefault()?.TotalRowCount ?? 0;
+
+				return Ok(new
+				{
+					heading = model.Heading,
+					gridData = gridData,
+					pods = model.Pods,
+					totalsRecord = gridData.Total
+				});
+			}
+			catch (SqlException)
+			{
+				return Ok(new
+				{
+					errorMessage = "Sorry, a database timeout error occurred.<br/>Please click to close this dialog box to retry, or reload your browser tab."
+				});
+			}
+		}
+
+
 		[HttpPost]
 		public async Task<IHttpActionResult> FetchOrdersBreakdown(
 			[FromBody] CreditControl_TradeAccount_OrderBreakdownDTO dto)

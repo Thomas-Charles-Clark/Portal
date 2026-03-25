@@ -616,6 +616,9 @@
   cursor: pointer;
 }
 
+#debt-breakdown-modal .modal-header {
+  border-radius: 0;
+}
 #debt-breakdown-modal .debt-breakdown-heading-btn-container {
   position: relative;
   display: flex;

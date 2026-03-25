@@ -69,11 +69,11 @@
         data: ko.observable(),
         element: ko.observable(),
         placement: 'right',
-        modifiers: {
-            //offset: {
-            //    offset: "-10,10"
-            //}
-        },
+        container: '.modal-body',   // this is specified as being .modal-body (#debt-breakdown-modal) 
+                                    // despite the fact that this control is most often 
+                                    // found in the main grid's Errata: Stopped column
+                                    // because it will null-coalesce to 'body': see defn of 
+                                    // 'actualBootstrapPopover' in knockout - extensions.js
         customClass: 'confirm-credit-toggle-popover',
         content: (element) => {
             let e = ko.dataFor(element);
@@ -167,7 +167,7 @@
 
                 dat.busy(false);
 
-                event.target.closest('.k-grid-content').addEventListener('scroll', (event) => {
+                event.target.closest('.k-grid-content')?.addEventListener('scroll', (event) => {
                     document.querySelectorAll('[data-bind*="actualBootstrapPopover"]').forEach(e => {
                         let p = bootstrap.Popover.getInstance(e);
                         if (p) {

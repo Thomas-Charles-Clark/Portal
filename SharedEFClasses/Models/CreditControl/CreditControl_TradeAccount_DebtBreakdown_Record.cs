@@ -17,11 +17,11 @@ namespace SharedEFClasses.Models.CreditControl
 		public string OriginalValueInCurrency { get; set; }
 		public string OutstandingAmountInCurrency { get; set; }
 		public string CreditsValue { get; set; }
-		public string CreditInfo { get; set; }
+		public string CreditsInfo { get; set; }
 		public string DepositsValue { get; set; }
 		public string DepositsInfo { get; set; }
 		public string OverPaymentsValue { get; set; }
-		public string OverPayemntsInfo { get; set; }
+		public string OverPaymentsInfo { get; set; }
 		public string RefundsValue { get; set; }
 		public string RefundsInfo { get; set; }
 		public string ProformaPaymentsValue { get; set; }

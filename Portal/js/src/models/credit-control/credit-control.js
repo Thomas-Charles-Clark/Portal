@@ -63,7 +63,14 @@ const creditControlViewModel = (() => {
 
     self.filters = creditControlFiltersViewModel({
         params: window.getPredefinedFilterParams(),
-        parent: self
+        parent: self,
+        prefix: 'dashboard-'
+    });
+
+    self.manageLedgerFilters = creditControlFiltersViewModel({
+        params: window.getPredefinedFilterParams(),
+        parent: self,
+        prefix: 'manage-ledger-'
     });
 
     self.allSortingOperations = ko.observableArray([]);
@@ -99,6 +106,10 @@ const creditControlViewModel = (() => {
     self.statementsTab = document.querySelector('#statements-tab');
 
     self.statementsCollapse = bootstrap.Collapse.getOrCreateInstance(self.statementsTab);
+
+    self.manageLedgerTab = document.querySelector('#manage-ledger-tab');
+
+    self.manageLedgerCollapse = bootstrap.Collapse.getOrCreateInstance(self.manageLedgerTab);
 
     self.payOffInvoicesTab = document.querySelector('#paying-off-with-proforma-tab');
 
@@ -435,6 +446,11 @@ const creditControlViewModel = (() => {
     self.outstandingInvoices = creditControlOutstandingInvoicesWithUnallocatedDepositsViewModel({
         busy: self.busy,
         filters: self.filters
+    });
+
+    self.manageLedger = creditControlDebtBreakdownViewModel({
+        callee: {},
+        filters: self.manageLedgerFilters
     });
 
     self.memberBasketFetcher = memberBasketFetcher(self);
@@ -1642,7 +1658,7 @@ const creditControlViewModel = (() => {
     }
 
     self.fetchDebtBreakdown = (tradeAccount, event) => {
-        self.busy(true);
+        //self.busy(true);
 
         let data = {
             tradeAccountId: tradeAccount.TradeAccountID,
@@ -1650,31 +1666,34 @@ const creditControlViewModel = (() => {
             pageSize: 10
         };
 
-        console.log('fetchDebtBreakdown calling with', data);
+        self.debtBreakdown(creditControlDebtBreakdownViewModel({
+            callee: tradeAccount
+        }));
 
-        fetch("/api/CreditControlAPI/FetchDebtBreakdown", {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            body: JSON.stringify(data)
-        })
-            .then(window.handleFetchResponse)
-            .then(result => {
-                console.log('fetchDebtBreakdown returned', result);
-                self.debtBreakdown(creditControlDebtBreakdownViewModel({
-                    callee: tradeAccount,
-                    rec: result
-                }));
+        self.debtBreakdown().busy(true);
 
-                self.busy(false);
+        self.debtBreakdownModal.show();
 
-                self.debtBreakdownModal.show();
-            })
-            .catch(err => {
-                self.busy(false);
-                window.catchFetchError(err);
-            });
+        //console.log('fetchDebtBreakdown calling with', data);
+
+        //fetch("/api/CreditControlAPI/FetchDebtBreakdown", {
+        //    method: 'POST',
+        //    headers: window.fetchHeaders,
+        //    cache: 'no-cache',
+        //    credentials: 'same-origin',
+        //    body: JSON.stringify(data)
+        //})
+        //    .then(window.handleFetchResponse)
+        //    .then(result => {
+        //        console.log('fetchDebtBreakdown returned', result);
+                
+        //        self.busy(false);
+
+        //    })
+        //    .catch(err => {
+        //        self.busy(false);
+        //        window.catchFetchError(err);
+        //    });
     }
 
     self.fetchOrdersBreakdown = (data, event) => {
@@ -1811,6 +1830,10 @@ const creditControlViewModel = (() => {
 
     self.onlinePaymentHistoryTab.addEventListener('click', (event) => {
         self.paymentHistory.refresh();
+    });
+
+    self.manageLedgerTab.addEventListener('click', (event) => {
+        self.manageLedger.refresh();
     });
 
     self.performance.init();

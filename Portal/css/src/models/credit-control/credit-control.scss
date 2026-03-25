@@ -531,7 +531,7 @@ html {
 
             &.alert {
                 margin-bottom: 0;
-                border: 1px solid $gray-500;
+                border: 1px solid;
                 border-radius: $border-radius;
             }
 
@@ -673,79 +673,122 @@ html {
             display: inline-flex;
             gap: $l-gutter;
         }
+    }
+}
 
-        .modal-body {
+.grouped-pods-container {
+    border: 0;
 
-            .breakdown-pods {
-                margin: 0 0 $l-gutter 0;
-                display: flex;
-                gap: $l-gutter;
-                justify-content: space-between;
-                align-items: center;
+    .pod-group {
+        border: 0;
+        background: $light;
+        padding: 0;
+        margin-bottom: $l-gutter;
+        border-radius: $border-radius;
 
-                .breakdown-pod {
-                    flex: 1;
-                    text-align: center;
-                    align-self: stretch;
-                    cursor: pointer;
-                    will-change: background-color;
-                    background-color: $white;
-                    color: $body-color;
-                    border-color: $gray-500;
-                    transition: background-color 150ms ease-in-out, color 150ms ease-in-out, border-color 150ms ease-in-out;
+        &:has(.accordion-collapse) {
+            .pod-group-title {
+                border-radius: $border-radius;
+            }
+        }
 
-                    a {
-                        color: $primary;
+        &:has(.accordion-collapse.show),
+        &:has(.accordion-collapse.collapsing) {
+            .pod-group-title {
+                border-radius: $border-radius $border-radius 0 0;
+            }
+        }
+
+        .pod-group-title {
+            margin: 0;
+            border: 1px solid $gray-500;
+            background-color: $light;
+            color: $body-color;
+        }
+
+        .accordion-button {
+            background-color: transparent;
+            padding: calc($l-gutter - 1px);
+            font-size: $font-size-lg;
+            color: $body-color;
+            border: 0;
+            box-shadow: none;
+        }
+
+        .accordion-header {
+            box-shadow: none;
+        }
+
+        .pods {
+            margin: 0;
+            padding: $l-gutter;
+            border: 1px solid $gray-500;
+            border-top: 0;
+            display: flex;
+            gap: $l-gutter;
+            justify-content: space-between;
+            align-items: center;
+            background-color: $white;
+            border-radius: 0 0 $border-radius $border-radius;
+
+            .pod {
+                flex: 1;
+                text-align: center;
+                align-self: stretch;
+                cursor: pointer;
+                color: $body-color;
+                border-color: $gray-500;
+                transition: color 150ms ease-in-out, border-color 150ms ease-in-out;
+                border-radius: $border-radius;
+
+                a {
+                    color: $primary;
+                }
+
+                &:hover, &:focus, &:focus-within {
+                    h4, h5 {
+                        text-decoration: underline;
                     }
+                }
 
-                    &:hover, &:focus, &:focus-within {
-                        .card-body {
-                            h4, h5 {
-                                text-decoration: underline;
-                            }
-                        }
-                    }
+                &.warning {
+                    background-color: $red-600;
+                    color: $white;
+                    border-color: tint-color($red-600, 5%);
 
-                    &.warning {
-                        background-color: $red-600;
+                    .btn {
                         color: $white;
-                        border-color: tint-color($red-600, 5%);
-
-                        .btn {
-                            color: $white;
-                        }
                     }
+                }
 
 
-                    .card-body {
+                .alert {
+                    margin-bottom: 0;
+                    border: 0;
+                    border-radius: $alert-border-radius;
+                    width: 100%;
+                    border: 1px solid;
+                }
 
-                        &.alert {
-                            margin-bottom: 0;
-                            border: 0;
-                            border-radius: $alert-border-radius;
-                        }
+                h4 {
+                    font-weight: bold;
+                    font-size: 1.55rem;
+                    margin-bottom: $m-gutter;
+                }
 
-                        h4 {
-                            font-weight: bold;
-                            font-size: 1.55rem;
-                            margin-bottom: $m-gutter;
-                        }
+                h5 {
+                    font-size: 1.15rem;
+                }
 
-                        h5 {
-                            font-size: 1.15rem;
-                        }
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
 
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        justify-content: center;
-
-                        h4,
-                        h5 {
-                            text-decoration: none;
-                            line-height: 1.75rem;
-                        }
-                    }
+                h4,
+                h5 {
+                    text-decoration: none;
+                    line-height: 1.75rem;
                 }
             }
         }

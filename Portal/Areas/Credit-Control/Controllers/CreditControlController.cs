@@ -37,7 +37,7 @@ namespace Portal.Areas.Orders.Controllers
 
         public async Task<ActionResult> Index()
         {
-            var application = PortalDb.Applications.Where(p => p.ControllerName == "" && p.AreaName == "credit-control" && p.ActionName == "index").Single();
+            var application = PortalDb.Applications.Where(p => p.ControllerName == "creditcontrol" && p.AreaName == "credit-control" && p.ActionName == "index").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
