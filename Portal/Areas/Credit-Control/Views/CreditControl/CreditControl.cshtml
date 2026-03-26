@@ -237,6 +237,21 @@
 			</div>
 		</div>
 	</div>
+	<div class="selected-filter-pills" style="display: none;" data-bind="visible: true, with: filters">
+		<!-- ko template: { name: 'filter-pills-template' } --><!-- /ko -->
+		<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
+			<a class="btn btn-secondary dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
+				<i class="bi bi-list-check"></i>
+			</a>
+			<!-- ko template: { name: 'credit-control-quantity-value-dropdown-container' } --><!-- /ko -->
+		</div>
+		<button class="btn btn-dark btn-export ms-auto" data-bind="click: $parent.exportToExcel">
+			Export to Excel
+			<i class="bi bi-download"></i>
+			<i class="bi bi-filetype-xlsx"></i>
+		</button>
+		<!-- ko if: initTooltips() --><!-- /ko -->
+	</div>
 	<div data-bind="kendoGrid: gridParams"></div>
 </script>
 
@@ -490,9 +505,9 @@
 		</ul>
 		<div class="tab-content" id="credit-control-tab-content">
 			<div class="tab-pane fade show active" id="dashboard-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-				<div id="dashboard-tab-flex-container">
+				<div id="dashboard-tab-flex-container" style="display: none" data-bind="flexFadeVisible: true">
 					<!-- ko template: { name: 'sidebar-template', data: filters } --><!-- /ko -->
-					<div id="tab-dashboard-main">
+					<div id="dashboard-main">
 						<div id="performance-container">
 							<div class="accordion" id="performance-accordion">
 								<div class="accordion-item relative" data-bind="with: performance">
@@ -570,7 +585,7 @@
 								</div>
 							</div>
 						</div>
-						<div id="selected-filter-pills">
+						<div class="selected-filter-pills">
 							<!-- ko template: { name: 'filter-pills-template', data: filters } --><!-- /ko -->
 							<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
 								<a class="btn btn-secondary dropdown-toggle no-ripple" href="#" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" data-bind="click: $root.hideValueDropdowns, clickBubble: false">
@@ -660,8 +675,18 @@
 				<div id="response-container" data-bind="html: sendResponse"></div>
 			</div>
 			<div class="tab-pane fade" id="manage-ledger-tab-pane" role="tabpanel" aria-labelledby="manage-ledger-tab" tabindex="0">
-				<!-- ko template: { name: 'sidebar-template', data: manageLedger.filters } --><!-- /ko -->
-				<!-- ko template: { name: 'debt-breakdown-template', data: manageLedger } --><!-- /ko -->
+				<div id="manage-ledger-tab-flex-container" data-bind="with: manageLedger">
+					<div class="blocker" data-bind="flexFadeVisible: busy">
+						<div class="loading-spinner"></div>
+						<h4 class="mt-3" data-bind="text: busyMessage"></h4>
+					</div>
+					<!-- ko template: { name: 'sidebar-template', data: filters } --><!-- /ko -->
+					<div id="manage-ledger-main">
+						<div id="manage-ledger-grid-container">
+							<!-- ko template: { name: 'debt-breakdown-template' } --><!-- /ko -->
+						</div>
+					</div>
+				</div>
 			</div>
 			<div id="paying-off-with-proforma-tab-pane" class="tab-pane fade">
 				<div class="prefilters mb-3" data-bind="with: filters">

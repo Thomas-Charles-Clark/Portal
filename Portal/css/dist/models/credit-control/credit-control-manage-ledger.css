@@ -615,4 +615,11 @@
   margin-bottom: 0;
   cursor: pointer;
 }
+
+#manage-ledger-grid-container .breakdown-modal-heading {
+  display: none;
+}
+#manage-ledger-grid-container .selected-filter-pills .dropdown {
+  display: none;
+}
 /*# sourceMappingURL=credit-control-manage-ledger.css.map */

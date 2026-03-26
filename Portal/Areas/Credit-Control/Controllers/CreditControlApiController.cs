@@ -77,11 +77,12 @@ namespace Portal.Areas.CreditControl.Controllers
 					totalsRecord = model.TotalsRecord
 				});
 			}
-			catch (SqlException)
+			catch (SqlException e)
 			{
 				return Ok(new
 				{
-					errorMessage = "Sorry, a database timeout error occurred.<br/>Please click to close this dialog box to retry, or reload your browser tab."
+					errorMessage = "Sorry, a database timeout error occurred.<br/>Please click to close this dialog box to retry, or reload your browser tab.",
+					exception = JsonConvert.SerializeObject(e, Formatting.Indented)
 				});
 			}
 		}
@@ -297,11 +298,12 @@ namespace Portal.Areas.CreditControl.Controllers
 					totalsRecord = gridData.Total
 				});
 			}
-			catch (SqlException)
+			catch (SqlException e)
 			{
 				return Ok(new
 				{
-					errorMessage = "Sorry, a database timeout error occurred.<br/>Please click to close this dialog box to retry, or reload your browser tab."
+					errorMessage = "Sorry, a database timeout error occurred.<br/>Please click to close this dialog box to retry, or reload your browser tab.",
+					exception = JsonConvert.SerializeObject(e, Formatting.Indented)
 				});
 			}
 		}

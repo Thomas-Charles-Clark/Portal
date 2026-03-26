@@ -1765,7 +1765,7 @@ const creditControlFiltersViewModel = ({
             result.salesHistoryAnalysisPeriod = self.salesHistoryAnalysisPeriodId();
         }
 
-        console.log('creditControlFilters', result);
+        console.log(`${self.prefix}creditControlFilters`, result);
 
         return result;
     }, self).extend({
@@ -1829,21 +1829,42 @@ const creditControlFiltersViewModel = ({
             });
 
         results.forEach(r => {
-            r.bsTooltipTitle = Object.hasOwn(r, 'label')
-                ? r.label
-                : (Object.hasOwn(r, 'multiSelectSettings')
-                    ? r.multiSelectSettings.label
-                    : '')
-                + ' '
-                + (Object.hasOwn(r, 'dropDownListSettings')
-                    ? Object.hasOwn(ko.unwrap(r.dropDownListSettings.dataItem), 'complexObjectName')
-                        ? `= ${ko.unwrap(r.dropDownListSettings.dataItem)[r.complexObjectName][r.complexObjectTextField]}`
-                        : `= ${(r.dropDownListSettings.dataValueField == 'Code'
-                            ? ko.unwrap(r.dropDownListSettings.dataItem)[r.dropDownListSettings.dataValueField] + ' -'
-                            : '')} ${ko.unwrap(r.dropDownListSettings.dataItem)[r.dropDownListSettings.dataTextField]}`
-                    : '');
 
-        })
+            r.bsTooltipTitle = () => {
+
+                let result = ''
+
+                if (Object.hasOwn(r, 'detailedLabel'))
+                    result = ko.unwrap(r.detailedLabel);
+                else if (Object.hasOwn(r, 'label'))
+                    result = ko.unwrap(r.label);
+                else if (Object.hasOwn(r, 'multiSelectSettings') && Object.hasOwn(r.multiSelectSettings, 'detailedLabel'))
+                    result = ko.unwrap(r.multiSelectSettings.detailedLabel);
+                else if (Object.hasOwn(r, 'dropDownListSettings')) {
+                    if (Object.hasOwn(r.dropDownListSettings, 'dataItem')) {
+                        if (Object.hasOwn(r.dropDownListSettings.dataItem, 'complexObjectName')) {
+                            result += ` = ${ko.unwrap(r.dropDownListSettings.dataItem)[r.complexObjectName][r.complexObjectTextField]}`;
+                        } else {
+                            result += ` = ${(r.dropDownListSettings.dataValueField == 'Code'
+                                ? ko.unwrap(r.dropDownListSettings.dataItem)[r.dropDownListSettings.dataValueField]
+                                : '')}`
+                        }
+                    } else {
+                        result += `${(ko.unwrap(r.dropDownListSettings.dataItem)[r.dropDownListSettings.dataTextField])}`;
+                    }
+                }
+                    
+                return result;
+            };
+
+            //r.bsTooltipTitle = r.determineTooltipTitle;
+
+            //if (Object.hasOwn(r, 'multiSelectSettings')) {
+            //    r.multiSelectSettings.observableArray.subscribe(nv => {
+            //        r.bsTooltipTitle(r.determineTooltipTitle());
+            //    }, 'arrayChange', self);
+            //}
+        });
 
         return results;
     }, self);
@@ -1860,6 +1881,10 @@ const creditControlFiltersViewModel = ({
         } else if (filtersCount > 1) {
             self.countDisplay(`${filtersCount}&nbsp;&nbsp;Filters&nbsp;&nbsp;Selected`)
         }
+
+        window.setTimeout(() => {
+            self.clearAllTooltips();
+        }, 0);
 
         return filtersCount;
     }, self);
@@ -1959,7 +1984,20 @@ const creditControlFiltersViewModel = ({
 
     self.initTooltips = () => {
         const tooltipTriggerList = document.querySelectorAll('.filter-pill[data-bs-toggle="tooltip"]')
-        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {
+            title: function() {
+                let result = ko.dataFor(tooltipTriggerEl).bsTooltipTitle();
+                return result;
+            }
+        }));
+    }
+
+    self.clearAllTooltips = () => {
+        document.querySelectorAll('.filter-pill[data-bs-toggle="tooltip"]').forEach(e => {
+            let toolTip = bootstrap.Tooltip.getOrCreateInstance(e);
+            toolTip.hide();
+        })
+        document.querySelectorAll('[role="tooltip"]').forEach(r => r.remove());
     }
 
     //#endregion

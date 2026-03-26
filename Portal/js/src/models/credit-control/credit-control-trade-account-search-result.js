@@ -126,7 +126,7 @@
                 </div>
             <h5 class="my-4 bold" data-bind="css: { 'text-danger': !CreditStop }">
                 You&apos;re about to <span data-bind="text: CreditStop ? 'remove the Credit Stop flag from this account' : 'set the Credit Stop flag on this account'"></span>
-            </h4>
+            </h5>
             <div class="mb-3" data-bind="component: { name: 'mdc-text-area-component', params: stopChangeReasonParams }"></div>
             <div class="d-flex justify-content-end align-items-center">
                 <button class="btn btn-secondary" data-bind="click: toggleCreditStop">

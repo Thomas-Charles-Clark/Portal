@@ -1,2 +1,13 @@
 ﻿@import "../common.scss";
 
+#manage-ledger-grid-container {
+	.breakdown-modal-heading {
+		display: none;
+	}
+
+	.selected-filter-pills {
+		.dropdown {
+			display: none;
+		}
+	}
+}

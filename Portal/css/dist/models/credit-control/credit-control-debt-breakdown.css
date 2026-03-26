@@ -694,4 +694,7 @@
 #debt-breakdown-modal .credit-stopped:hover {
   cursor: not-allowed;
 }
+#debt-breakdown-modal .selected-filter-pills {
+  display: none;
+}
 /*# sourceMappingURL=credit-control-debt-breakdown.css.map */

@@ -45,6 +45,7 @@
             extra: false
         },
         locked: true,
+        headerTemplate: `UniVerse Account<br/>`
     }, {
         field: "TradeAccountLabel",
         title: "Trade Account",
@@ -59,6 +60,7 @@
             extra: false
         },
         locked: true,
+        headerTemplate: `Trade Account<br/>`
     }, {
         field: "SalesLedgerKey",
         title: "Sales Ledger Key",
@@ -73,6 +75,7 @@
             extra: false
         },
         locked: true,
+        headerTemplate: `Sales Ledger Key<br/>`
     }, {
         field: "Age",
         title: "Age",
@@ -87,6 +90,7 @@
             extra: false
         },
         locked: true,
+        headerTemplate: `Age<br/>`
     }, {
         field: "OriginalValueInCurrency",
         title: "Original Value",
@@ -111,7 +115,9 @@
         headerAttributes: {
             "class": ""
         },
-        filterable: false,
+        filterable: {
+            extra: false
+        },
         template: `#: OutstandingAmountInCurrency ? formatCurrency(OutstandingAmountInCurrency, 2, FormattingCulture, CurrencyCode) : '' #`
     }, {
         field: "UnallocatedCashAssignedToThisOrderTotalInCurrency",
@@ -202,6 +208,11 @@
         },
         filterable: false,
         template: `<a target="_blank" href="#: InvoiceURI #" class="stretched-link"><i class="bi bi-file-earmark-pdf"></i></a>`
+    }, {
+        field: 'NoField',
+        title: ' ',
+        width: 'auto',
+        filterable: false
     }];
 
     self.gridDataSourceRead = (options) => {
@@ -300,7 +311,6 @@
             serverPaging: true,
             serverAggregates: false,
             serverSorting: true,
-            height: '800px',
             pageSize: 20,
             pageable: {
                 pageSize: 20,
@@ -342,6 +352,7 @@
                 self.busy(false);
             }
         }),
+        height: 1024,
         //useKOTemplates: false,
         //rowTemplate: 'credit-control-trade-account-row-template',
         noRecords: {
@@ -403,6 +414,33 @@
         },
         dataBound: (e) => {
             console.log('creditControlViewModel dataBound', e);
+
+            // <Thanks, Google AI>
+            let grid = e.sender;
+
+            // Use a timeout to ensure the grid has finished initial layout
+            window.setTimeout(function() {
+                let wrapper = grid.wrapper;
+                let lockedContent = wrapper.children(".k-grid-content-locked");
+                let content = wrapper.children(".k-grid-content");
+
+                // Reset heights to let them auto-expand to content
+                wrapper.height("");
+                lockedContent.height("");
+                content.height("");
+
+                // Synchronize the locked and unlocked content heights
+                let maxContentHeight = Math.max(content.height(), lockedContent.height());
+                content.height(maxContentHeight);
+                lockedContent.height(maxContentHeight);
+
+                // Set the final wrapper height based on the new content size
+                wrapper.height(wrapper.height());
+
+                // Notify the grid to recalculate its internal layout
+                grid.resize();
+            }, 0);
+            // </Thanks>
 
             ko.ignoreDependencies(() => {
 

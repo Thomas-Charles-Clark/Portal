@@ -654,6 +654,9 @@
 #paying-off-with-proforma-tab-pane .prefilters #outstanding-invoices-banking-currency-prefilter .k-animation-container .k-list-container {
   width: 100% !important;
 }
+#paying-off-with-proforma-tab-pane .k-grid .k-grid-header-locked {
+  vertical-align: bottom;
+}
 #paying-off-with-proforma-tab-pane .k-grid-norecords {
   width: 100%;
   height: calc(100% - 2px);

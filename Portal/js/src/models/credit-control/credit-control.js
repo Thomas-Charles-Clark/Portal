@@ -318,8 +318,12 @@ const creditControlViewModel = (() => {
                     if (Object.hasOwn(data, 'errorMessage')) {
 
                         document.querySelector('#info-modal').addEventListener('hide.bs.modal', self.refresh);
+
                         options.success([]);
+
                         window.showInfo('Sorry', data.errorMessage);
+
+                        console.error(data.exception);
 
                     } else {
                         document.querySelector('#info-modal')?.removeEventListener('hide.bs.modal', self.refresh);
@@ -449,7 +453,6 @@ const creditControlViewModel = (() => {
     });
 
     self.manageLedger = creditControlDebtBreakdownViewModel({
-        callee: {},
         filters: self.manageLedgerFilters
     });
 
@@ -1407,7 +1410,9 @@ const creditControlViewModel = (() => {
                 }, 1);
             },
             requestEnd: (e) => {
-                self.busy(false);
+                window.setTimeout(() => {
+                    self.busy(false);
+                }, 1);
             }
         }),
         //useKOTemplates: false,
@@ -1415,6 +1420,8 @@ const creditControlViewModel = (() => {
         noRecords: {
             template: () => `No Results. Please search using the filters to the left.`//: ${$("#grid").data("kendoGrid").dataSource.page()}`
         },
+        height: 2048,
+        scrollable: true,
         sortable: true,
         filterable: {
             extra: false,
@@ -1430,7 +1437,6 @@ const creditControlViewModel = (() => {
         excel: {
             allPages: true
         },
-        height: '800px',
         selectable: 'cell',
         change: function (event) {
             console.log('change', event, event.sender.select());
@@ -1473,6 +1479,33 @@ const creditControlViewModel = (() => {
         dataBound: (e) => {
             console.log('creditControlViewModel dataBound', e);
 
+            // <Thanks, Google AI>
+            let grid = e.sender;
+
+            // Use a timeout to ensure the grid has finished initial layout
+            window.setTimeout(function() {
+                let wrapper = grid.wrapper;
+                let lockedContent = wrapper.children(".k-grid-content-locked");
+                let content = wrapper.children(".k-grid-content");
+
+                // Reset heights to let them auto-expand to content
+                wrapper.height("");
+                lockedContent.height("");
+                content.height("");
+
+                // Synchronize the locked and unlocked content heights
+                let maxContentHeight = Math.max(content.height(), lockedContent.height());
+                content.height(maxContentHeight);
+                lockedContent.height(maxContentHeight);
+
+                // Set the final wrapper height based on the new content size
+                wrapper.height(wrapper.height());
+
+                // Notify the grid to recalculate its internal layout
+                grid.resize();
+            }, 0);
+            // </Thanks>
+
             ko.ignoreDependencies(() => {
 
                 var pristine = e.sender.dataSource.data().toJSON();
@@ -1491,9 +1524,9 @@ const creditControlViewModel = (() => {
 
                         ko.applyBindings(pristine[index], row);
                     });
-
                 });
             });
+
         }
     };
 
@@ -1506,11 +1539,11 @@ const creditControlViewModel = (() => {
         self.gridParams.widget().refresh();
     }, self, 'arrayChange');
 
-    self.filters.salesHistoryAnalysisPeriodId.subscribe(nv => {
-        self.gridParams.widget().setOptions({
-            columns: self.gridColumns
-        });
-    });
+    //self.filters.salesHistoryAnalysisPeriodId.subscribe(nv => {
+    //    self.gridParams.widget().setOptions({
+    //        columns: self.gridColumns
+    //    });
+    //});
 
     self.filters.getData.subscribe(nv => {
         self.gridParams.widget().dataSource.query({
@@ -1518,8 +1551,6 @@ const creditControlViewModel = (() => {
             pageSize: (self.gridParams.widget() && self.gridParams.widget().dataSource.pageSize())
         });
     });
-
-    self.filters.getCreditControlOrderReleaseParameters()
 
     self.selectedTradeAccount.subscribe(nv => {
         self.busy(true);

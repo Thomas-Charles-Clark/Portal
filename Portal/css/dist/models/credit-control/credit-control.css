@@ -729,11 +729,15 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #credit-control-main .tab-pane {
   padding: 1rem;
 }
-#credit-control-main #dashboard-tab-flex-container {
+#credit-control-main #dashboard-tab-flex-container,
+#credit-control-main #manage-ledger-tab-flex-container {
   display: flex;
   gap: 1rem;
 }
-#credit-control-main #dashboard-tab-flex-container #tab-dashboard-main {
+#credit-control-main #dashboard-tab-flex-container #dashboard-main,
+#credit-control-main #dashboard-tab-flex-container #manage-ledger-main,
+#credit-control-main #manage-ledger-tab-flex-container #dashboard-main,
+#credit-control-main #manage-ledger-tab-flex-container #manage-ledger-main {
   flex: 1 1 auto;
   max-width: calc(100% - 65px);
 }
@@ -930,6 +934,10 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   align-items: center;
 }
 
+.prefilter .mdc-validating-field {
+  height: 34px;
+}
+
 #trade-account-contacts-modal-dialog {
   margin-top: 0;
 }
@@ -1020,25 +1028,26 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   min-width: 420px !important;
 }
 
-#selected-filter-pills {
+.selected-filter-pills {
   display: flex;
   margin-bottom: 1rem;
 }
-#selected-filter-pills .filter-pill {
+.selected-filter-pills .filter-pills li {
   background-color: #ccc;
   color: #212529;
+  list-style-type: none;
 }
-#selected-filter-pills .filter-pill::focus-visible {
+.selected-filter-pills .filter-pills li::focus-visible {
   color: var(--bs-btn-hover-color);
   background-color: var(--bs-btn-hover-bg);
   border-color: var(--bs-btn-hover-border-color);
   outline: 0;
   box-shadow: var(--bs-btn-focus-box-shadow);
 }
-#selected-filter-pills .filter-pill.rounded-pill {
+.selected-filter-pills .filter-pills li.rounded-pill {
   border-radius: 4px;
 }
-#selected-filter-pills .btn-display-options {
+.selected-filter-pills .filter-pills .btn-display-options {
   margin-left: auto;
 }
 
@@ -1227,5 +1236,9 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 }
 .selected-pod .alert-success a {
   color: #fff;
+}
+
+.bs-tooltip-auto {
+  font-size: 1rem;
 }
 /*# sourceMappingURL=credit-control.css.map */

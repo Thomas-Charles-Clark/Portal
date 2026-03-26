@@ -272,6 +272,11 @@
 				<!-- /ko -->
 				<!-- /ko -->
 				<!-- /ko -->
+				<!-- ko if: Object.hasOwn($data, 'multiSelectSettings') -->
+				<!-- ko if: ko.unwrap(multiSelectSettings.label) -->
+				<span data-bind="html: `${ko.unwrap(multiSelectSettings.label)}`"></span>
+				<!-- /ko -->
+				<!-- /ko -->
 			</span>
 			<!-- ko if: typeof(clearFunction) != 'undefined' -->
 			<a class="stretched-link" href="javascript:;" data-bind="click: clearFunction">

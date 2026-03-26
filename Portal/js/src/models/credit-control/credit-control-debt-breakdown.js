@@ -10,6 +10,7 @@
         filters,
         ready: ko.observable(false),
         busy: ko.observable(false),
+        busyMessage: ko.observable('Please Wait...'),
         gridWidget: ko.observable(),
         heading: ko.observable(),
         pods: ko.observableArray([]),
@@ -29,6 +30,10 @@
 
 
     //#region Methods
+
+    self.exportToExcel = () => {
+        self.gridWidget() && self.gridWidget().saveAsExcel();
+    }
 
     self.podClick = (pod, event) => {
         console.log('debtBreakdown dashboardPod click', pod, event);
@@ -51,6 +56,11 @@
                 aggregates: self.gridWidget().dataSource.aggregates()
             })
         }
+    }
+
+    self.clearSelectedPod = () => {
+        self.selectedPod(undefined);
+        self.refresh();
     }
 
     //self.fetchDebtBreakdown = () => {
@@ -146,6 +156,8 @@
 
                         window.showInfo('Sorry', data.errorMessage);
 
+                        console.error(data.exception);
+
                     } else {
                         document.querySelector('#info-modal')?.removeEventListener('hide.bs.modal', self.refresh);
                         self.previouslySelectedPod = self.selectedPod()?.PodHandle;
@@ -188,7 +200,7 @@
     //#region Components
 
     self.gridParams = {
-        autoBind: false,
+        autoBind: self.filters ? false : true,
         widget: self.gridWidget,
         columns: [{
             field: 'DebtAgeBracketName',
@@ -308,7 +320,12 @@
         }, {
             field: 'ProformaPaymentsValue',
             title: 'Proforma Value',
-            template: (e) => e.ProformaPaymentsValue ? e.ProformaPaymentsValue : '',
+            template: (dataItem) => {
+                if (dataItem.ProformaPaymentsValue)
+                    return `<a href="javascript:;" data-bind="actualBootstrapPopover: { details: popoverDetails }, click: () => { return true; }, clickBubble: false">${dataItem.ProformaPaymentsValue}</a>`
+                else
+                    return '';
+            },
             attributes: {
                 'class': 'text-end'
             },
@@ -336,9 +353,9 @@
             serverGrouping: false,
             serverFiltering: false,
             serverPaging: true,
-            pageSize: 10,
+            pageSize: 20,
             pageable: {
-                pageSize: 10,
+                pageSize: 20,
                 pageSizes: [10, 20, 50, 100, 250, 500, 'all']
             },
             schema: $.extend({}, kendo.data.schemas.webapi, {
@@ -368,14 +385,6 @@
                         ProformaPaymentsValue: { type: 'string' },
                         ProformaPaymentsInfo: { type: 'string' }
                     }
-                },
-                parse: (response) => {
-                    if (response.length) {
-                        response = response.map(r => creditControlDebtBreakdownRecordViewModel({
-                            rec: r
-                        }));
-                    }
-                    return response;
                 }
             }),
             requestStart: (e) => {
@@ -390,12 +399,35 @@
         filterable: false,
         reorderable: false,
         paging: true,
-        pageSize: 10,
+        pageSize: 20,
         pageable: {
-            pageSize: 10,
+            pageSize: 20,
             pageSizes: [10, 20, 50, 100, 250, 500, 'all']
         },
         selectable: false,
+        dataBound: (e) => {
+            e.sender.resize();
+            
+            ko.ignoreDependencies(() => {
+
+                var pristine = e.sender.dataSource.data().toJSON();
+
+                ko.utils.arrayForEach(e.sender.dataSource.data(), function (item, index) {
+
+                    let rows = document.querySelectorAll('tr[data-uid="' + item.uid + '"]');
+
+                    rows.forEach(row => {
+                        ko.cleanNode(row);
+
+                        pristine[index] = creditControlDebtBreakdownRecordViewModel({
+                            rec: item
+                        })
+
+                        ko.applyBindings(pristine[index], row);
+                    });
+                });
+            });
+        }
     };
 
     self.errors = new ko.validation.group([
@@ -431,7 +463,20 @@
 
     //#region Subscriptions
 
+    if (self.filters) {
 
+        self.filters.displayModes.subscribe(nv => {
+            self.gridParams.widget().refresh();
+        }, self, 'arrayChange');
+
+        self.filters.getData.subscribe(nv => {
+            self.gridParams.widget().dataSource.query({
+                page: 1,
+                pageSize: (self.gridParams.widget() && self.gridParams.widget().dataSource.pageSize())
+            });
+        });
+
+    }
 
     //#endregion
 

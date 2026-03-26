@@ -163,11 +163,13 @@ html {
         padding: $l-gutter;
     }
 
-    #dashboard-tab-flex-container {
+    #dashboard-tab-flex-container,
+    #manage-ledger-tab-flex-container {
         display: flex;
         gap: $l-gutter;
 
-        #tab-dashboard-main {
+        #dashboard-main, 
+        #manage-ledger-main {
             flex: 1 1 auto;
             max-width: calc(100% - 65px);
         }
@@ -457,6 +459,12 @@ html {
     align-items: center;
 }
 
+.prefilter {
+    .mdc-validating-field {
+        height: 34px;
+    }
+}
+
 #trade-account-contacts-modal-dialog {
     margin-top: 0;
 
@@ -570,29 +578,33 @@ html {
     }
 }
 
-#selected-filter-pills {
+.selected-filter-pills {
     display: flex;
     margin-bottom: $l-gutter;
 
-    .filter-pill {
-        background-color: #ccc;
-        color: $body-color;
+    .filter-pills {
 
-        &::focus-visible {
-            color: var(--bs-btn-hover-color);
-            background-color: var(--bs-btn-hover-bg);
-            border-color: var(--bs-btn-hover-border-color);
-            outline: 0;
-            box-shadow: var(--bs-btn-focus-box-shadow);
+        li {
+            background-color: #ccc;
+            color: $body-color;
+            list-style-type: none;
+
+            &::focus-visible {
+                color: var(--bs-btn-hover-color);
+                background-color: var(--bs-btn-hover-bg);
+                border-color: var(--bs-btn-hover-border-color);
+                outline: 0;
+                box-shadow: var(--bs-btn-focus-box-shadow);
+            }
+
+            &.rounded-pill {
+                border-radius: 4px;
+            }
         }
 
-        &.rounded-pill {
-            border-radius: 4px;
+        .btn-display-options {
+            margin-left: auto;
         }
-    }
-
-    .btn-display-options {
-        margin-left: auto;
     }
 }
 
@@ -829,4 +841,8 @@ html {
             color: $white;
         }
     }
+}
+
+.bs-tooltip-auto {
+    font-size: $font-size-base;
 }

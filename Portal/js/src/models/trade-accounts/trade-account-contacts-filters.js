@@ -455,6 +455,31 @@ const tradeAccountContactsFiltersViewModel = ({
                     return `${count} Market${plural} Selected`;
                 }
             }, self),
+            detailedLabel: ko.computed(() => {
+
+                let plural = 's';
+
+                let d = {
+                    values: self.availableSalesMarkets().filter(f => self.salesMarketIds().indexOf(f.value) > -1)
+                }
+
+                let count = d.values.length;
+
+                if (count === 0) {
+                    return 'Market(s)';
+                } else if (count === 1) {
+                    return d.values[0].label
+                } else if (count > 1) {
+                    let final = d.values.pop();
+                    return `${d.values.map(v => v.label).join(', ')} and ${final.label}`;
+                }
+
+                if (count === 0) {
+                    return 'Market(s)';
+                } else {
+                    return `${count} Market${plural} Selected`;
+                }
+            }, self),
             selectedState: ko.computed(() => {
                 return self.salesMarketIds().length > 0;
             }, self),
