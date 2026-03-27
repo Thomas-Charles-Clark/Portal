@@ -1,42 +1,4 @@
-﻿const paymentHistoryDateRanges = [{
-    dateRangeId: '-2',
-    name: 'All Time',
-    class: null
-}, {
-    dateRangeId: '0',
-    name: 'Today',
-    class: null
-}, {
-    dateRangeId: '1',
-    name: 'Yesterday',
-    class: null
-}, {
-    dateRangeId: '30',
-    name: 'Last 30 Days',
-    class: null
-}, {
-    dateRangeId: '1M',
-    name: 'This Month',
-    class: null
-}, {
-    dateRangeId: '3M',
-    name: 'Last 3 Months',
-    class: null
-}, {
-    dateRangeId: '6M',
-    name: 'Last 6 Months',
-    class: null
-}, {
-    dateRangeId: '12M',
-    name: 'Last 12 Months',
-    class: null
-}, {
-    dateRangeId: '-1',
-    name: 'Custom',
-    class: null
-}];
-
-const paymentHistoryPaymentStatuses = [{
+﻿const paymentHistoryPaymentStatuses = [{
     name: 'Completed',
     value: 'Completed'
 }, {
@@ -49,10 +11,10 @@ const creditControlFiltersViewModel = ({
     parent,
     prefix
 } = {
-        params: {},
-        parent: {},
-        prefix: ''
-    }) => {
+    params: {},
+    parent: {},
+    prefix: ''
+}) => {
     let self = {
         refreshParent: parent.refresh,
         selectedPod: parent.selectedPod,
@@ -505,6 +467,9 @@ const creditControlFiltersViewModel = ({
 
             return d;
 
+        },
+        popupSettings: {
+            appendTo: `#${self.prefix}trade-account-prefilter`
         }
     });
 
@@ -610,7 +575,7 @@ const creditControlFiltersViewModel = ({
             return d;
         },
         popupSettings: {
-            appendTo: document.querySelector(`#${self.prefix}send-statements`)
+            appendTo: `#${self.prefix}send-statements`
         }
     });
 
@@ -852,7 +817,7 @@ const creditControlFiltersViewModel = ({
         dataBound: (e) => self.paymentTermsAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.debtFunderGroupBy),
         popupSettings: {
-            appendTo: document.querySelector(`#${self.prefix}debt-funder-prefilter`)
+            appendTo: `#${self.prefix}debt-funder-prefilter`
         }
     });
 
@@ -908,7 +873,7 @@ const creditControlFiltersViewModel = ({
         dataBound: (e) => self.paymentTermsAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.currencyGroupBy),
         popupSettings: {
-            appendTo: document.querySelector(`#${self.prefix}currency-prefilter`)
+            appendTo: `#${self.prefix}currency-prefilter`
         }
     });
 
@@ -1113,7 +1078,7 @@ const creditControlFiltersViewModel = ({
 
         },
         popupSettings: {
-            appendTo: document.querySelector(`#${self.prefix}payment-history-date-type-prefilter`)
+            appendTo: `#${self.prefix}payment-history-date-type-prefilter`
         },
     });
 
@@ -1259,7 +1224,7 @@ const creditControlFiltersViewModel = ({
         },
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
-            appendTo: document.querySelector(`#${self.prefix}banking-account-prefilter`)
+            appendTo: `#${self.prefix}banking-account-prefilter`
         }
     });
 
@@ -1290,7 +1255,7 @@ const creditControlFiltersViewModel = ({
         },
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
-            appendTo: document.querySelector(`#${self.prefix}banking-currency-prefilter`)
+            appendTo: `#${self.prefix}banking-currency-prefilter`
         }
     });
 
@@ -1317,7 +1282,7 @@ const creditControlFiltersViewModel = ({
 
         },
         popupSettings: {
-            appendTo: document.querySelector(`#${self.prefix}payment-history-payment-status-prefilter`)
+            appendTo: `#${self.prefix}payment-history-payment-status-prefilter`
         },
     });
 
@@ -1353,7 +1318,7 @@ const creditControlFiltersViewModel = ({
             self.paymentHistoryCreditControllerParams.dropDownListSettings.widget().trigger('change');
         },
         popupSettings: {
-            appendTo: document.querySelector(`#${self.prefix}payment-history-credit-controller-prefilter`)
+            appendTo: `#${self.prefix}payment-history-credit-controller-prefilter`
         }
     });
 
@@ -1509,7 +1474,7 @@ const creditControlFiltersViewModel = ({
 
         },
         popupSettings: {
-            appendTo: document.querySelector(`#${self.prefix}outstanding-invoices-date-type-prefilter`)
+            appendTo: `#${self.prefix}outstanding-invoices-date-type-prefilter`
         },
     });
 
@@ -1655,7 +1620,7 @@ const creditControlFiltersViewModel = ({
         },
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
-            appendTo: document.querySelector(`#${self.prefix}outstanding-invoices-banking-currency-prefilter`)
+            appendTo: `#${self.prefix}outstanding-invoices-banking-currency-prefilter`
         }
     });
 
@@ -1811,7 +1776,7 @@ const creditControlFiltersViewModel = ({
                             if (p.multiSelectSettings.observableArray().length)
                                 selected = true;
                         } else if (p.hasOwnProperty('observable')) {
-                            if (p.observable())
+                            if (p.observable() != null && p.observable() != '')
                                 selected = true;
                         }
                     }
@@ -1820,7 +1785,7 @@ const creditControlFiltersViewModel = ({
                         if (p.multiSelectSettings.observableArray().length)
                             selected = true;
                     } else if (p.hasOwnProperty('observable')) {
-                        if (p.observable())
+                        if (p.observable() != null && p.observable() != '')
                             selected = true;
                     }
                 }
@@ -1974,7 +1939,7 @@ const creditControlFiltersViewModel = ({
             }
         });
 
-        self.clearSelectedPod();
+        self.clearSelectedPod(false);
 
         window.setTimeout(() => {
             self.tradeAccountStatusId(true);

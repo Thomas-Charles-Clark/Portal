@@ -934,6 +934,9 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   align-items: center;
 }
 
+.prefilter {
+  position: relative;
+}
 .prefilter .mdc-validating-field {
   height: 34px;
 }
@@ -1240,5 +1243,15 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 
 .bs-tooltip-auto {
   font-size: 1rem;
+}
+
+.k-animation-container .k-virtual-content > .k-virtual-list > .k-virtual-item {
+  display: flex;
+  align-items: center;
+}
+
+.k-list .k-item {
+  display: flex;
+  align-items: center;
 }
 /*# sourceMappingURL=credit-control.css.map */

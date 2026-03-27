@@ -288,11 +288,10 @@
 		<!-- ko if: typeof($parent.selectedPod) != 'undefined' && $parent.selectedPod() -->
 		<li class="filter-pill relative">
 			<span data-bind="with: $parent.selectedPod">
-				@*<span data-bind="text: `Dashboard Selection = ${Heading}`"></span>*@
 				<span data-bind="text: Heading"></span>
 			</span>
 			<!-- ko if: typeof($parent.clearSelectedPod) != 'undefined' -->
-			<a class="stretched-link" href="javascript:;" data-bind="click: clearSelectedPod">
+			<a class="stretched-link" href="javascript:;" data-bind="click: $parent.clearSelectedPod">
 				<button type="button" class="btn-close"></button>
 			</a>
 			<!-- /ko -->
@@ -592,4 +591,136 @@
 			<span data-bind="text: LineStatus"></span>
 		</td>
 	</tr>
+</script>
+
+<script type="text/javascript">
+	window.paymentHistoryDateRanges = [{
+		dateRangeId: '-2',
+		name: 'All Time',
+		class: null
+	},
+	//    {
+	//    dateRangeId: '0',
+	//    name: 'Today',
+	//    class: null
+	//}, {
+	//    dateRangeId: '1',
+	//    name: 'Yesterday',
+	//    class: null
+	//    },
+	{
+		dateRangeId: '30',
+		name: 'Last 30 Days',
+		class: null
+	}, {
+		dateRangeId: '1M',
+		name: 'This Month',
+		class: null
+	}, {
+		dateRangeId: '3M',
+		name: 'Last 3 Months',
+		class: null
+	}, {
+		dateRangeId: '6M',
+		name: 'Last 6 Months',
+		class: null
+	}, {
+		dateRangeId: '12M',
+		name: 'Last 12 Months',
+		class: null
+	}, {
+		dateRangeId: '-1',
+		name: 'Custom',
+		class: null
+	}];
+
+	// add the previous days of the week, always splicing
+
+	let dayIndex = new Date().getDay();
+
+	let daysToSplice = [];
+
+	switch (dayIndex) {
+		case 0:
+			daysToSplice = [
+				{ dateRangeId: '0', name: 'Today', class: null },
+				{ dateRangeId: '1', name: 'Yesterday', class: null },
+				{ dateRangeId: '2', name: 'Friday', class: null },
+				{ dateRangeId: '3', name: 'Thursday', class: null },
+				{ dateRangeId: '4', name: 'Wednesday', class: null },
+				{ dateRangeId: '5', name: 'Tuesday', class: null },
+				{ dateRangeId: '6', name: 'Monday', class: null },
+			]
+			break;
+		case 1:
+			daysToSplice = [
+				{ dateRangeId: '0', name: 'Today', class: null },
+				{ dateRangeId: '1', name: 'Yesterday', class: null },
+				{ dateRangeId: '2', name: 'Saturday', class: null },
+				{ dateRangeId: '3', name: 'Friday', class: null },
+				{ dateRangeId: '4', name: 'Thursday', class: null },
+				{ dateRangeId: '5', name: 'Wednesday', class: null },
+				{ dateRangeId: '6', name: 'Tuesday', class: null },
+			]
+			break;
+		case 2:
+			daysToSplice = [
+				{ dateRangeId: '0', name: 'Today', class: null },
+				{ dateRangeId: '1', name: 'Yesterday', class: null },
+				{ dateRangeId: '2', name: 'Sunday', class: null },
+				{ dateRangeId: '3', name: 'Saturday', class: null },
+				{ dateRangeId: '4', name: 'Friday', class: null },
+				{ dateRangeId: '5', name: 'Thursday', class: null },
+				{ dateRangeId: '6', name: 'Wednesday', class: null },
+			]
+			break;
+		case 3:
+			daysToSplice = [
+				{ dateRangeId: '0', name: 'Today', class: null },
+				{ dateRangeId: '1', name: 'Yesterday', class: null },
+				{ dateRangeId: '2', name: 'Monday', class: null },
+				{ dateRangeId: '3', name: 'Sunday', class: null },
+				{ dateRangeId: '4', name: 'Saturday', class: null },
+				{ dateRangeId: '5', name: 'Friday', class: null },
+				{ dateRangeId: '6', name: 'Thursday', class: null },
+			]
+			break;
+		case 4:
+			daysToSplice = [
+				{ dateRangeId: '0', name: 'Today', class: null },
+				{ dateRangeId: '1', name: 'Yesterday', class: null },
+				{ dateRangeId: '2', name: 'Tuesday', class: null },
+				{ dateRangeId: '3', name: 'Monday', class: null },
+				{ dateRangeId: '4', name: 'Sunday', class: null },
+				{ dateRangeId: '5', name: 'Saturday', class: null },
+				{ dateRangeId: '6', name: 'Friday', class: null },
+			]
+			break;
+		case 5:
+			daysToSplice = [
+				{ dateRangeId: '0', name: 'Today', class: null },
+				{ dateRangeId: '1', name: 'Yesterday', class: null },
+				{ dateRangeId: '2', name: 'Wednesday', class: null },
+				{ dateRangeId: '3', name: 'Tuesday', class: null },
+				{ dateRangeId: '4', name: 'Monday', class: null },
+				{ dateRangeId: '5', name: 'Sunday', class: null },
+				{ dateRangeId: '6', name: 'Saturday', class: null },
+			]
+			break;
+		case 6:
+			daysToSplice = [
+				{ dateRangeId: '0', name: 'Today', class: null },
+				{ dateRangeId: '1', name: 'Yesterday', class: null },
+				{ dateRangeId: '2', name: 'Thursday', class: null },
+				{ dateRangeId: '3', name: 'Wednesday', class: null },
+				{ dateRangeId: '4', name: 'Tuesday', class: null },
+				{ dateRangeId: '5', name: 'Monday', class: null },
+				{ dateRangeId: '6', name: 'Sunday', class: null },
+			]
+			break;
+	}
+
+	daysToSplice.reverse().forEach(d => {
+		window.paymentHistoryDateRanges.splice(1, 0, d);
+	});
 </script>

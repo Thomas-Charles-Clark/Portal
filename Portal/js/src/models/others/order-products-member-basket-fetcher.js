@@ -2756,28 +2756,32 @@
                 });
             }
 
-            if (searchTerm) {
-                filters.push({
-                    logic: 'or',
-                    filters: [{
-                        field: 'Reference',
-                        operator: 'contains',
-                        value: searchTerm
-                    }, {
-                        field: 'CustomerCode',
-                        operator: 'eq',
-                        value: searchTerm
-                    }, {
-                        field: 'CustomerName',
-                        operator: 'contains',
-                        value: searchTerm
-                    }, {
-                        field: 'CustomerReference',
-                        operator: 'contains',
-                        value: searchTerm
-                    }]
-                });
-            }
+            //if (searchTerm) {
+            //    filters.push({
+            //        logic: 'or',
+            //        filters: [{
+            //            field: 'Reference',
+            //            operator: 'contains',
+            //            value: searchTerm
+            //        }, {
+            //            field: 'CustomerCode',
+            //            operator: 'eq',
+            //            value: searchTerm
+            //        }, {
+            //            field: 'CustomerName',
+            //            operator: 'contains',
+            //            value: searchTerm
+            //        }, {
+            //            field: 'CustomerReference',
+            //            operator: 'contains',
+            //            value: searchTerm
+            //        }, {
+            //            field: 'PartnerCompany',
+            //            operator: 'equals',
+            //            value: searchTerm
+            //        }]
+            //    });
+            //}
 
             self.heldOrdersGridWidget().dataSource.filter(filters);
         }
@@ -2829,7 +2833,8 @@
                     Imported: { type: 'bool' },
                     HeldSince: { type: 'date' },
                     DocumentSendHistory: { type: 'string' },
-                    PaidOnline: { type: 'string' }
+                    PaidOnline: { type: 'string' },
+                    PartnerCompany: { type: 'string' }
                 }
             }
         }),
@@ -2937,7 +2942,8 @@
                     BasketID: { type: 'number' },
                     LanguageID: { type: 'number' },
                     TransactionID: { type: 'number' },
-                    Imported: { type: 'bool' }
+                    Imported: { type: 'bool' },
+                    PartnerCompany: { type: 'string' }
                 }
             }
         }),

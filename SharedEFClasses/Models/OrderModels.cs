@@ -1285,6 +1285,8 @@ namespace SharedEFClasses.Models.Orders
 
         public string PaidOnline { get; set; }
 
+        public string PartnerCompany { get; set; }
+
         public TradeAccount TradeAccount { get; set; }
         public Market MertexMarket { get; set; }
         public List<BasketItem> BasketItems { get; set; }

@@ -16,7 +16,7 @@
         pods: ko.observableArray([]),
         records: ko.observableArray([]),
         selectedPod: ko.observable(),
-        previouslySelectedPod: ko.observable()
+        previouslySelectedPod: null
     };
 
     //#region Properties
@@ -36,18 +36,20 @@
     }
 
     self.podClick = (pod, event) => {
-        console.log('debtBreakdown dashboardPod click', pod, event);
-        if (self.selectedPod() === pod.PodHandle) {
+        console.log(`debtBreakdown dashboardPod click`, pod, event);
+        if (self.selectedPod() && self.selectedPod().PodHandle === pod.PodHandle) {
             self.selectedPod(undefined);
         } else {
-            self.selectedPod(pod.PodHandle);
+            self.selectedPod(pod);
         }
+
 
         self.refresh();
     }
 
     self.refresh = () => {
         if (self.gridWidget()) {
+            console.log(`debtBreakdown filters refresh called`);
             self.gridWidget().dataSource.query({
                 page: self.gridWidget().dataSource.page(),
                 pageSize: self.gridWidget().dataSource.pageSize(),
@@ -58,10 +60,14 @@
         }
     }
 
-    self.clearSelectedPod = () => {
+    self.clearSelectedPod = (withRefresh) => {
         self.selectedPod(undefined);
-        self.refresh();
+        if (typeof withRefresh === 'undefined' || withRefresh === true) {
+            self.refresh();
+        }
     }
+
+    self.filters.clearSelectedPod = self.clearSelectedPod;
 
     //self.fetchDebtBreakdown = () => {
     //    self.busy(true);
@@ -144,7 +150,7 @@
             .then(window.handleFetchResponse)
             .then(data => {
 
-                console.log('debtBreakdown gridDataSourceRead returned', data);
+                console.log(`debtBreakdown gridDataSourceRead returned`, data);
 
                 ko.ignoreDependencies(() => {
 
@@ -160,6 +166,7 @@
 
                     } else {
                         document.querySelector('#info-modal')?.removeEventListener('hide.bs.modal', self.refresh);
+
                         self.previouslySelectedPod = self.selectedPod()?.PodHandle;
 
                         self.pods(data.pods.map(dp => creditControlDashboardPodViewModel({
@@ -240,27 +247,27 @@
         }, {
             field: 'CreditsValue',
             title: 'Credits Value',
-            template: (e) => e.CreditsValue ? e.CreditsValue : '',
+            template: (dataItem) => {
+                if (dataItem.CreditsInfo)
+                    return `<a href="javascript:;" data-bind="actualBootstrapPopover: { details: creditsPopoverInfo }, click: () => { return true; }, clickBubble: false">${dataItem.CreditsValue}</a>`
+                else
+                    return `<span>${dataItem.CreditsValue}</span>`;
+            },
             attributes: {
                 'class': 'text-end'
             },
             headerAttributes: {
                 'class': 'text-end'
-            }
-        }, {
-            field: 'CreditsInfo',
-            title: 'Credits Info',
-            template: (e) => e.CreditsInfo ? e.CreditsInfo : '',
-            attributes: {
-                'class': ''
-            },
-            headerAttributes: {
-                'class': ''
             }
         }, {
             field: 'DepositsValue',
             title: 'Deposits Value',
-            template: (e) => e.DepositsValue ? e.DepositsValue : '',
+            template: (dataItem) => {
+                if (dataItem.DepositsInfo)
+                    return `<a href="javascript:;" data-bind="actualBootstrapPopover: { details: depositsPopoverInfo }, click: () => { return true; }, clickBubble: false">${dataItem.DepositsValue}</a>`
+                else
+                    return `<span>${dataItem.DepositsValue}</span>`;
+            },
             attributes: {
                 'class': 'text-end'
             },
@@ -268,39 +275,14 @@
                 'class': 'text-end'
             }
         }, {
-            field: 'DepositsInfo',
-            title: 'Deposits Info',
-            template: (e) => e.DepositsInfo ? e.DepositsInfo : '',
-            attributes: {
-                'class': ''
+            field: 'OverpaymentsValue',
+            title: 'Overpayments Value',
+            template: (dataItem) => {
+                if (dataItem.OverpaymentsInfo)
+                    return `<a href="javascript:;" data-bind="actualBootstrapPopover: { details: overpaymentsPopoverInfo }, click: () => { return true; }, clickBubble: false">${dataItem.OverpaymentsValue}</a>`
+                else
+                    return `<span>${dataItem.OverpaymentsValue}</span>`;
             },
-            headerAttributes: {
-                'class': ''
-            }
-        }, {
-            field: 'OverPaymentsValue',
-            title: 'Over Payments Value',
-            template: (e) => e.OverPaymentsValue ? e.OverPaymentsValue : '',
-            attributes: {
-                'class': 'text-end'
-            },
-            headerAttributes: {
-                'class': 'text-end'
-            }
-        }, {
-            field: 'OverPaymentsInfo',
-            title: 'Over Payments Info',
-            template: (e) => e.OverPaymentsInfo ? e.OverPaymentsInfo : '',
-            attributes: {
-                'class': ''
-            },
-            headerAttributes: {
-                'class': ''
-            }
-        }, {
-            field: 'RefundsValue',
-            title: 'Refunds Value',
-            template: (e) => e.RefundsValue ? e.RefundsValue : '',
             attributes: {
                 'class': 'text-end'
             },
@@ -308,39 +290,34 @@
                 'class': 'text-end'
             }
         }, {
-            field: 'RefundsInfo',
-            title: 'Refunds Info',
-            template: (e) => e.RefundsInfo ? e.RefundsInfo : '',
+            field: 'RefundsValue',
+            title: 'Refunds Value',
+            template: (dataItem) => {
+                if (dataItem.RefundsInfo)
+                    return `<a href="javascript:;" data-bind="actualBootstrapPopover: { details: refundsPopoverInfo }, click: () => { return true; }, clickBubble: false">${dataItem.RefundsValue}</a>`
+                else
+                    return `<span>${dataItem.RefundsValue}</span>`;
+            },
             attributes: {
-                'class': ''
+                'class': 'text-end'
             },
             headerAttributes: {
-                'class': ''
+                'class': 'text-end'
             }
         }, {
             field: 'ProformaPaymentsValue',
             title: 'Proforma Value',
             template: (dataItem) => {
-                if (dataItem.ProformaPaymentsValue)
-                    return `<a href="javascript:;" data-bind="actualBootstrapPopover: { details: popoverDetails }, click: () => { return true; }, clickBubble: false">${dataItem.ProformaPaymentsValue}</a>`
+                if (dataItem.ProformaPaymentsInfo)
+                    return `<a href="javascript:;" data-bind="actualBootstrapPopover: { details: proformaPaymentsPopoverInfo }, click: () => { return true; }, clickBubble: false">${dataItem.ProformaPaymentsValue}</a>`
                 else
-                    return '';
+                    return `<span>${dataItem.ProformaPaymentsValue}</span>`;
             },
             attributes: {
                 'class': 'text-end'
             },
             headerAttributes: {
                 'class': 'text-end'
-            }
-        }, {
-            field: 'ProformaPaymentsInfo',
-            title: 'Proforma Payments Info',
-            template: (e) => e.ProformaPaymentsInfo ? e.ProformaPaymentsInfo : '',
-            attributes: {
-                'class': ''
-            },
-            headerAttributes: {
-                'class': ''
             }
         }],
         data: new kendo.data.DataSource({
@@ -353,6 +330,7 @@
             serverGrouping: false,
             serverFiltering: false,
             serverPaging: true,
+            serverSorting: true,
             pageSize: 20,
             pageable: {
                 pageSize: 20,
@@ -378,8 +356,8 @@
                         CreditsInfo: { type: 'string' },
                         DepositsValue: { type: 'string' },
                         DepositsInfo: { type: 'string' },
-                        OverPaymentsValue: { type: 'string' },
-                        OverPaymentsInfo: { type: 'string' },
+                        OverpaymentsValue: { type: 'string' },
+                        OverpaymentsInfo: { type: 'string' },
                         RefundsValue: { type: 'string' },
                         RefundsInfo: { type: 'string' },
                         ProformaPaymentsValue: { type: 'string' },
@@ -407,7 +385,14 @@
         selectable: false,
         dataBound: (e) => {
             e.sender.resize();
-            
+
+            document.querySelectorAll('[data-bind*="actualBootstrapPopover"]').forEach(e => {
+                let p = bootstrap.Popover.getInstance(e);
+                if (p) {
+                    p.hide();
+                }
+            });
+
             ko.ignoreDependencies(() => {
 
                 var pristine = e.sender.dataSource.data().toJSON();
@@ -470,6 +455,7 @@
         }, self, 'arrayChange');
 
         self.filters.getData.subscribe(nv => {
+            console.log(`debtBreakdown filters getData subscribe hit`);
             self.gridParams.widget().dataSource.query({
                 page: 1,
                 pageSize: (self.gridParams.widget() && self.gridParams.widget().dataSource.pageSize())

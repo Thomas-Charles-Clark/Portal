@@ -697,4 +697,8 @@
 #debt-breakdown-modal .selected-filter-pills {
   display: none;
 }
+
+.info-popover {
+  font-size: 1rem;
+}
 /*# sourceMappingURL=credit-control-debt-breakdown.css.map */

@@ -115,8 +115,28 @@ namespace Portal.Areas.CreditControl.Controllers
 					case "30": /* Last 30 Days */
 						fromDt = DateTime.Now.AddDays(-30);
 						break;
+					case "6":
+						toDt = DateTime.Now.AddDays(-5);
+						fromDt = DateTime.Now.AddDays(-6);
+						break;
+					case "5":
+						toDt = DateTime.Now.AddDays(-4);
+						fromDt = DateTime.Now.AddDays(-5);
+						break;
+					case "4":
+						toDt = DateTime.Now.AddDays(-3);
+						fromDt = DateTime.Now.AddDays(-4);
+						break;
+					case "3":
+						toDt = DateTime.Now.AddDays(-2);
+						fromDt = DateTime.Now.AddDays(-3);
+						break;
+					case "2":
+						toDt = DateTime.Now.AddDays(-1);
+						fromDt = DateTime.Now.AddDays(-2);
+						break;
 					case "1":
-						toDt = DateTime.Now;
+						toDt = DateTime.Now.AddDays(0);
 						fromDt = DateTime.Now.AddDays(-1);
 						break;
 					case "0":
@@ -183,8 +203,28 @@ namespace Portal.Areas.CreditControl.Controllers
 					case "30": /* Last 30 Days */
 						fromDt = DateTime.Now.AddDays(-30);
 						break;
+					case "6":
+						toDt = DateTime.Now.AddDays(-5);
+						fromDt = DateTime.Now.AddDays(-6);
+						break;
+					case "5":
+						toDt = DateTime.Now.AddDays(-4);
+						fromDt = DateTime.Now.AddDays(-5);
+						break;
+					case "4":
+						toDt = DateTime.Now.AddDays(-3);
+						fromDt = DateTime.Now.AddDays(-4);
+						break;
+					case "3":
+						toDt = DateTime.Now.AddDays(-2);
+						fromDt = DateTime.Now.AddDays(-3);
+						break;
+					case "2":
+						toDt = DateTime.Now.AddDays(-1);
+						fromDt = DateTime.Now.AddDays(-2);
+						break;
 					case "1":
-						toDt = DateTime.Now;
+						toDt = DateTime.Now.AddDays(0);
 						fromDt = DateTime.Now.AddDays(-1);
 						break;
 					case "0":

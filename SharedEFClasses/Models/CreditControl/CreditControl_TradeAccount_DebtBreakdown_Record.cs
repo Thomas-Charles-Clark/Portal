@@ -20,8 +20,8 @@ namespace SharedEFClasses.Models.CreditControl
 		public string CreditsInfo { get; set; }
 		public string DepositsValue { get; set; }
 		public string DepositsInfo { get; set; }
-		public string OverPaymentsValue { get; set; }
-		public string OverPaymentsInfo { get; set; }
+		public string OverpaymentsValue { get; set; }
+		public string OverpaymentsInfo { get; set; }
 		public string RefundsValue { get; set; }
 		public string RefundsInfo { get; set; }
 		public string ProformaPaymentsValue { get; set; }

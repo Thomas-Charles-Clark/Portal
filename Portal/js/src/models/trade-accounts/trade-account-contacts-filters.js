@@ -577,7 +577,7 @@ const tradeAccountContactsFiltersViewModel = ({
         clearFunction: self.genericUnsavedChangesClear,
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.tradeAccountCompanyGroupBy),
         popupSettings: {
-            appendTo: document.getElementById(`${self.prefix}trade-account-company-prefilter`)
+            appendTo: `${self.prefix}trade-account-company-prefilter`
         }
     });
 
@@ -603,7 +603,7 @@ const tradeAccountContactsFiltersViewModel = ({
             field: 'SortOrder'
         },
         popupSettings: {
-            appendTo: document.getElementById('invoice-company-prefilter')
+            appendTo: '#invoice-company-prefilter'
         },
         template: (e) => {
             if ((e.Name != '') && (e.Code != null)) {
@@ -672,7 +672,7 @@ const tradeAccountContactsFiltersViewModel = ({
         dataBound: (e) => self.salesRepresentativeAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.salesRepresentativeGroupBy),
         popupSettings: {
-            appendTo: document.getElementById(`${self.prefix}sales-representative-prefilter`)
+            appendTo: `#${self.prefix}sales-representative-prefilter`
         }
     });
 
@@ -727,7 +727,7 @@ const tradeAccountContactsFiltersViewModel = ({
         dataBound: (e) => self.salesAgentAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.salesAgentGroupBy),
         popupSettings: {
-            appendTo: document.getElementById(`${self.prefix}sales-agent-prefilter`)
+            appendTo: `#${self.prefix}sales-agent-prefilter`
         }
     });
 
@@ -783,7 +783,7 @@ const tradeAccountContactsFiltersViewModel = ({
         dataBound: (e) => self.salesAreaAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.salesAreaGroupBy),
         popupSettings: {
-            appendTo: document.getElementById(`${self.prefix}sales-area-prefilter`)
+            appendTo: `#${self.prefix}sales-area-prefilter`
         }
     });
 
@@ -839,7 +839,7 @@ const tradeAccountContactsFiltersViewModel = ({
         dataBound: (e) => self.countryAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.countryGroupBy),
         popupSettings: {
-            appendTo: document.getElementById(`${self.prefix}country-prefilter`)
+            appendTo: `#${self.prefix}country-prefilter`
         }
     });
 
@@ -894,7 +894,7 @@ const tradeAccountContactsFiltersViewModel = ({
         dataBound: (e) => self.tradeAccountTypeAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.tradeAccountTypeGroupBy),
         popupSettings: {
-            appendTo: document.getElementById(`${self.prefix}trade-account-type-prefilter`)
+            appendTo: `#${self.prefix}trade-account-type-prefilter`
         }
     });
 
@@ -949,7 +949,7 @@ const tradeAccountContactsFiltersViewModel = ({
         dataBound: (e) => self.tradeAccountTypeGroupAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.tradeAccountTypeGroupGroupBy),
         popupSettings: {
-            appendTo: document.getElementById(`${self.prefix}trade-account-type-group-prefilter`)
+            appendTo: `#${self.prefix}trade-account-type-group-prefilter`
         }
     });
 
@@ -1004,7 +1004,7 @@ const tradeAccountContactsFiltersViewModel = ({
         dataBound: (e) => self.tradeAccountGroupAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.tradeAccountGroupGroupBy),
         popupSettings: {
-            appendTo: document.getElementById(`${self.prefix}trade-account-group-prefilter`)
+            appendTo: `#${self.prefix}trade-account-group-prefilter`
         }
     });
 
@@ -1059,7 +1059,7 @@ const tradeAccountContactsFiltersViewModel = ({
         dataBound: (e) => self.paymentTermsAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.paymentTermsGroupBy),
         popupSettings: {
-            appendTo: document.getElementById(`${self.prefix}payment-terms-prefilter`)
+            appendTo: `#${self.prefix}payment-terms-prefilter`
         }
     });
 
@@ -1114,7 +1114,7 @@ const tradeAccountContactsFiltersViewModel = ({
         dataBound: (e) => self.paymentTermsTypeAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.paymentTermsTypeGroupBy),
         popupSettings: {
-            appendTo: document.getElementById(`${self.prefix}payment-terms-type-prefilter`)
+            appendTo: `#${self.prefix}payment-terms-type-prefilter`
         }
     });
 
@@ -1169,7 +1169,7 @@ const tradeAccountContactsFiltersViewModel = ({
         dataBound: (e) => self.creditControllerAwaitingBinding(false),
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.creditControllerGroupBy),
         popupSettings: {
-            appendTo: document.getElementById(`${self.prefix}credit-controller-prefilter`)
+            appendTo: `#${self.prefix}credit-controller-prefilter`
         }
     });
 
@@ -1203,7 +1203,7 @@ const tradeAccountContactsFiltersViewModel = ({
         clearFunction: self.genericUnsavedChangesClear,
         dataBound: (e) => self.creditStoppedAwaitingBinding(false),
         popupSettings: {
-            appendTo: document.getElementById(`${self.prefix}credit-stopped-prefilter`)
+            appendTo: `#${self.prefix}credit-stopped-prefilter`
         }
     });
 
@@ -1228,7 +1228,7 @@ const tradeAccountContactsFiltersViewModel = ({
         },
         clearFunction: self.genericUnsavedChangesClear,
         popupSettings: {
-            appendTo: document.getElementById(`${self.prefix}trade-account-status-prefilter`)
+            appendTo: `#${self.prefix}trade-account-status-prefilter`
         }
     });
 

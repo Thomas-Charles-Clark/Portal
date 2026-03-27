@@ -460,6 +460,8 @@ html {
 }
 
 .prefilter {
+    position: relative;
+
     .mdc-validating-field {
         height: 34px;
     }
@@ -845,4 +847,22 @@ html {
 
 .bs-tooltip-auto {
     font-size: $font-size-base;
+}
+
+.k-animation-container {
+    .k-virtual-content {
+        > .k-virtual-list {
+            > .k-virtual-item {
+                display: flex;
+                align-items: center;
+            }
+        }
+    }
+}
+
+.k-list {
+    .k-item {
+        display: flex;
+        align-items: center;
+    }
 }

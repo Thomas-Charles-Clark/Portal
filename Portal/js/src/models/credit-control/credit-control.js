@@ -56,9 +56,11 @@ const creditControlViewModel = (() => {
 
     self.selectedPod = ko.observable();
 
-    self.clearSelectedPod = () => {
+    self.clearSelectedPod = (withRefresh) => {
         self.selectedPod(undefined);
-        self.refresh();
+        if (typeof withRefresh === 'undefined' || withRefresh === true) {
+            self.refresh();
+        }
     }
 
     self.filters = creditControlFiltersViewModel({
@@ -1835,6 +1837,10 @@ const creditControlViewModel = (() => {
         self.gridWidget() && self.gridWidget().saveAsExcel();
     }
 
+    self.init = () => {
+        // hi! 
+    }
+
     //#endregion
 
     //#region Events
@@ -1855,16 +1861,20 @@ const creditControlViewModel = (() => {
         self.refresh();
     });
 
+    self.manageLedgerTab.addEventListener('click', (event) => {
+        self.manageLedger.refresh();
+    });
+
+    self.orderReleaseTab.addEventListener('click', (event) => {
+        self.memberBasketFetcher.heldOrdersRefresh();
+    });
+
     self.payOffInvoicesTab.addEventListener('click', (event) => {
         self.outstandingInvoices.refresh();
     });
 
     self.onlinePaymentHistoryTab.addEventListener('click', (event) => {
         self.paymentHistory.refresh();
-    });
-
-    self.manageLedgerTab.addEventListener('click', (event) => {
-        self.manageLedger.refresh();
     });
 
     self.performance.init();
