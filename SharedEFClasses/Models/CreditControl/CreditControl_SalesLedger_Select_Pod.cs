@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.CreditControl
 {
-	public class CreditControl_TradeAccount_DebtBreakdown_Pod
+	public class CreditControl_SalesLedger_Select_Pod
 	{
 		public string Group { get; set; }
 		public string Classes { get; set; }

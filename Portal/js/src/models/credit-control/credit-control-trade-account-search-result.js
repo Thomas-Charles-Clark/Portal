@@ -69,7 +69,7 @@
         data: ko.observable(),
         element: ko.observable(),
         placement: 'right',
-        container: '.modal-body',   // this is specified as being .modal-body (#debt-breakdown-modal) 
+        container: '.modal-body',   // this is specified as being .modal-body (#sales-ledger-modal) 
                                     // despite the fact that this control is most often 
                                     // found in the main grid's Errata: Stopped column
                                     // because it will null-coalesce to 'body': see defn of 

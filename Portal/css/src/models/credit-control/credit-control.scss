@@ -164,12 +164,14 @@ html {
     }
 
     #dashboard-tab-flex-container,
-    #manage-ledger-tab-flex-container {
+    #manage-ledger-tab-flex-container,
+    #statements-tab-flex-container {
         display: flex;
         gap: $l-gutter;
 
-        #dashboard-main, 
-        #manage-ledger-main {
+        #dashboard-main,
+        #manage-ledger-main,
+        #statements-main {
             flex: 1 1 auto;
             max-width: calc(100% - 65px);
         }
@@ -333,7 +335,7 @@ html {
         .credit-limit-heading,
         .totals-heading,
         .orders-heading,
-        .debt-breakdown-heading,
+        .sales-ledger-heading,
         .claim-heading,
         .other-heading,
         .sales-heading {
@@ -350,7 +352,7 @@ html {
         .credit-limit-subheading,
         .totals-subheading,
         .orders-subheading,
-        .debt-breakdown-subheading,
+        .sales-ledger-subheading,
         .claim-subheading,
         .other-subheading,
         .sales-subheading {
@@ -387,7 +389,7 @@ html {
         }
     }
 
-    .debt-breakdown,
+    .sales-ledger,
     .orders-breakdown,
     .claims-breakdown {
         cursor: pointer;

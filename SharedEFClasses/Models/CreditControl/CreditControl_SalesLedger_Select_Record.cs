@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.CreditControl
 {
-	public class CreditControl_TradeAccount_DebtBreakdown_Record
+	public class CreditControl_SalesLedger_Select_Record
 	{
 		public string UniVerseAccount { get; set; }
 		public string DebtAgeBracketName { get; set; }

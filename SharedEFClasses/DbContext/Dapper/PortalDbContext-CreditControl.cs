@@ -23,7 +23,7 @@ namespace SharedEFClasses.Models
 {
     public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
-		public async Task<CreditControl_TradeAccount_Search_Result> CreditControl_TradeAccount_Search(CreditControl_TradeAccount_SearchDTO dto)
+		public async Task<CreditControl_Dashboard_Select_Result> CreditControl_Dashboard_Select(CreditControl_Dashboard_SelectDTO dto)
 		{
 			var SalesMarketIDs = new DataTable();
 
@@ -66,17 +66,17 @@ namespace SharedEFClasses.Models
 				dto.SortOrder
 			};
 
-			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_Search]", dat, null, 30, CommandType.StoredProcedure);
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_Dashboard_Select]", dat, null, 30, CommandType.StoredProcedure);
 
-			return new CreditControl_TradeAccount_Search_Result()
+			return new CreditControl_Dashboard_Select_Result()
 			{
-				DashboardPods = await reply.ReadAsync<CreditControl_TradeAccount_Search_DashboardPod>(),
-                Results = await reply.ReadAsync<CreditControl_TradeAccount_Search_Record>(),
-				TotalsRecord = await reply.ReadSingleAsync<CreditControl_TradeAccount_Totals_Record>() // remap this to a class
+				DashboardPods = await reply.ReadAsync<CreditControl_Dashboard_Select_Pod>(),
+                Results = await reply.ReadAsync<CreditControl_Dashboard_Select_Record>(),
+				TotalsRecord = await reply.ReadSingleAsync<CreditControl_TradeAccount_Totals_Record>()
 			};
 		}
 
-		public async Task<CreditControl_TradeAccount_DebtBreakdown_Result> CreditControl_TradeAccount_DebtBreakdown_Select(CreditControl_TradeAccount_DebtBreakdownDTO dto)
+		public async Task<CreditControl_SalesLedger_Select_Result> CreditControl_SalesLedger_Select(CreditControl_SalesLedger_SelectDTO dto)
 		{
 			var SalesMarketIDs = new DataTable();
 
@@ -120,13 +120,68 @@ namespace SharedEFClasses.Models
 				dto.TradeAccountID
 			};
 
-			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_TradeAccount_DebtBreakdown_Select]", dat, null, 300, CommandType.StoredProcedure);
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_SalesLedger_Select]", dat, null, 300, CommandType.StoredProcedure);
 
-			return new CreditControl_TradeAccount_DebtBreakdown_Result()
+			return new CreditControl_SalesLedger_Select_Result()
 			{
-				Heading = await reply.ReadSingleOrDefaultAsync<CreditControl_TradeAccount_DebtBreakdown_HeadingResult>(),
-				Pods = await reply.ReadAsync<CreditControl_TradeAccount_DebtBreakdown_Pod>(),
-				Records = await reply.ReadAsync<CreditControl_TradeAccount_DebtBreakdown_Record>()
+				Heading = await reply.ReadSingleOrDefaultAsync<CreditControl_SalesLedger_Select_HeadingResult>(),
+				Pods = await reply.ReadAsync<CreditControl_SalesLedger_Select_Pod>(),
+				Records = await reply.ReadAsync<CreditControl_SalesLedger_Select_Record>()
+			};
+		}
+
+		public async Task<CreditControl_Statement_Select_Result> CreditControl_Statements_Select(CreditControl_Statement_SelectDTO dto)
+		{
+			var SalesMarketIDs = new DataTable();
+
+			SalesMarketIDs.Columns.Add("ID", typeof(byte));
+
+			if (dto.SalesMarketIDs != null)
+			{
+				foreach (var sm in dto.SalesMarketIDs)
+				{
+					SalesMarketIDs.Rows.Add(sm);
+				}
+			}
+
+			var dat = new
+			{
+				SalesMarketIDs,
+				dto.SalesRepresentativeID,
+				dto.SalesAgentID,
+				dto.SalesAreaID,
+				dto.CountryID,
+				dto.TradeAccountCode,
+				dto.TradeAccountGroupID,
+				dto.TradeAccountTypeID,
+				dto.TradeAccountTypeGroupID,
+				dto.PaymentTermsID,
+				dto.PaymentTermsTypeID,
+				dto.CreditStopped,
+				dto.CreditControllerCode,
+				dto.Open,
+				dto.SearchTerm,
+				dto.SalesHistoryAnalysisPeriod,
+				dto.LanguageID,
+				dto.DebtFunderCode,
+				dto.CurrencyID,
+				dto.SelectedPOD,
+				dto.PageSize,
+				dto.Page,
+				dto.TradeAccountCompanyCode,
+				dto.InvoiceCompanyCode,
+				dto.SortOrder,
+				dto.TradeAccountID
+			};
+
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_Statement_Select]", dat, null, 300, CommandType.StoredProcedure);
+
+			return new CreditControl_Statement_Select_Result()
+			{
+				Heading = await reply.ReadSingleOrDefaultAsync<CreditControl_Statement_Select_HeadingResult>(),
+				Pods = await reply.ReadAsync<CreditControl_Statement_Select_Pod>(),
+				Results = await reply.ReadAsync<CreditControl_Statement_Select_Record>(),
+				TotalsRecord = await reply.ReadSingleAsync<CreditControl_TradeAccount_Totals_Record>()
 			};
 		}
 

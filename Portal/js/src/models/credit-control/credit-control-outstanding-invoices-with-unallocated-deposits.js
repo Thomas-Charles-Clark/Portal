@@ -254,7 +254,7 @@
             .then(window.handleFetchResponse)
             .then(data => {
 
-                console.log('onlinePaymentsHistory gridDataSourceRead returned', data);
+                console.log('outstandingInvoices gridDataSourceRead returned', data);
 
                 ko.ignoreDependencies(() => {
 
@@ -375,35 +375,7 @@
         },
         selectable: false,
         change: function (event) {
-            console.log('change', event, event.sender.select());
-
-            if (event.sender.select()) {
-
-                let classList = event.sender.select()[0].classList;
-
-                let dataItem = event.sender.dataItem(event.sender.select().closest('tr'));
-
-                if (classList.contains('debt-breakdown')) {
-                    self.fetchDebtBreakdown(dataItem);
-                }
-                else if (classList.contains('orders-breakdown')) {
-                    self.fetchOrdersBreakdown(dataItem);
-                }
-                else if (classList.contains('claims-breakdown')) {
-                    self.fetchClaimsBreakdown(dataItem);
-                }
-                else if (classList.contains('other-breakdown')) {
-                    self.fetchOtherBreakdown(dataItem);
-                }
-                else if (classList.contains('sales-breakdown')) {
-                    self.fetchSalesBreakdown(dataItem);
-                }
-                else if (classList.contains('contacts-cell')) {
-                    self.tradeAccountContacts.selectedTradeAccount(tradeAccountViewModel({
-                        rec: dataItem
-                    }));
-                }
-            }
+            console.log('outstandingInvoices change', event, event.sender.select());
         },
         filterMenuInit: (e) => {
             if (e.field === "CreditStop") {
@@ -459,7 +431,6 @@
 
                         ko.applyBindings(pristine[index], row);
                     });
-
                 });
             });
         }

@@ -49,9 +49,9 @@ namespace Portal.Areas.CreditControl.Controllers
         }
 
 		[HttpGet]
-		public async Task<IHttpActionResult> TradeAccountSearch(
+		public async Task<IHttpActionResult> DashboardSelect(
 			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
-			[FromUri] CreditControl_TradeAccount_SearchDTO dto)
+			[FromUri] CreditControl_Dashboard_SelectDTO dto)
 		{
 			try
 			{
@@ -62,9 +62,13 @@ namespace Portal.Areas.CreditControl.Controllers
 					dto.SortOrder = $"{sort.Member}_{(sort.SortDirection == ListSortDirection.Ascending ? "Asc" : "Desc")}";
 				}
 
-				var model = await PortalDb.CreditControl_TradeAccount_Search(dto);
+				var model = await PortalDb.CreditControl_Dashboard_Select(dto);
 
 				request.Page = 1; // This is a super weird and stupid hack but...
+								  // which I can't remember why I did it - is it because... if the procedure does paging,
+								  // the data is already paged and so the datasource processing is moot? 
+								  // something like that, anyway I'm only having this thought now because
+								  // see CreditControl_Statement_Select below
 
 				var gridData = model.Results.ToDataSourceResult(request);
 
@@ -262,31 +266,6 @@ namespace Portal.Areas.CreditControl.Controllers
 			}
 		}
 
-
-		[HttpGet]
-		public async Task<IHttpActionResult> TradeAccountSearchEndless(
-			[FromUri] CreditControl_TradeAccount_SearchDTO dto)
-		{
-			try
-			{
-				var model = await PortalDb.CreditControl_TradeAccount_Search(dto);
-
-				return Ok(new
-				{
-					gridData = model.Results,
-					dashboardPods = model.DashboardPods,
-					totalsRecord = model.TotalsRecord
-				});
-			}
-			catch (SqlException)
-			{
-				return Ok(new
-				{
-					errorMessage = "Sorry, a database timeout error occurred.<br/>Please click to close this dialog box to retry, or reload your browser tab."
-				});
-			}
-		}
-
 		[HttpPost]
 		public async Task<IHttpActionResult> ToggleCreditStop([FromBody] CreditControl_TradeAccount_StopToggleDTO dto)
 		{
@@ -300,18 +279,18 @@ namespace Portal.Areas.CreditControl.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IHttpActionResult> FetchDebtBreakdown(
-			[FromBody] CreditControl_TradeAccount_DebtBreakdownDTO dto)
+		public async Task<IHttpActionResult> SalesLedger_Select(
+			[FromBody] CreditControl_SalesLedger_SelectDTO dto)
 		{
-			var result = await PortalDb.CreditControl_TradeAccount_DebtBreakdown_Select(dto);
+			var result = await PortalDb.CreditControl_SalesLedger_Select(dto);
 
 			return Ok(result);
 		}
 
 		[HttpGet]
-		public async Task<IHttpActionResult> FetchDebtBreakdown(
+		public async Task<IHttpActionResult> SalesLedger_Select(
 			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
-			[FromUri] CreditControl_TradeAccount_DebtBreakdownDTO dto)
+			[FromUri] CreditControl_SalesLedger_SelectDTO dto)
 		{
 			try
 			{
@@ -322,7 +301,7 @@ namespace Portal.Areas.CreditControl.Controllers
 					dto.SortOrder = $"{sort.Member}_{(sort.SortDirection == ListSortDirection.Ascending ? "Asc" : "Desc")}";
 				}
 
-				var model = await PortalDb.CreditControl_TradeAccount_DebtBreakdown_Select(dto);
+				var model = await PortalDb.CreditControl_SalesLedger_Select(dto);
 
 				request.Page = 1; // This is a super weird and stupid hack but...
 
@@ -348,6 +327,46 @@ namespace Portal.Areas.CreditControl.Controllers
 			}
 		}
 
+		[HttpGet]
+		public async Task<IHttpActionResult> StatementsSelect(
+			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+			[FromUri] CreditControl_Statement_SelectDTO dto)
+		{
+			try
+			{
+				if (request.Sorts.Any())
+				{
+					var sort = request.Sorts.First();
+
+					dto.SortOrder = $"{sort.Member}_{(sort.SortDirection == ListSortDirection.Ascending ? "Asc" : "Desc")}";
+				}
+
+				var model = await PortalDb.CreditControl_Statements_Select(dto);
+
+				//request.Page = 1; // This is a super weird and stupid hack but...
+									// it will become necessary when Matt gets around to using paging in the sproc
+
+				var gridData = model.Results.ToDataSourceResult(request);
+
+				gridData.Total = model.TotalsRecord.TotalRowCount;
+
+				return Ok(new
+				{
+					heading = model.Heading,
+					gridData = gridData,
+					pods = model.Pods,
+					totalsRecord = model.TotalsRecord
+				});
+			}
+			catch (SqlException e)
+			{
+				return Ok(new
+				{
+					errorMessage = "Sorry, a database timeout error occurred.<br/>Please click to close this dialog box to retry, or reload your browser tab.",
+					exception = JsonConvert.SerializeObject(e, Formatting.Indented)
+				});
+			}
+		}
 
 		[HttpPost]
 		public async Task<IHttpActionResult> FetchOrdersBreakdown(

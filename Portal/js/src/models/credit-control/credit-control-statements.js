@@ -1,10 +1,10 @@
-﻿const creditControlDebtBreakdownViewModel = ({
+﻿const creditControlStatementsViewModel = ({
     callee,
     filters
 } = {
-    callee: {},
-    filters: {}
-}) => {
+        callee: {},
+        filters: {}
+    }) => {
     let self = {
         callee,
         filters,
@@ -16,14 +16,16 @@
         pods: ko.observableArray([]),
         records: ko.observableArray([]),
         selectedPod: ko.observable(),
-        previouslySelectedPod: null
+        previouslySelectedPod: null,
+        allSelected: ko.observable(false),
+        allTradeAccountIds: ko.observableArray([]),
+        allTradeAccountCodes: ko.observableArray([]),
+        selectedTradeAccountCodes: ko.observableArray([])
     };
 
     //#region Properties
 
-    self.modalElement = document.querySelector('#debt-breakdown-modal');
 
-    self.modal = bootstrap.Modal.getOrCreateInstance(self.modalElement);
 
     //#endregion
 
@@ -36,20 +38,19 @@
     }
 
     self.podClick = (pod, event) => {
-        console.log(`debtBreakdown dashboardPod click`, pod, event);
+        console.log(`statements dashboardPod click`, pod, event);
         if (self.selectedPod() && self.selectedPod().PodHandle === pod.PodHandle) {
             self.selectedPod(undefined);
         } else {
             self.selectedPod(pod);
         }
 
-
         self.refresh();
     }
 
     self.refresh = () => {
         if (self.gridWidget()) {
-            console.log(`debtBreakdown filters refresh called`);
+            console.log(`statements filters refresh called`);
             self.gridWidget().dataSource.query({
                 page: self.gridWidget().dataSource.page(),
                 pageSize: self.gridWidget().dataSource.pageSize(),
@@ -67,46 +68,11 @@
         }
     }
 
-    self.filters.clearSelectedPod = self.clearSelectedPod;
-
-    //self.fetchDebtBreakdown = () => {
-    //    self.busy(true);
-
-    //    let data = {
-    //        tradeAccountId: self.callee.TradeAccountID,
-    //        selectedPod: self.selectedPod()
-    //    };
-
-    //    console.log('fetchDebtBreakdown calling with', data);
-
-    //    fetch("/api/CreditControlAPI/FetchDebtBreakdown", {
-    //        method: 'POST',
-    //        headers: window.fetchHeaders,
-    //        cache: 'no-cache',
-    //        credentials: 'same-origin',
-    //        body: JSON.stringify(data)
-    //    })
-    //        .then(window.handleFetchResponse)
-    //        .then(data => {
-    //            console.log('fetchDebtBreakdown returned', data);
-
-    //            self.heading(data.Heading);
-
-    //            self.pods(data.Pods.map(p => creditControlDebtBreakdownPodViewModel({
-    //                rec: p
-    //            })));
-
-    //            self.records(data.Records.map(p => creditControlDebtBreakdownRecordViewModel({
-    //                rec: p
-    //            })));
-
-    //            self.busy(false);
-    //        })
-    //        .catch(err => {
-    //            self.busy(false);
-    //            window.catchFetchError(err);
-    //        });
-    //}
+    if (self.filters) { // this viewModel is used in two distinct contexts: from the Dashboard cell drill-down,
+        // where there is no call for a filter set,
+        // and in the Sales Ledger tab itself, which does have a set of filters. 
+        self.filters.clearSelectedPod = self.clearSelectedPod;
+    }
 
     self.gridDataSourceRead = (options) => {
 
@@ -137,11 +103,11 @@
             }
         }
 
-        console.log('debtBreakdown gridDataSourceRead calling with', data);
+        console.log('statements gridDataSourceRead calling with', data);
 
         self.busy(true);
 
-        fetch('/api/creditcontrolapi/FetchDebtBreakdown?' + params, {
+        fetch('/api/creditcontrolapi/StatementsSelect?' + params, {
             method: 'GET',
             headers: window.fetchHeaders,
             cache: 'no-cache',
@@ -150,7 +116,7 @@
             .then(window.handleFetchResponse)
             .then(data => {
 
-                console.log(`debtBreakdown gridDataSourceRead returned`, data);
+                console.log(`statements gridDataSourceRead returned`, data);
 
                 ko.ignoreDependencies(() => {
 
@@ -176,6 +142,10 @@
                         if (self.previouslySelectedPod) {
                             self.selectedPod(self.pods().find(dp => dp.PodHandle == self.previouslySelectedPod));
                         }
+
+                        self.allTradeAccountCodes(data.totalsRecord.TradeAccountCodes);
+
+                        self.allTradeAccountIds(data.totalsRecord.TradeAccountIDs);
 
                         self.heading(data.heading);
 
@@ -206,118 +176,58 @@
 
     //#region Components
 
+    self.selectAllParams = {
+        checkboxId: `select-all-checkbox`,
+        observable: self.allSelected,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        busy: self.busy
+    }
+
     self.gridParams = {
         autoBind: self.filters ? false : true,
         widget: self.gridWidget,
         columns: [{
-            field: 'DebtAgeBracketName',
-            title: 'Name'
-        }, {
-            field: 'InvoiceURI',
-            title: 'Invoice',
-            template: (e) => `<a target="_self" href="/documents/view/statement?filePath=${encodeURIComponent(e.InvoiceURI)}">${e.InvoiceID}</a>`
-        }, {
-            field: 'InvoiceDT',
-            title: 'Invoice Date',
-            template: (e) => moment(e.InvoiceDT).format('DD/MM/YYYY')
-        }, {
-            field: 'DueDT',
-            title: 'Due Date',
-            template: (e) => moment(e.DueDT).format('DD/MM/YYYY')
-        }, {
-            field: 'OriginalValueInCurrency',
-            title: 'Original Value',
-            template: (e) => e.OriginalValueInCurrency ? e.OriginalValueInCurrency : '',
-            attributes: {
-                'class': 'text-end'
-            },
-            headerAttributes: {
-                'class': 'text-end'
-            }
-        }, {
-            field: 'OutstandingAmountInCurrency',
-            title: 'Outstanding Amount',
-            template: (e) => e.OutstandingAmountInCurrency ? e.OutstandingAmountInCurrency : '',
-            attributes: {
-                'class': 'text-end'
-            },
-            headerAttributes: {
-                'class': 'text-end'
-            }
-        }, {
-            field: 'CreditsValue',
-            title: 'Credits Value',
+            field: 'TradeAccountCode',
+            title: 'Trade Account',
             template: (dataItem) => {
-                if (dataItem.CreditsInfo)
-                    return `<a href="javascript:;" data-bind="actualBootstrapPopover: { details: creditsPopoverInfo }, click: () => { return true; }, clickBubble: false">${dataItem.CreditsValue}</a>`
-                else
-                    return `<span>${dataItem.CreditsValue}</span>`;
-            },
-            attributes: {
-                'class': 'text-end'
-            },
-            headerAttributes: {
-                'class': 'text-end'
+                return `${dataItem.TradeAccountCode} - ${dataItem.TradeAccountName}`
             }
         }, {
-            field: 'DepositsValue',
-            title: 'Deposits Value',
+            field: 'Advisory',
+            title: 'Advisory',
             template: (dataItem) => {
-                if (dataItem.DepositsInfo)
-                    return `<a href="javascript:;" data-bind="actualBootstrapPopover: { details: depositsPopoverInfo }, click: () => { return true; }, clickBubble: false">${dataItem.DepositsValue}</a>`
-                else
-                    return `<span>${dataItem.DepositsValue}</span>`;
-            },
-            attributes: {
-                'class': 'text-end'
-            },
-            headerAttributes: {
-                'class': 'text-end'
+                return dataItem?.Advisory ?? ``;
             }
         }, {
-            field: 'OverpaymentsValue',
-            title: 'Overpayments Value',
+            field: 'Overdue',
+            title: 'Overdue',
             template: (dataItem) => {
-                if (dataItem.OverpaymentsInfo)
-                    return `<a href="javascript:;" data-bind="actualBootstrapPopover: { details: overpaymentsPopoverInfo }, click: () => { return true; }, clickBubble: false">${dataItem.OverpaymentsValue}</a>`
-                else
-                    return `<span>${dataItem.OverpaymentsValue}</span>`;
-            },
-            attributes: {
-                'class': 'text-end'
-            },
-            headerAttributes: {
-                'class': 'text-end'
+                return dataItem.Overdue;
             }
         }, {
-            field: 'RefundsValue',
-            title: 'Refunds Value',
+            field: 'StatementContacts',
+            title: 'Contacts',
             template: (dataItem) => {
-                if (dataItem.RefundsInfo)
-                    return `<a href="javascript:;" data-bind="actualBootstrapPopover: { details: refundsPopoverInfo }, click: () => { return true; }, clickBubble: false">${dataItem.RefundsValue}</a>`
-                else
-                    return `<span>${dataItem.RefundsValue}</span>`;
-            },
-            attributes: {
-                'class': 'text-end'
-            },
-            headerAttributes: {
-                'class': 'text-end'
+                return dataItem.StatementContacts ?? ``;
             }
         }, {
-            field: 'ProformaPaymentsValue',
-            title: 'Proforma Value',
+            field: 'SendHistory',
+            title: 'Send History',
             template: (dataItem) => {
-                if (dataItem.ProformaPaymentsInfo)
-                    return `<a href="javascript:;" data-bind="actualBootstrapPopover: { details: proformaPaymentsPopoverInfo }, click: () => { return true; }, clickBubble: false">${dataItem.ProformaPaymentsValue}</a>`
-                else
-                    return `<span>${dataItem.ProformaPaymentsValue}</span>`;
+                return dataItem?.Advisory ?? ``;
+            }
+        }, {
+            field: 'Unbound',
+            title: ' ',
+            width: 52,
+            sortable: false,
+            filterable: false,
+            template: (dataItem) => {
+                return `<div data-bind="component: { name: 'mdc-checkbox-component', params: selectedCheckboxParams }"></div>`
             },
-            attributes: {
-                'class': 'text-end'
-            },
-            headerAttributes: {
-                'class': 'text-end'
+            headerTemplate: (e) => {
+                return `<div id="select-all-checkbox" data-bind="component: { name: 'mdc-checkbox-component', params: selectAllParams }"></div>`
             }
         }],
         data: new kendo.data.DataSource({
@@ -342,27 +252,31 @@
                 errors: "Errors",
                 aggregates: "Aggregates",
                 model: {
-                    id: 'InvoiceID',
+                    id: 'TradeAccountCode',
                     fields: {
-                        UniVerseAccount: { type: 'string' },
-                        DebtAgeBracketName: { type: 'string' },
-                        InvoiceID: { type: 'string' },
-                        InvoiceURI: { type: 'string' },
-                        InvoiceDate: { type: 'date' },
-                        DueDate: { type: 'date' },
-                        OriginalValueInCurrency: { type: 'string' },
-                        OutstandingAmountInCurrency: { type: 'string' },
-                        CreditsValue: { type: 'string' },
-                        CreditsInfo: { type: 'string' },
-                        DepositsValue: { type: 'string' },
-                        DepositsInfo: { type: 'string' },
-                        OverpaymentsValue: { type: 'string' },
-                        OverpaymentsInfo: { type: 'string' },
-                        RefundsValue: { type: 'string' },
-                        RefundsInfo: { type: 'string' },
-                        ProformaPaymentsValue: { type: 'string' },
-                        ProformaPaymentsInfo: { type: 'string' }
+                        TradeAccountCode: { type: 'string' },
+                        TradeAccountName: { type: 'string' },
+                        Advisory: { type: 'string' },
+                        Overdue: { type: 'string' },
+                        StatementContacts: { type: 'string' },
+                        SendHistory: { type: 'string' }
                     }
+                },
+                parse: (response) => {
+                    console.log('statements dataSource.parse', response);
+
+                    let data = [];
+
+                    response.Data.forEach(d => {
+                        data.push(creditControlStatementsRecordViewModel({
+                            rec: d,
+                            preselected: self.selectedTradeAccountCodes().find(ta => ta == d.TradeAccountCode) != null,
+                        }))
+                    });
+
+                    response.Data = data;
+
+                    return response;
                 }
             }),
             requestStart: (e) => {
@@ -382,7 +296,7 @@
             pageSize: 20,
             pageSizes: [10, 20, 50, 100, 250, 500, 'all']
         },
-        selectable: false,
+        persistSelection: true,
         dataBound: (e) => {
             e.sender.resize();
 
@@ -399,25 +313,34 @@
 
                 ko.utils.arrayForEach(e.sender.dataSource.data(), function (item, index) {
 
+                    // this is necessary because if you have locked columns you will have multiple <tr> sharing the one uid
                     let rows = document.querySelectorAll('tr[data-uid="' + item.uid + '"]');
 
                     rows.forEach(row => {
                         ko.cleanNode(row);
-
-                        pristine[index] = creditControlDebtBreakdownRecordViewModel({
-                            rec: item
-                        })
-
-                        ko.applyBindings(pristine[index], row);
+                        ko.applyBindings(item, row);
                     });
                 });
             });
+
+            var selectAllElement = document.querySelector('#select-all-checkbox');
+
+            ko.cleanNode(selectAllElement);
+
+            ko.applyBindings(self, selectAllElement);
+        },
+        change: (e) => {
+            self.selectedTradeAccountCodes(e.sender.selectedKeyNames());
         }
     };
 
     self.errors = new ko.validation.group([
 
     ]);
+
+    self.toggleSelectAll = () => {
+        self.allSelected(!self.allSelected());
+    }
 
     //#endregion
 
@@ -455,7 +378,7 @@
         }, self, 'arrayChange');
 
         self.filters.getData.subscribe(nv => {
-            console.log(`debtBreakdown filters getData subscribe hit`);
+            console.log(`statements filters getData subscribe hit`);
             self.gridParams.widget().dataSource.query({
                 page: 1,
                 pageSize: (self.gridParams.widget() && self.gridParams.widget().dataSource.pageSize())
@@ -463,6 +386,18 @@
         });
 
     }
+
+    self.allSelected.subscribe(nv => {
+        if (nv) {
+            self.selectedTradeAccountCodes(self.allTradeAccountCodes());
+        } else {
+            self.selectedTradeAccountCodes([]);
+        }
+
+        ko.utils.arrayForEach(self.gridWidget().dataSource.data(), function (item, index) {
+            item.selected(nv);
+        });
+    });
 
     //#endregion
 

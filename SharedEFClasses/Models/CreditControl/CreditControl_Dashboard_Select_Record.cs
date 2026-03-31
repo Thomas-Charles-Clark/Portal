@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.CreditControl
 {
-	public class CreditControl_TradeAccount_Search_Record
+	public class CreditControl_Dashboard_Select_Record
 	{
 		public string UniVerseAccount { get; set; }
 		public string CreditStopHistory { get; set; }

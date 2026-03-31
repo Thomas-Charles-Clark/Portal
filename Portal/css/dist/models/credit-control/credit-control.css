@@ -730,14 +730,20 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   padding: 1rem;
 }
 #credit-control-main #dashboard-tab-flex-container,
-#credit-control-main #manage-ledger-tab-flex-container {
+#credit-control-main #manage-ledger-tab-flex-container,
+#credit-control-main #statements-tab-flex-container {
   display: flex;
   gap: 1rem;
 }
 #credit-control-main #dashboard-tab-flex-container #dashboard-main,
 #credit-control-main #dashboard-tab-flex-container #manage-ledger-main,
+#credit-control-main #dashboard-tab-flex-container #statements-main,
 #credit-control-main #manage-ledger-tab-flex-container #dashboard-main,
-#credit-control-main #manage-ledger-tab-flex-container #manage-ledger-main {
+#credit-control-main #manage-ledger-tab-flex-container #manage-ledger-main,
+#credit-control-main #manage-ledger-tab-flex-container #statements-main,
+#credit-control-main #statements-tab-flex-container #dashboard-main,
+#credit-control-main #statements-tab-flex-container #manage-ledger-main,
+#credit-control-main #statements-tab-flex-container #statements-main {
   flex: 1 1 auto;
   max-width: calc(100% - 65px);
 }
@@ -843,7 +849,7 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #credit-control-main .k-grid:not(#held-orders-grid) .credit-limit-heading,
 #credit-control-main .k-grid:not(#held-orders-grid) .totals-heading,
 #credit-control-main .k-grid:not(#held-orders-grid) .orders-heading,
-#credit-control-main .k-grid:not(#held-orders-grid) .debt-breakdown-heading,
+#credit-control-main .k-grid:not(#held-orders-grid) .sales-ledger-heading,
 #credit-control-main .k-grid:not(#held-orders-grid) .claim-heading,
 #credit-control-main .k-grid:not(#held-orders-grid) .other-heading,
 #credit-control-main .k-grid:not(#held-orders-grid) .sales-heading {
@@ -859,7 +865,7 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #credit-control-main .k-grid:not(#held-orders-grid) .credit-limit-subheading,
 #credit-control-main .k-grid:not(#held-orders-grid) .totals-subheading,
 #credit-control-main .k-grid:not(#held-orders-grid) .orders-subheading,
-#credit-control-main .k-grid:not(#held-orders-grid) .debt-breakdown-subheading,
+#credit-control-main .k-grid:not(#held-orders-grid) .sales-ledger-subheading,
 #credit-control-main .k-grid:not(#held-orders-grid) .claim-subheading,
 #credit-control-main .k-grid:not(#held-orders-grid) .other-subheading,
 #credit-control-main .k-grid:not(#held-orders-grid) .sales-subheading {
@@ -882,7 +888,7 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 #credit-control-main .k-grid-header .k-with-icon .k-link {
   margin: 0;
 }
-#credit-control-main .debt-breakdown,
+#credit-control-main .sales-ledger,
 #credit-control-main .orders-breakdown,
 #credit-control-main .claims-breakdown {
   cursor: pointer;

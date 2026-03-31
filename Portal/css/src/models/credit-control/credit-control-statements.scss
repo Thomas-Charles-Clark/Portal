@@ -1,0 +1,13 @@
+﻿@import "../common.scss";
+
+#statements-grid-container {
+	.breakdown-modal-heading {
+		display: none;
+	}
+
+	.selected-filter-pills {
+		.dropdown {
+			display: none;
+		}
+	}
+}

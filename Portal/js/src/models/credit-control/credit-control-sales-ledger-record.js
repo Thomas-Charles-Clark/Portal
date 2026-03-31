@@ -1,4 +1,4 @@
-﻿const creditControlDebtBreakdownRecordViewModel = ({
+﻿const creditControlSalesLedgerRecordViewModel = ({
     rec
 } = {
         rec: {}

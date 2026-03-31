@@ -577,7 +577,7 @@ const tradeAccountContactsFiltersViewModel = ({
         clearFunction: self.genericUnsavedChangesClear,
         parameterMap: self.generateTradeAccountSuperSetParameterMap(self.tradeAccountCompanyGroupBy),
         popupSettings: {
-            appendTo: `${self.prefix}trade-account-company-prefilter`
+            appendTo: `#${self.prefix}trade-account-company-prefilter`
         }
     });
 
@@ -603,7 +603,7 @@ const tradeAccountContactsFiltersViewModel = ({
             field: 'SortOrder'
         },
         popupSettings: {
-            appendTo: '#invoice-company-prefilter'
+            appendTo: `#${self.prefix}invoice-company-prefilter`
         },
         template: (e) => {
             if ((e.Name != '') && (e.Code != null)) {

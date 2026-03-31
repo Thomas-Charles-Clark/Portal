@@ -75,6 +75,12 @@ const creditControlViewModel = (() => {
         prefix: 'manage-ledger-'
     });
 
+    self.statementsFilters = creditControlFiltersViewModel({
+        params: window.getPredefinedFilterParams(),
+        parent: self,
+        prefix: 'statements-'
+    });
+
     self.allSortingOperations = ko.observableArray([]);
 
     self.activeSortingOperation = ko.observable();
@@ -96,6 +102,18 @@ const creditControlViewModel = (() => {
     self.tradeAccountContacts = tradeAccountContactsViewModel({});
 
     self.selectedTradeAccount = ko.observable();
+
+    self.salesLedger = ko.observable();
+
+    self.statements = ko.observable();
+
+    self.ordersBreakdown = ko.observable();
+
+    self.claimsBreakdown = ko.observable();
+
+    self.otherBreakdown = ko.observable();
+
+    self.salesBreakdown = ko.observable();
 
     self.dashboardTab = document.querySelector('#dashboard-tab');
 
@@ -121,31 +139,21 @@ const creditControlViewModel = (() => {
 
     self.onlinePaymentHistoryCollapse = bootstrap.Collapse.getOrCreateInstance(self.onlinePaymentHistoryTab);
 
-    self.debtBreakdown = ko.observable();
+    self.salesLedgerModalElement = document.querySelector('#sales-ledger-modal');
 
-    self.debtBreakdownModalElement = document.querySelector('#debt-breakdown-modal');
-
-    self.debtBreakdownModal = bootstrap.Modal.getOrCreateInstance(self.debtBreakdownModalElement);
-
-    self.ordersBreakdown = ko.observable();
+    self.salesLedgerModal = bootstrap.Modal.getOrCreateInstance(self.salesLedgerModalElement);
 
     self.ordersBreakdownModalElement = document.querySelector('#orders-breakdown-modal');
 
     self.ordersBreakdownModal = bootstrap.Modal.getOrCreateInstance(self.ordersBreakdownModalElement);
 
-    self.claimsBreakdown = ko.observable();
-
     self.claimsBreakdownModalElement = document.querySelector('#claims-breakdown-modal');
 
     self.claimsBreakdownModal = bootstrap.Modal.getOrCreateInstance(self.claimsBreakdownModalElement);
 
-    self.otherBreakdown = ko.observable();
-
     self.otherBreakdownModalElement = document.querySelector('#other-breakdown-modal');
 
     self.otherBreakdownModal = bootstrap.Modal.getOrCreateInstance(self.otherBreakdownModalElement);
-
-    self.salesBreakdown = ko.observable();
 
     self.salesBreakdownModalElement = document.querySelector('#sales-breakdown-modal');
 
@@ -304,7 +312,7 @@ const creditControlViewModel = (() => {
 
         self.busy(true);
 
-        fetch('/api/creditcontrolapi/TradeAccountSearch?' + params, {
+        fetch('/api/creditcontrolapi/DashboardSelect?' + params, {
             method: 'GET',
             headers: window.fetchHeaders,
             cache: 'no-cache',
@@ -421,29 +429,6 @@ const creditControlViewModel = (() => {
 
     //#region Components
 
-    //self.virtualScrollerContainer = document.getElementById("credit-control-scroller-container");
-
-    //self.virtualScoller =  virtualScrollingDeferredDataFactory({
-    //    busy: self.busy,
-    //    tableSelector: "#credit-control-main-table",
-    //    rowHeight: 50,
-    //    primaryFetchMethod: 'GET',
-    //    primaryFetchParams: self.primaryFetchParams,
-    //    primaryFetchEndpoint: "/api/creditcontrolapi/TradeAccountSearchEndless",
-    //    primaryFetchResultSetName: "gridData",
-    //    primaryFetchResultFn: (rec) => {
-    //        return creditControlMainGridRow(rec);
-    //    },
-    //    container: self.virtualScrollerContainer,
-    //    gridHeaderHeight: 57,
-    //    gridPositionTop: 0,
-    //    unfilledRecordFn: (rec) => {
-    //        let self = Object.assign({}, rec);
-    //        return self;
-    //    },
-    //    displayModes: self.filters.displayModes
-    //});
-
     self.paymentHistory = creditControlPaymentsHistoryViewModel({
         busy: self.busy,
         filters: self.filters
@@ -454,8 +439,12 @@ const creditControlViewModel = (() => {
         filters: self.filters
     });
 
-    self.manageLedger = creditControlDebtBreakdownViewModel({
+    self.manageLedger = creditControlSalesLedgerViewModel({
         filters: self.manageLedgerFilters
+    });
+
+    self.statements = creditControlStatementsViewModel({
+        filters: self.statementsFilters
     });
 
     self.memberBasketFetcher = memberBasketFetcher(self);
@@ -696,16 +685,16 @@ const creditControlViewModel = (() => {
     }, {
         title: 'Debt Breakdown',
         headerAttributes: {
-            "class": "debt-breakdown-heading debt-breakdown"
+            "class": "sales-ledger-heading sales-ledger"
         },
         columns: [{
             field: 'TotalValue',
             title: 'Total',
             headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
+                "class": "sales-ledger-subheading sales-ledger"
             },
             attributes: {
-                "class": "text-end debt-breakdown"
+                "class": "text-end sales-ledger"
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -730,10 +719,10 @@ const creditControlViewModel = (() => {
             field: 'NotDueTotalValue',
             title: 'Not Due',
             headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
+                "class": "sales-ledger-subheading sales-ledger"
             },
             attributes: {
-                "class": 'text-end debt-breakdown'
+                "class": 'text-end sales-ledger'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -758,10 +747,10 @@ const creditControlViewModel = (() => {
             field: 'OverdueTotalValue',
             title: 'Overdue',
             headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
+                "class": "sales-ledger-subheading sales-ledger"
             },
             attributes: {
-                "class": '#: (OverdueTotalValue > 0) ? "text-danger": "" # text-end debt-breakdown'
+                "class": '#: (OverdueTotalValue > 0) ? "text-danger": "" # text-end sales-ledger'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -786,10 +775,10 @@ const creditControlViewModel = (() => {
             field: 'Debt30DayValue',
             title: '30 Day',
             headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
+                "class": "sales-ledger-subheading sales-ledger"
             },
             attributes: {
-                "class": '#: (Debt30DayValue > 0 || Debt60DayValue > 0 || Debt90DayValue > 0 || Debt120DayValue > 0) ? "text-danger": "" # text-end debt-breakdown'
+                "class": '#: (Debt30DayValue > 0 || Debt60DayValue > 0 || Debt90DayValue > 0 || Debt120DayValue > 0) ? "text-danger": "" # text-end sales-ledger'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -814,10 +803,10 @@ const creditControlViewModel = (() => {
             field: 'Debt60DayValue',
             title: '60 Day',
             headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
+                "class": "sales-ledger-subheading sales-ledger"
             },
             attributes: {
-                "class": '#: (Debt60DayValue > 0 || Debt90DayValue > 0 || Debt120DayValue > 0) ? "text-danger": "" # text-end debt-breakdown'
+                "class": '#: (Debt60DayValue > 0 || Debt90DayValue > 0 || Debt120DayValue > 0) ? "text-danger": "" # text-end sales-ledger'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -842,10 +831,10 @@ const creditControlViewModel = (() => {
             field: 'Debt90DayValue',
             title: '90 Day',
             headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
+                "class": "sales-ledger-subheading sales-ledger"
             },
             attributes: {
-                "class": '#: (Debt90DayValue > 0 || Debt120DayValue > 0) ? "text-danger": "" # text-end debt-breakdown'
+                "class": '#: (Debt90DayValue > 0 || Debt120DayValue > 0) ? "text-danger": "" # text-end sales-ledger'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -870,10 +859,10 @@ const creditControlViewModel = (() => {
             field: 'Debt120DayValue',
             title: '120 Day',
             headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
+                "class": "sales-ledger-subheading sales-ledger"
             },
             attributes: {
-                "class": '#: (Debt120DayValue > 0) ? "text-danger": "" # text-end debt-breakdown'
+                "class": '#: (Debt120DayValue > 0) ? "text-danger": "" # text-end sales-ledger'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -898,10 +887,10 @@ const creditControlViewModel = (() => {
             field: 'DisputedValue',
             title: 'Disputed',
             headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
+                "class": "sales-ledger-subheading sales-ledger"
             },
             attributes: {
-                "class": '#: DisputedValue > 0 ? "text-danger": "" # text-end debt-breakdown'
+                "class": '#: DisputedValue > 0 ? "text-danger": "" # text-end sales-ledger'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -926,10 +915,10 @@ const creditControlViewModel = (() => {
             field: 'WrittenOffValue',
             title: 'Written Off',
             headerAttributes: {
-                "class": "debt-breakdown-subheading debt-breakdown"
+                "class": "sales-ledger-subheading sales-ledger"
             },
             attributes: {
-                "class": '#: WrittenOffValue > 0 ? "text-danger": "" # text-end debt-breakdown'
+                "class": '#: WrittenOffValue > 0 ? "text-danger": "" # text-end sales-ledger'
             },
             width: gridColumnWidths.oneForty,
             template: (e) => {
@@ -1449,8 +1438,8 @@ const creditControlViewModel = (() => {
 
                 let dataItem = ko.dataFor(event.sender.select()[0]);//event.sender.dataItem(event.sender.select().closest('tr'));
 
-                if (classList.contains('debt-breakdown')) {
-                    self.fetchDebtBreakdown(dataItem);
+                if (classList.contains('sales-ledger')) {
+                    self.fetchSalesLedger(dataItem);
                 }
                 else if (classList.contains('orders-breakdown')) {
                     self.fetchOrdersBreakdown(dataItem);
@@ -1690,7 +1679,7 @@ const creditControlViewModel = (() => {
         }
     }
 
-    self.fetchDebtBreakdown = (tradeAccount, event) => {
+    self.fetchSalesLedger = (tradeAccount, event) => {
         //self.busy(true);
 
         let data = {
@@ -1699,34 +1688,13 @@ const creditControlViewModel = (() => {
             pageSize: 10
         };
 
-        self.debtBreakdown(creditControlDebtBreakdownViewModel({
+        self.salesLedger(creditControlSalesLedgerViewModel({
             callee: tradeAccount
         }));
 
-        self.debtBreakdown().busy(true);
+        self.salesLedger().busy(true);
 
-        self.debtBreakdownModal.show();
-
-        //console.log('fetchDebtBreakdown calling with', data);
-
-        //fetch("/api/CreditControlAPI/FetchDebtBreakdown", {
-        //    method: 'POST',
-        //    headers: window.fetchHeaders,
-        //    cache: 'no-cache',
-        //    credentials: 'same-origin',
-        //    body: JSON.stringify(data)
-        //})
-        //    .then(window.handleFetchResponse)
-        //    .then(result => {
-        //        console.log('fetchDebtBreakdown returned', result);
-                
-        //        self.busy(false);
-
-        //    })
-        //    .catch(err => {
-        //        self.busy(false);
-        //        window.catchFetchError(err);
-        //    });
+        self.salesLedgerModal.show();
     }
 
     self.fetchOrdersBreakdown = (data, event) => {
@@ -1845,11 +1813,11 @@ const creditControlViewModel = (() => {
 
     //#region Events
 
-    self.debtBreakdownModalElement.addEventListener('bs.modal.hidden', () => {
-        self.debtBreakdown(undefined);
+    self.salesLedgerModalElement.addEventListener('bs.modal.hidden', () => {
+        self.salesLedger(undefined);
     });
 
-    self.debtBreakdownModalElement.addEventListener('bs.modal.shown', () => {
+    self.salesLedgerModalElement.addEventListener('bs.modal.shown', () => {
         
     });
 
@@ -1863,6 +1831,10 @@ const creditControlViewModel = (() => {
 
     self.manageLedgerTab.addEventListener('click', (event) => {
         self.manageLedger.refresh();
+    });
+
+    self.statementsTab.addEventListener('click', (event) => {
+        self.statements.refresh();
     });
 
     self.orderReleaseTab.addEventListener('click', (event) => {

@@ -6,18 +6,13 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.CreditControl
 {
-	public class CreditControl_TradeAccount_Search_DashboardPod
+	public class CreditControl_Statement_Select_Pod
 	{
+		public string Group { get; set; }
 		public string Classes { get; set; }
-
-		public byte SortOrder { get; set; }
-		
+		public int SortOrder { get; set; }
 		public string Heading { get; set; }
-
 		public string Stats { get; set; }
-
-		public string ParameterJSON { get; set; }
-
 		public string PodHandle { get; set; }
 	}
 }

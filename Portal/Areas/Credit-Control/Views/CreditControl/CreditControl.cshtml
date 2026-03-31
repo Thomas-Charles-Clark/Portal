@@ -157,7 +157,7 @@
 						<div class="prefilter" data-bind="attr: { id: `${prefix}trade-account-type-prefilter` }, component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeParams }"></div>
 						<div class="prefilter" data-bind="attr: { id: `${prefix}trade-account-type-group-prefilter` }, component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountTypeGroupParams }"></div>
 						<div class="prefilter" data-bind="attr: { id: `${prefix}trade-account-group-prefilter` }, component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountGroupParams }"></div>
-						<div class="prefilter" data-bind="attr: { id: `${prefix}trade-account-company` }, component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountCompanyParams }"></div>
+						<div class="prefilter" data-bind="attr: { id: `${prefix}trade-account-company-prefilter` }, component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountCompanyParams }"></div>
 						<div class="prefilter" data-bind="attr: { id: `${prefix}payment-terms-prefilter` }, component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsParams }"></div>
 						<div class="prefilter" data-bind="attr: { id: `${prefix}payment-terms-type-prefilter` }, component: { name: 'mdc-kendo-dropdown-component', params: paymentTermsTypeParams }"></div>
 						<div class="prefilter" data-bind="attr: { id: `${prefix}credit-stopped-prefilter` }, component: { name: 'mdc-kendo-dropdown-component', params: creditStoppedParams }"></div>
@@ -188,10 +188,10 @@
 	</sidebar>
 </script>
 
-<script type="text/html" id="debt-breakdown-template">
+<script type="text/html" id="sales-ledger-template">
 	<h4 class="breakdown-modal-heading" data-bind="with: heading">
 		<span data-bind="text: Heading"></span>
-		<div class="debt-breakdown-heading-btn-container">
+		<div class="sales-ledger-heading-btn-container">
 			<span>
 				Contacts
 			</span>
@@ -200,7 +200,7 @@
 				<span class="badge rounded-pill text-bg-primary" data-bind="text: $parent.callee.MemberCount"></span>
 			</a>
 		</div>
-		<div class="debt-breakdown-heading-btn-container">
+		<div class="sales-ledger-heading-btn-container">
 			<span>
 				Stop Status
 			</span>
@@ -209,7 +209,7 @@
 				<i class="bi bi-octagon bi-octagon-red d-none" data-bind="flexFadeVisible: $parent.callee.onStop() == true"></i>
 			</a>
 		</div>
-		<div class="debt-breakdown-heading-btn-container">
+		<div class="sales-ledger-heading-btn-container">
 			<a class="btn btn-dark statement-btn" href="javascript:;" data-bind="attr: { 'href': @(SharedEFClasses.Utilities.PortalFramework.IsDebug() ? "StatementURI.replace('portal.designersguild.com', 'localhost:44335')" : "StatementURI") }" target="_blank">
 				View Statement
 				<i class="bi bi-receipt-cutoff"></i>
@@ -222,9 +222,9 @@
 	<div class="grouped-pods-container accordion" data-bind="foreach: groupedPods">
 		<div class="pod-group accordion-item">
 			<h4 class="pod-group-title accordion-header">
-				<button type="button" class="accordion-button" data-bs-toggle="collapse" data-bind="html: groupName, attr: { 'data-bs-target': `#debt-breakdown-pod-group-${$index()}` }"></button>
+				<button type="button" class="accordion-button" data-bs-toggle="collapse" data-bind="html: groupName, attr: { 'data-bs-target': `#sales-ledger-pod-group-${$index()}` }"></button>
 			</h4>
-			<div class="accordion-collapse collapse show" data-bind="attr: { id: `debt-breakdown-pod-group-${$index()}` }">
+			<div class="accordion-collapse collapse show" data-bind="attr: { id: `sales-ledger-pod-group-${$index()}` }">
 				<div class="pods">
 					<!-- ko foreach: pods -->
 					<div class="pod" data-bind="css: { 'selected-pod': $parentContext.$parent.selectedPod()?.PodHandle == PodHandle }">
@@ -257,9 +257,9 @@
 	<div data-bind="kendoGrid: gridParams"></div>
 </script>
 
-<div class="modal fade breakdown-modal" id="debt-breakdown-modal" tabindex="-1">
-	<div class="modal-dialog modal-fullscreen" id="debt-breakdown-modal-dialog">
-		<div class="modal-content" data-bind="with: debtBreakdown">
+<div class="modal fade breakdown-modal" id="sales-ledger-modal" tabindex="-1">
+	<div class="modal-dialog modal-fullscreen" id="sales-ledger-modal-dialog">
+		<div class="modal-content" data-bind="with: salesLedger">
 			<div class="blocker" data-bind="flexFadeVisible: busy">
 				<div class="loading-spinner"></div>
 				<h4>
@@ -273,7 +273,7 @@
 				<button type="button" class="btn-close btn-close-white" aria-label="Close" data-bs-dismiss="modal"></button>
 			</div>
 			<div class="modal-body">
-				<!-- ko template: { name: 'debt-breakdown-template' } --><!-- /ko -->
+				<!-- ko template: { name: 'sales-ledger-template' } --><!-- /ko -->
 			</div>
 		</div>
 	</div>
@@ -665,7 +665,7 @@
 					<!-- ko template: { name: 'sidebar-template', data: filters } --><!-- /ko -->
 					<div id="manage-ledger-main">
 						<div id="manage-ledger-grid-container">
-							<!-- ko template: { name: 'debt-breakdown-template' } --><!-- /ko -->
+							<!-- ko template: { name: 'sales-ledger-template' } --><!-- /ko -->
 						</div>
 					</div>
 				</div>
@@ -676,7 +676,19 @@
 				</div>
 			</div>
 			<div class="tab-pane fade" id="statements-tab-pane" role="tabpanel" aria-labelledby="statements-tab" tabindex="0">
-				<form id="send-statements-controls" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
+				<div id="statements-tab-flex-container" data-bind="with: statements">
+					<div class="blocker" data-bind="flexFadeVisible: busy">
+						<div class="loading-spinner"></div>
+						<h4 class="mt-3" data-bind="text: busyMessage"></h4>
+					</div>
+					<!-- ko template: { name: 'sidebar-template', data: filters } --><!-- /ko -->
+					<div id="statements-main">
+						<div id="statements-grid-container">
+							<!-- ko template: { name: 'sales-ledger-template' } --><!-- /ko -->
+						</div>
+					</div>
+				</div>
+				@*<form id="send-statements-controls" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
 					<div class="trade-account-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statementsTradeAccountParams }"></div>
 					<div class="prefilter">
 						<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
@@ -688,7 +700,7 @@
 						Send Statements
 					</button>
 				</div>
-				<div id="response-container" data-bind="html: sendResponse"></div>
+				<div id="response-container" data-bind="html: sendResponse"></div>*@
 			</div>
 			<div id="paying-off-with-proforma-tab-pane" class="tab-pane fade">
 				<div class="prefilters mb-3" data-bind="with: filters">

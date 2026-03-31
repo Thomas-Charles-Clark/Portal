@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.CreditControl
 {
-	public class CreditControl_TradeAccount_SearchDTO
+	public class CreditControl_Dashboard_SelectDTO
 	{
 		public IEnumerable<byte> SalesMarketIDs { get; set; }
 

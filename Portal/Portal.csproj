@@ -1855,6 +1855,9 @@
     <Content Include="js\src\models\credit-control\credit-control-payments-history-pod.js" />
     <Content Include="js\src\models\credit-control\credit-control-payments-history-record.js" />
     <Content Include="js\src\models\credit-control\credit-control-payments-history.js" />
+    <Content Include="js\src\models\credit-control\credit-control-statements.js" />
+    <Content Include="js\src\models\credit-control\credit-control-statements-pod.js" />
+    <Content Include="js\src\models\credit-control\credit-control-statements-record.js" />
     <Content Include="js\src\models\others\address.js" />
     <Content Include="js\src\models\others\alternative-products.js" />
     <Content Include="js\src\models\others\application-groups.js" />
@@ -1880,11 +1883,11 @@
     <Content Include="js\src\models\credit-control\credit-control-orders-breakdown.js" />
     <Content Include="js\src\models\credit-control\credit-control-orders-breakdown-pod.js" />
     <Content Include="js\src\models\credit-control\credit-control-orders-breakdown-record.js" />
-    <Content Include="js\src\models\credit-control\credit-control-debt-breakdown-record.js" />
-    <Content Include="js\src\models\credit-control\credit-control-debt-breakdown-pod.js" />
+    <Content Include="js\src\models\credit-control\credit-control-sales-ledger-record.js" />
+    <Content Include="js\src\models\credit-control\credit-control-sales-ledger-pod.js" />
     <Content Include="js\src\models\credit-control\credit-control-filters.js" />
     <Content Include="js\src\models\credit-control\credit-control-trade-account-search-result.js" />
-    <Content Include="js\src\models\credit-control\credit-control-debt-breakdown.js" />
+    <Content Include="js\src\models\credit-control\credit-control-sales-ledger.js" />
     <Content Include="js\src\models\others\customer-care.js" />
     <Content Include="js\src\models\others\customer-enquiry.js" />
     <Content Include="js\src\models\others\customer-invite.js" />
@@ -3322,8 +3325,9 @@
     <Content Include="css\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits.scss" />
     <Content Include="css\dist\fonts\src\trixie-web-pro-heavy.ttf" />
     <Content Include="css\src\fonts\src\trixie-web-pro-heavy.ttf" />
-    <Content Include="css\src\models\credit-control\credit-control-debt-breakdown.scss" />
+    <Content Include="css\src\models\credit-control\credit-control-sales-ledger.scss" />
     <Content Include="css\src\models\credit-control\credit-control-manage-ledger.scss" />
+    <Content Include="css\src\models\credit-control\credit-control-statements.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
