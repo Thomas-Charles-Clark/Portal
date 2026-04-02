@@ -705,4 +705,22 @@
 #online-payment-history-pane .alert + .alert {
   margin-top: 1rem;
 }
+
+.popover {
+  max-width: unset;
+  max-height: 640px;
+  overflow-y: scroll;
+}
+.popover.payment-error-popover .popover-body {
+  max-height: 640px;
+  overflow-y: scroll;
+}
+.popover.payment-error-popover .popover-body pre {
+  min-width: 480px !important;
+  max-height: 640px;
+}
+.popover.payment-error-popover .popover-body .prettyprint {
+  min-width: 480px !important;
+  max-height: 640px;
+}
 /*# sourceMappingURL=credit-control-payments.css.map */

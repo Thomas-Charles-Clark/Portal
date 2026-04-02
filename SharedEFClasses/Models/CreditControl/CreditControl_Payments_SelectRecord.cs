@@ -44,5 +44,9 @@ namespace SharedEFClasses.Models.CreditControl
 		public string DepositAccountDetails { get; set; }
 
 		public string BraintreeTransactionURI { get; set; }
+
+		public bool PaymentTaken { get; set; }
+
+		public string FullErrorDetails { get; set; }
 	}
 }

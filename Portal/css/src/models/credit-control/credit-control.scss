@@ -717,7 +717,7 @@ html {
 
         .pod-group-title {
             margin: 0;
-            border: 1px solid $gray-500;
+            border: 1px solid $gray-400;
             background-color: $light;
             color: $body-color;
         }
@@ -738,7 +738,7 @@ html {
         .pods {
             margin: 0;
             padding: $l-gutter;
-            border: 1px solid $gray-500;
+            border: 1px solid $gray-400;
             border-top: 0;
             display: flex;
             gap: $l-gutter;

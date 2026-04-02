@@ -218,7 +218,12 @@
             extra: false
         },
         template: (dataItem) => {
-            if (dataItem.PaymentStatus) {
+            if (dataItem.PaymentTaken == false && dataItem.FullErrorDetails != null) {
+                return `<div class="relative">
+                    ${dataItem.PaymentStatus}
+                    <a class="stretched-link" href="javascript:;" data-bind="actualBootstrapPopover: { details: fullErrorDetails }, click: () => { return true; }, clickBubble: false"></a>
+                </div>`;
+            } else if (dataItem.PaymentStatus) {
                 return dataItem.PaymentStatus;
             } else {
                 return '';
@@ -394,8 +399,25 @@
                         ModifiedDT: { type: 'date' },
                         OrderIDs: { type: 'string' },
                         TradeAccountLabel: { type: 'string' },
-                        CreditController: { type: 'string' }
+                        CreditController: { type: 'string' },
+                        FullErrorDetails: { type: 'string' },
+                        PaymentTaken: { type: 'boolean' }
                     }
+                },
+                parse: (response) => {
+                    console.log('paymentsHistory dataSource.parse', response);
+
+                    let data = [];
+
+                    response.Data.forEach(d => {
+                        data.push(creditControlPaymentsHistoryRecordViewModel({
+                            rec: d
+                        }))
+                    });
+
+                    response.Data = data;
+
+                    return response;
                 }
             }),
             requestStart: (e) => {
@@ -465,26 +487,26 @@
             }
         },
         dataBound: (e) => {
-            console.log('creditControlViewModel dataBound', e);
+            e.sender.resize();
+
+            document.querySelectorAll('[data-bind*="actualBootstrapPopover"]').forEach(e => {
+                let p = bootstrap.Popover.getInstance(e);
+                if (p) {
+                    p.hide();
+                }
+            });
 
             ko.ignoreDependencies(() => {
 
-                var pristine = e.sender.dataSource.data().toJSON();
-
                 ko.utils.arrayForEach(e.sender.dataSource.data(), function (item, index) {
 
+                    // this is necessary because if you have locked columns you will have multiple <tr> sharing the one uid
                     let rows = document.querySelectorAll('tr[data-uid="' + item.uid + '"]');
 
                     rows.forEach(row => {
                         ko.cleanNode(row);
-
-                        pristine[index] = creditControlPaymentsHistoryRecordViewModel({
-                            rec: item
-                        });
-
-                        ko.applyBindings(pristine[index], row);
+                        ko.applyBindings(item, row);
                     });
-
                 });
             });
         }
