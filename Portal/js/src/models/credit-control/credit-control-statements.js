@@ -20,18 +20,110 @@
         allSelected: ko.observable(false),
         allTradeAccountIds: ko.observableArray([]),
         allTradeAccountCodes: ko.observableArray([]),
-        selectedTradeAccountCodes: ko.observableArray([])
+        selectedTradeAccountCodes: ko.observableArray([]),
+        statementDate: ko.observable(new Date()),
+        statementSendModalElement: document.querySelector('#statement-send-modal')
     };
 
     //#region Properties
 
+    self.statementSendModal = bootstrap.Modal.getOrCreateInstance(self.statementSendModalElement);
 
+    self.statementDateParams = {
+        label: "Date",
+        observable: self.statementDate,
+        originalValue: self.statementDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'calendar',
+                cellSize: '3rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false
+        },
+        clearable: ko.observable(false),
+        clearFunction: () => {
+            self.statementDate(undefined);
+            self.statementDateParams.observable.tempusDominus.clear();
+            self.statementDateParams.observable.tempusDominus.updateOptions({
+                display: {
+                    viewMode: 'calendar'
+                }
+            })
+        },
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.statementDateParams.observable(self.statementDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+    };
 
     //#endregion
 
 
 
     //#region Methods
+
+    self.showSendStatementsModal = () => {
+        if (self.selectedTradeAccountCodes().length == 0) {
+            window.showInfo("No Trade Accounts Selected", "Please select Trade Accounts using the checkbox column on the right.");
+        } else {
+            self.statementSendModal.show();
+        }
+    }
+
+    self.sendStatements = () => {
+        self.busy(true);
+
+        let parameters = {
+            tradeAccountCodes: self.selectedTradeAccountCodes(),
+            date: self.statementDate()
+        }
+
+        fetch('/api/creditcontrolapi/SendStatements', {
+            method: 'POST',
+            headers: window.fetchHeaders,
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            body: JSON.stringify(parameters)
+        })
+            .then(window.handleFetchResponse)
+            .then(data => {
+                if (data.Success) {
+                    self.busy(false);
+                    window.showInfo("Information", data.Message);
+                    self.statementSendModal.hide();
+                } else {
+                    window.showError(data.Message);
+                    self.busy(false);
+                }
+            })
+    }
 
     self.exportToExcel = () => {
         self.gridWidget() && self.gridWidget().saveAsExcel();
@@ -271,6 +363,7 @@
                         data.push(creditControlStatementsRecordViewModel({
                             rec: d,
                             preselected: self.selectedTradeAccountCodes().find(ta => ta == d.TradeAccountCode) != null,
+                            observableArray: self.selectedTradeAccountCodes
                         }))
                     });
 
@@ -328,9 +421,6 @@
             ko.cleanNode(selectAllElement);
 
             ko.applyBindings(self, selectAllElement);
-        },
-        change: (e) => {
-            self.selectedTradeAccountCodes(e.sender.selectedKeyNames());
         }
     };
 
@@ -365,6 +455,18 @@
 
     }, self);
 
+    self.modalMessage = ko.computed(() => {
+        let result = '';
+
+        if (self.selectedTradeAccountCodes().length == 1) {
+            result = `Send Statement (${moment(self.statementDate()).format('DD/MM/YYYY')}) to 1 Trade Account: ${self.selectedTradeAccountCodes()[0]}`
+        } else {
+            result = `Send Statements (${moment(self.statementDate()).format('DD/MM/YYYY')}) to: ${window.formatNumber(self.selectedTradeAccountCodes().length, 0, 'en-GB')} Trade Accounts`
+        }
+
+        return result;
+    }, self)
+
     //#endregion
 
 
@@ -372,7 +474,6 @@
     //#region Subscriptions
 
     if (self.filters) {
-
         self.filters.displayModes.subscribe(nv => {
             self.gridParams.widget().refresh();
         }, self, 'arrayChange');
@@ -384,7 +485,6 @@
                 pageSize: (self.gridParams.widget() && self.gridParams.widget().dataSource.pageSize())
             });
         });
-
     }
 
     self.allSelected.subscribe(nv => {

@@ -1,12 +1,15 @@
 ﻿const creditControlStatementsRecordViewModel = ({
     preselected,
-    rec
+    rec,
+    observableArray
 } = {
         preselected: false,
-        rec: {}
+        rec: {},
+        observableArray: ko.observableArray([])
     }) => {
     let self = Object.assign({
-        selected: ko.observable(preselected)
+        selected: ko.observable(preselected),
+        observableArray: observableArray
     }, rec);
 
     self.popoverInsertion = async function(event) {
@@ -89,7 +92,13 @@
 
     //#region Subscriptions
 
-
+    self.selected.subscribe(nv => {
+        if (nv) {
+            self.observableArray.push(self.TradeAccountCode);
+        } else {
+            self.observableArray.remove(i => i == self.TradeAccountCode)
+        }
+    });
 
     //#endregion
 

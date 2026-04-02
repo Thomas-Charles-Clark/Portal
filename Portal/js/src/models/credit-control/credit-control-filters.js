@@ -579,60 +579,6 @@ const creditControlFiltersViewModel = ({
         }
     });
 
-    self.dateParams = {
-        label: "Date",
-        observable: self.date,
-        originalValue: self.date(),
-        displayObservable: ko.observable(),
-        dateTimePickerOptions: {
-            localization: {
-                locale: 'en-GB',
-                format: 'dd/MM/yyyy'
-            },
-            display: {
-                sideBySide: false,
-                components: {
-                    clock: false,
-                    calendar: true,
-                    date: true,
-                    month: true,
-                    year: true,
-                    decades: false,
-                    clock: false,
-                    hours: false,
-                    minutes: false,
-                    seconds: false
-                },
-                viewMode: 'months',
-                cellSize: '3rem'
-            },
-            restrictions: {
-                disabledDates: []
-            },
-            allowInputToggle: true,
-            useCurrent: false,
-            keepInvalid: true,
-            debug: false
-        },
-        clearable: ko.observable(true),
-        clearFunction: () => {
-            self.date(undefined);
-            self.dateParams.observable.tempusDominus.clear();
-            self.dateParams.observable.tempusDominus.updateOptions({
-                display: {
-                    viewMode: 'months'
-                }
-            })
-        },
-        revertible: ko.observable(true),
-        revertFunction: () => {
-            self.date.observable(self.dateParams.originalValue);
-        },
-        useNativeValidation: false,
-        insertValidationMessages: false,
-        decorateInputElement: true,
-    };
-
     //self.salesHistoryAnalysisPeriodGroupBy = `groupby((GroupName))`;
 
     self.salesHistoryAnalysisPeriodTemplate = (e) => {

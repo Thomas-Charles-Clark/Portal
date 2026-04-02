@@ -4702,7 +4702,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
     self.changeStatusAndSubmit = function (action) {
         // determine what status
         // set it to self.selectedLeadStatus
-        //call submit with no action
+        // call submit with no action
         var nextStatus = null;
 
         switch (self.currentStage()) {
@@ -5098,31 +5098,30 @@ This customer wishes their deliveries to be consolidated. Please double check th
                             $("#edit-lead-modal").modal('hide');
                         break;
                         case 'open':
+                            //$.info('Sorry', 'Opening of Trade Accounts is on hold until further notice. Please check back on Friday the 27th of March 2026.', null, () => {
+                            //    self.leadSaveBusy(false);
+                            //    $("#edit-lead-modal").modal('hide');
+                            //});
 
-                            $.info('Sorry', 'Opening of Trade Accounts is on hold until further notice. Please check back on Friday the 27th of March 2026.', null, () => {
-                                self.leadSaveBusy(false);
-                                $("#edit-lead-modal").modal('hide');
+                            $.ajax({
+                              url: '/api/leadsapi/OpenTradeAccount',
+                              type: 'post',
+                              dataType: 'json',
+                              cache: false,
+                              data: {
+                                leadId: self.leadId(),
+                              },
+                              success: (result) => {
+                                $.info('Success', `Trade Account <b>${result.tradeAccountCode}</b> has been opened in Mertex.`, null, () => {
+                                  self.leadSaveBusy(false);
+                                  $("#edit-lead-modal").modal('hide');
+                                });
+                              },
+                              error: function (xhr, e, s) {
+                                //self.resetLeadToCreditControl();
+                                $.showError(xhr, e, s);
+                              }
                             });
-
-                        //$.ajax({
-                        //  url: '/api/leadsapi/OpenTradeAccount',
-                        //  type: 'post',
-                        //  dataType: 'json',
-                        //  cache: false,
-                        //  data: {
-                        //    leadId: self.leadId(),
-                        //  },
-                        //  success: (result) => {
-                        //    $.info('Success', `Trade Account <b>${result.tradeAccountCode}</b> has been opened in Mertex.`, null, () => {
-                        //      self.leadSaveBusy(false);
-                        //      $("#edit-lead-modal").modal('hide');
-                        //    });
-                        //  },
-                        //  error: function (xhr, e, s) {
-                        //    //self.resetLeadToCreditControl();
-                        //    $.showError(xhr, e, s);
-                        //  }
-                        //});
                         break;
                       default:
                             self.leadSaveBusy(false);

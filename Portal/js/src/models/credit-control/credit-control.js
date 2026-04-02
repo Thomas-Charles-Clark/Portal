@@ -1237,7 +1237,7 @@ const creditControlViewModel = (() => {
         },
         columns: [{
             field: 'ClaimCount',
-            title: ' ',
+            title: 'Value<br/>Count',
             headerAttributes: {
                 "class": "claim-subheading claims-breakdown"
             },
@@ -1575,7 +1575,22 @@ const creditControlViewModel = (() => {
 
     //#region Computeds
 
+    self.groupedPods = ko.computed(() => {
 
+        let pods = self.dashboardPods();
+
+        let groups = Object.groupBy(pods, (pod) => pod.Group);
+
+        let groupedPods = Object.keys(groups).map(k => {
+            return {
+                groupName: k,
+                pods: groups[k]
+            };
+        });
+
+        return groupedPods;
+
+    }, self);
 
     //#endregion
 

@@ -8,6 +8,8 @@ namespace SharedEFClasses.Models.CreditControl
 {
 	public class CreditControl_Dashboard_Select_Pod
 	{
+		public string Group { get; set; }
+
 		public string Classes { get; set; }
 
 		public byte SortOrder { get; set; }

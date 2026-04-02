@@ -421,6 +421,7 @@
     <Compile Include="Models\CreditControl\CreditControl_Payments_SelectRecord.cs" />
     <Compile Include="Models\CreditControl\CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectResult.cs" />
     <Compile Include="Models\CreditControl\CreditControl_Payments_SelectResult.cs" />
+    <Compile Include="Models\CreditControl\CreditControl_Statement_SendDTO.cs" />
     <Compile Include="Models\CreditControl\CreditControl_Toggle_CreditStop_Record.cs" />
     <Compile Include="Models\CreditControl\CreditControl_Toggle_CreditStop_Result.cs" />
     <Compile Include="Models\CreditControl\CreditControl_TradeAccount_PerformanceDTO.cs" />

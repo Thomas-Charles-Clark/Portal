@@ -1260,4 +1260,15 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
   display: flex;
   align-items: center;
 }
+
+#dashboard-main .k-grid-header {
+  padding-right: 0 !important;
+}
+#dashboard-main .k-grid-header .k-grid-header-wrap {
+  border-right: 0 !important;
+}
+#dashboard-main .k-grid-content.k-auto-scrollable {
+  padding-right: 0 !important;
+  overflow-y: hidden !important;
+}
 /*# sourceMappingURL=credit-control.css.map */

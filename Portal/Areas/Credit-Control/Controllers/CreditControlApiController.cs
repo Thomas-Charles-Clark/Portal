@@ -64,11 +64,7 @@ namespace Portal.Areas.CreditControl.Controllers
 
 				var model = await PortalDb.CreditControl_Dashboard_Select(dto);
 
-				request.Page = 1; // This is a super weird and stupid hack but...
-								  // which I can't remember why I did it - is it because... if the procedure does paging,
-								  // the data is already paged and so the datasource processing is moot? 
-								  // something like that, anyway I'm only having this thought now because
-								  // see CreditControl_Statement_Select below
+				request.Page = 1;  // super weird but 100% necessary because we're doing the paging inside the procedure.
 
 				var gridData = model.Results.ToDataSourceResult(request);
 
@@ -160,7 +156,7 @@ namespace Portal.Areas.CreditControl.Controllers
 
 				var model = await PortalDb.CreditControl_Payments_Select(dto);
 
-				request.Page = 1; // This is a super weird and stupid hack but...
+				request.Page = 1; // super weird but 100% necessary because we're doing the paging inside the procedure.
 
 				var gridData = model.Records.ToDataSourceResult(request);
 
@@ -248,7 +244,7 @@ namespace Portal.Areas.CreditControl.Controllers
 
 				var model = await PortalDb.CreditControl_OutstandingInvoicesWithUnallocatedDeposits_Select(dto);
 
-				request.Page = 1; // This is a super weird and stupid hack but...
+				request.Page = 1;  // super weird but 100% necessary because we're doing the paging inside the procedure.
 
 				var gridData = model.Records.ToDataSourceResult(request);
 
@@ -303,7 +299,7 @@ namespace Portal.Areas.CreditControl.Controllers
 
 				var model = await PortalDb.CreditControl_SalesLedger_Select(dto);
 
-				request.Page = 1; // This is a super weird and stupid hack but...
+				request.Page = 1;  // super weird but 100% necessary because we're doing the paging inside the procedure.
 
 				var gridData = model.Records.ToDataSourceResult(request);
 
@@ -343,8 +339,7 @@ namespace Portal.Areas.CreditControl.Controllers
 
 				var model = await PortalDb.CreditControl_Statements_Select(dto);
 
-				//request.Page = 1; // This is a super weird and stupid hack but...
-									// it will become necessary when Matt gets around to using paging in the sproc
+				request.Page = 1; // super weird but 100% necessary because we're doing the paging inside the procedure.
 
 				var gridData = model.Results.ToDataSourceResult(request);
 
@@ -420,6 +415,18 @@ namespace Portal.Areas.CreditControl.Controllers
 			var results = await PortalDb.CreditControl_AgedSalesLedger_Select(dto);
 
 			return Ok(results);
+		}
+
+		[HttpPost]
+		public async Task<IHttpActionResult> SendStatements([FromBody]CreditControl_Statement_SendDTO dto)
+		{
+			await Task.Run(() => { });
+
+			return Ok(new
+			{
+				Success = false,
+				Message = "Server call was successful; which stored procedure should we call?"
+			});
 		}
 	}
 }
