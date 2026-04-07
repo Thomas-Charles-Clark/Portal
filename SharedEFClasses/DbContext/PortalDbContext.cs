@@ -3,6 +3,7 @@
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 
+using SharedEFClasses.Models.Accounts;
 using SharedEFClasses.Models.ActiveDirectory;
 using SharedEFClasses.Models.Advertisers;
 using SharedEFClasses.Models.Applications;
@@ -667,6 +668,8 @@ namespace SharedEFClasses.Models
         public virtual DbSet<Banking.BankingAccount> BankingAccounts { get; set; }
 
         public virtual DbSet<Banking.BankingCurrency> BankingCurrencies { get; set; }
+
+        public virtual DbSet<DGPaymentDetails> DGPaymentDetails { get; set; }
 
         #endregion
 

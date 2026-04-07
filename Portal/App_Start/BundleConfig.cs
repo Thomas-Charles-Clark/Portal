@@ -461,6 +461,11 @@ namespace Portal
 					$"{cssPrefix}/models/common/common-2026{cssSuffix}"
 			));
 
+			bundles.Add(new StyleBundle("~/bundles/css/bank-accounts").Include(
+					$"{cssPrefix}/models/full-width-app{cssSuffix}",
+					$"{cssPrefix}/models/accounts/banks/bank-accounts{cssSuffix}"
+			));
+
 			//  
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			//
@@ -1075,6 +1080,11 @@ namespace Portal
 						$"{jsPrefix}/models/trade-accounts/trade-account-contacts{jsSuffix}",
 						$"{jsPrefix}/models/trade-accounts/trade-account-contacts-dashboard-pod{jsSuffix}",
 						$"{jsPrefix}/models/trade-accounts/trade-account-contact{jsSuffix}"
+				));
+
+			bundles.Add(new ScriptBundle("~/bundles/js/accounts/bank-accounts").Include(
+						$"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+						$"{jsPrefix}/models/accounts/banks/bank-accounts{jsSuffix}"
 				));
 
 			bundles.Add(new ScriptBundle("~/bundles/js/supplier-payments").Include(

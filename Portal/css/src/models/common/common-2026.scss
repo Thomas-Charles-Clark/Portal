@@ -1,5 +1,47 @@
 ﻿@import '../common.scss';
 
+#navbarSupportedContent {
+	h1, h2, h3, h4, h5, h6 {
+		font-family: "Trixie", "Open Sans", Arial;
+		font-weight: 800;
+
+		span {
+			font-family: "Trixie", "Open Sans", Arial;
+			font-weight: 800;
+		}
+	}
+
+	.nav.navbar-nav {
+		flex-wrap: nowrap;
+
+		.app-title {
+			h2 {
+				flex-wrap: nowrap;
+
+				span {
+					white-space: nowrap;
+				}
+			}
+
+			.dropdown-toggle {
+				vertical-align: top;
+			}
+		}
+	}
+
+	ul.dropdown-menu {
+		overflow-y: auto;
+
+		li:not(.app-title) {
+			padding: 0;
+
+			.dropdown-item {
+				padding: $m-gutter $l-gutter;
+			}
+		}
+	}
+}
+
 .k-dropdownlist {
 	&.k-picker {
 		width: 100%;

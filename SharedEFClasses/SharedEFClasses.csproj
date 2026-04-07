@@ -382,6 +382,7 @@
     <Compile Include="DbContext\PortalDbContext-Product-Maintenance.cs" />
     <Compile Include="DbContext\PortalDbContext-OrderBook.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Models\Accounts\DGPaymentDetails.cs" />
     <Compile Include="Models\ActiveDirectory\ActiveDirectoryGroup.cs" />
     <Compile Include="Models\ActiveDirectory\ActiveDirectoryUser.cs" />
     <Compile Include="Models\ActiveDirectory\ActiveDirectoryUser_ActiveDirectoryGroup.cs" />

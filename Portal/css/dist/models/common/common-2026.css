@@ -616,6 +616,36 @@
   cursor: pointer;
 }
 
+#navbarSupportedContent h1, #navbarSupportedContent h2, #navbarSupportedContent h3, #navbarSupportedContent h4, #navbarSupportedContent h5, #navbarSupportedContent h6 {
+  font-family: "Trixie", "Open Sans", Arial;
+  font-weight: 800;
+}
+#navbarSupportedContent h1 span, #navbarSupportedContent h2 span, #navbarSupportedContent h3 span, #navbarSupportedContent h4 span, #navbarSupportedContent h5 span, #navbarSupportedContent h6 span {
+  font-family: "Trixie", "Open Sans", Arial;
+  font-weight: 800;
+}
+#navbarSupportedContent .nav.navbar-nav {
+  flex-wrap: nowrap;
+}
+#navbarSupportedContent .nav.navbar-nav .app-title h2 {
+  flex-wrap: nowrap;
+}
+#navbarSupportedContent .nav.navbar-nav .app-title h2 span {
+  white-space: nowrap;
+}
+#navbarSupportedContent .nav.navbar-nav .app-title .dropdown-toggle {
+  vertical-align: top;
+}
+#navbarSupportedContent ul.dropdown-menu {
+  overflow-y: auto;
+}
+#navbarSupportedContent ul.dropdown-menu li:not(.app-title) {
+  padding: 0;
+}
+#navbarSupportedContent ul.dropdown-menu li:not(.app-title) .dropdown-item {
+  padding: 0.75rem 1rem;
+}
+
 .k-dropdownlist.k-picker {
   width: 100%;
 }

@@ -1,0 +1,31 @@
+﻿@import "../../common/common-2026.scss";
+
+#bank-accounts-container {
+	padding: $l-gutter;
+	opacity: 0;
+
+	#bank-accounts-main {
+		width: 100%;
+	}
+
+	#overview-tab-content {
+		background-color: $white;
+		border: 1px solid $gray-300;
+		border-top: none;
+		border-bottom-right-radius: $border-radius;
+		border-bottom-left-radius: $border-radius;
+
+		.tab-pane {
+			padding: $l-gutter;
+
+			.tab-heading {
+				margin-bottom: 0;
+			}
+
+			.k-table-td {
+				height: 56px;
+				padding: 4px 12px;
+			}
+		}
+	}
+}

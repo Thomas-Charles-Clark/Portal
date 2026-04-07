@@ -553,12 +553,15 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\Accounts\AccountsAreaRegistration.cs" />
+    <Compile Include="Areas\Accounts\Controllers\Banks\BankAccountsApiController.cs" />
+    <Compile Include="Areas\Accounts\Controllers\Banks\BankAccountsController.cs" />
+    <Compile Include="Areas\Accounts\ViewModels\BankAccountsViewModel.cs" />
     <Compile Include="Areas\Credit-Control\Controllers\CreditControlApiController.cs" />
     <Compile Include="Areas\Credit-Control\Controllers\StatementsApiController.cs" />
     <Compile Include="Areas\Credit-Control\Controllers\CreditControlController.cs" />
     <Compile Include="Areas\Credit-Control\CreditControlAreaRegistration.cs" />
     <Compile Include="Areas\Credit-Control\ViewModels\CreditControlViewModel.cs" />
-    <Compile Include="Areas\Credit-Control\Views\CreditControl\heldOrdersMarketParams.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceAPIController.cs" />
     <Compile Include="Areas\Customers\Controllers\AdvertiserMaintenanceController.cs" />
     <Compile Include="Areas\Suppliers\Controllers\SupplierPaymentApproval_Basket_SelectRecordsController.cs" />
@@ -683,6 +686,7 @@
     <Compile Include="Controllers\IncomingEmailAttachmentController.cs" />
     <Compile Include="Controllers\ODataControllers\BankingCurrenciesController.cs" />
     <Compile Include="Controllers\ODataControllers\BankingAccountsController.cs" />
+    <Compile Include="Controllers\ODataControllers\DGPaymentDetailsController.cs" />
     <Compile Include="Controllers\ODataControllers\PaymentPeriodsController.cs" />
     <Compile Include="Controllers\ODataControllers\PaymentBudgetsController.cs" />
     <Compile Include="Controllers\ODataControllers\PurchaseOrderHeadsController.cs" />
@@ -1847,6 +1851,7 @@
     <Content Include="js\src\lib\tempus-dominus\tempus-dominus.js" />
     <Content Include="js\src\lib\tiff\tiff.js" />
     <Content Include="js\src\lib\tiny-slider\tiny-slider.js" />
+    <Content Include="js\src\models\accounts\banks\bank-accounts.js" />
     <Content Include="js\src\models\credit-control\credit-control-main-grid-row.js" />
     <Content Include="js\src\models\credit-control\credit-control-main-grid-column.js" />
     <Content Include="js\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits-pod.js" />
@@ -2796,6 +2801,9 @@
     <Content Include="Areas\Documents\Views\SentReport\DocumentsSentReport.cshtml" />
     <Content Include="Areas\Credit-Control\Views\web.config" />
     <Content Include="Areas\Credit-Control\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Accounts\Views\web.config" />
+    <Content Include="Areas\Accounts\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Accounts\Views\BankAccounts\BankAccounts.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <Content Include="Areas\Trade-Accounts\Views\web.config" />
@@ -3328,6 +3336,7 @@
     <Content Include="css\src\models\credit-control\credit-control-sales-ledger.scss" />
     <Content Include="css\src\models\credit-control\credit-control-manage-ledger.scss" />
     <Content Include="css\src\models\credit-control\credit-control-statements.scss" />
+    <Content Include="css\src\models\accounts\banks\bank-accounts.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -6813,6 +6822,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\Accounts\Data\" />
+    <Folder Include="Areas\Accounts\Views\Shared\" />
     <Folder Include="Areas\ApplicationGroups\Views\Shared\" />
     <Folder Include="Areas\Credit-Control\Data\" />
     <Folder Include="Areas\Credit-Control\Views\Shared\" />
@@ -6853,6 +6864,7 @@
     <Folder Include="Programmatic\ImageDownloads\" />
     <Folder Include="Scripts\int-tel\assets\" />
     <Folder Include="Uploads\" />
+    <Folder Include="Views\Accounts\" />
     <Folder Include="Views\BaseOData\" />
     <Folder Include="Views\ForceAuth\" />
     <Folder Include="Views\HeldOrderAPI\" />

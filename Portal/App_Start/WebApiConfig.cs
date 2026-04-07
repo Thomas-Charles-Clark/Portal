@@ -38,6 +38,7 @@ using SharedEFClasses.Models.Suppliers.PaymentApprovals;
 using SharedEFClasses.Models.Suppliers.PaymentApproval;
 using SharedEFClasses.Models.Suppliers.Payments;
 using SharedEFClasses.Models.Banking;
+using SharedEFClasses.Models.Accounts;
 
 namespace Portal
 {
@@ -169,6 +170,7 @@ namespace Portal
 			odataBuilder.EntitySet<CreditControllerLive>("CreditControllers");
 			odataBuilder.EntitySet<SharedEFClasses.Models.Banking.BankingAccount>("BankingAccounts");
 			odataBuilder.EntitySet<SharedEFClasses.Models.Banking.BankingCurrency> ("BankingCurrencies");
+			odataBuilder.EntitySet<DGPaymentDetails> ("DGPaymentDetails");
 
 			var paymentRequests = odataBuilder.EntityType<PaymentRequest>();
 
