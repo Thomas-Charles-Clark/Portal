@@ -435,7 +435,8 @@ namespace Portal
                     $"{cssPrefix}/models/credit-control/credit-control-payments{cssSuffix}",
                     $"{cssPrefix}/models/credit-control/credit-control-performance{cssSuffix}",
 					$"{cssPrefix}/models/credit-control/credit-control-order-release{cssSuffix}",
-                    $"{cssPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits{cssSuffix}",
+					$"{cssPrefix}/models/credit-control/credit-control-close-brothers{cssSuffix}",
+					$"{cssPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits{cssSuffix}",
 					$"{cssPrefix}/models/credit-control/credit-control-virtual-scroller{cssSuffix}",
 					$"{cssPrefix}/models/credit-control/credit-control-sales-ledger{cssSuffix}",
 					$"{cssPrefix}/models/credit-control/credit-control-manage-ledger{cssSuffix}",
@@ -464,6 +465,11 @@ namespace Portal
 			bundles.Add(new StyleBundle("~/bundles/css/bank-accounts").Include(
 					$"{cssPrefix}/models/full-width-app{cssSuffix}",
 					$"{cssPrefix}/models/accounts/banks/bank-accounts{cssSuffix}"
+			));
+
+			bundles.Add(new StyleBundle("~/bundles/css/daily-banking-statistics").Include(
+					$"{cssPrefix}/models/full-width-app{cssSuffix}",
+					$"{cssPrefix}/models/accounts/banks/daily-banking-statistics{cssSuffix}"
 			));
 
 			//  
@@ -1038,6 +1044,8 @@ namespace Portal
 									$"{jsPrefix}/models/others/basket-status{jsSuffix}",
 									$"{jsPrefix}/models/others/order-products-member-basket-fetcher{jsSuffix}",
 									$"{jsPrefix}/models/shared/virtual-scrolling-deferred-data{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-close-brothers{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-close-brothers-record{jsSuffix}",
 									$"{jsPrefix}/models/credit-control/credit-control-sales-breakdown{jsSuffix}",
 						            $"{jsPrefix}/models/credit-control/credit-control-sales-breakdown-pod{jsSuffix}",
 						            $"{jsPrefix}/models/credit-control/credit-control-sales-breakdown-record{jsSuffix}",
@@ -1103,6 +1111,13 @@ namespace Portal
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments-requests{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments-supplier{jsSuffix}",
 						$"{jsPrefix}/models/suppliers/payments/supplier-payments-suppliers{jsSuffix}"
+				));
+
+			bundles.Add(new ScriptBundle("~/bundles/js/accounts/daily-banking-statistics").Include(
+						$"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+						$"{jsPrefix}/models/accounts/banks/daily-banking-statistics-row{jsSuffix}",
+						$"{jsPrefix}/models/accounts/banks/daily-banking-statistics-cell{jsSuffix}",
+						$"{jsPrefix}/models/accounts/banks/daily-banking-statistics{jsSuffix}"
 				));
 
 			foreach (var b in BundleTable.Bundles)

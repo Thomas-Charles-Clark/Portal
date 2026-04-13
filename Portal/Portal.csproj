@@ -554,8 +554,11 @@
     <Compile Include="App_Start\UnityWebApiActivator.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\Accounts\AccountsAreaRegistration.cs" />
-    <Compile Include="Areas\Accounts\Controllers\Banks\BankAccountsApiController.cs" />
-    <Compile Include="Areas\Accounts\Controllers\Banks\BankAccountsController.cs" />
+    <Compile Include="Areas\Accounts\Controllers\BankAccounts\BankAccountsApiController.cs" />
+    <Compile Include="Areas\Accounts\Controllers\BankAccounts\BankAccountsController.cs" />
+    <Compile Include="Areas\Accounts\Controllers\DailyBankingStatistics\DailyBankingStatisticsApiController.cs" />
+    <Compile Include="Areas\Accounts\Controllers\DailyBankingStatistics\DailyBankingStatisticsController.cs" />
+    <Compile Include="Areas\Accounts\ViewModels\DailyBankingStatisticsViewModel.cs" />
     <Compile Include="Areas\Accounts\ViewModels\BankAccountsViewModel.cs" />
     <Compile Include="Areas\Credit-Control\Controllers\CreditControlApiController.cs" />
     <Compile Include="Areas\Credit-Control\Controllers\StatementsApiController.cs" />
@@ -1852,8 +1855,13 @@
     <Content Include="js\src\lib\tiff\tiff.js" />
     <Content Include="js\src\lib\tiny-slider\tiny-slider.js" />
     <Content Include="js\src\models\accounts\banks\bank-accounts.js" />
+    <Content Include="js\src\models\accounts\banks\daily-banking-statistics-cell.js" />
+    <Content Include="js\src\models\accounts\banks\daily-banking-statistics-row.js" />
+    <Content Include="js\src\models\accounts\banks\daily-banking-statistics.js" />
     <Content Include="js\src\models\credit-control\credit-control-main-grid-row.js" />
     <Content Include="js\src\models\credit-control\credit-control-main-grid-column.js" />
+    <Content Include="js\src\models\credit-control\credit-control-close-brothers.js" />
+    <Content Include="js\src\models\credit-control\credit-control-close-brothers-record.js" />
     <Content Include="js\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits-pod.js" />
     <Content Include="js\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits-record.js" />
     <Content Include="js\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits.js" />
@@ -2804,6 +2812,7 @@
     <Content Include="Areas\Accounts\Views\web.config" />
     <Content Include="Areas\Accounts\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Accounts\Views\BankAccounts\BankAccounts.cshtml" />
+    <Content Include="Areas\Accounts\Views\BankAccounts\DailyBankingStatistics.cshtml" />
     <None Include="Areas\Stock\Views\Management\StockManagement.cshtml.bak" />
     <Content Include="Areas\Stock\Views\RangeManagement\RangeManagement.cshtml" />
     <Content Include="Areas\Trade-Accounts\Views\web.config" />
@@ -3337,6 +3346,8 @@
     <Content Include="css\src\models\credit-control\credit-control-manage-ledger.scss" />
     <Content Include="css\src\models\credit-control\credit-control-statements.scss" />
     <Content Include="css\src\models\accounts\banks\bank-accounts.scss" />
+    <Content Include="css\src\models\accounts\banks\daily-banking-statistics.scss" />
+    <Content Include="css\src\models\credit-control\credit-control-close-brothers.scss" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

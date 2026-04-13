@@ -33,7 +33,7 @@
     });
 
     self.onStopHistoryRecords = ko.observableArray(JSON.parse(rec.CreditStopHistory));
-
+    
     Object.keys(rec).forEach(k => {
         if (k.endsWith('Value')) {
             self[`${k[0].toLowerCase()}${k.substring(1)}`] = ko.observable(self[k]).extend({

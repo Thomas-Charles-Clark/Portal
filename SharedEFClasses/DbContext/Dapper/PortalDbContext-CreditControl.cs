@@ -260,8 +260,8 @@ namespace SharedEFClasses.Models
 		public async Task<CreditControl_Payments_SelectResult> CreditControl_Payments_Select(CreditControl_Payments_SelectDTO dto)
 		{
 			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_Payments_Select]", new { 
-				dto.From,
-				dto.To,
+				From = dto.From?.Date,
+				To = dto.To?.Date,
 				dto.TradeAccountCode,
 				dto.SearchTerm,
 				dto.CurrencyCode,
@@ -280,8 +280,8 @@ namespace SharedEFClasses.Models
 		{
 			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_OutstandingInvoicesWithUnallocatedDeposits_Select]", new
 			{
-				dto.From,
-				dto.To,
+				From = dto.From?.Date,
+				To = dto.To?.Date,
 				dto.TradeAccountCode,
 				dto.SearchTerm,
 				dto.CurrencyCode

@@ -24,6 +24,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 using SharedEFClasses.Models.Payment;
+using SharedEFClasses.Models.Banking;
 
 namespace SharedEFClasses.Models
 {
@@ -320,6 +321,10 @@ namespace SharedEFClasses.Models
         [JsonIgnore]
         [InverseProperty("FinalisedByMember")]
         public virtual ICollection<PaymentPeriod> FinalisedPaymentPeriods { get; set; }
+
+		[JsonIgnore]
+		[InverseProperty("Member")]
+		public virtual ICollection<BankAccountStat> BankAccountStats { get; set; }
 
 		//[JsonIgnore]
 		//[InverseProperty("RequestedByMember")]

@@ -81,6 +81,12 @@ const creditControlViewModel = (() => {
         prefix: 'statements-'
     });
 
+    self.closeBrothersFilters = creditControlFiltersViewModel({
+        params: window.getPredefinedFilterParams(),
+        parent: self,
+        prefix: 'close-brothers-'
+    })
+
     self.allSortingOperations = ko.observableArray([]);
 
     self.activeSortingOperation = ko.observable();
@@ -138,6 +144,10 @@ const creditControlViewModel = (() => {
     self.onlinePaymentHistoryTab = document.querySelector('#online-payment-history-tab');
 
     self.onlinePaymentHistoryCollapse = bootstrap.Collapse.getOrCreateInstance(self.onlinePaymentHistoryTab);
+
+    self.closeBrothersTab = document.querySelector('#close-brothers-tab');
+
+    self.closeBrothersCollapse = bootstrap.Collapse.getOrCreateInstance(self.closeBrothersTab);
 
     self.salesLedgerModalElement = document.querySelector('#sales-ledger-modal');
 
@@ -445,6 +455,10 @@ const creditControlViewModel = (() => {
 
     self.statements = creditControlStatementsViewModel({
         filters: self.statementsFilters
+    });
+
+    self.closeBrothers = creditControlCloseBrothersViewModel({
+        filters: self.closeBrothersFilters
     });
 
     self.memberBasketFetcher = memberBasketFetcher(self);
@@ -1862,6 +1876,10 @@ const creditControlViewModel = (() => {
 
     self.onlinePaymentHistoryTab.addEventListener('click', (event) => {
         self.paymentHistory.refresh();
+    });
+
+    self.closeBrothersTab.addEventListener('click', (event) => {
+        self.closeBrothers.refresh();
     });
 
     self.performance.init();

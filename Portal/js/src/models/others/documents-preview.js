@@ -595,13 +595,14 @@
             });
         } else {
             self.busy(true);
+            var previousBusyMessage = self.busyMessage();
             self.busyMessage('Emailing to ' + self.emailer.to());
-            var data = $.extend(self.overrideParameters() ?? self.getData(), {
+            var data = Object.assign({
                 email: self.emailer.to(),
                 replyTo: self.emailer.replyTo(),
                 subject: self.emailer.subject(),
                 body: self.emailer.body()
-            });
+            }, self.overrideParameters() ?? self.getData());
 
             let objJsonStr = JSON.stringify(data);
 
@@ -619,6 +620,9 @@
                     self.busy(false);
                     self.emailer.validateSendNow(false);
                     self.emailer.sentTo(self.emailer.to());
+                    window.setTimeout(() => {
+                        self.busyMessage(previousBusyMessage);
+                    }, 300);
                     //self.to(undefined);
                     //self.subject(undefined);
                     //self.body(undefined);

@@ -18,28 +18,21 @@ using System.Web.Mvc;
 namespace Portal.Areas.Accounting.Controllers
 {
     [DynamicRoleAuthorize]
-    [RouteArea("accounts")]
-    [RoutePrefix("banks")]
-    [Route("{action=index}")]
-    public class BankAccountsController : BaseController
+    public partial class BankAccountsController : BaseController
     {
-        public BankAccountsController(ApplicationUserManager userManager, PortalDbContext portalDbContext) : base (userManager, portalDbContext)
+		[Route("daily-statistics")]
+		public ActionResult DailyBankingStatistics()
         {
-
-        }
-
-        public ActionResult Index()
-        {
-            var application = PortalDb.Applications.Where(p => p.AreaName == "accounts" && p.ControllerName == "banks" && p.ActionName == "index").Single();
+            var application = PortalDb.Applications.Where(p => p.AreaName == "accounts" && p.ControllerName == "banks" && p.ActionName == "daily-statistics").Single();
 
             var user = UserManager.FindById(User.Identity.GetUserId<int>());
 
-            var model = new BankAccountsViewModel(
+            var model = new DailyBankingStatisticsViewModel(
                 user.GetActiveRoleProperties(),
                 application.Heading,
                 application.SubHeading);
 
-            return View("BankAccounts", model);
+            return View("DailyBankingStatistics", model);
         }
     }
 }

@@ -1,0 +1,50 @@
+﻿@import "../common.scss";
+
+#close-brothers-pane {
+	position: relative;
+
+	.blocker {
+		border-radius: 0 0 $border-radius $border-radius;
+
+		h4 {
+			text-align: center;
+			line-height: 3rem;
+		}
+	}
+
+	.prefilters {
+		align-items: flex-start;
+
+		.prefilter {
+			position: relative;
+		}
+
+		> div:first-of-type {
+			min-width: 280px;
+		}
+
+		> div:last-of-type {
+			min-width: 280px;
+			flex: 1 1 420px;
+		}
+
+		.date-prefilters {
+			display: flex;
+			gap: $l-gutter;
+
+			> div:first-of-type {
+				min-width: 180px;
+			}
+
+			> div {
+				min-width: 180px;
+				width: 180px;
+			}
+
+			.validation-message {
+				text-align: center;
+				width: 100%;
+			}
+		}
+	}
+}

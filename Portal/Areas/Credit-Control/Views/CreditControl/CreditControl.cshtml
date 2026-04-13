@@ -548,6 +548,11 @@
 					Online Payment History
 				</button>
 			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" id="close-brothers-tab" data-bs-toggle="tab" data-bs-target="#close-brothers-pane" type="button" role="tab" aria-controls="close-brothers-pane" aria-selected="false">
+					Close Brothers
+				</button>
+			</li>
 		</ul>
 		<div class="tab-content" id="credit-control-tab-content">
 			<div class="tab-pane fade show active" id="dashboard-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
@@ -643,14 +648,14 @@
 							</div>
 						</div>
 						@*<div class="dashboard" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
-							<div class="dashboard-pod card" data-bind="css: { 'selected-pod': $parent.selectedPod() == $data }">
-								<div class="card-body" data-bind="class: Classes">
-									<h4 data-bind="html: Heading"></h4>
-									<div data-bind="html: Stats"></div>
-									<a href="#" class="stretched-link" data-bind="click: $parent.dashboardClick"></a>
-								</div>
+						<div class="dashboard-pod card" data-bind="css: { 'selected-pod': $parent.selectedPod() == $data }">
+							<div class="card-body" data-bind="class: Classes">
+								<h4 data-bind="html: Heading"></h4>
+								<div data-bind="html: Stats"></div>
+								<a href="#" class="stretched-link" data-bind="click: $parent.dashboardClick"></a>
 							</div>
-						</div>*@
+						</div>
+					</div>*@
 						<div class="selected-filter-pills">
 							<!-- ko template: { name: 'filter-pills-template', data: filters } --><!-- /ko -->
 							<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
@@ -668,55 +673,55 @@
 						</div>
 						<div id="credit-control-grid-container" data-bind="kendoGrid: gridParams"></div>
 						@*<div id="credit-control-scroller-container" class="virtual-scoller-container" data-bind="with: virtualScoller">
-			<table id="credit-control-main-table" class="table  virtual-scrolling-table table-condensed table-striped table-hover">
-				<colgroup data-bind="foreach: $parent.gridColumns">
-					<col data-bind="style: { width: `${$data.width}px` }">
-				</colgroup>
-				<thead>
-					<tr>
-						<!-- ko foreach: $parent.gridColumns -->
-						<!-- ko if: typeof columns == 'undefined' -->
-						<th data-bind="style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;"></th>
-						<!-- /ko -->
-						<!-- ko if: typeof columns != 'undefined' -->
-						<!-- ko foreach: columns -->
-						<th data-bind="attr: { colspan: $parent.columns.length }, style: { '--left-offset': `${$parentContext.$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
-							<span data-bind="text: columnNameDisplay"></span>
-						</th>
-						<!-- /ko -->
-						<!-- /ko -->
-						<!-- /ko -->
-					</tr>
-					<tr>
-						<!-- ko foreach: $parent.gridColumns -->
-						<th class="sortable-column" data-bind="click: $root.sortByColumn, style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
-							<span data-bind="text: columnNameDisplay"></span>
-							<!-- ko if: (Object.hasOwn($data, 'direction') && $data.direction()) -->
-							<i class="bi bi-caret-down" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
-							<!-- /ko -->
-						</th>
-						<!-- /ko -->
-					</tr>
-				</thead>
-				<tbody class="virtual-spacing">
-					<tr>
-						<td colspan="500" style="height: 0" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
-					</tr>
-				</tbody>
-				<tbody data-bind="foreach: { data: visibleItems, as: 'record' }">
-					<tr class="visible-item">
-						<!-- ko foreach: $parentContext.$parent.gridColumns -->
-						<!-- ko template: { name: 'main-grid-row-template', data: { column: $data, record: record } } --><!-- /ko -->
-						<!-- /ko -->
-					</tr>
-				</tbody>
-				<tbody class="virtual-spacing">
-					<tr class="final-row">
-						<td colspan="500" style="height: 0" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>*@
+						<table id="credit-control-main-table" class="table  virtual-scrolling-table table-condensed table-striped table-hover">
+							<colgroup data-bind="foreach: $parent.gridColumns">
+								<col data-bind="style: { width: `${$data.width}px` }">
+							</colgroup>
+							<thead>
+								<tr>
+									<!-- ko foreach: $parent.gridColumns -->
+									<!-- ko if: typeof columns == 'undefined' -->
+									<th data-bind="style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;"></th>
+									<!-- /ko -->
+									<!-- ko if: typeof columns != 'undefined' -->
+									<!-- ko foreach: columns -->
+									<th data-bind="attr: { colspan: $parent.columns.length }, style: { '--left-offset': `${$parentContext.$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
+										<span data-bind="text: columnNameDisplay"></span>
+									</th>
+									<!-- /ko -->
+									<!-- /ko -->
+									<!-- /ko -->
+								</tr>
+								<tr>
+									<!-- ko foreach: $parent.gridColumns -->
+									<th class="sortable-column" data-bind="click: $root.sortByColumn, style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
+										<span data-bind="text: columnNameDisplay"></span>
+										<!-- ko if: (Object.hasOwn($data, 'direction') && $data.direction()) -->
+										<i class="bi bi-caret-down" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
+										<!-- /ko -->
+									</th>
+									<!-- /ko -->
+								</tr>
+							</thead>
+							<tbody class="virtual-spacing">
+								<tr>
+									<td colspan="500" style="height: 0" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
+								</tr>
+							</tbody>
+							<tbody data-bind="foreach: { data: visibleItems, as: 'record' }">
+								<tr class="visible-item">
+									<!-- ko foreach: $parentContext.$parent.gridColumns -->
+									<!-- ko template: { name: 'main-grid-row-template', data: { column: $data, record: record } } --><!-- /ko -->
+									<!-- /ko -->
+								</tr>
+							</tbody>
+							<tbody class="virtual-spacing">
+								<tr class="final-row">
+									<td colspan="500" style="height: 0" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>*@
 					</div>
 				</div>
 			</div>
@@ -753,18 +758,18 @@
 					</div>
 				</div>
 				@*<form id="send-statements-controls" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
-						<div class="trade-account-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statementsTradeAccountParams }"></div>
-						<div class="prefilter">
-							<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
-							<span class="validation-message" data-bind="validationMessage: date"></span>
-						</div>
-					</form>
-					<div id="controls-wrapper">
-						<button class="btn btn-dark" data-bind="click: sendStatements">
-							Send Statements
-						</button>
-					</div>
-					<div id="response-container" data-bind="html: sendResponse"></div>*@
+				<div class="trade-account-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statementsTradeAccountParams }"></div>
+				<div class="prefilter">
+					<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
+					<span class="validation-message" data-bind="validationMessage: date"></span>
+				</div>
+			</form>
+			<div id="controls-wrapper">
+				<button class="btn btn-dark" data-bind="click: sendStatements">
+					Send Statements
+				</button>
+			</div>
+			<div id="response-container" data-bind="html: sendResponse"></div>*@
 			</div>
 			<div id="paying-off-with-proforma-tab-pane" class="tab-pane fade">
 				<div class="prefilters mb-3" data-bind="with: filters">
@@ -816,6 +821,36 @@
 					<div class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: paymentHistorySearchTermParams }"></div>
 				</div>
 				<div data-bind="kendoGrid: paymentHistory.gridParams"></div>
+			</div>
+			<div id="close-brothers-pane" class="tab-pane fade" data-bind="with: closeBrothers">
+				<div class="blocker" data-bind="flexFadeVisible: busy">
+					<div class="loading-spinner"></div>
+					<h4 class="mt-2" data-bind="html: busyMessage"></h4>
+				</div>
+				<div class="prefilters mb-3" data-bind="with: filters">
+					<div id="close-brothers-date-prefilter-container" class="prefilter">
+						<div class="date-prefilters">
+							<div id="close-brothers-date-type-prefilter" class="date-prefilter prefilter relative">
+								<div class="date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: closeBrothersDateRangeParams }"></div>
+							</div>
+							<div id="close-brothers-from-date" class="prefilter" style="display: none" data-bind="visible: closeBrothersDateRangeId() == -1">
+								<div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: closeBrothersFromDateParams }"></div>
+							</div>
+							<div id="close-brothers-to-date" class="prefilter" style="display: none" data-bind="visible: closeBrothersDateRangeId() == -1">
+								<div class="to-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: closeBrothersToDateParams }"></div>
+							</div>
+						</div>
+						<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersFromDate"></span>
+						<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersToDate"></span>
+						<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersFromPrecedesTo"></span>
+					</div>
+					<button class="btn btn-dark btn-export ms-auto" data-bind="click: $parent.exportToExcel">
+						Export to Excel
+						<i class="bi bi-download"></i>
+						<i class="bi bi-filetype-xlsx"></i>
+					</button>
+				</div>
+				<div data-bind="kendoGrid: gridParams"></div>
 			</div>
 		</div>
 	</main>

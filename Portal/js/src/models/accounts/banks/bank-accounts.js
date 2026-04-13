@@ -34,17 +34,6 @@
                             data[k] = null;
                     })
 
-                    //var models = data.models; // 'models' is used when batch: true
-
-                    //for (var i = 0; i < models.length; i++) {
-                    //    var model = models[i];
-                    //    for (var field in model) {
-                    //        if (model[field] === "") {
-                    //            model[field] = null;
-                    //        }
-                    //    }
-                    //}
-
                     return "/odata/DGPaymentDetails('" + data.Code + "')"
                 },
                 type: "PATCH"
@@ -124,22 +113,7 @@
                         nullable: true,
                         defaultValue: null,
                         editable: true
-                    },
-                    //CaptureDailyStats: {
-                    //    type: 'boolean',
-                    //    nullable: false,
-                    //    editable: false
-                    //},
-                    //BankAccountOwner: {
-                    //    type: 'string',
-                    //    nullable: false,
-                    //    editable: false
-                    //},
-                    //BankAccountID: {
-                    //    type: 'number',
-                    //    nullable: false,
-                    //    editable: false
-                    //}
+                    }
                 }
             }
         },

@@ -1,0 +1,97 @@
+﻿@import "../../common/common-2026.scss";
+
+#daily-banking-statistics-container {
+	padding: $l-gutter;
+	padding-bottom: 0;
+	opacity: 0;
+
+	#daily-banking-statistics-main {
+		width: 100%;
+	}
+
+	#daily-statistics-tab-content {
+		background-color: $white;
+		border: 1px solid $gray-300;
+		border-top: none;
+		border-bottom-right-radius: $border-radius;
+		border-bottom-left-radius: $border-radius;
+
+		.tab-pane {
+			padding: $l-gutter;
+
+			.k-loading-mask {
+				display: none !important;
+			}
+
+			.tab-heading {
+				margin-bottom: 0;
+			}
+
+			.k-table-td {
+				height: 56px;
+				padding: 4px 12px;
+			}
+
+			.prefilters {
+				display: flex;
+				gap: $l-gutter;
+				align-items: center;
+				margin-bottom: $l-gutter;
+
+				.prefilter {
+					position: relative;
+
+					.mdc-validating-field {
+						height: 34px;
+					}
+				}
+
+				#date-prefilter {
+					display: flex;
+					align-items: center;
+					gap: $m-gutter;
+
+					label {
+						margin-bottom: 0;
+					}
+
+					#daily-statistics-date {
+						width: 320px;
+					}
+				}
+			}
+
+			.mdc-validating-field {
+				background-color: $white;
+
+				> div {
+					max-width: unset;
+					width: 100%;
+
+					.mdc-text-field,
+					.mdc-numeric-field {
+						flex: 1;
+					}
+				}
+
+				textarea {
+					min-height: 97.5px;
+					margin-top: 0;
+					padding-top: 8px;
+					border-radius: $border-radius;
+					resize: none;
+				}
+			}
+
+			.k-column-title {
+				position: relative;
+			}
+
+			.row-label-cell,
+			.k-table-td {
+				position: relative;
+				height: 112px
+			}
+		}
+	}
+}

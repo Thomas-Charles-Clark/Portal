@@ -234,7 +234,7 @@
 	{
 		<div class="container body-content">
 			@RenderBody()
-			<footer style="position: fixed; bottom: 0; z-index: -5">
+			<footer style="position: fixed; bottom: 0; z-index: -5" class="container">
 				<p>&copy; @DateTime.Now.Year - Designers Guild</p>
 			</footer>
 		</div>
@@ -630,7 +630,8 @@
                      },
                      css: {
                         'busy': busy(),
-                        'mdc-text-field--disabled': disable() || !enable()
+                        'mdc-text-field--disabled': disable() || !enable(),
+						'mdc-text-field--selected': observable() || observable() === 0
                      }">
 					<input class="mdc-text-field__input text-end mdc-text-field__numeric" data-bind="
                         numeric: observable,
@@ -895,7 +896,8 @@
                  },
                  css: {
                     'busy': busy,
-                    'mdc-text-field--disabled': disable() || !enable()
+                    'mdc-text-field--disabled': disable() || !enable(),
+					'mdc-text-field--selected': observable() || observable() === 0
                  }">
 				<textarea class="mdc-text-field__input" data-bind="
                           enterKey: typeof enterKey === 'undefined' ? null : enterKey,
@@ -912,11 +914,13 @@
 						  rows="6" maxlength="500"></textarea>
 				<div class="mdc-notched-outline">
 					<div class="mdc-notched-outline__leading"></div>
+					<!-- ko if: typeof label !== 'undefined' && label -->
 					<div class="mdc-notched-outline__notch">
 						<label for="input" class="mdc-floating-label">
 							<span data-bind="text: label"></span>
 						</label>
 					</div>
+					<!-- /ko -->
 					<div class="mdc-notched-outline__trailing"></div>
 				</div>
 				<div class="controls">

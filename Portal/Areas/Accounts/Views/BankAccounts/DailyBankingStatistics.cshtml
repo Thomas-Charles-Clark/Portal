@@ -1,0 +1,102 @@
+﻿@model DailyBankingStatisticsViewModel
+@{
+	ViewBag.Title = "Daily Banking Statistics";
+}
+@section styles {
+	@Styles.Render("~/bundles/css/generic-forms")
+	@Styles.Render("~/bundles/css/daily-banking-statistics")
+	@Styles.Render("~/bundles/css/tempus-dominus")
+	@Styles.Render("~/bundles/css/full-width-app")
+}
+@section scripts {
+	@Scripts.Render("~/bundles/js/jqueryui")
+	@Scripts.Render("~/bundles/js/generic-forms")
+	@Scripts.Render("~/bundles/js/accounts/daily-banking-statistics")
+	@Scripts.Render("~/bundles/js/tempus-dominus")
+
+	<script type="text/javascript">
+		@if (User.Identity.GetUserId<int>() == 8)
+		{
+			<text>
+			window.getPredefinedFilterParams = () =>
+			{
+				return {
+					//tradeAccountCode: 'K0098'
+				}
+			}
+			</text>
+		}
+		else
+		{
+			<text>
+			window.getPredefinedFilterParams = () =>
+			{
+				return {}
+			}
+			</text>
+		}
+
+	</script>
+
+	<script type="text/javascript">
+
+		var viewModel = dailyBankingStatisticsViewModel();
+
+		var vm = viewModel;
+
+		ko.options.deferUpdates = true;
+
+		ko.validation.init({
+			decorateInputElement: true,
+			errorElementClass: 'alert-danger',
+			errorMessageClass: 'validation-message text-danger'
+		});
+
+		ko.applyBindings(viewModel, document.body);
+
+		viewModel.init();
+
+		window.self = viewModel;
+
+	</script>
+}
+@section modals {
+
+}
+@section navbarTitle {
+	<h2 class="d-flex gap-3 align-items-center">
+		<span>
+			@(ViewBag.Title)
+		</span>
+	</h2>
+}
+
+<div class="blocker" data-bind="flexFadeVisible: busy">
+	<div class="loading-spinner"></div>
+	<h4 class="mt-3" data-bind="text: busyMessage"></h4>
+</div>
+
+<div id="daily-banking-statistics-container" class="d-flex align-items-start w-100" data-bind="flexFadeVisible: true">
+	<main id="daily-banking-statistics-main">
+		@*<ul class="nav nav-tabs" id="daily-banking-statistics-tabs" role="tablist">
+			<li class="nav-item" role="presentation">
+				<button class="nav-link fs-5 active" id="daily-statistics-tab" data-bs-toggle="tab" data-bs-target="#daily-statistics-tab-pane" type="button" role="tab" aria-controls="dashboard-tab-pane" aria-selected="true">
+					Daily Statistics
+				</button>
+			</li>
+		</ul>*@
+		<div class="tab-content" id="daily-statistics-tab-content">
+			<div class="tab-pane fade show active" id="daily-statistics-tab-pane" role="tabpanel" aria-labelledby="daily-statistics-tab">
+				<div class="prefilters">
+					<div id="date-prefilter" class="prefilter">
+						<label>
+							Date:
+						</label>
+						<div id="daily-statistics-date" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
+					</div>
+				</div>
+				<div id="daily-statistics-grid-container" data-bind="kendoGrid: gridParams"></div>
+			</div>
+		</div>
+	</main>
+</div>

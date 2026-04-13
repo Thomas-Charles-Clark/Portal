@@ -15,6 +15,7 @@ using SharedEFClasses.Models.Components;
 using SharedEFClasses.Models.CreditControl;
 using SharedEFClasses.Models.Documents;
 using SharedEFClasses.Models.IncomingEmail;
+using SharedEFClasses.Models.Reporting.CloseBrothers;
 using SharedEFClasses.Utilities;
 using SimpleImpersonation;
 
@@ -427,6 +428,97 @@ namespace Portal.Areas.CreditControl.Controllers
 				Success = false,
 				Message = "Server call was successful; which stored procedure should we call?"
 			});
+		}
+
+		[HttpGet]
+		public async Task<IHttpActionResult> CloseBrothers_Fundability_Select(
+			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
+			[FromUri] CloseBrothers_Fundability_Select_DTO dto)
+		{
+			try
+			{
+				DateTime? toDt = DateTime.Now;
+
+				DateTime? fromDt = null;
+
+				switch (dto.DateRangeID)
+				{
+					case "12M": /* Last 12 Months */
+						fromDt = DateTime.Now.AddYears(-1);
+						break;
+					case "6M": /* Last 6 Months */
+						fromDt = DateTime.Now.AddMonths(-6);
+						break;
+					case "3M": /* This Month */
+						fromDt = DateTime.Now.AddMonths(-3);
+						break;
+					case "1M": /* This Month */
+						fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
+						break;
+					case "30": /* Last 30 Days */
+						fromDt = DateTime.Now.AddDays(-30);
+						break;
+					case "6":
+						toDt = DateTime.Now.AddDays(-5);
+						fromDt = DateTime.Now.AddDays(-6);
+						break;
+					case "5":
+						toDt = DateTime.Now.AddDays(-4);
+						fromDt = DateTime.Now.AddDays(-5);
+						break;
+					case "4":
+						toDt = DateTime.Now.AddDays(-3);
+						fromDt = DateTime.Now.AddDays(-4);
+						break;
+					case "3":
+						toDt = DateTime.Now.AddDays(-2);
+						fromDt = DateTime.Now.AddDays(-3);
+						break;
+					case "2":
+						toDt = DateTime.Now.AddDays(-1);
+						fromDt = DateTime.Now.AddDays(-2);
+						break;
+					case "1":
+						toDt = DateTime.Now.AddDays(0);
+						fromDt = DateTime.Now.AddDays(-1);
+						break;
+					case "0":
+						toDt = DateTime.Now.AddDays(1);
+						fromDt = DateTime.Now.AddDays(0);
+						break;
+					case "-1": /* "Custom" */
+						toDt = dto.To;
+						fromDt = dto.From;
+						break;
+					case "-2": /* "All Time" noop */
+						break;
+				}
+
+				dto.From = fromDt?.Date;
+				dto.To = toDt?.Date;
+
+				var model = await PortalDb.CloseBrothers_Fundability_Select(dto);
+
+				//request.Page = 1;  // super weird but 100% necessary because we're doing the paging inside the procedure.
+
+				var gridData = model.Records.ToDataSourceResult(request);
+
+				gridData.Total = model.Records.Count();
+
+				return Ok(new
+				{
+					gridData = gridData,
+					totalsRecord = gridData.Total
+				});
+			}
+			catch (SqlException e)
+			{
+				return Ok(new
+				{
+					errorMessage = "Sorry, a database timeout error occurred.<br/>Please click to close this dialog box to retry, or reload your browser tab.",
+					exception = JsonConvert.SerializeObject(e, Formatting.Indented)
+				});
+			}
 		}
 	}
 }

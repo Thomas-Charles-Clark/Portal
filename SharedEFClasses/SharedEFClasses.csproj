@@ -354,6 +354,8 @@
     <Compile Include="App_Start\UnityMvcActivator.cs" />
     <Compile Include="BaseController.cs" />
     <Compile Include="BaseViewModel.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-CloseBrothers.cs" />
+    <Compile Include="DbContext\Dapper\PortalDbContext-Banking.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-Documents.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-ContractPricing.cs" />
     <Compile Include="DbContext\Dapper\PortalDbContext-DotDigital.cs" />
@@ -391,6 +393,17 @@
     <Compile Include="Models\ArchiveResponse.cs" />
     <Compile Include="Models\Attribute\Attribute.cs" />
     <Compile Include="Models\AttributeGroup\AttributeGroup.cs" />
+    <Compile Include="Models\Banking\BankAccountStat_Save_Record.cs" />
+    <Compile Include="Models\Banking\BankAccountStat_Select_Column.cs" />
+    <Compile Include="Models\Banking\BankAccountStat_Select_Value.cs" />
+    <Compile Include="Models\Banking\BankAccountStat_Row.cs" />
+    <Compile Include="Models\Banking\BankAccountStat_Column.cs" />
+    <Compile Include="Models\Banking\BankAccountStat.cs" />
+    <Compile Include="Models\Banking\BankAccountStat_Save_Result.cs" />
+    <Compile Include="Models\Banking\BankAccountStat_SaveDTO.cs" />
+    <Compile Include="Models\Banking\BankAccountStat_SelectDTO.cs" />
+    <Compile Include="Models\Banking\BankAccountStat_Select_Row.cs" />
+    <Compile Include="Models\Banking\BankAccountStat_Select_Result.cs" />
     <Compile Include="Models\Banking\BankingAccount.cs" />
     <Compile Include="Models\Banking\BankingCurrency.cs" />
     <Compile Include="Models\BasketStatusModels.cs" />
@@ -703,6 +716,9 @@
     <Compile Include="Models\PassGiftVoucher.cs" />
     <Compile Include="Models\PassMertexCurrencyCode.cs" />
     <Compile Include="Models\Payment\PaymentPeriod_Currency.cs" />
+    <Compile Include="Models\Reporting\CloseBrothers\CloseBrothers_Fundability_Select_DTO.cs" />
+    <Compile Include="Models\Reporting\CloseBrothers\CloseBrothers_Fundability_Select_Result.cs" />
+    <Compile Include="Models\Reporting\CloseBrothers\CloseBrothers_Fundability_Select_Record.cs" />
     <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApproval_Basket_SelectRecord.cs" />
     <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApproval_Basket_SelectResult.cs" />
     <Compile Include="Models\Suppliers\PaymentApprovals\SupplierPaymentApproval_Basket_SelectDTO.cs" />

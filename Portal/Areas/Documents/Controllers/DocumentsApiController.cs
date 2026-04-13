@@ -173,7 +173,7 @@ namespace Portal.Areas.Documents.Controllers
 	            <row>
 		            <columns>
 			            <p class=""text-left"" style=""margin-top: 0"">
-				            {System.Text.RegularExpressions.Regex.Replace(objDoc.body, "\n", "<br/>")}
+				            {System.Text.RegularExpressions.Regex.Replace(objDoc.body, "\n", "<br/><br/>")}
 			            </p>
 		            </columns>
 	            </row>
@@ -212,7 +212,9 @@ namespace Portal.Areas.Documents.Controllers
 
                 ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
-                var inkyResult = await client.PostAsync(PortalFramework.InkyEndpoint, content);
+                var header = System.Web.HttpUtility.UrlEncode(PortalFramework.PlainEmailHeaderImage);
+
+				var inkyResult = await client.PostAsync($"{PortalFramework.InkyEndpoint}?header={header}", content);
 
                 inkyMarkup = await inkyResult.Content.ReadAsStringAsync();
             }

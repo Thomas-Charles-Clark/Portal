@@ -94,6 +94,7 @@ namespace SharedEFClasses.Utilities
     public static partial class PortalFramework
     {
         public static readonly string InkyEndpoint = "https://vm-web2:8091/inkyUpdated/inkyUpdated.js";
+        public static readonly string PlainEmailHeaderImage = "https://downloads.designersguild.com/content/images/email-logo-720-shallow.jpg";
         public static readonly string WebServerHostname = "vm-web2";
 
         public static Assembly GetAssembly(string name) 
@@ -2574,8 +2575,8 @@ table.button.small-expand table a,
         padding-left: 5px;
     }
 	p {
-	margin-top: 4px;
-	margin-bottom: 0px;
+	    margin-top: 4px;
+	    margin-bottom: 12px !important;
 	}
 	hr {
 	margin-bottom: 2px;

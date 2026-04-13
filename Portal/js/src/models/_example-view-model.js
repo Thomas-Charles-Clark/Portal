@@ -41,7 +41,9 @@
 
     //#region Methods
 
+    self.init = () => {
 
+    }
 
     //#endregion
 

@@ -8,6 +8,7 @@ using SharedEFClasses.Models.ActiveDirectory;
 using SharedEFClasses.Models.Advertisers;
 using SharedEFClasses.Models.Applications;
 using SharedEFClasses.Models.Attributes;
+using SharedEFClasses.Models.Banking;
 using SharedEFClasses.Models.CreditControl;
 using SharedEFClasses.Models.Documents;
 using SharedEFClasses.Models.DotDigital;
@@ -665,11 +666,17 @@ namespace SharedEFClasses.Models
 
         #region Banking
 
-        public virtual DbSet<Banking.BankingAccount> BankingAccounts { get; set; }
+        public virtual DbSet<BankingAccount> BankingAccounts { get; set; }
 
-        public virtual DbSet<Banking.BankingCurrency> BankingCurrencies { get; set; }
+        public virtual DbSet<BankingCurrency> BankingCurrencies { get; set; }
 
         public virtual DbSet<DGPaymentDetails> DGPaymentDetails { get; set; }
+
+        public virtual DbSet<BankAccountStat> BankAccountStats { get; set; }
+
+        public virtual DbSet<BankAccountStat_Column> BankAccountStats_Columns { get; set; }
+
+        public virtual DbSet<BankAccountStat_Row> BankAccountStats_Row { get; set; }
 
         #endregion
 

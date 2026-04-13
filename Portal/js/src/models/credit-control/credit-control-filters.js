@@ -26,6 +26,10 @@ const creditControlFiltersViewModel = ({
 
     let now = new Date();
 
+    let tomorrow = new Date();
+
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
     self.busy = parent.busy;
 
     self.validateNow = ko.observable(false);
@@ -167,7 +171,7 @@ const creditControlFiltersViewModel = ({
 
     self.outstandingInvoicesToDate = ko.observable(now);
 
-    self.validateoutstandingInvoicesSearchNow = ko.observable(true);
+    self.validateOutstandingInvoicesSearchNow = ko.observable(true);
 
     self.outstandingInvoicesFromDate.extend({
         date: {
@@ -177,7 +181,7 @@ const creditControlFiltersViewModel = ({
         required: {
             params: true,
             onlyIf: function () {
-                return self.validateoutstandingInvoicesSearchNow() && self.outstandingInvoicesDateRangeId() == -1 && self.outstandingInvoicesToDate() != null
+                return self.validateOutstandingInvoicesSearchNow() && self.outstandingInvoicesDateRangeId() == -1 && self.outstandingInvoicesToDate() != null
             },
             message: 'Please provide a From Date'
         }
@@ -200,6 +204,46 @@ const creditControlFiltersViewModel = ({
     self.outstandingInvoicesBankingCurrencyCode = ko.observable(params.outstandingInvoicesBankingCurrencyCode ?? '');
 
     self.outstandingInvoicesBankingCurrency = ko.observable(params?.outstandingInvoicesBankingCurrency ?? undefined);
+
+    self.closeBrothersDateRangeId = ko.observable('0');
+
+    self.closeBrothersDateRange = ko.observable(paymentHistoryDateRanges.find(d => d.dateRangeId == '30'));
+
+    self.closeBrothersDateRanges = paymentHistoryDateRanges;
+
+    self.closeBrothersFromDate = ko.observable(now);
+
+    self.closeBrothersToDate = ko.observable(tomorrow);
+
+    self.validateCloseBrothersSearchNow = ko.observable(true);
+
+    self.closeBrothersFromDate.extend({
+        date: {
+            params: true,
+            message: 'From must be a date'
+        },
+        required: {
+            params: true,
+            onlyIf: function () {
+                return self.validateCloseBrothersSearchNow() && self.closeBrothersDateRangeId() == -1 && self.closeBrothersToDate() != null
+            },
+            message: 'Please provide a From Date'
+        }
+    });
+
+    self.closeBrothersFromDate.extend({
+        date: {
+            params: true,
+            message: 'To must be a date'
+        }
+    });
+
+    self.closeBrothersToDate.extend({
+        date: {
+            params: true,
+            message: 'To must be a date'
+        }
+    });
 
     //#endregion
 
@@ -1052,7 +1096,7 @@ const creditControlFiltersViewModel = ({
                     minutes: false,
                     seconds: false
                 },
-                viewMode: 'months',
+                viewMode: 'calendar',
                 cellSize: '3rem'
             },
             restrictions: {
@@ -1070,7 +1114,7 @@ const creditControlFiltersViewModel = ({
             self.paymentHistoryFromDateParams.observable.tempusDominus.clear();
             self.paymentHistoryFromDateParams.observable.tempusDominus.updateOptions({
                 display: {
-                    viewMode: 'months'
+                    viewMode: 'calendar'
                 }
             });
         },
@@ -1110,7 +1154,7 @@ const creditControlFiltersViewModel = ({
                     minutes: false,
                     seconds: false
                 },
-                viewMode: 'months',
+                viewMode: 'calendar',
                 cellSize: '3rem'
             },
             restrictions: {
@@ -1127,7 +1171,7 @@ const creditControlFiltersViewModel = ({
         //    self.paymentHistoryToDateParams.observable.tempusDominus.clear();
         //    self.paymentHistoryToDateParams.observable.tempusDominus.updateOptions({
         //        display: {
-        //            viewMode: 'months'
+        //            viewMode: 'calendar'
         //        }
         //    });
         //},
@@ -1448,7 +1492,7 @@ const creditControlFiltersViewModel = ({
                     minutes: false,
                     seconds: false
                 },
-                viewMode: 'months',
+                viewMode: 'calendar',
                 cellSize: '3rem'
             },
             restrictions: {
@@ -1466,7 +1510,7 @@ const creditControlFiltersViewModel = ({
             self.outstandingInvoicesFromDateParams.observable.tempusDominus.clear();
             self.outstandingInvoicesFromDateParams.observable.tempusDominus.updateOptions({
                 display: {
-                    viewMode: 'months'
+                    viewMode: 'calendar'
                 }
             });
         },
@@ -1506,7 +1550,7 @@ const creditControlFiltersViewModel = ({
                     minutes: false,
                     seconds: false
                 },
-                viewMode: 'months',
+                viewMode: 'calendar',
                 cellSize: '3rem'
             },
             restrictions: {
@@ -1523,7 +1567,7 @@ const creditControlFiltersViewModel = ({
         //    self.outstandingInvoicesToDateParams.observable.tempusDominus.clear();
         //    self.outstandingInvoicesToDateParams.observable.tempusDominus.updateOptions({
         //        display: {
-        //            viewMode: 'months'
+        //            viewMode: 'calendar'
         //        }
         //    });
         //},
@@ -1570,6 +1614,149 @@ const creditControlFiltersViewModel = ({
         }
     });
 
+    self.closeBrothersDateRangeParams = kendoMDCDropDownList({
+        skipCascade: false,
+        label: 'Date Range',
+        data: self.closeBrothersDateRanges,
+        textField: 'name',
+        valueField: 'dateRangeId',
+        idObservable: self.closeBrothersDateRangeId,
+        objObservable: self.closeBrothersDateRange,
+        template: (e) => `<span class="date-range ${e.class}">${e.name}</span>`,
+        valueTemplate: (e) => `<span class="date-range ${e.class}">${e.name}</span>`,
+        enable: ko.observable(true),
+        disable: ko.observable(false),
+        clearable: ko.observable(false),
+        revertible: ko.observable(false),
+        readOnly: false,
+        autoBind: true,
+        autoWidth: true,
+        clearFunction: () => {
+            self.closeBrothersDateRangeId('');
+        },
+        afterClear: () => {
+
+        },
+        popupSettings: {
+            appendTo: `#${self.prefix}close-brothers-date-type-prefilter`
+        },
+    });
+
+    self.closeBrothersFromDateParams = {
+        label: "From",
+        observable: self.closeBrothersFromDate,
+        originalValue: self.closeBrothersFromDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'calendar',
+                cellSize: '3rem'
+            },
+            restrictions: {
+                disabledDates: [],
+                maxDate: new Date(),
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false
+        },
+        clearable: ko.observable(true),
+        clearFunction: () => {
+            self.closeBrothersFromDate(undefined);
+            self.closeBrothersFromDateParams.observable.tempusDominus.clear();
+            self.closeBrothersFromDateParams.observable.tempusDominus.updateOptions({
+                display: {
+                    viewMode: 'calendar'
+                }
+            });
+        },
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.closeBrothersFromDateParams.observable(self.closeBrothersFromDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+        popupSettings: {
+            appendTo: `#${self.prefix}close-brothers-from-date`
+        }
+    };
+
+    self.closeBrothersToDateParams = {
+        label: "To",
+        observable: self.closeBrothersToDate,
+        originalValue: self.closeBrothersToDate(),
+        displayObservable: ko.observable(),
+        dateTimePickerOptions: {
+            localization: {
+                locale: 'en-GB',
+                format: 'dd/MM/yyyy'
+            },
+            display: {
+                sideBySide: false,
+                components: {
+                    clock: false,
+                    calendar: true,
+                    date: true,
+                    month: true,
+                    year: true,
+                    decades: false,
+                    clock: false,
+                    hours: false,
+                    minutes: false,
+                    seconds: false
+                },
+                viewMode: 'calendar',
+                cellSize: '3rem'
+            },
+            restrictions: {
+                disabledDates: []
+            },
+            allowInputToggle: true,
+            useCurrent: false,
+            keepInvalid: true,
+            debug: false
+        },
+        clearable: ko.observable(false),
+        //clearFunction: () => {
+        //    self.closeBrothersToDate(undefined);
+        //    self.closeBrothersToDateParams.observable.tempusDominus.clear();
+        //    self.closeBrothersToDateParams.observable.tempusDominus.updateOptions({
+        //        display: {
+        //            viewMode: 'calendar'
+        //        }
+        //    });
+        //},
+        revertible: ko.observable(true),
+        revertFunction: () => {
+            self.closeBrothersToDateParams.observable(self.closeBrothersToDateParams.originalValue);
+        },
+        useNativeValidation: false,
+        insertValidationMessages: false,
+        decorateInputElement: true,
+        popupSettings: {
+            appendTo: `#${self.prefix}close-brothers-to-date`
+        }
+    };
+
     //#endregion
 
 
@@ -1611,6 +1798,20 @@ const creditControlFiltersViewModel = ({
             params: true,
             onlyIf: function () {
                 return self.outstandingInvoicesFromDate() && self.outstandingInvoicesToDate()
+            },
+            message: 'From Date must precede To Date'
+        }
+    }, self);
+
+    self.closeBrothersFromPrecedesTo = ko.pureComputed(() => {
+        if (self.closeBrothersFromDate() && self.closeBrothersToDate()) {
+            return self.closeBrothersFromDate().getTime() <= self.closeBrothersToDate().getTime();
+        }
+    }, self).extend({
+        equal: {
+            params: true,
+            onlyIf: function () {
+                return self.closeBrothersFromDate() && self.closeBrothersToDate()
             },
             message: 'From Date must precede To Date'
         }
@@ -1710,6 +1911,7 @@ const creditControlFiltersViewModel = ({
                     && (k != 'salesHistoryAnalysisPeriodsParams')
                     && (k.indexOf('paymentHistory') == -1)
                     && (k.indexOf('outstanding') == -1)
+                    && (k.indexOf('closeBrothers') == -1)
                     && (k.indexOf('Params') > -1)
                     && (k.indexOf('Params') == k.length - 6);
             }).map(k => self[k])
@@ -1850,6 +2052,15 @@ const creditControlFiltersViewModel = ({
 
         return data;
 
+    }, self);
+
+    self.closeBrothersFilters = ko.computed(() => {
+        let data = {
+            dateRangeId: self.closeBrothersDateRangeId(),
+            from: self.closeBrothersFromDate()?.toUTCString() ?? null,
+            to: self.closeBrothersToDate()?.toUTCString() ?? null,
+        }
+        return data;
     }, self);
 
     //#endregion
