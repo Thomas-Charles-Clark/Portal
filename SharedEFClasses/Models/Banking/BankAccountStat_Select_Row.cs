@@ -15,5 +15,13 @@ namespace SharedEFClasses.Models.Banking
 		public string Tooltip { get; set; }
 
 		public int SortOrder { get; set; }
+
+		public string GroupLabel { get; set; }
+
+		public string CurrencyCode { get; set; }
+
+		public byte? FormattingDigits { get; set; }
+
+		public string FormattingCulture { get; set; }
 	}
 }

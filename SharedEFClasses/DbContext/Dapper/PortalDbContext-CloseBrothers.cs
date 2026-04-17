@@ -20,6 +20,7 @@ using SharedEFClasses.Models.CreditControl;
 using NLog.LayoutRenderers;
 using SharedEFClasses.Models.Banking;
 using SharedEFClasses.Models.Reporting.CloseBrothers;
+using Newtonsoft.Json;
 
 namespace SharedEFClasses.Models
 {
@@ -27,15 +28,32 @@ namespace SharedEFClasses.Models
     {
 		public async Task<CloseBrothers_Fundability_Select_Result> CloseBrothers_Fundability_Select(CloseBrothers_Fundability_Select_DTO dto)
 		{
-			var reply = await this.Database.Connection.QueryMultipleAsync("[rpt].[CB_Fundability]", new {
-				FromDate = dto.From.Value.Date,
-				ToDate = dto.To.Value.Date
+			var result = new CloseBrothers_Fundability_Select_Result();
+
+#if DEBUG
+			var fileName = $"{AppDomain.CurrentDomain.BaseDirectory}\\rpt.CB_Fundability.json";
+
+			if (System.IO.File.Exists(fileName))
+			{
+				result = JsonConvert.DeserializeObject<CloseBrothers_Fundability_Select_Result>(System.IO.File.ReadAllText(fileName));
+
+				return result;
+			}
+#endif
+
+			var reply = await this.Database.Connection.QueryMultipleAsync("[rpt].[CB_Fundability]", new
+			{
+				//FromDate = dto.From.Value.Date,
+				//ToDate = dto.To.Value.Date
 			}, null, 300, CommandType.StoredProcedure);
 
-			return new CloseBrothers_Fundability_Select_Result()
-			{
-				Records = await reply.ReadAsync<CloseBrothers_Fundability_Select_Record>(),
-			};
+			result.Records = await reply.ReadAsync<CloseBrothers_Fundability_Select_Record>();
+
+#if DEBUG
+			System.IO.File.WriteAllText(fileName, JsonConvert.SerializeObject(result));
+#endif
+
+			return result;
 		}
 	}
 }

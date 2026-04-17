@@ -74,12 +74,17 @@
 					}
 				}
 
+				input {
+					text-align: left !important;
+				}
+
 				textarea {
-					min-height: 97.5px;
+					min-height: 58px;
 					margin-top: 0;
-					padding-top: 8px;
 					border-radius: $border-radius;
 					resize: none;
+					overflow-y: auto;
+					padding: 4px 8px;
 				}
 			}
 
@@ -90,7 +95,32 @@
 			.row-label-cell,
 			.k-table-td {
 				position: relative;
-				height: 112px
+				height: 68px
+			}
+
+			.k-table-group-row {
+				.k-table-td {
+					height: 34px;
+				}
+			}
+		}
+	}
+
+
+	.mdc-validating-field {
+		.mdc-text-field--selected:not(.mdc-text-field--disabled):not(.mdc-text-field--changed) {
+			input,
+			textarea {
+				background: $white;
+				color: $body-color;
+			}
+
+			.controls {
+				> div {
+					color: #000;
+					text-shadow: 0 1px 0 #fff;
+					opacity: 0.2;
+				}
 			}
 		}
 	}

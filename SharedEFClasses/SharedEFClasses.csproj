@@ -395,6 +395,7 @@
     <Compile Include="Models\AttributeGroup\AttributeGroup.cs" />
     <Compile Include="Models\Banking\BankAccountStat_Save_Record.cs" />
     <Compile Include="Models\Banking\BankAccountStat_Select_Column.cs" />
+    <Compile Include="Models\Banking\BankAccountStat_Select_RowLabel.cs" />
     <Compile Include="Models\Banking\BankAccountStat_Select_Value.cs" />
     <Compile Include="Models\Banking\BankAccountStat_Row.cs" />
     <Compile Include="Models\Banking\BankAccountStat_Column.cs" />

@@ -17,6 +17,8 @@
 
     self.date = ko.observable(now);
 
+    self.previousDate = ko.observable(now);
+
     self.responseValues = ko.observableArray([]);
 
     self.responseRows = ko.observableArray([]);
@@ -24,6 +26,8 @@
     self.responseColumns = ko.observableArray([]);
 
     self.gridColumns = ko.observableArray([]);
+
+    self.rowLabelColumnWidthPixels = ko.observable('200px');
 
     //#endregion
 
@@ -54,9 +58,11 @@
 
         var mapped = webapi.parameterMap(options.data);
 
-        var additionalParameters = {
-            date: self.date().toUTCString()
-        };
+        var additionalParameters = {};
+
+        ko.ignoreDependencies(() => {
+            additionalParameters.date = self.date().toUTCString()
+        })
 
         var params = new URLSearchParams();
 
@@ -98,38 +104,64 @@
                     } else {
                         document.querySelector('#info-modal')?.removeEventListener('hide.bs.modal', self.refresh);
 
+                        self.rowLabelColumnWidthPixels(data.rowLabel.RowLabelColumnWidthPixels)
+
                         self.responseValues(data.values);
                         self.responseColumns(data.columns);
                         self.responseRows(data.rows);
 
+                        var grouped = Object.groupBy(data.columns.sort((a, b) => {
+                            return a.SortOrder > b.SortOrder ? 1 : -1;
+                        }), (g) => g.GroupLabel == null ? `~${g.SortOrder}` : g.GroupLabel);
+
+                        //let rowGroupResults = Object.keys(grouped).forEach((k, items) => {
+                        //    console.log(k, items);
+                        //    return { k, items };
+                        //});
+                        
+                        let mapped = Object.keys(grouped).map((c, i) => {
+                            return {
+                                title: c ? c.replace(/(~\d+)/gm, '') ?? "" : " ",
+                                index: i,
+                                columns: [...grouped[c]].map((column, index) => {
+                                    return {
+                                        title: `${(column.Label ?? "nbsp;")}`,
+                                        field: column.Label,
+                                        index: index,
+                                        attributes: {
+                                            class: 'row-label-cell'
+                                        },
+                                        width: column.WidthPixels,
+                                        editable: () => false,
+                                        template: (dataItem) => {
+                                            let result = dataItem.template(column.Label, column.SortOrder);
+                                            return result;
+                                        },
+                                        groupHeaderTemplate: (dataItem) => `${dataItem.value}`,
+                                    }
+                                }).sort((a, b) => {
+                                    return a.index > b.index ? 1 : -1;
+                                })
+                            }
+                        });
+
                         self.gridColumns([{
-                            field: 'Label',
+                            field: 'GroupLabel',
                             title: ' ',
+                            index: 0,
                             attributes: {
                                 class: 'row-label-cell'
                             },
-                            width: '240px',
+                            width: self.rowLabelColumnWidthPixels() ?? '200px',
                             editable: () => false,
                             template: (dataItem) => {
                                 return `<span>${dataItem.Label}</span><a class="stretched-link" href="javascript:;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${dataItem.Tooltip}"></a>`;
                             },
-                            locked: true
+                            locked: true,
+                            groupHeaderTemplate: (dataItem) => `${dataItem.value}`,
                         },
-                        ...data.columns.map(c => {
-                            return {
-                                field: c.Label,
-                                title: c.Label,
-                                attributes: {
-                                    'class': ''
-                                },
-                                width: c.WidthPixels ?? 160,
-                                editable: () => false,
-                                template: (dataItem) => dataItem.template(c),
-                                headerTemplate: (dataItem) => {
-                                    return `<span>${c.Label}</span><a class="stretched-link" href="javascript:;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${c.Tooltip}"></a>`
-                                }
-                            }
-                        })]);
+                        ...mapped
+                        ]);
 
                         options.success(data.gridData);
                     }
@@ -207,10 +239,10 @@
             read: self.gridDataSourceRead
         },
         batch: true,
-        pageSize: 20,
-        serverPaging: true,
-        serverSorting: true,
-        serverFiltering: true,
+        pageSize: 50,
+        serverPaging: false,
+        serverSorting: false,
+        serverFiltering: false,
         autoSync: false,
         schema: $.extend({}, kendo.data.schemas.webapi, {
             data: "Data", 
@@ -223,7 +255,8 @@
                     RowID: { type: 'number' },
                     Label: { type: 'string' },
                     Tooltip: { type: 'string' },
-                    SortOrder: { type: 'number' }
+                    SortOrder: { type: 'number' },
+                    GroupLabel: { type: 'string' }
                 }
             },
             parse: (response) => {
@@ -244,8 +277,25 @@
                 return response;
             }
         }),
+        group: {
+            field: 'GroupLabel',
+            dir: 'asc'
+        },
         requestStart: function (e) {
             console.log('requestStart', e);
+            if (e.type === 'read') {
+                console.log('requestStart was a read');
+                if (self.dirtyRecords.peek().length > 0) {
+                    e.preventDefault();
+                    window.showInfo('Unsaved Changes', 'You have unsaved changes. Please save or cancel them before continuing.');
+                }
+            }
+            //if (e.type == 'read') {
+            //    if (self.dirtyRecords().length) {
+            //        e.preventDefault();
+            //    }
+            //    self.gridWidget().refresh();
+            //}
         },
         requestEnd: function (e) {
             //if (e.type == "create") {
@@ -257,6 +307,22 @@
             })
         },
     });
+
+    self.showUnsavedChanges = (onClose) => {
+        window.showInfo('Unsaved Changes', 'You have unsaved changes. Please either save or cancel them before navigating.', onClose);
+    }
+
+    self.gridDataBinding = (e) => {
+        console.log('gridDataBinding');
+        if (self.gridWidget()) {
+            if (self.dirtyRecords().length) {
+                if (e.action === "rebind") {
+                    e.preventDefault();
+                    self.showUnsavedChanges();
+                }
+            }
+        }
+    };
 
     self.gridParams = {
         autoBind: true,
@@ -283,28 +349,33 @@
                 }
             }
         },
-        dataBound: (e) => {
+        dataBound: function (e) {
+
+            self.previousDate(self.date());
 
             console.log('dataBound');
 
             ko.ignoreDependencies(() => {
 
-                ko.utils.arrayForEach(e.sender.dataSource.view(), function (item, index) {
+                ko.utils.arrayForEach(e.sender.dataSource.view(), function (groupItem, index) {
 
-                    // this is necessary because if you have locked columns you will have multiple <tr> sharing the one uid
-                    let rows = document.querySelectorAll('tr[data-uid="' + item.uid + '"]');
+                    groupItem.items.forEach(item => {
 
-                    rows.forEach(row => {
+                        // this is necessary because if you have locked columns you will have multiple <tr> sharing the one uid
+                        let rows = document.querySelectorAll(`[data-uid="${item.uid}"]`);
 
-                        ko.cleanNode(row);
+                        rows.forEach(row => {
 
-                        let cells = row.querySelectorAll('td');
+                            ko.cleanNode(row);
 
-                        cells.forEach((c, i) => {
-                            ko.cleanNode(c);
-                            ko.applyBindings(item.cells()[i], c);
-                        })
-                    });
+                            let cells = row.querySelectorAll('td');
+
+                            cells.forEach((c, i) => {
+                                ko.cleanNode(c);
+                                ko.applyBindings(item.cells()[i], c);
+                            })
+                        });
+                    })
                 });
             });
 
@@ -326,8 +397,14 @@
 
             self.responseValues.valueHasMutated();
 
-            $(".k-grid-save-changes").hide();
-            $(".k-grid-cancel-changes").hide();
+            $(".k-grid-cancel-changes").off("click");
+            $(".k-grid-cancel-changes").on("click", self.cancelChanges);
+
+            $(".k-grid-save-changes").off("click");
+            $(".k-grid-save-changes").on("click", self.saveChanges);
+
+            $(".k-grid-save-changes").addClass('d-inline-flex');
+            $(".k-grid-cancel-changes").addClass('d-inline-flex');
         },
         saveChanges: (e) => {
             console.log('saveChanges', e);
@@ -337,12 +414,6 @@
         cancel: (e) => {
             console.log('cancel');
 
-            var saveBtn = e.sender.element.find(".k-grid-save-changes");
-            var cancelBtn = e.sender.element.find(".k-grid-cancel-changes");
-
-            saveBtn.hide();
-            cancelBtn.hide();
-
             self.dirtyRecords().filter(x => {
                 x.value(x.originalValue());
             });
@@ -351,7 +422,7 @@
         filterable: false,
         reorderable: true,
         pageable: {
-            pageSize: 20,
+            pageSize: 50,
             pageSizes: [10, 20, 50, 100, 200]
         },
         scrollable: true,
@@ -376,9 +447,44 @@
 
     //#region Subscriptions
 
+    self.skipDateSubscription = false;
+
     self.date.subscribe(nv => {
-        self.reload();
+
+        if (self.skipDateSubscription == true) {
+            self.skipDateSubscription = false;
+        } else {
+
+            if (self.dirtyRecords().length) {
+
+                self.showUnsavedChanges(() => {
+
+                    self.date.tempusDominus.dates.setValue(new tempusDominus.DateTime(self.previousDate()));
+
+                });
+
+                self.skipDateSubscription = true;
+
+                self.date(self.previousDate());
+
+                self.skipDateSubscription = true;
+            } else {
+                self.reload();
+            }
+        }
     });
+
+    self.onbeforeunload = (event) => {
+        event.preventDefault();
+    }
+
+    self.dirtyRecords.subscribe(nv => {
+        if (nv.length) {
+            window.addEventListener('beforeunload', self.onbeforeunload);
+        } else {
+            window.removeEventListener('beforeunload', self.onbeforeunload);
+        }
+    }, 'arrayChange');
 
     //#endregion
 
@@ -391,10 +497,14 @@
     }
 
     self.cancelChanges = () => {
-        self.dirtyRecords().forEach(r => {
-            r.value(r.originalValue());
-        })
-        self.gridWidget().dataSource.cancelChanges(); // Force the actual data revert
+        if (self.dirtyRecords().length) {
+            self.dirtyRecords().forEach(r => {
+                r.value(r.originalValue());
+            })
+            self.gridWidget().dataSource.cancelChanges(); // Force the actual data revert
+        } else {
+            window.showInfo('Information', 'You have no unsaved changes to cancel.');
+        }
     }
 
     self.reload = () => {
@@ -402,47 +512,54 @@
             self.gridWidget().dataSource.data([]);
             self.gridWidget().dataSource.query({
                 page: 1,
-                pageSize: self.gridWidget().dataSource.pageSize()
+                pageSize: self.gridWidget().dataSource.pageSize(),
+                group: self.gridWidget().dataSource.group()
             });
         }
     }
 
     self.saveChanges = () => {
-        self.busy(true);
 
-        let data = {
-            date: self.date().toUTCString(),
-            records: self.dirtyRecords().map(dr => {
-                return {
-                    rowId: dr.row.RowID,
-                    columnId: dr.column.ColumnID,
-                    value: dr.value()
-                }
+        if (self.dirtyRecords().length) {
+
+            self.busy(true);
+
+            let data = {
+                date: self.date().toUTCString(),
+                records: self.dirtyRecords().map(dr => {
+                    return {
+                        rowId: dr.row.RowID,
+                        columnId: dr.column.ColumnID,
+                        value: dr.value()
+                    }
+                })
+            }
+
+            console.log('saveChanges calling with', data);
+
+            fetch('/api/DailyBankingStatisticsAPI/SaveChanges', {
+                method: 'POST',
+                headers: window.fetchHeaders,
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                body: JSON.stringify(data)
             })
+                .then(window.handleFetchResponse)
+                .then(data => {
+                    self.busy(false);
+                    self.dirtyRecords().forEach(r => {
+                        r.originalValue(r.value());
+                    });
+                    window.showInfo('Success', 'Saved successfully.');
+                    self.reload();
+                })
+                .catch(err => {
+                    self.busy(false)
+                    window.catchFetchError(err);
+                })
+        } else {
+            window.showInfo('Information', 'You have no pending changes to save.');
         }
-
-        console.log('saveChanges calling with', data);
-
-        fetch('/api/DailyBankingStatisticsAPI/SaveChanges', {
-            method: 'POST',
-            headers: window.fetchHeaders,
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            body: JSON.stringify(data)
-        })
-            .then(window.handleFetchResponse)
-            .then(data => {
-                self.busy(false);
-                self.dirtyRecords().forEach(r => {
-                    r.originalValue(r.value());
-                });
-                window.showInfo('Success', 'Saved successfully.');
-                self.reload();
-            })
-            .catch(err => {
-                self.busy(false)
-                window.catchFetchError(err);
-            })
     }
 
     //#endregion

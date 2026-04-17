@@ -38,9 +38,9 @@
                         </label>
                     </div>
                     <div>
-                        <span data-bind="text: `${BasketSplitID}`"></span>
-                        <span data-bind="text: `${ParentBasketSplitID}`"></span>
-                        <span data-bind="text: `${BasketSplitName}`"></span>
+                        <span data-bind="text: `${BasketSplitID}`, attr: { title: `${BasketSplitID}` }"></span>
+                        <span data-bind="text: `${ParentBasketSplitID}`, attr: { title: `${ParentBasketSplitID}` }"></span>
+                        <span data-bind="text: `${BasketSplitName}`, attr: { title: `${BasketSplitName}` }"></span>
                     </div>
                 </div>
                 <h4 class="blue-heading text-center">
@@ -81,16 +81,16 @@
                         </label>
                     </div>
                     <div>
-                        <span data-bind="text: `${TradeAccountID}`"></span>
-                        <span data-bind="text: `${TradeAccountGroupID}`"></span>
-                        <span data-bind="text: `${ChargeTradeAccountID}`"></span>
-                        <span data-bind="text: `${ChargeTradeAccountGroupID}`"></span>
-                        <span data-bind="text: `${IsFurnitureOrder}`"></span>
-                        <span data-bind="text: `${IsTreatmentOrder}`"></span>
-                        <span data-bind="text: `${OrderContext}`"></span>
-                        <span data-bind="text: `${OrderLevel}`"></span>
-                        <span data-bind="text: `${SalesMarketID}`"></span>
-                        <span data-bind="text: `${MertexCurrencyCode}`"></span>
+                        <span data-bind="text: `${TradeAccountID}`, attr: { title: `${TradeAccountID}` }"></span>
+                        <span data-bind="text: `${TradeAccountGroupID}`, attr: { title: `${TradeAccountGroupID}` }"></span>
+                        <span data-bind="text: `${ChargeTradeAccountID}`, attr: { title: `${ChargeTradeAccountID}` }"></span>
+                        <span data-bind="text: `${ChargeTradeAccountGroupID}`, attr: { title: `${ChargeTradeAccountGroupID}` }"></span>
+                        <span data-bind="text: `${IsFurnitureOrder}`, attr: { title: `${IsFurnitureOrder}` }"></span>
+                        <span data-bind="text: `${IsTreatmentOrder}`, attr: { title: `${IsTreatmentOrder}` }"></span>
+                        <span data-bind="text: `${OrderContext}`, attr: { title: `${OrderContext}` }"></span>
+                        <span data-bind="text: `${OrderLevel}`, attr: { title: `${OrderLevel}` }"></span>
+                        <span data-bind="text: `${SalesMarketID}`, attr: { title: `${SalesMarketID}` }"></span>
+                        <span data-bind="text: `${MertexCurrencyCode}`, attr: { title: `${MertexCurrencyCode}` }"></span>
                     </div>
                 </div>
                 <h4 class="blue-heading text-center">
@@ -137,18 +137,18 @@
                         </label>
                     </div>
                     <div>
-                        <span data-bind="text: `${HaulierCodeGroup}`"></span>
-                        <span data-bind="text: `${HaulierName} (${HaulierCode})`"></span>
-                        <span data-bind="text: `${ServiceName} (${ServiceCode})`"></span>
-                        <span data-bind="text: `${DeliveryType}`"></span>
-                        <span data-bind="text: `${DeliveryTerms}`"></span>
-                        <span data-bind="text: `${TransportBilledToName} ${TransportBilledToCode ? TransportBilledToCode : ''}`"></span>
-                        <span data-bind="text: `${DutyTaxBilledToName} ${DutyTaxBilledToCode ? DutyTaxBilledToCode : ''}`"></span>
-                        <span data-bind="text: `${Preference}`"></span>
-                        <span data-bind="text: `${HaulierSortOrder}`"></span>
-                        <span data-bind="text: `${ServiceDataOrigin} (${ServiceDataOriginID})`"></span>
-                        <span data-bind="text: `${HaulierServiceCode}`"></span>
-                        <span data-bind="text: `${ExpressService}`"></span>
+                        <span data-bind="text: `${HaulierCodeGroup}`, attr: { title: `${HaulierCodeGroup}` }"></span>
+                        <span data-bind="text: `${HaulierName} (${HaulierCode})`, attr: { title: `${HaulierName} (${HaulierCode})` }"></span>
+                        <span data-bind="text: `${ServiceName} (${ServiceCode})`, attr: { title: `${ServiceName} (${ServiceCode})` }"></span>
+                        <span data-bind="text: `${DeliveryType}`, attr: { title: `${DeliveryType}` }"></span>
+                        <span data-bind="text: `${DeliveryTerms}`, attr: { title: `${DeliveryTerms}` }"></span>
+                        <span data-bind="text: `${TransportBilledToName} ${TransportBilledToCode ? TransportBilledToCode : ''}`, attr: { title: `${TransportBilledToName} ${TransportBilledToCode ? TransportBilledToCode : ''}` }"></span>
+                        <span data-bind="text: `${DutyTaxBilledToName} ${DutyTaxBilledToCode ? DutyTaxBilledToCode : ''}`, attr: { title: `${DutyTaxBilledToName} ${DutyTaxBilledToCode ? DutyTaxBilledToCode : ''}` }"></span>
+                        <span data-bind="text: `${Preference}`, attr: { title: `${Preference}` }"></span>
+                        <span data-bind="text: `${HaulierSortOrder}`, attr: { title: `${HaulierSortOrder}` }"></span>
+                        <span data-bind="text: `${ServiceDataOrigin} (${ServiceDataOriginID})`, attr: { title: `${ServiceDataOrigin} (${ServiceDataOriginID})` }"></span>
+                        <span data-bind="text: `${HaulierServiceCode}`, attr: { title: `${HaulierServiceCode}` }"></span>
+                        <span data-bind="text: `${ExpressService}`, attr: { title: `${ExpressService}` }"></span>
                     </div>
                 </div>
                 <h4 class="blue-heading text-center">
@@ -171,10 +171,10 @@
                         </label>
                     </div>
                     <div>
-                        <span data-bind="text: `${ParcelWeight != null ? ParcelWeight + ' KG' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${ParcelWidthCM != null ? ParcelWidthCM + ' CM' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${ParcelLengthCM != null ? ParcelLengthCM + ' CM' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${ParcelHeightCM != null ? ParcelHeightCM + ' CM' : 'Unknown'}`"></span>
+                        <span data-bind="text: `${ParcelWeight != null ? ParcelWeight + ' KG' : 'Unknown' }`, attr: { title: `${ParcelWeight != null ? ParcelWeight + ' KG' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${ParcelWidthCM != null ? ParcelWidthCM + ' CM' : 'Unknown' }`, attr: { title: `${ParcelWidthCM != null ? ParcelWidthCM + ' CM' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${ParcelLengthCM != null ? ParcelLengthCM + ' CM' : 'Unknown' }`, attr: { title: `${ParcelLengthCM != null ? ParcelLengthCM + ' CM' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${ParcelHeightCM != null ? ParcelHeightCM + ' CM' : 'Unknown' }`, attr: { title: `${ParcelHeightCM != null ? ParcelHeightCM + ' CM' : 'Unknown'}` }"></span>
                     </div>
                 </div>
                 <h4 class="blue-heading text-center">
@@ -215,16 +215,16 @@
                         </label>
                     </div>
                     <div>
-                        <span data-bind="text: `${UnitDeliveryChargeEx != null ? formatCurrency(UnitDeliveryChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${DeliveryChargingLogicName} (${DeliveryChargingLogicID})`"></span>
-                        <span data-bind="text: `${UnitDeliverySurchargeEx != null ? formatCurrency(UnitDeliverySurchargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${SurchargeDeliveryChargingLogicName} (${SurchargeDeliveryChargingLogicID})`"></span>
-                        <span data-bind="text: `${UnitDeliveryVAT != null ? formatCurrency(UnitDeliveryVAT, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) : 'Unknown'}`"></span>
-                        <span data-bind="text: `${TotalDeliveryChargeEx != null ? formatCurrency(TotalDeliveryChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${TotalDeliveryVAT != null ? formatCurrency(TotalDeliveryVAT, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) : 'Unknown'}`"></span>
-                        <span data-bind="text: `${FinalDeliveryChargeEx != null ? formatCurrency(FinalDeliveryChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${FinalDeliveryVAT != null ? formatCurrency(FinalDeliveryVAT, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) : 'Unknown'}`"></span>
-                        <span data-bind="text: `${FinalDeliveryChargingLogicName} (${FinalDeliveryChargingLogicID})`"></span>
+                        <span data-bind="text: `${UnitDeliveryChargeEx != null ? formatCurrency(UnitDeliveryChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`, attr: { title: `${UnitDeliveryChargeEx != null ? formatCurrency(UnitDeliveryChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${DeliveryChargingLogicName} (${DeliveryChargingLogicID})`, attr: { title: `${DeliveryChargingLogicName} (${DeliveryChargingLogicID})` }"></span>
+                        <span data-bind="text: `${UnitDeliverySurchargeEx != null ? formatCurrency(UnitDeliverySurchargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`, attr: { title: `${UnitDeliverySurchargeEx != null ? formatCurrency(UnitDeliverySurchargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${SurchargeDeliveryChargingLogicName} (${SurchargeDeliveryChargingLogicID})`, attr: { title: `${SurchargeDeliveryChargingLogicName} (${SurchargeDeliveryChargingLogicID})` }"></span>
+                        <span data-bind="text: `${UnitDeliveryVAT != null ? formatCurrency(UnitDeliveryVAT, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) : 'Unknown'}`, attr: { title: `${UnitDeliveryVAT != null ? formatCurrency(UnitDeliveryVAT, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${TotalDeliveryChargeEx != null ? formatCurrency(TotalDeliveryChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`, attr: { title: `${TotalDeliveryChargeEx != null ? formatCurrency(TotalDeliveryChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${TotalDeliveryVAT != null ? formatCurrency(TotalDeliveryVAT, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) : 'Unknown'}`, attr: { title: `${TotalDeliveryVAT != null ? formatCurrency(TotalDeliveryVAT, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${FinalDeliveryChargeEx != null ? formatCurrency(FinalDeliveryChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`, attr: { title: `${FinalDeliveryChargeEx != null ? formatCurrency(FinalDeliveryChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${FinalDeliveryVAT != null ? formatCurrency(FinalDeliveryVAT, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) : 'Unknown'}`, attr: { title: `${FinalDeliveryVAT != null ? formatCurrency(FinalDeliveryVAT, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${FinalDeliveryChargingLogicName} (${FinalDeliveryChargingLogicID})`, attr: { title: `${FinalDeliveryChargingLogicName} (${FinalDeliveryChargingLogicID})` }"></span>
                     </div>
                 </div>
                 <h4 class="blue-heading text-center">
@@ -298,27 +298,27 @@
                         </label>
                     </div>
                     <div>
-                        <span data-bind="text: `${PricelistUnitChargeEx != null ? formatCurrency(PricelistUnitChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${PricelistProportionalCharge != null ? formatCurrency(PricelistProportionalCharge, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${ContractChargeEx != null ? formatCurrency(ContractChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${OperatorEnteredChargeEx != null ? formatCurrency(OperatorEnteredChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${OperatorEnteredChargingLogicID}`"></span>
-                        <span data-bind="text: `${CourierCostEx != null ? formatCurrency(CourierCostEx, 2, 'en-GB', 'GBP') + ' Ex. VAT (includes fuel but excludes surcharges)' : 'Unknown (includes fuel but excludes surcharges)'}`"></span>
-                        <span data-bind="text: `${CourierMarkupPercentage != null ? CourierMarkupPercentage + '%' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${CourierSurchargeEx != null ? formatCurrency(CourierSurchargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) : 'Unknown'}`"></span>
+                        <span data-bind="text: `${PricelistUnitChargeEx != null ? formatCurrency(PricelistUnitChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`, attr: { title: `${PricelistUnitChargeEx != null ? formatCurrency(PricelistUnitChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${PricelistProportionalCharge != null ? formatCurrency(PricelistProportionalCharge, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`, attr: { title: `${PricelistProportionalCharge != null ? formatCurrency(PricelistProportionalCharge, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${ContractChargeEx != null ? formatCurrency(ContractChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`, attr: { title: `${ContractChargeEx != null ? formatCurrency(ContractChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${OperatorEnteredChargeEx != null ? formatCurrency(OperatorEnteredChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`, attr: { title: `${OperatorEnteredChargeEx != null ? formatCurrency(OperatorEnteredChargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${OperatorEnteredChargingLogicID}`, attr: { title: `${OperatorEnteredChargingLogicID}` }"></span>
+                        <span data-bind="text: `${CourierCostEx != null ? formatCurrency(CourierCostEx, 2, 'en-GB', 'GBP') + ' Ex. VAT (includes fuel but excludes surcharges)' : 'Unknown (includes fuel but excludes surcharges)'}`, attr: { title: ``${CourierCostEx != null ? formatCurrency(CourierCostEx, 2, 'en-GB', 'GBP') + ' Ex. VAT (includes fuel but excludes surcharges)' : 'Unknown (includes fuel but excludes surcharges)'}` }"></span>
+                        <span data-bind="text: `${CourierMarkupPercentage != null ? CourierMarkupPercentage + '%' : 'Unknown'}`, attr: { title: `${CourierMarkupPercentage != null ? CourierMarkupPercentage + '%' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${CourierSurchargeEx != null ? formatCurrency(CourierSurchargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) : 'Unknown'}`, attr: { title: `${CourierSurchargeEx != null ? formatCurrency(CourierSurchargeEx, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) : 'Unknown'}` }"></span>
                         @*<span data-bind="html: '<pre><code>' + JSON.stringify(DeliveryDetailsJSON, null, ' ') + '</pre></code>'"></span>*@
-                        <span data-bind="text: `CurrencyID: ${SourceCurrencyID} (${SourceCurrencyCode}) (GBP to ${SourceCurrencyCode} FX:${GBPtoSourceCurrencyFX.toFixed(4)})`"></span>
-                        <span data-bind="text: `CurrencyID: ${TargetCurrencyID} (${TargetCurrencyCode}) (GBP to ${TargetCurrencyCode} FX:${GBPtoTargetCurrencyFX.toFixed(4)})`"></span>
-                        <span data-bind="text: `${Quote ? 'Yes' : 'No'}`"></span>
-                        <span data-bind="text: `${CalculateTotalDeliveryCharge ? 'Yes' : 'No'}`"></span>
-                        <span data-bind="text: `${PaymentTermsID}`"></span>
-                        <span data-bind="text: `${Threshold}`"></span>
-                        <span data-bind="text: `${SurchargeThreshold}`"></span>
-                        <span data-bind="text: `${EstimatedParcelCount}`"></span>
-                        <span data-bind="text: `${AvgParcelWeightKG} KG`"></span>
-                        <span data-bind="text: `${CalculatedAvgParcelWeightKG} KG`"></span>
-                        <span data-bind="text: `${AvgPalletWeightKG} KG`"></span>
-                        <span data-bind="text: `${EstimatedPalletCount}`"></span>
+                        <span data-bind="text: `CurrencyID: ${SourceCurrencyID} (${SourceCurrencyCode}) (GBP to ${SourceCurrencyCode} FX:${GBPtoSourceCurrencyFX.toFixed(4)})`, attr: { title: `CurrencyID: ${SourceCurrencyID} (${SourceCurrencyCode}) (GBP to ${SourceCurrencyCode} FX:${GBPtoSourceCurrencyFX.toFixed(4)})` }"></span>
+                        <span data-bind="text: `CurrencyID: ${TargetCurrencyID} (${TargetCurrencyCode}) (GBP to ${TargetCurrencyCode} FX:${GBPtoTargetCurrencyFX.toFixed(4)})`, attr: { title: `CurrencyID: ${TargetCurrencyID} (${TargetCurrencyCode}) (GBP to ${TargetCurrencyCode} FX:${GBPtoTargetCurrencyFX.toFixed(4)})` }"></span>
+                        <span data-bind="text: `${Quote ? 'Yes' : 'No'}`, attr: { title: `${Quote ? 'Yes' : 'No'}` }"></span>
+                        <span data-bind="text: `${CalculateTotalDeliveryCharge ? 'Yes' : 'No'}`, attr: { title: `${CalculateTotalDeliveryCharge ? 'Yes' : 'No'}` }"></span>
+                        <span data-bind="text: `${PaymentTermsID}`, attr: { title: `${PaymentTermsID}` }"></span>
+                        <span data-bind="text: `${Threshold}`, attr: { title: `${Threshold}` }"></span>
+                        <span data-bind="text: `${SurchargeThreshold}`, attr: { title: `${SurchargeThreshold}` }"></span>
+                        <span data-bind="text: `${EstimatedParcelCount}`, attr: { title: `${EstimatedParcelCount}` }"></span>
+                        <span data-bind="text: `${AvgParcelWeightKG} KG`, attr: { title: `${AvgParcelWeightKG} KG` }"></span>
+                        <span data-bind="text: `${CalculatedAvgParcelWeightKG} KG`, attr: { title: `${CalculatedAvgParcelWeightKG} KG` }"></span>
+                        <span data-bind="text: `${AvgPalletWeightKG} KG`, attr: { title: `${AvgPalletWeightKG} KG` }"></span>
+                        <span data-bind="text: `${EstimatedPalletCount}`, attr: { title: `${EstimatedPalletCount}` }"></span>
                     </div>
                 </div>
                 <h4 class="blue-heading text-center">
@@ -356,15 +356,15 @@
                         </label>
                     </div>
                     <div>
-                        <span data-bind="text: `${OrderDataOrigin})`"></span>
-                        <span data-bind="text: `${OrderTotal != null ? formatCurrency(OrderTotal, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${OrderWeight != null ? OrderWeight + ' KG' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${OrderQuantity}`"></span>
-                        <span data-bind="text: `${OrderDiscountPercentage != null ? OrderDiscountPercentage + '%' : 'Unknown'}`"></span>
-                        <span data-bind="text: `${DeliveryGroupName} (${DeliveryGroupID})`"></span>
-                        <span data-bind="text: `${FulfilmentTypeID}`"></span>
-                        <span data-bind="text: `${ItemCount}`"></span>
-                        <span data-bind="text: `${SeatCount}`"></span>
+                        <span data-bind="text: `${OrderDataOrigin}`, attr: { title: `${OrderDataOrigin}` }"></span>
+                        <span data-bind="text: `${OrderTotal != null ? formatCurrency(OrderTotal, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}`, attr: { title: `${OrderTotal != null ? formatCurrency(OrderTotal, 2, $parent.parent.currency().FormattingCulture, $parent.parent.currency().ISO_4217) + ' Ex. VAT' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${OrderWeight != null ? OrderWeight + ' KG' : 'Unknown'}`, attr: { title: `${OrderWeight != null ? OrderWeight + ' KG' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${OrderQuantity}`, attr: { title: `${OrderQuantity}` }"></span>
+                        <span data-bind="text: `${OrderDiscountPercentage != null ? OrderDiscountPercentage + '%' : 'Unknown'}`, attr: { title: `${OrderDiscountPercentage != null ? OrderDiscountPercentage + '%' : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${DeliveryGroupName} (${DeliveryGroupID})`, attr: { title: `${DeliveryGroupName} (${DeliveryGroupID})` }"></span>
+                        <span data-bind="text: `${FulfilmentTypeID}`, attr: { title: `${FulfilmentTypeID}` }"></span>
+                        <span data-bind="text: `${ItemCount}`, attr: { title: `${ItemCount}` }"></span>
+                        <span data-bind="text: `${SeatCount}`, attr: { title: `${SeatCount}` }"></span>
                     </div>
                 </div>
                 <h4 class="blue-heading text-center">
@@ -384,9 +384,9 @@
                         </label>
                     </div>
                     <div>
-                        <span data-bind="text: `${OperatorDiscountPercentage != null ? OperatorDiscountPercentage + '%' : 'Unknown'}`"></span>
-                        <span data-bind="text: DiscountReasonID ? `${DiscountReasonComment} (${DiscountReasonID})` : 'No Discount'"></span>
-                        <span data-bind="text: `${TradePromotionCodeID}`"></span>
+                        <span data-bind="text: `${OperatorDiscountPercentage != null ? OperatorDiscountPercentage + '%' : 'Unknown'}`, attr: { title: `${OperatorDiscountPercentage != null ? OperatorDiscountPercentage + '%' : 'Unknown'}` }"></span>
+                        <span data-bind="text: DiscountReasonID ? `${DiscountReasonComment} (${DiscountReasonID})` : 'No Discount', attr: { title: DiscountReasonID ? `${DiscountReasonComment} (${DiscountReasonID})` : 'No Discount' }"></span>
+                        <span data-bind="text: `${TradePromotionCodeID}`, attr: { title: `${TradePromotionCodeID}` }"></span>
                     </div>
                 </div>
                 <h4 class="blue-heading text-center">
@@ -403,8 +403,8 @@
                         </label>
                     </div>
                     <div>
-                        <span data-bind="text: `${DeliveryEstimateMin ? moment.utc(DeliveryEstimateMin).format('dddd Do MMM YY') : 'Unknown'}`"></span>
-                        <span data-bind="text: `${DeliveryEstimateMax ? moment.utc(DeliveryEstimateMax).format('dddd Do MMM YY') : 'Unknown'}`"></span>
+                        <span data-bind="text: `${DeliveryEstimateMin ? moment.utc(DeliveryEstimateMin).format('dddd Do MMM YY') : 'Unknown'}`, attr: { title: `${DeliveryEstimateMin ? moment.utc(DeliveryEstimateMin).format('dddd Do MMM YY') : 'Unknown'}` }"></span>
+                        <span data-bind="text: `${DeliveryEstimateMax ? moment.utc(DeliveryEstimateMax).format('dddd Do MMM YY') : 'Unknown'}`, attr: { title: `${DeliveryEstimateMax ? moment.utc(DeliveryEstimateMax).format('dddd Do MMM YY') : 'Unknown'}` }"></span>
                     </div>
                 </div>
                 <h4 class="blue-heading text-center">
@@ -424,9 +424,9 @@
                         </label>
                     </div>
                     <div>
-                        <span data-bind="text: `${AllowCustomerHaulierAccountForTransportCharges}`"></span>
-                        <span data-bind="text: `${AllowCustomerHaulierAccountForDutyAndTax}`"></span>
-                        <span data-bind="text: `${OfferConsolidatedShipment}`"></span>
+                        <span data-bind="text: `${AllowCustomerHaulierAccountForTransportCharges}`, attr: { title: `${AllowCustomerHaulierAccountForTransportCharges}` }"></span>
+                        <span data-bind="text: `${AllowCustomerHaulierAccountForDutyAndTax}`, attr: { title: `${AllowCustomerHaulierAccountForDutyAndTax}` }"></span>
+                        <span data-bind="text: `${OfferConsolidatedShipment}`, attr: { title: `${OfferConsolidatedShipment}` }"></span>
                     </div>
                 </div>
                 <h4 class="blue-heading text-center">
@@ -458,13 +458,13 @@
                         </label>
                     </div>
                     <div>
-                        <span data-bind="text: `${OriginCountryName} (${OriginCountryID})`"></span>
-                        <span data-bind="text: `${DestinationCountryName} (${DestinationCountryID})`"></span>
-                        <span data-bind="text: `${DestinationInEU}`"></span>
-                        <span data-bind="text: `${EUExitCode}`"></span>
-                        <span data-bind="text: `${VATNumber}`"></span>
-                        <span data-bind="text: `${VATCode}`"></span>
-                        <span data-bind="text: `${VATRate}`"></span>
+                        <span data-bind="text: `${OriginCountryName} (${OriginCountryID})`, attr: { title: `${OriginCountryName} (${OriginCountryID})` }"></span>
+                        <span data-bind="text: `${DestinationCountryName} (${DestinationCountryID})`, attr: { title: `${DestinationCountryName} (${DestinationCountryID})` }"></span>
+                        <span data-bind="text: `${DestinationInEU}`, attr: { title: `${DestinationInEU}` }"></span>
+                        <span data-bind="text: `${EUExitCode}`, attr: { title: ``${EUExitCode}` }"></span>
+                        <span data-bind="text: `${VATNumber}`, attr: { title: `${VATNumber}` }"></span>
+                        <span data-bind="text: `${VATCode}`, attr: { title: `${VATCode}` }"></span>
+                        <span data-bind="text: `${VATRate}`, attr: { title: `${VATRate}` }"></span>
                     </div>
                 </div>
                 <h4 class="blue-heading text-center">
@@ -486,25 +486,25 @@
                                 Supplier Address Details:
                             </label>*@
                     </div>
-                    <div>
-                        <span data-bind="text: `${From}`"></span>
-                        <span data-bind="text: `${OriginStockLocationID}`"></span>
-                        <span data-bind="text: `${OriginStockLocationSiteID}`"></span>
-                        @*<!-- ko if: SupplierCompanyName -->
-                            <div>
-                                <span class="address-block-span" data-bind="text: `${SupplierCompanyName}`"></span>
-                                <span class="address-block-span" data-bind="text: `${SupplierAddressLine1}`"></span>
-                                <span class="address-block-span" data-bind="text: `${SupplierAddressLine2}`"></span>
-                                <span class="address-block-span" data-bind="text: `${SupplierTown}`"></span>
-                                <span class="address-block-span" data-bind="text: `${SupplierCounty}`"></span>
-                                <span class="address-block-span" data-bind="text: `${SupplierPostcode}`"></span>
-                                <span class="address-block-span" data-bind="text: `${SupplierCountryCode} (CountryID: ${SupplierCountryID})`"></span>
-                            </div>
-                            <!-- /ko -->
-                            <!-- ko ifnot: SupplierCompanyName -->
-                            <span data-bind="text: `Unknown`"></span>
-                            <!-- /ko -->*@
-                    </div>
+					<div>
+						<span data-bind="text: `${From}`, attr: { title: `${From}` }"></span>
+						<span data-bind="text: `${OriginStockLocationID}`, attr: { title: `${OriginStockLocationID}` }"></span>
+						<span data-bind="text: `${OriginStockLocationSiteID}`, attr: { title: `${OriginStockLocationSiteID}` }"></span>
+						@*<!-- ko if: SupplierCompanyName -->
+		<div>
+			<span class="address-block-span" data-bind="text: `${SupplierCompanyName}`, attr: { title: `` }"></span>
+			<span class="address-block-span" data-bind="text: `${SupplierAddressLine1}`, attr: { title: `` }"></span>
+			<span class="address-block-span" data-bind="text: `${SupplierAddressLine2}`, attr: { title: `` }"></span>
+			<span class="address-block-span" data-bind="text: `${SupplierTown}`, attr: { title: `` }"></span>
+			<span class="address-block-span" data-bind="text: `${SupplierCounty}`, attr: { title: `` }"></span>
+			<span class="address-block-span" data-bind="text: `${SupplierPostcode}`, attr: { title: `` }"></span>
+			<span class="address-block-span" data-bind="text: `${SupplierCountryCode} (CountryID: ${SupplierCountryID})`, attr: { title: `` }"></span>
+		</div>
+		<!-- /ko -->
+		<!-- ko ifnot: SupplierCompanyName -->
+		<span data-bind="text: `Unknown`"></span>
+		<!-- /ko -->*@
+					</div>
                 </div>
                 <h4 class="blue-heading text-center">
                     Location Details: Destination
@@ -526,28 +526,28 @@
                         </label>
                     </div>
                     <div>
-                        <span data-bind="text: `${From}`"></span>
-                        <span data-bind="text: `${DestinationStockLocationID}`"></span>
-                        <span data-bind="text: `${DestinationStockLocationSiteID}`"></span>
+                        <span data-bind="text: `${From}`, attr: { title: `${From}` }"></span>
+                        <span data-bind="text: `${DestinationStockLocationID}`, attr: { title: `${DestinationStockLocationID}` }"></span>
+                        <span data-bind="text: `${DestinationStockLocationSiteID}`, attr: { title: `${DestinationStockLocationSiteID}` }"></span>
                         <div class="address-block">
-                            <span class="address-block-span" data-bind="text: `${DeliveryName}`"></span>
-                            <span class="address-block-span" data-bind="text: `${DeliveryCompanyName}`"></span>
-                            <span class="address-block-span" data-bind="text: `${DeliveryAddressLine1}`"></span>
+                            <span class="address-block-span" data-bind="text: `${DeliveryName}`, attr: { title: `${DeliveryName}` }"></span>
+                            <span class="address-block-span" data-bind="text: `${DeliveryCompanyName}`, attr: { title: `${DeliveryCompanyName}` }"></span>
+                            <span class="address-block-span" data-bind="text: `${DeliveryAddressLine1}`, attr: { title: `${DeliveryAddressLine1}` }"></span>
                             <!-- ko if: DeliveryAddressLine2 -->
-                            <span class="address-block-span" data-bind="text: `${DeliveryAddressLine2}`"></span>
+                            <span class="address-block-span" data-bind="text: `${DeliveryAddressLine2}`, attr: { title: `${DeliveryAddressLine2}` }"></span>
                             <!-- /ko -->
                             <!-- ko if: DeliveryTown -->
-                            <span class="address-block-span" data-bind="text: `${DeliveryTown}`"></span>
+                            <span class="address-block-span" data-bind="text: `${DeliveryTown}`, attr: { title: `${DeliveryTown}` }"></span>
                             <!-- /ko -->
                             <!-- ko if: DeliveryCounty -->
-                            <span class="address-block-span" data-bind="text: `${DeliveryCounty}`"></span>
+                            <span class="address-block-span" data-bind="text: `${DeliveryCounty}`, attr: { title: `${DeliveryCounty}` }"></span>
                             <!-- /ko -->
-                            <span class="address-block-span" data-bind="text: `${DeliveryPostcode}`"></span>
-                            <span class="address-block-span" data-bind="text: `${DeliveryCountryCode} (CountryID: ${DeliveryCountryID})`"></span>
+                            <span class="address-block-span" data-bind="text: `${DeliveryPostcode}`, attr: { title: `${DeliveryPostcode}` }"></span>
+                            <span class="address-block-span" data-bind="text: `${DeliveryCountryCode} (CountryID: ${DeliveryCountryID})`, attr: { title: `${DeliveryCountryCode} (CountryID: ${DeliveryCountryID})` }"></span>
                             <!-- ko if: DeliveryPhoneNumber -->
-                            <span class="address-block-span" data-bind="text: `${DeliveryPhoneNumber}`"></span>
+                            <span class="address-block-span" data-bind="text: `${DeliveryPhoneNumber}`, attr: { title: `${DeliveryPhoneNumber}` }"></span>
                             <!-- /ko -->
-                            <span class="address-block-span" data-bind="text: `${DeliveryZoneName} (DeliveryZoneID: ${DeliveryZoneID})`"></span>
+                            <span class="address-block-span" data-bind="text: `${DeliveryZoneName} (DeliveryZoneID: ${DeliveryZoneID})`, attr: { title: `${DeliveryZoneName} (DeliveryZoneID: ${DeliveryZoneID})` }"></span>
                         </div>
                     </div>
                 </div>

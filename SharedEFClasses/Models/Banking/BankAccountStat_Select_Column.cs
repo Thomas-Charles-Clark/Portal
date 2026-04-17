@@ -19,5 +19,7 @@ namespace SharedEFClasses.Models.Banking
 		public string DataType { get; set; }
 
 		public string WidthPixels { get; set; }
+
+		public string GroupLabel { get; set; }
 	}
 }

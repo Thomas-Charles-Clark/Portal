@@ -56,6 +56,7 @@ namespace Portal.Areas.Accounting.Banks.Controllers
 				{
 					gridData = model.Rows.ToDataSourceResult(request),
 					rows = model.Rows,
+					rowLabel = model.RowLabel,
 					columns = model.Columns,
 					values = model.Values
 				});

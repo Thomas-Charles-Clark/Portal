@@ -28,6 +28,10 @@
 
     self.dataType = self.column.DataType?.toLowerCase()?.replace(/\(\d+\)/gm, '');
 
+    //console.log(`Row: ${self.row.SortOrder}, Column: ${self.column.SortOrder} "${self.column.Label}" - ${self.dataType}`);
+
+    //console.log(self.dataType);
+
     switch (self.dataType) {
         case "nvarchar":
             let maxLength = +self.column.DataType.replace(/[^\d+]/gm, '');
@@ -115,7 +119,7 @@
                 revertible: ko.observable(true),
                 clearable: ko.observable(true),
                 buttons: false,
-                rows: 3,
+                rows: 2,
                 revertFunction: function () {
                     let self = this;
                     this.observable(self.originalValue());
@@ -135,6 +139,7 @@
                 maxValue: Number.MAX_SAFE_INTEGER,
                 step: 1,
                 observable: self.value,
+                originalValue: self.originalValue,
                 busy: self.busy,
                 useNativeValidation: false,
                 decorateInputElement: true,
@@ -152,6 +157,9 @@
                     self.value(undefined);
                 }
             }
+            break;
+        default:
+            console.warning(self);
             break;
         //    break;
         //case 'date':
@@ -228,21 +236,9 @@
 
     //#region Subscriptions
 
-    self.value.subscribe(nv => {
-        // this call is from the kendo grid row: it must be called so that the grid
-        // knows a field is "dirty"
+    //self.value.subscribe(nv => {
 
-        if (nv != self.originalValue()) {
-            $(".k-grid-save-changes").show();
-            $(".k-grid-cancel-changes").show();
-        } 
-
-        $(".k-grid-cancel-changes").off("click");
-        $(".k-grid-cancel-changes").on("click", viewModel.cancelChanges);
-
-        $(".k-grid-save-changes").off("click");
-        $(".k-grid-save-changes").on("click", viewModel.saveChanges);
-    })
+    //})
 
     //#endregion
 
@@ -255,18 +251,19 @@
     }
 
     self.template = () => {
-
+        //console.log('template: ', self.dataType);
         switch (self.dataType) {
             case 'nvarchar':
                 return `<div data-bind="component: { name: 'mdc-text-area-component', params: valueParams }"></div>`
                 break;
             case 'decimal':
             case 'money':
+            default: 
                 return `<div data-bind="component: { name: 'mdc-text-field-numeric-component', params: valueParams }"></div>`;
             //case 'date':
             //    return `<div id="row-${self.RowID}-column-${self.ColumnID}-date" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: valueParams }"></div>`;
-            default:
-                return 'daily-banking-statistics-cell.js:167'
+            //default:
+            //    return 'daily-banking-statistics-cell.js:167'
         }
     }
 

@@ -1,6 +1,8 @@
 ﻿@model CreditControlViewModel
 @{
 	ViewBag.Title = "Credit Control";
+
+	var isItMe = User.Identity.GetUserId<int>() == 8;
 }
 @section styles {
 	@Styles.Render("~/bundles/css/generic-forms")
@@ -68,11 +70,15 @@
 
 		window.getHeldOrderReasonIdToLoad = () => null;
 
-		window.getTabToLoad = () => "ordersToApprove";
+		window.getTabToLoad = () => "ordersToApprove"; 
+
+		window.getIsMe = () => {
+			return @(isItMe.ToString().ToLowerInvariant());
+		}
 
 		window.isCreditControlApp = () => "C";
 
-		@if (User.Identity.GetUserId<int>() == 8)
+		@if (isItMe)
 		{
 			<text>
 			window.getPredefinedFilterParams = () =>
@@ -114,6 +120,11 @@
 		viewModel.init();
 
 		window.self = viewModel;
+
+		@if (isItMe) 
+		{ 
+			@:window.viewModel.closeBrothers.dataSource.read();
+		}
 
 	</script>
 }
@@ -517,7 +528,7 @@
 	<main id="credit-control-main">
 		<ul class="nav nav-tabs" id="credit-control-tabs" role="tablist">
 			<li class="nav-item" role="presentation">
-				<button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard-tab-pane" type="button" role="tab" aria-controls="dashboard-tab-pane" aria-selected="true">
+				<button class="nav-link @(isItMe ? "" : "active")" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard-tab-pane" type="button" role="tab" aria-controls="dashboard-tab-pane" aria-selected="true">
 					Dashboard
 				</button>
 			</li>
@@ -549,13 +560,13 @@
 				</button>
 			</li>
 			<li class="nav-item" role="presentation">
-				<button class="nav-link" id="close-brothers-tab" data-bs-toggle="tab" data-bs-target="#close-brothers-pane" type="button" role="tab" aria-controls="close-brothers-pane" aria-selected="false">
+				<button class="nav-link @(isItMe ? "active" : "")" id="close-brothers-tab" data-bs-toggle="tab" data-bs-target="#close-brothers-pane" type="button" role="tab" aria-controls="close-brothers-pane" aria-selected="false">
 					Close Brothers
 				</button>
 			</li>
 		</ul>
 		<div class="tab-content" id="credit-control-tab-content">
-			<div class="tab-pane fade show active" id="dashboard-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+			<div class="tab-pane fade @(isItMe ? "" : "show active")" id="dashboard-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
 				<div id="dashboard-tab-flex-container" style="display: none" data-bind="flexFadeVisible: true">
 					<!-- ko template: { name: 'sidebar-template', data: filters } --><!-- /ko -->
 					<div id="dashboard-main">
@@ -757,19 +768,6 @@
 						</div>
 					</div>
 				</div>
-				@*<form id="send-statements-controls" data-bind="with: filters" action="javascript:void(0);" autocomplete="off" onsubmit="return false;">
-				<div class="trade-account-prefilter prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: statementsTradeAccountParams }"></div>
-				<div class="prefilter">
-					<div class="date-prefilter" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: dateParams }"></div>
-					<span class="validation-message" data-bind="validationMessage: date"></span>
-				</div>
-			</form>
-			<div id="controls-wrapper">
-				<button class="btn btn-dark" data-bind="click: sendStatements">
-					Send Statements
-				</button>
-			</div>
-			<div id="response-container" data-bind="html: sendResponse"></div>*@
 			</div>
 			<div id="paying-off-with-proforma-tab-pane" class="tab-pane fade">
 				<div class="prefilters mb-3" data-bind="with: filters">
@@ -822,35 +820,353 @@
 				</div>
 				<div data-bind="kendoGrid: paymentHistory.gridParams"></div>
 			</div>
-			<div id="close-brothers-pane" class="tab-pane fade" data-bind="with: closeBrothers">
+			<div id="close-brothers-pane" class="tab-pane fade @(isItMe ? "show active" : "")" data-bind="with: closeBrothers">
 				<div class="blocker" data-bind="flexFadeVisible: busy">
 					<div class="loading-spinner"></div>
 					<h4 class="mt-2" data-bind="html: busyMessage"></h4>
 				</div>
-				<div class="prefilters mb-3" data-bind="with: filters">
-					<div id="close-brothers-date-prefilter-container" class="prefilter">
-						<div class="date-prefilters">
-							<div id="close-brothers-date-type-prefilter" class="date-prefilter prefilter relative">
-								<div class="date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: closeBrothersDateRangeParams }"></div>
-							</div>
-							<div id="close-brothers-from-date" class="prefilter" style="display: none" data-bind="visible: closeBrothersDateRangeId() == -1">
-								<div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: closeBrothersFromDateParams }"></div>
-							</div>
-							<div id="close-brothers-to-date" class="prefilter" style="display: none" data-bind="visible: closeBrothersDateRangeId() == -1">
-								<div class="to-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: closeBrothersToDateParams }"></div>
-							</div>
-						</div>
-						<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersFromDate"></span>
-						<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersToDate"></span>
-						<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersFromPrecedesTo"></span>
+				@*<div class="prefilters mb-3" data-bind="with: filters">
+			<div id="close-brothers-date-prefilter-container" class="prefilter">
+				<div class="date-prefilters">
+					<div id="close-brothers-date-type-prefilter" class="date-prefilter prefilter relative">
+						<div class="date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: closeBrothersDateRangeParams }"></div>
 					</div>
-					<button class="btn btn-dark btn-export ms-auto" data-bind="click: $parent.exportToExcel">
-						Export to Excel
-						<i class="bi bi-download"></i>
-						<i class="bi bi-filetype-xlsx"></i>
-					</button>
+					<div id="close-brothers-from-date" class="prefilter" style="display: none" data-bind="visible: closeBrothersDateRangeId() == -1">
+						<div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: closeBrothersFromDateParams }"></div>
+					</div>
+					<div id="close-brothers-to-date" class="prefilter" style="display: none" data-bind="visible: closeBrothersDateRangeId() == -1">
+						<div class="to-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: closeBrothersToDateParams }"></div>
+					</div>
 				</div>
-				<div data-bind="kendoGrid: gridParams"></div>
+				<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersFromDate"></span>
+				<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersToDate"></span>
+				<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersFromPrecedesTo"></span>
+			</div>
+		</div>*@
+				<div class="close-brothers-section">
+					<div class="close-brothers-section-body">
+						<table class="table close-brothers-table">
+							<colgroup>
+								<col class="close-brothers-title-column" />
+								<col class="close-brothers-value-column" />
+								<col class="close-brothers-value-column" />
+								<col class="close-brothers-value-column" />
+							</colgroup>
+							<thead>
+								<tr class="close-brothers-section-title">
+									<th>
+										Gross Ledger
+									</th>
+									<th>
+										Combined GBP
+									</th>
+									<th>
+										Only GBP
+									</th>
+									<th>
+										Only EUR
+									</th>
+								</tr>
+							</thead>
+							<tbody data-bind="with: grossLedger">
+								<tr>
+									<th>
+										Grand Total
+									</th>
+									<th data-bind="css: { 'text-danger': combinedGbp < 0 }">
+										<span data-bind="text: combinedGbpFormatted"></span>
+									</th>
+									<th data-bind="css: { 'text-danger': onlyGbp < 0 }">
+										<span data-bind="text: onlyGbpFormatted"></span>
+									</th>
+									<th data-bind="css: { 'text-danger': onlyEur < 0 }">
+										<span data-bind="text: onlyEurFormatted"></span>
+									</th>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="close-brothers-section">
+					<div class="close-brothers-section-body">
+						<table class="table close-brothers-table">
+							<colgroup>
+								<col class="close-brothers-title-column" />
+								<col class="close-brothers-value-column" />
+								<col class="close-brothers-value-column" />
+								<col class="close-brothers-value-column" />
+							</colgroup>
+							<thead>
+								<tr class="close-brothers-section-title">
+									<th>
+										Designers Guild Exclusions (Not Notifiable &amp; Not Fundable)
+									</th>
+									<th>
+										Combined GBP
+									</th>
+									<th>
+										Only GBP
+									</th>
+									<th>
+										Only EUR
+									</th>
+								</tr>
+							</thead>
+							<!-- ko foreach: dgExclusions -->
+							<tbody>
+								<tr class="grouping">
+									<th>
+										<span data-bind="text: label"></span>
+									</th>
+									<th data-bind="css: { 'text-danger': combinedGbp < 0 }">
+										<span data-bind="text: combinedGbpFormatted"></span>
+									</th>
+									<th data-bind="css: { 'text-danger': onlyGbp < 0 }">
+										<span data-bind="text: onlyGbpFormatted"></span>
+									</th>
+									<th data-bind="css: { 'text-danger': onlyEur < 0 }">
+										<span data-bind="text: onlyEurFormatted"></span>
+									</th>
+								</tr>
+								<!-- ko foreach: items -->
+								<tr class="sub-grouping">
+									<td>
+										<span data-bind="text: label"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': combinedGbp < 0 }">
+										<span data-bind="text: combinedGbpFormatted"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': onlyGbp < 0 }">
+										<span data-bind="text: onlyGbpFormatted"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': onlyEur < 0 }">
+										<span data-bind="text: onlyEurFormatted"></span>
+									</td>
+								</tr>
+								<!-- /ko -->
+							</tbody>
+							<!-- /ko -->
+						</table>
+					</div>
+				</div>
+				<div class="close-brothers-section">
+					<div class="close-brothers-section-body">
+						<table class="table close-brothers-table">
+							<colgroup>
+								<col class="close-brothers-title-column" />
+								<col class="close-brothers-value-column" />
+								<col class="close-brothers-value-column" />
+								<col class="close-brothers-value-column" />
+							</colgroup>
+							<thead>
+								<tr class="close-brothers-section-title">
+									<th>
+										Close Brothers Exclusions (Not Notifiable &amp; Not Fundable)
+									</th>
+									<th>
+										Combined GBP
+									</th>
+									<th>
+										Only GBP
+									</th>
+									<th>
+										Only EUR
+									</th>
+								</tr>
+							</thead>
+							<!-- ko foreach: cbExclusions -->
+							<tbody>
+								<tr class="grouping">
+									<th>
+										<span data-bind="text: label"></span>
+									</th>
+									<th data-bind="css: { 'text-danger': combinedGbp < 0 }">
+										<span data-bind="text: combinedGbpFormatted"></span>
+									</th>
+									<th data-bind="css: { 'text-danger': onlyGbp < 0 }">
+										<span data-bind="text: onlyGbpFormatted"></span>
+									</th>
+									<th data-bind="css: { 'text-danger': onlyEur < 0 }">
+										<span data-bind="text: onlyEurFormatted"></span>
+									</th>
+								</tr>
+								<!-- ko foreach: items -->
+								<tr class="sub-grouping">
+									<td>
+										<span data-bind="text: label"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': combinedGbp < 0 }">
+										<span data-bind="text: combinedGbpFormatted"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': onlyGbp < 0 }">
+										<span data-bind="text: onlyGbpFormatted"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': onlyEur < 0 }">
+										<span data-bind="text: onlyEurFormatted"></span>
+									</td>
+								</tr>
+								<!-- /ko -->
+							</tbody>
+							<!-- /ko -->
+						</table>
+					</div>
+				</div>
+				<div class="close-brothers-section">
+					<div class="close-brothers-section-body">
+						<table class="table close-brothers-table">
+							<colgroup>
+								<col class="close-brothers-title-column" />
+								<col class="close-brothers-value-column" />
+								<col class="close-brothers-value-column" />
+								<col class="close-brothers-value-column" />
+							</colgroup>
+							<thead>
+								<tr class="close-brothers-section-title">
+									<th>
+										Reserves
+									</th>
+									<th>
+										Combined GBP
+									</th>
+									<th>
+										Only GBP
+									</th>
+									<th>
+										Only EUR
+									</th>
+								</tr>
+							</thead>
+							<!-- ko foreach: reserves -->
+							<tbody>
+								<tr class="grouping">
+									<th>
+										<span data-bind="text: label"></span>
+									</th>
+									<th data-bind="css: { 'text-danger': combinedGbp < 0 }">
+										<span data-bind="text: combinedGbpFormatted"></span>
+									</th>
+									<th data-bind="css: { 'text-danger': onlyGbp < 0 }">
+										<span data-bind="text: onlyGbpFormatted"></span>
+									</th>
+									<th data-bind="css: { 'text-danger': onlyEur < 0 }">
+										<span data-bind="text: onlyEurFormatted"></span>
+									</th>
+								</tr>
+								<!-- ko foreach: funders -->
+								<tr class="sub-grouping">
+									<th>
+										<span data-bind="text: label"></span>
+									</th>
+									<td data-bind="css: { 'text-danger': combinedGbp < 0 }">
+										<span data-bind="text: combinedGbpFormatted"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': onlyGbp < 0 }">
+										<span data-bind="text: onlyGbpFormatted"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': onlyEur < 0 }">
+										<span data-bind="text: onlyEurFormatted"></span>
+									</td>
+								</tr>
+								<!-- ko foreach: explanations -->
+								<tr class="sub-sub-grouping">
+									<td>
+										<span data-bind="text: label"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': combinedGbp < 0 }">
+										<span data-bind="text: combinedGbpFormatted"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': onlyGbp < 0 }">
+										<span data-bind="text: onlyGbpFormatted"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': onlyEur < 0 }">
+										<span data-bind="text: onlyEurFormatted"></span>
+									</td>
+								</tr>
+								<!-- /ko -->
+								<!-- /ko -->
+							</tbody>
+							<!-- /ko -->
+						</table>
+					</div>
+				</div>
+				<div class="close-brothers-section">
+					<div class="close-brothers-section-body">
+						<table class="table close-brothers-table">
+							<colgroup>
+								<col class="close-brothers-title-column" />
+								<col class="close-brothers-value-column" />
+								<col class="close-brothers-value-column" />
+								<col class="close-brothers-value-column" />
+							</colgroup>
+							<thead>
+								<tr class="close-brothers-section-title">
+									<th>
+										Net Ledger
+									</th>
+									<th>
+										Combined GBP
+									</th>
+									<th>
+										Only GBP
+									</th>
+									<th>
+										Only EUR
+									</th>
+								</tr>
+							</thead>
+							<!-- ko foreach: netLedgers -->
+							<tbody>
+								<tr class="grouping">
+									<th>
+										<span data-bind="text: label"></span>
+									</th>
+									<th data-bind="css: { 'text-danger': combinedGbp < 0 }">
+										<span data-bind="text: combinedGbpFormatted"></span>
+									</th>
+									<th data-bind="css: { 'text-danger': onlyGbp < 0 }">
+										<span data-bind="text: onlyGbpFormatted"></span>
+									</th>
+									<th data-bind="css: { 'text-danger': onlyEur < 0 }">
+										<span data-bind="text: onlyEurFormatted"></span>
+									</th>
+								</tr>
+								<!-- ko foreach: funders -->
+								<tr class="sub-grouping">
+									<th>
+										<span data-bind="text: label"></span>
+									</th>
+									<td data-bind="css: { 'text-danger': combinedGbp < 0 }">
+										<span data-bind="text: combinedGbpFormatted"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': onlyGbp < 0 }">
+										<span data-bind="text: onlyGbpFormatted"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': onlyEur < 0 }">
+										<span data-bind="text: onlyEurFormatted"></span>
+									</td>
+								</tr>
+								<!-- ko foreach: tradeAccountTypes -->
+								<tr class="sub-sub-grouping">
+									<td>
+										<span data-bind="text: label"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': combinedGbp < 0 }">
+										<span data-bind="text: combinedGbpFormatted"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': onlyGbp < 0 }">
+										<span data-bind="text: onlyGbpFormatted"></span>
+									</td>
+									<td data-bind="css: { 'text-danger': onlyEur < 0 }">
+										<span data-bind="text: onlyEurFormatted"></span>
+									</td>
+								</tr>
+								<!-- /ko -->
+								<!-- /ko -->
+							</tbody>
+							<!-- /ko -->
+						</table>
+					</div>
+				</div>
 			</div>
 		</div>
 	</main>

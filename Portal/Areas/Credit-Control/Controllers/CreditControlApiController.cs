@@ -437,65 +437,65 @@ namespace Portal.Areas.CreditControl.Controllers
 		{
 			try
 			{
-				DateTime? toDt = DateTime.Now;
+				//DateTime? toDt = DateTime.Now;
 
-				DateTime? fromDt = null;
+				//DateTime? fromDt = null;
 
-				switch (dto.DateRangeID)
-				{
-					case "12M": /* Last 12 Months */
-						fromDt = DateTime.Now.AddYears(-1);
-						break;
-					case "6M": /* Last 6 Months */
-						fromDt = DateTime.Now.AddMonths(-6);
-						break;
-					case "3M": /* This Month */
-						fromDt = DateTime.Now.AddMonths(-3);
-						break;
-					case "1M": /* This Month */
-						fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
-						break;
-					case "30": /* Last 30 Days */
-						fromDt = DateTime.Now.AddDays(-30);
-						break;
-					case "6":
-						toDt = DateTime.Now.AddDays(-5);
-						fromDt = DateTime.Now.AddDays(-6);
-						break;
-					case "5":
-						toDt = DateTime.Now.AddDays(-4);
-						fromDt = DateTime.Now.AddDays(-5);
-						break;
-					case "4":
-						toDt = DateTime.Now.AddDays(-3);
-						fromDt = DateTime.Now.AddDays(-4);
-						break;
-					case "3":
-						toDt = DateTime.Now.AddDays(-2);
-						fromDt = DateTime.Now.AddDays(-3);
-						break;
-					case "2":
-						toDt = DateTime.Now.AddDays(-1);
-						fromDt = DateTime.Now.AddDays(-2);
-						break;
-					case "1":
-						toDt = DateTime.Now.AddDays(0);
-						fromDt = DateTime.Now.AddDays(-1);
-						break;
-					case "0":
-						toDt = DateTime.Now.AddDays(1);
-						fromDt = DateTime.Now.AddDays(0);
-						break;
-					case "-1": /* "Custom" */
-						toDt = dto.To;
-						fromDt = dto.From;
-						break;
-					case "-2": /* "All Time" noop */
-						break;
-				}
+				//switch (dto.DateRangeID)
+				//{
+				//	case "12M": /* Last 12 Months */
+				//		fromDt = DateTime.Now.AddYears(-1);
+				//		break;
+				//	case "6M": /* Last 6 Months */
+				//		fromDt = DateTime.Now.AddMonths(-6);
+				//		break;
+				//	case "3M": /* This Month */
+				//		fromDt = DateTime.Now.AddMonths(-3);
+				//		break;
+				//	case "1M": /* This Month */
+				//		fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
+				//		break;
+				//	case "30": /* Last 30 Days */
+				//		fromDt = DateTime.Now.AddDays(-30);
+				//		break;
+				//	case "6":
+				//		toDt = DateTime.Now.AddDays(-5);
+				//		fromDt = DateTime.Now.AddDays(-6);
+				//		break;
+				//	case "5":
+				//		toDt = DateTime.Now.AddDays(-4);
+				//		fromDt = DateTime.Now.AddDays(-5);
+				//		break;
+				//	case "4":
+				//		toDt = DateTime.Now.AddDays(-3);
+				//		fromDt = DateTime.Now.AddDays(-4);
+				//		break;
+				//	case "3":
+				//		toDt = DateTime.Now.AddDays(-2);
+				//		fromDt = DateTime.Now.AddDays(-3);
+				//		break;
+				//	case "2":
+				//		toDt = DateTime.Now.AddDays(-1);
+				//		fromDt = DateTime.Now.AddDays(-2);
+				//		break;
+				//	case "1":
+				//		toDt = DateTime.Now.AddDays(0);
+				//		fromDt = DateTime.Now.AddDays(-1);
+				//		break;
+				//	case "0":
+				//		toDt = DateTime.Now.AddDays(1);
+				//		fromDt = DateTime.Now.AddDays(0);
+				//		break;
+				//	case "-1": /* "Custom" */
+				//		toDt = dto.To;
+				//		fromDt = dto.From;
+				//		break;
+				//	case "-2": /* "All Time" noop */
+				//		break;
+				//}
 
-				dto.From = fromDt?.Date;
-				dto.To = toDt?.Date;
+				//dto.From = fromDt?.Date;
+				//dto.To = toDt?.Date;
 
 				var model = await PortalDb.CloseBrothers_Fundability_Select(dto);
 

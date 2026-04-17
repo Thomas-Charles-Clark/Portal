@@ -244,7 +244,8 @@
   color: #fff;
   border-radius: 0.375rem;
 }
-.mdc-validating-field .mdc-text-field--selected:not(.mdc-text-field--disabled) input {
+.mdc-validating-field .mdc-text-field--selected:not(.mdc-text-field--disabled) input,
+.mdc-validating-field .mdc-text-field--selected:not(.mdc-text-field--disabled) textarea {
   position: relative;
   z-index: 0;
   background: #084298;
@@ -653,5 +654,153 @@
 #close-brothers-pane .prefilters .date-prefilters .validation-message {
   text-align: center;
   width: 100%;
+}
+#close-brothers-pane .close-brothers-section {
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+}
+#close-brothers-pane .close-brothers-section + .close-brothers-section {
+  margin-top: 1rem;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-title {
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+  background-color: #084298;
+  color: #fff;
+  padding: 0.75rem;
+  margin: 0;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body {
+  padding: 0;
+  border: 0;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table {
+  border: 0;
+  border-top: 0;
+  margin-bottom: 0;
+  border: none;
+  border-radius: 0.375rem;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table colgroup .close-brothers-title-column {
+  width: "auto";
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table colgroup .close-brothers-value-column {
+  width: 300px;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr {
+  border-top: 1px solid #dee2e6;
+  border-bottom: 0;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr:first-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr:first-of-type {
+  border-top: 0;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr.close-brothers-table-subheading,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr.close-brothers-table-subheading {
+  background-color: #cfe2ff;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr.close-brothers-table-subheading td:first-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr.close-brothers-table-subheading th:first-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr.close-brothers-table-subheading td:first-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr.close-brothers-table-subheading th:first-of-type {
+  border-left: 1px solid #cfe2ff;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr.close-brothers-table-subheading td:last-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr.close-brothers-table-subheading th:last-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr.close-brothers-table-subheading td:last-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr.close-brothers-table-subheading th:last-of-type {
+  border-right: 1px solid #cfe2ff;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr.close-brothers-table-subheading td,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr.close-brothers-table-subheading th,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr.close-brothers-table-subheading td,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr.close-brothers-table-subheading th {
+  border-right: 1px solid #ddebff;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr.grouping,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr.grouping {
+  background-color: #e9ecef;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr.sub-grouping,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr.sub-grouping {
+  background-color: #f8f9fa;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr.sub-grouping td:first-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr.sub-grouping th:first-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr.sub-grouping td:first-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr.sub-grouping th:first-of-type {
+  padding-left: 2rem;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr.sub-sub-grouping td:first-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr.sub-sub-grouping th:first-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr.sub-sub-grouping td:first-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr.sub-sub-grouping th:first-of-type {
+  padding-left: 3rem;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead td,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead th {
+  border-left: 0;
+  border-right: 1px solid #dee2e6;
+  border-bottom: 0;
+  text-align: right;
+  border-top: 1px solid #dee2e6;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead th:first-of-type {
+  border-left: 1px solid #084298;
+  text-align: left;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead th:first-of-type + td {
+  text-align: right;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead td:first-of-type {
+  border-left: 1px solid #dee2e6;
+  text-align: left;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead td:first-of-type + td {
+  text-align: right;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead td:last-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead th:last-of-type {
+  border-right: 1px solid #dee2e6;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr:first-of-type td,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr:first-of-type th {
+  border-left: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+  border-bottom: 0;
+  border-top: 1px solid #084298;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody td,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody th {
+  border-left: 0;
+  border-right: 1px solid #dee2e6;
+  border-bottom: 0;
+  text-align: right;
+  border-top: 1px solid #dee2e6;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody th:first-of-type {
+  border-left: 1px solid #dee2e6;
+  text-align: left;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody th:first-of-type + td {
+  text-align: right;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody td:first-of-type {
+  border-left: 1px solid #dee2e6;
+  text-align: left;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody td:first-of-type + td {
+  text-align: right;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody td:last-of-type,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody th:last-of-type {
+  border-right: 1px solid #dee2e6;
+}
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr:last-of-type th,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table thead tr:last-of-type td,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr:last-of-type th,
+#close-brothers-pane .close-brothers-section .close-brothers-section-body .close-brothers-table tbody tr:last-of-type td {
+  border-bottom: 1px solid #dee2e6;
 }
 /*# sourceMappingURL=credit-control-close-brothers.css.map */

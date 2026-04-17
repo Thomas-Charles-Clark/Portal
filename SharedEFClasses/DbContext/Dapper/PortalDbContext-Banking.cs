@@ -32,7 +32,8 @@ namespace SharedEFClasses.Models
 			{
 				Rows = await reply.ReadAsync<BankAccountStat_Select_Row>(),
 				Columns = await reply.ReadAsync<BankAccountStat_Select_Column>(),
-				Values = await reply.ReadAsync<BankAccountStat_Select_Value>()
+				Values = await reply.ReadAsync<BankAccountStat_Select_Value>(),
+				RowLabel = await reply.ReadSingleOrDefaultAsync<BankAccountStat_Select_RowLabel>()
 			};
 		}
 

@@ -30,7 +30,7 @@ const creditControlViewModel = (() => {
 
     //#region Properties
 
-    self.busy = ko.observable(true);
+    self.busy = ko.observable(window.getIsMe() ? false : true);
 
     self.busy.subscribe(nv => {
         console.log('viewModel.busy', nv);
@@ -462,6 +462,10 @@ const creditControlViewModel = (() => {
     });
 
     self.memberBasketFetcher = memberBasketFetcher(self);
+
+    if (window.getIsMe()) {
+        self.memberBasketFetcher.heldOrdersResultGridSettings.autoBind = false;
+    }
 
     self.formatCurrency = (e, fieldName) => {
 
@@ -1298,7 +1302,7 @@ const creditControlViewModel = (() => {
     });
 
     self.gridParams = {
-        autoBind: true,
+        autoBind: window.getIsMe() ? false : true,
         widget: self.gridWidget,
         columns: self.gridColumns,
         data: new kendo.data.DataSource({

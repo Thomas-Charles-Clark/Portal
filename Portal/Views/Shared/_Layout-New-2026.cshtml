@@ -519,7 +519,8 @@
                  css: {
                     'busy': busy,
                     'mdc-text-field--disabled': disable() || !enable(),
-                    'mdc-text-field--selected': observable() || observable() === 0 || observable() === false
+                    'mdc-text-field--selected': observable() || observable() === 0 || observable() === false,
+					'mdc-text-field--changed': typeof originalValue != 'undefined' && ko.unwrap(observable) != ko.unwrap(originalValue)
                  }">
 				<input type="search" autocomplete="off" class="mdc-text-field__input" data-bind="
                        keepElement: observable,
@@ -631,7 +632,8 @@
                      css: {
                         'busy': busy(),
                         'mdc-text-field--disabled': disable() || !enable(),
-						'mdc-text-field--selected': observable() || observable() === 0
+						'mdc-text-field--selected': observable() || observable() === 0,
+						'mdc-text-field--changed': typeof originalValue != 'undefined' && ko.unwrap(observable) != ko.unwrap(originalValue)
                      }">
 					<input class="mdc-text-field__input text-end mdc-text-field__numeric" data-bind="
                         numeric: observable,
@@ -897,11 +899,13 @@
                  css: {
                     'busy': busy,
                     'mdc-text-field--disabled': disable() || !enable(),
-					'mdc-text-field--selected': observable() || observable() === 0
+					'mdc-text-field--selected': observable() || observable() === 0,
+					'mdc-text-field--changed': typeof originalValue != 'undefined' && ko.unwrap(observable) != ko.unwrap(originalValue)
                  }">
 				<textarea class="mdc-text-field__input" data-bind="
                           enterKey: typeof enterKey === 'undefined' ? null : enterKey,
                     maxNewLines: typeof maxNewLines === 'undefined' ? null : maxNewLines,
+                    forceNullOnEmpty: observable,
                     keepElement: observable,
                     textInput: observable,
                     charsRemaining: charsRemainingOptions,

@@ -8,10 +8,10 @@ namespace SharedEFClasses.Models.Reporting.CloseBrothers
 {
 	public class CloseBrothers_Fundability_Select_DTO
 	{
-		public DateTime? From { get; set; }
+		//public DateTime? From { get; set; }
 
-		public DateTime? To { get; set; }
+		//public DateTime? To { get; set; }
 	
-		public string DateRangeID { get; set; }
+		//public string DateRangeID { get; set; }
 	}
 }

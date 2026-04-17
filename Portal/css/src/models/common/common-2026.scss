@@ -85,3 +85,17 @@
 		align-items: center;
 	}
 }
+
+.mdc-validating-field {
+	.mdc-text-field--selected {
+		&:not(.mdc-text-field--disabled) {
+			input,
+			textarea {
+				&:focus,
+				&:focus-within {
+					box-shadow: 0 0 1px 3px $blue-200;
+				}
+			}
+		}
+	}
+}

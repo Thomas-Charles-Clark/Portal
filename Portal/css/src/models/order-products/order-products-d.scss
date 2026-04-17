@@ -219,6 +219,7 @@ ul.delivery-service-list {
                         text-align: left;
                         padding-left: 10px;
                         flex: 0 1 50%;
+                        overflow: hidden;
                     }
                 }
             }
@@ -273,9 +274,13 @@ ul.delivery-service-list {
         }
 
         span {
-            display: block;
             line-height: 26px;
             margin: 0;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            display: block;
+            max-width: 422px;
+            overflow: hidden;
         }
     }
 }

@@ -29,11 +29,11 @@
         validateNow
     })));
 
-    self.cells().forEach(c => {
-        c.value.subscribe(nv => {
+    //self.cells().forEach(c => {
+    //    c.value.subscribe(nv => {
 
-        });
-    });
+    //    });
+    //});
 
     //#endregion
 
@@ -69,8 +69,9 @@
 
     }
 
-    self.template = (c) => {
-        return self.cells().find(p => p.ColumnID == c.ColumnID).template();
+    self.template = (heading, sortOrder) => {
+        let result = self.cells()?.find(c => c.column.Label == heading && c.column.SortOrder == sortOrder)?.template();
+        return result;
     }
 
     //#endregion

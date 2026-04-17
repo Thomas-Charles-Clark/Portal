@@ -5098,7 +5098,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
                             $("#edit-lead-modal").modal('hide');
                         break;
                         case 'open':
-                            //$.info('Sorry', 'Opening of Trade Accounts is on hold until further notice. Please check back on Friday the 27th of March 2026.', null, () => {
+                            //$.info('Sorry', 'Opening of Trade Accounts is on hold until further notice. Please check back on Friday the 17th of April 2026.', null, () => {
                             //    self.leadSaveBusy(false);
                             //    $("#edit-lead-modal").modal('hide');
                             //});

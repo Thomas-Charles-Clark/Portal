@@ -11,5 +11,6 @@ namespace SharedEFClasses.Models.Banking
 		public IEnumerable<BankAccountStat_Select_Row> Rows { get; set; }
 		public IEnumerable<BankAccountStat_Select_Column> Columns { get; set; }
 		public IEnumerable<BankAccountStat_Select_Value> Values { get; set; }
+		public BankAccountStat_Select_RowLabel RowLabel { get; set; }
 	}
 }
