@@ -106,7 +106,7 @@ var leadEnquiryViewModel = function () {
 }
 
 // LeadEdit. This does the heavy lifting in LeadEnquiry.
-// Contains 190 observables... are they all resetting when appropriate?
+// Contains 194 observables... are they all resetting when appropriate?
 // are they all sensibly used?
 var leadEdit = function (parent) {
 
@@ -388,7 +388,7 @@ var leadEdit = function (parent) {
         maxLength: 100,
         charsRemaining: {
             maxLength: 100,
-            elementId: '.lead-company-name'
+            element: '.lead-company-name'
         }
     });
     self.companyRegistration = ko.observable().extend({
@@ -1149,11 +1149,13 @@ This customer wishes their deliveries to be consolidated. Please double check th
                 type: 'POST',
                 data: data,
                 success: function (data) {
+                    console.log('leadEdit validateVATNumber returned', data);
                     if (data.Body.valid) {
                         self.vatNumberValid(true);
                         self.vatNumberError(false);
-                        self.vatNumberMessage('Confirmed valid VAT Number for: ' + data.Body.traderName);
-
+                        self.vatNumberMessage('Confirmed valid VAT Number' + (data.Body.traderName ? ' for: ' + data.Body.traderName : '. The issuing country redacts business details.'));
+                        self.viesResult(data);
+                        self.hasVIESResult(true);
                         //callback(true);
                     } else {
                         self.vatNumberValid(false);
@@ -1161,7 +1163,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
                         if (self.vatCountry()?.Code?.indexOf('GB') === 0) {
                             self.vatNumberMessage(data.countryName + ': Incorrect or expired VAT number. Please refer to <a href="https://www.gov.uk/government/publications/check-a-uk-vat-number-service-availability-and-issues/check-a-uk-vat-number-service-availability-and-issues" target="_blank">The GOV.UK VAT Service Status Page</a> for information.');
                         } else {
-                            self.vatNumberMessage(data.countryName + ': Incorrect or expired VAT number. Please refer to <a href="http://ec.europa.eu/taxation_customs/vies/faq.html#item_7" target="_blank">The European Union\'s V.I.E.S. FAQ</a> for assistance.<br/>You will not be able to submit this order until Credit Control have corrected the VAT number.');
+                            self.vatNumberMessage(data.countryName + ': Incorrect or expired VAT number. Please refer to <a href="http://ec.europa.eu/taxation_customs/vies/faq.html#item_7" target="_blank">The European Union\'s V.I.E.S. FAQ</a> for assistance.<br/>Orders cannot be placed for this account until we have the correct VAT number.');
                         }
                         //callback(false);
                     }
@@ -1574,6 +1576,23 @@ This customer wishes their deliveries to be consolidated. Please double check th
             });
     }
 
+    self.invoiceAddressChecked = ko.observable(false).extend({
+        equal: {
+            params: true,
+            message: 'You must check both the Company Name and the Invoice Address before opening an account.'
+        }
+    });
+
+    self.invoiceAddressCheckedParams = {
+        label: 'Company Details Checked',
+        checkboxId: `invoice-address-checked`,
+        observable: self.invoiceAddressChecked,
+        originalValue: false,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
 
     self.creditControllerErrors = ko.validation.group([
         self.creditControllerFromList,
@@ -1589,7 +1608,7 @@ This customer wishes their deliveries to be consolidated. Please double check th
         self.insuredCreditLimit,
         self.companyVATNumber,
         self.vatCountry,
-
+        self.invoiceAddressChecked,
         //self.bankName,
         //self.bankCountryId,
         //self.bankAddressLine1,
@@ -2099,6 +2118,20 @@ This customer wishes their deliveries to be consolidated. Please double check th
             }).FirstOrDefault();
         }
     });
+
+    self.hasVIESResult = ko.observable(false);
+
+    self.viesResult = ko.observable();
+
+    self.viesResultDisplay = ko.computed(() => {
+        let viesResult = self.viesResult();
+        if (viesResult) {
+            return `<label class="col-form-label">Company Name</label><span class="address-span">${viesResult.Body.traderName}</span>   
+            <label class="col-form-label">Trader Address</label><span class="address-span">${viesResult.Body.traderAddress.split('\n').filter(x => x != '').join('</span><span class="address-span">')}</span>`;
+        } else {
+            return ``;
+        }
+    }, self);
 
     self.channel = ko.pureComputed({
         read: function () {
@@ -3670,6 +3703,8 @@ This customer wishes their deliveries to be consolidated. Please double check th
                 // ownerMemberId in currentStage.subscribe
                 self.stageInformation(data.StageInformation);
 
+                self.invoiceAddressChecked(data.Lead.InvoiceAddressChecked);
+
                 //window.setTimeout(function () {
                 //    if ([1, 2, 5].indexOf(self.currentStage()) > -1) {
                 //        $('[href="#tab-one"]').tab('show');
@@ -5062,6 +5097,8 @@ This customer wishes their deliveries to be consolidated. Please double check th
                 data.PaymentOptionID = self.requestedPaymentOption().PaymentOptionID;
             }
 
+            data.InvoiceAddressChecked = self.invoiceAddressChecked();
+
             let fd = new FormData(document.getElementById('lead-form'));
 
             var params = {
@@ -5161,6 +5198,10 @@ This customer wishes their deliveries to be consolidated. Please double check th
             $.showError(xhr, s, a);
             }
         });
+    }
+
+    self.editInvoiceAddress = () => {
+        self.editLeadAddress(self.defaultInvoicingAddressId());
     }
 
     self.reset = function (stayOpen) {
@@ -5383,6 +5424,12 @@ This customer wishes their deliveries to be consolidated. Please double check th
         self.tradeAccountCreationEmail_displayLookbook(undefined);
 
         self.attachmentsManager.attachments([]);
+
+        self.invoiceAddressChecked(false);
+
+        self.hasVIESResult(false);
+
+        self.viesResult(undefined);
 
         $("#lead-form-potential-heading").parent().removeClass('alert-danger');
         $("#lead-form-company-heading").parent().removeClass('alert-danger');

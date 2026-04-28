@@ -2432,4 +2432,33 @@ tr.k-state-selected td.view-button {
 #trade-account-creation-email-attachment-modal .modal-body #attachment-manager ul li:not(:last-of-type) {
   padding: 0.25rem;
 }
+
+#vat-country-dropdown {
+  width: 128px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+#vat-country-dropdown select {
+  text-overflow: ellipsis;
+}
+
+#invoice-checked-component label {
+  font-size: 14px;
+}
+
+#invoice-address-checked {
+  margin-top: 0;
+}
+
+.contact.alert .alert-title {
+  color: #212529;
+  font-weight: bold;
+}
+.contact.alert .col-form-label {
+  float: none;
+}
+
+.vies-result-display {
+  padding-left: 1rem;
+}
 /*# sourceMappingURL=lead-enquiry.css.map */

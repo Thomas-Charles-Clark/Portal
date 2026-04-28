@@ -1904,3 +1904,38 @@ tr.k-state-selected td.view-button {
         }
     }
 }
+
+#vat-country-dropdown {
+    width: 128px;
+    overflow: hidden;
+    white-space: nowrap;
+
+    select {
+        text-overflow: ellipsis;
+    }
+}
+
+#invoice-checked-component {
+    label {
+        font-size: 14px;
+    }
+}
+
+#invoice-address-checked {
+    margin-top: 0;
+}
+
+.contact.alert {
+    .alert-title {
+        color: $body-color;
+        font-weight: bold;
+    }
+
+    .col-form-label {
+        float: none;
+    }
+}
+
+.vies-result-display {
+    padding-left: $l-gutter;
+}

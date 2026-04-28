@@ -123,13 +123,12 @@
 .popover {
 	max-width: unset;
 	max-height: 640px;
-	overflow-y: scroll;
 
 	&.payment-error-popover {
 
 		.popover-body {
 			max-height: 640px;
-			overflow-y: scroll;
+			overflow-y: auto;
 
 			pre {
 				min-width: 480px !important;
@@ -140,6 +139,12 @@
 				min-width: 480px !important;
 				max-height: 640px;
 			}
+		}
+	}
+
+	.credit-control-history-table-wrapper {
+		table {
+			margin-bottom: 0;
 		}
 	}
 }

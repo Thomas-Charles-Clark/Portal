@@ -132,43 +132,37 @@
         filterable: {
             extra: false
         },
-        template: `#: UnallocatedCashAssignedToThisOrderTotalInCurrency ? formatCurrency(UnallocatedCashAssignedToThisOrderTotalInCurrency, 2, FormattingCulture, CurrencyCode) : '' #`
-    }, {
-        field: "UnallocatedCashAssignedToThisOrderBreakdown",
-        title: "Unallocated Cash on Order - Breakdown",
-        width: 260,
-        attributes: {
-            "class": ""
-        },
-        headerAttributes: {
-            "class": ""
-        },
-        filterable: {
-            extra: false
-        },
         template: (dataItem) => {
-            return dataItem.UnallocatedCashAssignedToThisOrderBreakdown ?? '';
+            if (dataItem.UnallocatedCashAssignedToThisOrderTotalInCurrency) {
+                return `<a href="javascript:;" class="grid-btn stop-btn" data-bind="actualBootstrapPopover: { details: unallocatedCashAssignedToThisOrderTotalInCurrencyPopoverDetails }, click: () => { return true; }, clickBubble: false">${formatCurrency(dataItem.UnallocatedCashAssignedToThisOrderTotalInCurrency, 2, dataItem.FormattingCulture, dataItem.CurrencyCode)}</a>`
+            } else {
+                return '';
+            }
         }
-    }, {
+    },
+        //{
+        //field: "UnallocatedCashAssignedToThisOrderBreakdown",
+        //title: "Unallocated Cash on Order - Breakdown",
+        //width: 260,
+        //attributes: {
+        //    "class": ""
+        //},
+        //headerAttributes: {
+        //    "class": ""
+        //},
+        //filterable: {
+        //    extra: false
+        //},
+        //template: (dataItem) => {
+        //    return dataItem.UnallocatedCashAssignedToThisOrderBreakdown ?? '';
+        //}
+        //},
+    {
         field: "UnallocatedCashAssignedToThisAccountTotalInCurrency",
         title: "Unallocated Cash Assigned to this Account",
         width: 160,
         attributes: {
-            "class": ""
-        },
-        headerAttributes: {
-            "class": ""
-        },
-        filterable: {
-            extra: false
-        },
-        template: `#: UnallocatedCashAssignedToThisAccountTotalInCurrency ? formatCurrency(UnallocatedCashAssignedToThisAccountTotalInCurrency, 2, FormattingCulture, CurrencyCode) : '' #`
-    }, {
-        field: "UnallocatedCashAssignedToThisAccountBreakdown",
-        title: "Unallocated Cash on Account - Breakdown",
-        width: 260,
-        attributes: {
-            "class": ""
+            "class": "relative"
         },
         headerAttributes: {
             "class": ""
@@ -177,9 +171,31 @@
             extra: false
         },
         template: (dataItem) => {
-            return dataItem.UnallocatedCashAssignedToThisAccountBreakdown ?? '';
+            if (dataItem.UnallocatedCashAssignedToThisAccountTotalInCurrency) {
+                return `<a href="javascript:;" class="grid-btn stop-btn" data-bind="actualBootstrapPopover: { details: unallocatedCashAssignedToThisAccountTotalInCurrencyPopoverDetails }, click: () => { return true; }, clickBubble: false">${formatCurrency(dataItem.UnallocatedCashAssignedToThisAccountTotalInCurrency, 2, dataItem.FormattingCulture, dataItem.CurrencyCode)}</a>`
+            } else {
+                return '';
+            }
         }
-    }, {
+    },
+        //{
+        //field: "UnallocatedCashAssignedToThisAccountBreakdown",
+        //title: "Unallocated Cash on Account - Breakdown",
+        //width: 260,
+        //attributes: {
+        //    "class": ""
+        //},
+        //headerAttributes: {
+        //    "class": ""
+        //},
+        //filterable: {
+        //    extra: false
+        //},
+        //template: (dataItem) => {
+        //    return dataItem.UnallocatedCashAssignedToThisAccountBreakdown ?? '';
+        //}
+        //},
+    {
         field: "InvoiceID",
         title: "Invoice No.",
         width: 140,
@@ -335,9 +351,9 @@
                         OriginalValueInCurrency: { type: 'number' },
                         OutstandingAmountInCurrency: { type: 'number' },
                         UnallocatedCashAssignedToThisOrderTotalInCurrency: { type: 'number' },
-                        UnallocatedCashAssignedToThisOrderBreakdown: { type: 'number' },
+                        UnallocatedCashAssignedToThisOrderBreakdown: { type: 'string' },
                         UnallocatedCashAssignedToThisAccountTotalInCurrency: { type: 'number' },
-                        UnallocatedCashAssignedToThisAccountBreakdown: { type: 'number' },
+                        UnallocatedCashAssignedToThisAccountBreakdown: { type: 'string' },
                         InvoiceID: { type: 'string' },
                         InvoiceDT: { type: 'date' },
                         InvoiceURI: { type: 'string' },
@@ -352,13 +368,14 @@
                 self.busy(false);
             }
         }),
-        height: 1024,
+        //height: 1024,
         //useKOTemplates: false,
         //rowTemplate: 'credit-control-trade-account-row-template',
         noRecords: {
             template: () => `No Results. Please search using the filters to the left.`//: ${$("#grid").data("kendoGrid").dataSource.page()}`
         },
         sortable: true,
+        scrollable: false,
         filterable: {
             extra: false,
             defaultOperation: 'contains'
@@ -425,7 +442,7 @@
                     rows.forEach(row => {
                         ko.cleanNode(row);
 
-                        pristine[index] = creditControlPaymentsHistoryRecordViewModel({
+                        pristine[index] = creditControlOutstandingInvoicesWithUnallocatedDepositsRecordViewModel({
                             rec: item
                         });
 

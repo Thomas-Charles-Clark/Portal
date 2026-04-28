@@ -682,4 +682,8 @@
 #paying-off-with-proforma-tab-pane .alert + .alert {
   margin-top: 1rem;
 }
+
+.unallocated-deposits-popover div {
+  font-size: 1rem;
+}
 /*# sourceMappingURL=credit-control-outstanding-invoices-with-unallocated-deposits.css.map */

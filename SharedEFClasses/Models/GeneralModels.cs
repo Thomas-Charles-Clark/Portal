@@ -531,6 +531,7 @@ namespace SharedEFClasses.Models.General
         public string Code { get; set; }
         public string ThreeDigitCode { get; set; }
         public short? CountryID { get; set; }
+        public bool InEU { get; set; }
     }
 
     public class ProductTypeGroup

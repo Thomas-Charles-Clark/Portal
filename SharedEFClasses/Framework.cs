@@ -401,46 +401,46 @@ namespace SharedEFClasses.Utilities
 
             var result = new List<ClientSideCountry>();
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 15).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Austria
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 15).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Austria
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 16).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Austria
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 16).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Austria
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 23).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Belgium
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 23).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Belgium
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 62).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Denmark
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 62).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Denmark
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 74).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Finland
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 74).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Finland
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 79).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // France
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 79).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // France
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 60).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Germany
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 60).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Germany
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 170).Select(p => new ClientSideCountry() { Name = "Holland", Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Holland 
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 170).Select(p => new ClientSideCountry() { Name = "Holland", Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Holland 
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 106).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Ireland
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 106).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Ireland
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 114).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Italy
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 114).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Italy
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 171).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Norway
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 171).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Norway
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 184).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Poland
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 184).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Poland
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 189).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Portugal
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 189).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Portugal
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 71).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Spain
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 71).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Spain
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 202).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Sweden
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 202).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Sweden
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 46).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // Switzerland
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 46).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // Switzerland
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 81).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // United Kingdom
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 81).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // United Kingdom
 
-            result.Add(portalDb.Countries.Where(p => p.CountryID == 238).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID }).Single()); // United States
+            result.Add(portalDb.Countries.Where(p => p.CountryID == 238).Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU }).Single()); // United States
 
             //result.Add(new ClientSideCountry() { Name = "----------------------------------------------", Code = null, ThreeDigitCode = null, CountryID = null });
 
             result = result.Concat(portalDb.Countries.Where(p => p.DeletedDT == null)
-                                    .Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID })
+                                    .Select(p => new ClientSideCountry() { Name = p.Name, Code = p.Code, ThreeDigitCode = p.ThreeDigitCode, CountryID = p.CountryID, InEU = p.EU })
                                     .OrderBy(p => p.Name)
                                     .ToList()).ToList();
             return result;

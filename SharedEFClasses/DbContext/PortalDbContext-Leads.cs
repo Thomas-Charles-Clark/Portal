@@ -480,7 +480,8 @@ namespace SharedEFClasses.Models
 
                     new SqlParameter("@ShouldSendPricelists", objLeadUpsert.ShouldSendPricelists ?? (object)DBNull.Value),
                     new SqlParameter("@BelongToGroupAccount", objLeadUpsert.BelongToGroupAccount ?? (object)DBNull.Value),
-                };
+                    new SqlParameter("@InvoiceAddressChecked", objLeadUpsert.InvoiceAddressChecked),
+				};
 
                     if (objLeadUpsert.OrderDocument != null &&
                         objLeadUpsert.OrderDocument.Length > 0)

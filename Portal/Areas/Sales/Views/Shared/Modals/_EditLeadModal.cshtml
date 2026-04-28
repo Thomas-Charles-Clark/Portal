@@ -1526,7 +1526,7 @@
                                                                             </div>
                                                                             <div class="form-group row">
                                                                                 <div class="col-xs-12">
-                                                                                    <label class="lead-company-name col-form-label">Customer Name</label>
+                                                                                    <label class="lead-company-name col-form-label">Company Name</label>
                                                                                 </div>
                                                                                 <div class="col-xs-12">
                                                                                     <input autocapitalize="none" class="lead-company-name form-control" data-bind="highlightNullField: companyName, highlightNullField: companyName, forceNullOnEmpty: companyName, textInput: companyName" />
@@ -1903,21 +1903,58 @@
                                                                     <div class="form-group row">
                                                                         <div class="col-sm-6 col-xs-12">
                                                                             <div class="form-group row">
-                                                                                <div class="col-xs-12">
-                                                                                    <div class="contact alert alert-info bg-info well-sm" data-bind="with: Enumerable.From(leadAddresses()).Where('$.leadAddressId() == ' + defaultInvoicingAddressId()).FirstOrDefault()">
-                                                                                        <div class="row">
-                                                                                            <div class="col-xs-12">
-                                                                                                <label class="col-form-label">Invoice Address</label>
+                                                                                <div class="col-xs-12" data-bind="with: Enumerable.From(leadAddresses()).Where('$.leadAddressId() == ' + defaultInvoicingAddressId()).FirstOrDefault()">
+                                                                                    <div class="contact alert well-sm" 
+                                                                                         data-bind="class: country() && country().InEU ? 'alert-warning' : 'alert-info'">
+																						<div class="row">
+																							<div class="col-xs-12 margin-bottom-15" style="display: none;" data-bind="visible: country() && country().InEU">
+																								<h4 class="alert-title">
+																									Check this Company
+																								</h4>
+																								<p>
+																									You must check both the Company Name and Invoice Address using the <a href="https://e-justice.europa.eu/topics/registers-business-insolvency-land/business-registers-search-company-eu_en" target="_blank">European Justice Business Registers website</a>. Please ensure that the values above match precisely the values found using the EJBR.
+																								</p>
+																								<!-- ko if: $parent.hasVIESResult() -->
+																								<p>
+																									The EU VIES system has returned the following data regarding the VAT number as given below.
+																								</p>
+                                                                                                <label class="col-form-label">V.I.E.S. Result</label>
+																								<div class="vies-result-display" data-bind="html: $parent.viesResultDisplay"></div>
+																								<!-- /ko -->
+																							</div>
+																							<div class="form-group" data-bind="with: $parent">
+																								<div class="col-xs-12">
+																									<label class="col-form-label">Company Name</label>
+																								</div>
+																								<div class="col-xs-12">
+																									<input autocapitalize="none" class="lead-company-name form-control" data-bind="highlightNullField: companyName, forceNullOnEmpty: companyName, textInput: companyName" />
+																								</div>
+																							</div>
+																							<div class="col-xs-8 margin-top-15">
+																								<label class="col-form-label">
+                                                                                                    Invoice Address
+                                                                                                </label>
+																								<span class="address-span" data-bind="html: label || '', attr: { title: label || '' }"></span>
+																								<span class="address-span" data-bind="html: line1 || '', attr: { title: line1 || '' }"></span>
+																								<span class="address-span" data-bind="html: line2 || '', attr: { title: line2 || '' }"></span>
+																								<span class="address-span" data-bind="html: town || '', attr: { title: town || '' }"></span>
+																								<span class="address-span" data-bind="html: county || ''"></span>
+																								<span class="address-span" data-bind="html: postcode || ''"></span>
+																								<span class="address-span" data-bind="html: country().Name"></span>
+																							</div>
+                                                                                            <div class="col-xs-4 margin-top-15">
+                                                                                                <button class="btn btn-primary" data-bind="click: $parent.editInvoiceAddress">
+                                                                                                    Edit Invoice Address
+                                                                                                </button>
                                                                                             </div>
-                                                                                            <div class="col-xs-12">
-                                                                                                <span class="address-span" data-bind="html: label || '', attr: { title: label || '' }"></span>
-                                                                                                <span class="address-span" data-bind="html: line1 || '', attr: { title: line1 || '' }"></span>
-                                                                                                <span class="address-span" data-bind="html: line2 || '', attr: { title: line2 || '' }"></span>
-                                                                                                <span class="address-span" data-bind="html: town || '', attr: { title: town || '' }"></span>
-                                                                                                <span class="address-span" data-bind="html: county || ''"></span>
-                                                                                                <span class="address-span" data-bind="html: postcode || ''"></span>
-                                                                                                <span class="address-span" data-bind="html: country().Name"></span>
-                                                                                            </div>
+																						</div>
+                                                                                        <div class="row" data-bind="visible: country() && country().InEU">
+																							<div class="col-xs-12">
+																								<div class="alert alert-warning margin-top-15" data-bind="css: { 'alert-danger': $parent.invoiceAddressChecked.isValid() == false }">
+																									<div id="invoice-checked-component" data-bind="component: { name: 'mdc-checkbox-component', params: $parent.invoiceAddressCheckedParams }"></div>
+                                                                                            <span class="validation-message text-danger" data-bind="validationMessage: $parent.invoiceAddressChecked"></span>
+																								</div>
+																							</div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -1992,7 +2029,7 @@
                                                                                         <div class="col-xs-12" style="position: relative">
                                                                                             <div style="display: flex; align-items: center;" data-bind="visible: vatRegistered">
                                                                                                 <div class="input-group" style="width: 100%" data-bind="validationOptions: { insertMessages: false }">
-                                                                                                    <div class="input-group-addon" style="width: 146px;" data-bind="style: { width: `${(vatCountry() ? 70 : 146)}px` }">
+                                                                                                    <div id="vat-country-dropdown" class="input-group-addon">
                                                                                                         <select class="form-control" data-bind="highlightNullField: vatCountry, options: $parent.availableCountries, value: vatCountry, optionsText: (item) => `${item.Code} - ${item.Name}`, optionsValue: $data, optionsCaption: 'Please Select...'"></select>
                                                                                                         <span style="display: none"></span>
                                                                                                     </div>

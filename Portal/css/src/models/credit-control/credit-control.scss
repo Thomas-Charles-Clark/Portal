@@ -403,7 +403,7 @@ html {
     
     #credit-control-history-table-wrapper {
         max-height: 202px;
-        overflow-y: scroll;
+        overflow-y: auto;
         font-size: $font-size-base;
         box-shadow: 0px -4px 4px $white;
     }

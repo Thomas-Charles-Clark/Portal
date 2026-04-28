@@ -273,6 +273,8 @@ namespace SharedEFClasses.Models.Leads
         public bool? TradeAccountCreationEmail_DisplayB2BRegistration { get; set; }
         public bool? TradeAccountCreationEmail_DisplayLookbook { get; set; }
 
+        public bool InvoiceAddressChecked { get; set; }
+
         // Does setting computed conflict with manually setting the thing?
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public bool ShouldSendTradeAccountCreationEmail { get; set; }
@@ -1035,6 +1037,8 @@ namespace SharedEFClasses.Models.Leads
 
         public byte? ShouldSendPricelists { get; set; }
         public byte? BelongToGroupAccount { get; set; }
+
+        public bool InvoiceAddressChecked { get; set; }
 
         //public long? leadContactId { get; set; }
         //public byte? editContactTitleId { get; set; } //
