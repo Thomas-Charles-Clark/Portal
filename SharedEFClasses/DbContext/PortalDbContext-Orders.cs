@@ -3390,6 +3390,7 @@ namespace SharedEFClasses.Models
 
             var parameters = new SqlParameter[]
             {
+                new SqlParameter("@UniVerseAccount", objDoc.uniVerseAccount),
                 new SqlParameter("@DocumentID", objDoc.documentType),
                 new SqlParameter("@BasketID", objDoc.basketId),
                 new SqlParameter("@TransactionID", objDoc.transactionId ?? (object)DBNull.Value),

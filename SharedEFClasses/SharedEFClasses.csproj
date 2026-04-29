@@ -425,6 +425,7 @@
     <Compile Include="Models\CreditControlRegion_SalesMarket.cs" />
     <Compile Include="Models\CreditControl\CreditControl_AgedSalesLedger_Record.cs" />
     <Compile Include="Models\CreditControl\CreditControl_AgedSalesLedger_Result.cs" />
+    <Compile Include="Models\CreditControl\CreditControl_Statement_Info_Record.cs" />
     <Compile Include="Models\CreditControl\CreditControl_Statement_SelectDTO.cs" />
     <Compile Include="Models\CreditControl\CreditControl_Statement_Select_HeadingResult.cs" />
     <Compile Include="Models\CreditControl\CreditControl_Statement_Select_Pod.cs" />
@@ -470,7 +471,6 @@
     <Compile Include="Models\CreditControl\CreditControl_Dashboard_Select_Result.cs" />
     <Compile Include="Models\CreditControl\CreditControl_TradeAccount_StopToggleDTO.cs" />
     <Compile Include="Models\CreditControl\CreditControl_TradeAccount_Totals_Record.cs" />
-    <Compile Include="Models\CreditControl\PassSendStatementsDto.cs" />
     <Compile Include="Models\CreditControl\CreditControl_TradeAccount_OrderBreakdownDTO.cs" />
     <Compile Include="Models\CreditControl\SalesHistoryAnalysisPeriod.cs" />
     <Compile Include="Models\CreditControl\SendStatementsResult.cs" />

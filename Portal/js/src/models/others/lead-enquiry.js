@@ -388,7 +388,7 @@ var leadEdit = function (parent) {
         maxLength: 100,
         charsRemaining: {
             maxLength: 100,
-            element: '.lead-company-name'
+            elementId: '.lead-company-name'
         }
     });
     self.companyRegistration = ko.observable().extend({
@@ -1576,55 +1576,6 @@ This customer wishes their deliveries to be consolidated. Please double check th
             });
     }
 
-    self.invoiceAddressChecked = ko.observable(false).extend({
-        equal: {
-            params: true,
-            message: 'You must check both the Company Name and the Invoice Address before opening an account.'
-        }
-    });
-
-    self.invoiceAddressCheckedParams = {
-        label: 'Company Details Checked',
-        checkboxId: `invoice-address-checked`,
-        observable: self.invoiceAddressChecked,
-        originalValue: false,
-        useNativeValidation: false,
-        disable: ko.observable(false),
-        enable: ko.observable(true),
-        busy: ko.observable(false)
-    }
-
-    self.creditControllerErrors = ko.validation.group([
-        self.creditControllerFromList,
-        self.creditControllerCode,
-        //self.numberOfPatternBooksPurchased,
-        //self.firstOrderValue,
-        //self.joinedPatternScheme
-    ]);
-
-    self.creditControlErrors = ko.validation.group([
-        self.paymentTerms,
-        self.creditLimit,
-        self.insuredCreditLimit,
-        self.companyVATNumber,
-        self.vatCountry,
-        self.invoiceAddressChecked,
-        //self.bankName,
-        //self.bankCountryId,
-        //self.bankAddressLine1,
-        //self.bankAddressLine2,
-        //self.bankTown,
-        //self.bankCounty,
-        //self.bankPostcode,
-        //self.bankAccountNumber,
-        //self.bankSortCode,
-        //self.bankIBAN,
-        self.bankCode,
-        self.creditController,
-        self.taxId,
-        self.mertexLanguageCode
-    ]);
-
     self.payByDirectDebitOptions = [{ Name: 'Yes', Value: true }, { Name: 'No', Value: false }];
 
     // #endregion
@@ -2119,6 +2070,19 @@ This customer wishes their deliveries to be consolidated. Please double check th
         }
     });
 
+    self.isInEU = ko.computed(() => {
+        let country = self.country();
+        if (country) {
+            return country.InEU;
+        } else {
+            return false;
+        }
+    }, self);
+
+    self.invoicingAddress = ko.computed(() => {
+        return self.leadAddresses().find(x => x.leadAddressId() == self.defaultInvoicingAddressId());
+    }, self);
+
     self.hasVIESResult = ko.observable(false);
 
     self.viesResult = ko.observable();
@@ -2132,6 +2096,59 @@ This customer wishes their deliveries to be consolidated. Please double check th
             return ``;
         }
     }, self);
+
+
+    self.invoiceAddressChecked = ko.observable(false).extend({
+        equal: {
+            params: true,
+            onlyIf: () => {
+                return self.country() && self.country().InEU;
+            },
+            message: 'You must check both the Company Name and the Invoice Address before opening an account.'
+        }
+    });
+
+    self.invoiceAddressCheckedParams = {
+        label: 'Company Details Checked',
+        checkboxId: `invoice-address-checked`,
+        observable: self.invoiceAddressChecked,
+        originalValue: false,
+        useNativeValidation: false,
+        disable: ko.observable(false),
+        enable: ko.observable(true),
+        busy: ko.observable(false)
+    }
+
+    self.creditControllerErrors = ko.validation.group([
+        self.creditControllerFromList,
+        self.creditControllerCode,
+        //self.numberOfPatternBooksPurchased,
+        //self.firstOrderValue,
+        //self.joinedPatternScheme
+    ]);
+
+    self.creditControlErrors = ko.validation.group([
+        self.paymentTerms,
+        self.creditLimit,
+        self.insuredCreditLimit,
+        self.companyVATNumber,
+        self.vatCountry,
+        self.invoiceAddressChecked,
+        //self.bankName,
+        //self.bankCountryId,
+        //self.bankAddressLine1,
+        //self.bankAddressLine2,
+        //self.bankTown,
+        //self.bankCounty,
+        //self.bankPostcode,
+        //self.bankAccountNumber,
+        //self.bankSortCode,
+        //self.bankIBAN,
+        self.bankCode,
+        self.creditController,
+        self.taxId,
+        self.mertexLanguageCode
+    ]);
 
     self.channel = ko.pureComputed({
         read: function () {

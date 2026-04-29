@@ -18,7 +18,13 @@ namespace SharedEFClasses.Models.CreditControl
 
 		public string Advisory { get; set; }
 
-		public decimal Overdue { get; set; }
+		public string UniVerseAccounts { get; set; }
+
+		public string StatementTotals { get; set; }
+
+		public string OverdueTotals { get; set; }
+
+		public string StatementLinks { get; set; }
 
 		public string StatementContacts { get; set; }
 

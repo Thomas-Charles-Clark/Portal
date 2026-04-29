@@ -181,7 +181,8 @@ namespace SharedEFClasses.Models
 				Heading = await reply.ReadSingleOrDefaultAsync<CreditControl_Statement_Select_HeadingResult>(),
 				Pods = await reply.ReadAsync<CreditControl_Statement_Select_Pod>(),
 				Results = await reply.ReadAsync<CreditControl_Statement_Select_Record>(),
-				TotalsRecord = await reply.ReadSingleAsync<CreditControl_TradeAccount_Totals_Record>()
+				TotalsRecord = await reply.ReadSingleAsync<CreditControl_TradeAccount_Totals_Record>(),
+				InformationPopup = await reply.ReadSingleAsync<CreditControl_Statement_Info_Record>()
 			};
 		}
 

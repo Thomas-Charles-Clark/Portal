@@ -561,7 +561,6 @@
     <Compile Include="Areas\Accounts\ViewModels\DailyBankingStatisticsViewModel.cs" />
     <Compile Include="Areas\Accounts\ViewModels\BankAccountsViewModel.cs" />
     <Compile Include="Areas\Credit-Control\Controllers\CreditControlApiController.cs" />
-    <Compile Include="Areas\Credit-Control\Controllers\StatementsApiController.cs" />
     <Compile Include="Areas\Credit-Control\Controllers\CreditControlController.cs" />
     <Compile Include="Areas\Credit-Control\CreditControlAreaRegistration.cs" />
     <Compile Include="Areas\Credit-Control\ViewModels\CreditControlViewModel.cs" />

@@ -351,7 +351,8 @@ namespace Portal.Areas.CreditControl.Controllers
 					heading = model.Heading,
 					gridData = gridData,
 					pods = model.Pods,
-					totalsRecord = model.TotalsRecord
+					totalsRecord = model.TotalsRecord,
+					informationPopup = model.InformationPopup
 				});
 			}
 			catch (SqlException e)
@@ -421,7 +422,7 @@ namespace Portal.Areas.CreditControl.Controllers
 		[HttpPost]
 		public async Task<IHttpActionResult> SendStatements([FromBody]CreditControl_Statement_SendDTO dto)
 		{
-			await Task.Run(() => { });
+			var result = await PortalDb.SendStatements(dto);
 
 			return Ok(new
 			{

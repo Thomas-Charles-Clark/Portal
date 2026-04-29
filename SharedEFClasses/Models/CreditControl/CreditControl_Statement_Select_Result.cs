@@ -15,5 +15,7 @@ namespace SharedEFClasses.Models.CreditControl
 		public IEnumerable<CreditControl_Statement_Select_Record> Results { get; set; }
 
 		public CreditControl_TradeAccount_Totals_Record TotalsRecord { get; set; }
+
+		public CreditControl_Statement_Info_Record InformationPopup { get; set; }
 	}
 }

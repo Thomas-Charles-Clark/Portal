@@ -22,12 +22,16 @@
         allTradeAccountCodes: ko.observableArray([]),
         selectedTradeAccountCodes: ko.observableArray([]),
         statementDate: ko.observable(new Date()),
-        statementSendModalElement: document.querySelector('#statement-send-modal')
+        statementSendModalElement: document.querySelector('#statement-send-modal'),
+        statementInfoModalElement: document.querySelector('#statements-info-modal'),
+        popupInfo: ko.observable()
     };
 
     //#region Properties
 
     self.statementSendModal = bootstrap.Modal.getOrCreateInstance(self.statementSendModalElement);
+
+    self.statementInfoModal = bootstrap.Modal.getOrCreateInstance(self.statementInfoModalElement);
 
     self.statementDateParams = {
         label: "Date",
@@ -241,6 +245,11 @@
 
                         self.heading(data.heading);
 
+                        if (data.informationPopup && data.informationPopup.PopupMessage) {
+                            self.popupInfo(data.informationPopup.PopupMessage);
+                            self.statementInfoModal.show();
+                        }
+
                         options.success(data.gridData);
                     }
 
@@ -292,10 +301,28 @@
                 return dataItem?.Advisory ?? ``;
             }
         }, {
-            field: 'Overdue',
-            title: 'Overdue',
+            field: 'UniVerseAccounts',
+            title: 'UniVerse Accounts',
             template: (dataItem) => {
-                return dataItem.Overdue;
+                return dataItem.UniVerseAccounts ?? ``;
+            }
+        }, {
+            field: 'StatementTotals',
+            title: 'Statement Totals',
+            template: (dataItem) => {
+                return dataItem.StatementTotals ?? ``;
+            }
+        }, {
+            field: 'OverdueTotals',
+            title: 'Overdue Totals',
+            template: (dataItem) => {
+                return dataItem.OverdueTotals ?? ``;
+            }
+        }, {
+            field: 'StatementLinks',
+            title: 'Statement Links',
+            template: (dataItem) => {
+                return dataItem.StatementLinks ?? ``;
             }
         }, {
             field: 'StatementContacts',
@@ -349,7 +376,10 @@
                         TradeAccountCode: { type: 'string' },
                         TradeAccountName: { type: 'string' },
                         Advisory: { type: 'string' },
-                        Overdue: { type: 'string' },
+                        UniVerseAccounts: { type: 'string' },
+                        StatementTotals: { type: 'string' },
+                        OverdueTotals: { type: 'string' },
+                        StatementLinks: { type: 'string' },
                         StatementContacts: { type: 'string' },
                         SendHistory: { type: 'string' }
                     }

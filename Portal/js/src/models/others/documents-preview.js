@@ -1,4 +1,15 @@
-﻿var documentsPreviewViewModel = function () {
+﻿const uniVerseAccounts = [{
+    name: 'Mertex',
+    value: 'MERTEX'
+}, {
+    name: 'DG Europe',
+    value: 'DG_EUROPE'
+}, {
+    name: 'Mertex Inc.',
+    value: 'MERTEX_INC'
+}];
+
+var documentsPreviewViewModel = function () {
     var self = this;
 
     //#region Properties
@@ -63,6 +74,12 @@
 
     self.liveDocuments = ko.observableArray([]);
 
+    self.uniVerseAccounts = uniVerseAccounts;
+
+    self.uniVerseAccountId = ko.observable('');
+
+    self.uniVerseAccount = ko.observable()
+    
     //#endregion
 
 
@@ -499,6 +516,10 @@
                 outputMode: dataItem.OutputMode
             };
 
+            if (self.uniVerseAccountId()) {
+                overrideParameters.uniVerseAccount = self.uniVerseAccountId();
+            }
+
             self.overrideParameters(overrideParameters);
 
             self.fetchDocument(undefined, undefined);
@@ -507,6 +528,25 @@
 
         }
     };
+
+    self.uniVerseAccountParams = kendoMDCDropDownList({
+        label: 'UniVerse Account',
+        data: self.uniVerseAccounts,
+        textField: 'name',
+        valueField: 'value',
+        virtual: false,
+        idObservable: self.uniVerseAccountId,
+        objObservable: self.uniVerseAccount,
+        optionLabel: {
+            name: '',
+            value: ''
+        },
+        clearable: ko.observable(false),
+        revertible: ko.observable(false),
+        optionLabelTemplate: '',
+        filter: false,
+        autoBind: true
+    });
 
     self.errors = ko.validation.group([
         self.basketId,
@@ -572,7 +612,7 @@
                 outputMode: nv
             }, self.overrideParameters()));
         }
-    })
+    });
 
     //#endregion
 
@@ -797,7 +837,8 @@
             transactionId: self.transactionId(),
             orderHeadId: self.orderHeadId(),
             date: self.date() ? self.date().toISOString() : null,
-            outputMode: self.documentOutputModeCode()
+            outputMode: self.documentOutputModeCode(),
+            uniVerseAccount: self.uniVerseAccountId()
         };
     }
 
@@ -835,6 +876,7 @@
     self.link = ko.pureComputed(function () {
 
         let objJson = {
+            uniVerseAccount: self.uniVerseAccount(),
             documentType: self.documentId(),
             languageId: self.languageId(),
             tradeAccountId: self.tradeAccountId(),
@@ -860,19 +902,19 @@
 
     }, self);
 
-    self.userLink = ko.pureComputed(function () {
-        return window.location.origin + '/documents/view?' + self.link()?.replace(/%3D/gm, '=');
-    }, self);
-
-    self.renderDocument = ko.pureComputed(function () {
+    self.publicViewLink = ko.pureComputed(function () {
         return window.location.origin + `/documents/view/render?${(self.link()?.replace(/%3D/gm, '='))}`
     }, self);
 
-    self.directDownloadLink = ko.pureComputed(function () {
-        return window.location.origin + `/documents/view/download?${(self.link()?.replace(/%3D/gm, '='))}`
+    self.publicDownloadLink = ko.pureComputed(function () {
+        return window.location.origin + '/documents/view/download?' + self.link()?.replace(/%3D/gm, '=');
     }, self);
 
-    self.adminLink = ko.pureComputed(function () {
+    self.privateViewEmailerLink = ko.pureComputed(function () {
+        return window.location.origin + '/documents/view?' + self.link()?.replace(/%3D/gm, '=');
+    }, self);
+
+    self.privateAdminLink = ko.pureComputed(function () {
         return window.location.origin + '/documents/preview?' + self.link()?.replace(/%3D/gm, '=')
     }, self);
 
@@ -930,44 +972,57 @@
             autoLoad.call(self);
     }
 
-    self.copyUserLink = function (e) {
-        e.preventDefault();
-        navigator.permissions.query({ name: "clipboard-write" }).then(result => {
-            if (result.state == "granted" || result.state == "prompt") {
-                navigator.clipboard.writeText(self.userLink());
-                $('#user-copied-ok').stop(false, false).fadeIn('fast');
-                window.setTimeout(function () {
-                    $('#user-copied-ok').stop(false, false).fadeOut('slow');
-                }, 500);
-            }
-        });
-    }
+    //self.copyPublicViewLink = function (e) {
+    //    e.preventDefault();
+    //    navigator.permissions.query({ name: "clipboard-write" }).then(result => {
+    //        if (result.state == "granted" || result.state == "prompt") {
+    //            navigator.clipboard.writeText(self.publicViewLink());
+    //            $('#public-view-copied-ok').stop(false, false).fadeIn('fast');
+    //            window.setTimeout(function () {
+    //                $('#public-view-copied-ok').stop(false, false).fadeOut('slow');
+    //            }, 500);
+    //        }
+    //    });
+    //}
 
-    self.copyDirectDownloadLink = function (e) {
-        e.preventDefault();
-        navigator.permissions.query({ name: "clipboard-write" }).then(result => {
-            if (result.state == "granted" || result.state == "prompt") {
-                navigator.clipboard.writeText(self.directDownloadLink());
-                $('#user-copied-ok').stop(false, false).fadeIn('fast');
-                window.setTimeout(function () {
-                    $('#user-copied-ok').stop(false, false).fadeOut('slow');
-                }, 500);
-            }
-        });
-    }
+    //self.copyPublicDownloadLink = function (e) {
+    //    e.preventDefault();
+    //    navigator.permissions.query({ name: "clipboard-write" }).then(result => {
+    //        if (result.state == "granted" || result.state == "prompt") {
+    //            navigator.clipboard.writeText(self.publicDownloadLink());
+    //            $('#public-download-copied-ok').stop(false, false).fadeIn('fast');
+    //            window.setTimeout(function () {
+    //                $('#public-download-copied-ok').stop(false, false).fadeOut('slow');
+    //            }, 500);
+    //        }
+    //    });
+    //}
 
-    self.copyAdminLink = function (e) {
-        e.preventDefault();
-        navigator.permissions.query({ name: "clipboard-write" }).then(result => {
-            if (result.state == "granted" || result.state == "prompt") {
-                navigator.clipboard.writeText(self.adminLink());
-                $('#admin-copied-ok').stop(false, false).fadeIn('fast');
-                window.setTimeout(function () {
-                    $('#admin-copied-ok').stop(false, false).fadeOut('slow');
-                }, 500);
-            }
-        });
-    }
+    //self.copyPrivateDownloadLink = function (e) {
+    //    e.preventDefault();
+    //    navigator.permissions.query({ name: "clipboard-write" }).then(result => {
+    //        if (result.state == "granted" || result.state == "prompt") {
+    //            navigator.clipboard.writeText(self.privateDownloadLink());
+    //            $('#private-download-copied-ok').stop(false, false).fadeIn('fast');
+    //            window.setTimeout(function () {
+    //                $('#private-download-copied-ok').stop(false, false).fadeOut('slow');
+    //            }, 500);
+    //        }
+    //    });
+    //}
+
+    //self.copyPrivateAdminLink = function (e) {
+    //    e.preventDefault();
+    //    navigator.permissions.query({ name: "clipboard-write" }).then(result => {
+    //        if (result.state == "granted" || result.state == "prompt") {
+    //            navigator.clipboard.writeText(self.privateAdminLink());
+    //            $('#admin-copied-ok').stop(false, false).fadeIn('fast');
+    //            window.setTimeout(function () {
+    //                $('#admin-copied-ok').stop(false, false).fadeOut('slow');
+    //            }, 500);
+    //        }
+    //    });
+    //}
 
     //#endregion
 

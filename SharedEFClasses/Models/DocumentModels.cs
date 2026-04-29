@@ -333,7 +333,8 @@ namespace SharedEFClasses.Models.Documents
 
     public class PassDocumentIdentifier
     {
-        public PortalPDFDocument documentType { get; set; }
+        public string uniVerseAccount { get; set; }
+		public PortalPDFDocument documentType { get; set; }
         public long? basketId { get; set; }
         public int? transactionId { get; set; }
         public int? orderHeadId { get; set; }

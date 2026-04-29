@@ -70,7 +70,7 @@
 
 		window.getHeldOrderReasonIdToLoad = () => null;
 
-		window.getTabToLoad = () => "ordersToApprove"; 
+		window.getTabToLoad = () => "ordersToApprove";
 
 		window.getIsMe = () => {
 			return @(isItMe.ToString().ToLowerInvariant());
@@ -121,8 +121,8 @@
 
 		window.self = viewModel;
 
-		@if (isItMe) 
-		{ 
+		@if (isItMe)
+		{
 			@:window.viewModel.closeBrothers.dataSource.read();
 		}
 
@@ -275,6 +275,19 @@
 	</div>
 	<div data-bind="kendoGrid: gridParams"></div>
 </script>
+
+<div class="modal fade statements-info-modal" id="statements-info-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+	<div class="modal-dialog" id="statements-info-modal-dialog">
+		<div class="modal-content" data-bind="with: statements">
+			<div class="modal-body" data-bind="html: popupInfo"></div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+					Understood
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 <div class="modal fade breakdown-modal" id="sales-ledger-modal" tabindex="-1">
 	<div class="modal-dialog modal-fullscreen" id="sales-ledger-modal-dialog">
@@ -527,8 +540,13 @@
 <div id="main-credit-control-container" class="d-flex align-items-start w-100 opacity-100" data-bind="flexFadeVisible: true">
 	<main id="credit-control-main">
 		<ul class="nav nav-tabs" id="credit-control-tabs" role="tablist">
+			<li class="nav-item d-none" role="presentation">
+				<button class="nav-link active" id="pre-selection-tab-container" data-bs-toggle="tab" data-bs-target="#pre-selection-tab-pane" type="button" role="tab" aria-controls="pre-selection-tab-pane" aria-selected="false">
+					Pre
+				</button>
+			</li>
 			<li class="nav-item" role="presentation">
-				<button class="nav-link @(isItMe ? "" : "active")" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard-tab-pane" type="button" role="tab" aria-controls="dashboard-tab-pane" aria-selected="true">
+				<button class="nav-link @(isItMe ? "" : "")" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard-tab-pane" type="button" role="tab" aria-controls="dashboard-tab-pane" aria-selected="false">
 					Dashboard
 				</button>
 			</li>
@@ -560,13 +578,18 @@
 				</button>
 			</li>
 			<li class="nav-item" role="presentation">
-				<button class="nav-link @(isItMe ? "active" : "")" id="close-brothers-tab" data-bs-toggle="tab" data-bs-target="#close-brothers-pane" type="button" role="tab" aria-controls="close-brothers-pane" aria-selected="false">
+				<button class="nav-link @(isItMe ? "" : "")" id="close-brothers-tab" data-bs-toggle="tab" data-bs-target="#close-brothers-pane" type="button" role="tab" aria-controls="close-brothers-pane" aria-selected="false">
 					Close Brothers
 				</button>
 			</li>
 		</ul>
 		<div class="tab-content" id="credit-control-tab-content">
-			<div class="tab-pane fade @(isItMe ? "" : "show active")" id="dashboard-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+			<div class="tab-pane fade active show" id="pre-selection-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+				<h4 class="mb-0">
+					Please select a tab above.
+				</h4>
+			</div>
+			<div class="tab-pane fade @(isItMe ? "" : "")" id="dashboard-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
 				<div id="dashboard-tab-flex-container" style="display: none" data-bind="flexFadeVisible: true">
 					<!-- ko template: { name: 'sidebar-template', data: filters } --><!-- /ko -->
 					<div id="dashboard-main">
@@ -659,14 +682,14 @@
 							</div>
 						</div>
 						@*<div class="dashboard" style="display: none" data-bind="visible: dashboardPods().length, foreach: dashboardPods">
-						<div class="dashboard-pod card" data-bind="css: { 'selected-pod': $parent.selectedPod() == $data }">
-							<div class="card-body" data-bind="class: Classes">
-								<h4 data-bind="html: Heading"></h4>
-								<div data-bind="html: Stats"></div>
-								<a href="#" class="stretched-link" data-bind="click: $parent.dashboardClick"></a>
-							</div>
-						</div>
-					</div>*@
+								<div class="dashboard-pod card" data-bind="css: { 'selected-pod': $parent.selectedPod() == $data }">
+									<div class="card-body" data-bind="class: Classes">
+										<h4 data-bind="html: Heading"></h4>
+										<div data-bind="html: Stats"></div>
+										<a href="#" class="stretched-link" data-bind="click: $parent.dashboardClick"></a>
+									</div>
+								</div>
+							</div>*@
 						<div class="selected-filter-pills">
 							<!-- ko template: { name: 'filter-pills-template', data: filters } --><!-- /ko -->
 							<div class="dropdown ms-3" style="display: none" data-bind="visible: true">
@@ -684,55 +707,55 @@
 						</div>
 						<div id="credit-control-grid-container" data-bind="kendoGrid: gridParams"></div>
 						@*<div id="credit-control-scroller-container" class="virtual-scoller-container" data-bind="with: virtualScoller">
-						<table id="credit-control-main-table" class="table  virtual-scrolling-table table-condensed table-striped table-hover">
-							<colgroup data-bind="foreach: $parent.gridColumns">
-								<col data-bind="style: { width: `${$data.width}px` }">
-							</colgroup>
-							<thead>
-								<tr>
-									<!-- ko foreach: $parent.gridColumns -->
-									<!-- ko if: typeof columns == 'undefined' -->
-									<th data-bind="style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;"></th>
-									<!-- /ko -->
-									<!-- ko if: typeof columns != 'undefined' -->
-									<!-- ko foreach: columns -->
-									<th data-bind="attr: { colspan: $parent.columns.length }, style: { '--left-offset': `${$parentContext.$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
-										<span data-bind="text: columnNameDisplay"></span>
-									</th>
-									<!-- /ko -->
-									<!-- /ko -->
-									<!-- /ko -->
-								</tr>
-								<tr>
-									<!-- ko foreach: $parent.gridColumns -->
-									<th class="sortable-column" data-bind="click: $root.sortByColumn, style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
-										<span data-bind="text: columnNameDisplay"></span>
-										<!-- ko if: (Object.hasOwn($data, 'direction') && $data.direction()) -->
-										<i class="bi bi-caret-down" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
-										<!-- /ko -->
-									</th>
-									<!-- /ko -->
-								</tr>
-							</thead>
-							<tbody class="virtual-spacing">
-								<tr>
-									<td colspan="500" style="height: 0" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
-								</tr>
-							</tbody>
-							<tbody data-bind="foreach: { data: visibleItems, as: 'record' }">
-								<tr class="visible-item">
-									<!-- ko foreach: $parentContext.$parent.gridColumns -->
-									<!-- ko template: { name: 'main-grid-row-template', data: { column: $data, record: record } } --><!-- /ko -->
-									<!-- /ko -->
-								</tr>
-							</tbody>
-							<tbody class="virtual-spacing">
-								<tr class="final-row">
-									<td colspan="500" style="height: 0" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>*@
+								<table id="credit-control-main-table" class="table  virtual-scrolling-table table-condensed table-striped table-hover">
+									<colgroup data-bind="foreach: $parent.gridColumns">
+										<col data-bind="style: { width: `${$data.width}px` }">
+									</colgroup>
+									<thead>
+										<tr>
+											<!-- ko foreach: $parent.gridColumns -->
+											<!-- ko if: typeof columns == 'undefined' -->
+											<th data-bind="style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;"></th>
+											<!-- /ko -->
+											<!-- ko if: typeof columns != 'undefined' -->
+											<!-- ko foreach: columns -->
+											<th data-bind="attr: { colspan: $parent.columns.length }, style: { '--left-offset': `${$parentContext.$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
+												<span data-bind="text: columnNameDisplay"></span>
+											</th>
+											<!-- /ko -->
+											<!-- /ko -->
+											<!-- /ko -->
+										</tr>
+										<tr>
+											<!-- ko foreach: $parent.gridColumns -->
+											<th class="sortable-column" data-bind="click: $root.sortByColumn, style: { '--left-offset': `${$parentContext.$parent.gridColumns.reduce((a, c, i) => a += i < $index() ? c.width : 0, 0)}px` }" style="--left-offset: 0px;">
+												<span data-bind="text: columnNameDisplay"></span>
+												<!-- ko if: (Object.hasOwn($data, 'direction') && $data.direction()) -->
+												<i class="bi bi-caret-down" data-bind="css: { 'bi-caret-up': direction() == 'asc', 'bi-caret-down': direction() == 'desc' }"></i>
+												<!-- /ko -->
+											</th>
+											<!-- /ko -->
+										</tr>
+									</thead>
+									<tbody class="virtual-spacing">
+										<tr>
+											<td colspan="500" style="height: 0" data-bind="style: { height: `${gridScrollTopPadding()}px` }"></td>
+										</tr>
+									</tbody>
+									<tbody data-bind="foreach: { data: visibleItems, as: 'record' }">
+										<tr class="visible-item">
+											<!-- ko foreach: $parentContext.$parent.gridColumns -->
+											<!-- ko template: { name: 'main-grid-row-template', data: { column: $data, record: record } } --><!-- /ko -->
+											<!-- /ko -->
+										</tr>
+									</tbody>
+									<tbody class="virtual-spacing">
+										<tr class="final-row">
+											<td colspan="500" style="height: 0" data-bind="style: { height: `${gridScrollBottomPadding()}px` }"></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>*@
 					</div>
 				</div>
 			</div>
@@ -820,29 +843,29 @@
 				</div>
 				<div data-bind="kendoGrid: paymentHistory.gridParams"></div>
 			</div>
-			<div id="close-brothers-pane" class="tab-pane fade @(isItMe ? "show active" : "")" data-bind="with: closeBrothers">
+			<div id="close-brothers-pane" class="tab-pane fade @(isItMe ? "" : "")" data-bind="with: closeBrothers">
 				<div class="blocker" data-bind="flexFadeVisible: busy">
 					<div class="loading-spinner"></div>
 					<h4 class="mt-2" data-bind="html: busyMessage"></h4>
 				</div>
 				@*<div class="prefilters mb-3" data-bind="with: filters">
-			<div id="close-brothers-date-prefilter-container" class="prefilter">
-				<div class="date-prefilters">
-					<div id="close-brothers-date-type-prefilter" class="date-prefilter prefilter relative">
-						<div class="date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: closeBrothersDateRangeParams }"></div>
-					</div>
-					<div id="close-brothers-from-date" class="prefilter" style="display: none" data-bind="visible: closeBrothersDateRangeId() == -1">
-						<div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: closeBrothersFromDateParams }"></div>
-					</div>
-					<div id="close-brothers-to-date" class="prefilter" style="display: none" data-bind="visible: closeBrothersDateRangeId() == -1">
-						<div class="to-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: closeBrothersToDateParams }"></div>
-					</div>
-				</div>
-				<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersFromDate"></span>
-				<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersToDate"></span>
-				<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersFromPrecedesTo"></span>
-			</div>
-		</div>*@
+						<div id="close-brothers-date-prefilter-container" class="prefilter">
+							<div class="date-prefilters">
+								<div id="close-brothers-date-type-prefilter" class="date-prefilter prefilter relative">
+									<div class="date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: closeBrothersDateRangeParams }"></div>
+								</div>
+								<div id="close-brothers-from-date" class="prefilter" style="display: none" data-bind="visible: closeBrothersDateRangeId() == -1">
+									<div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: closeBrothersFromDateParams }"></div>
+								</div>
+								<div id="close-brothers-to-date" class="prefilter" style="display: none" data-bind="visible: closeBrothersDateRangeId() == -1">
+									<div class="to-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: closeBrothersToDateParams }"></div>
+								</div>
+							</div>
+							<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersFromDate"></span>
+							<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersToDate"></span>
+							<span class="validation-message text-danger" data-bind="validationMessage: closeBrothersFromPrecedesTo"></span>
+						</div>
+					</div>*@
 				<div class="close-brothers-section">
 					<div class="close-brothers-section-body">
 						<table class="table close-brothers-table">

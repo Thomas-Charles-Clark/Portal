@@ -18,12 +18,20 @@ namespace SharedEFClasses.Models
 {
     public partial class PortalDbContext : IdentityDbContext<Member, Role, int, Member_Login, Member_Role, Member_Claim>
     {
-        public async Task<SendStatementsResult> SendStatements(PassSendStatementsDto dto)
+        public async Task<SendStatementsResult> SendStatements(CreditControl_Statement_SendDTO dto)
         {
-            var result = await this.Database.Connection.QuerySingleAsync<SendStatementsResult>("portal.CreditControl_AccountStatement_AddToDocumentEmailQueue",
+            var tradeAccountCodes = new DataTable();
+
+            tradeAccountCodes.Columns.Add("Code", typeof (string));
+
+            foreach(var t in dto.TradeAccountCodes)
+            {
+                tradeAccountCodes.Rows.Add(t);
+			}
+
+            var result = await this.Database.Connection.QuerySingleAsync<SendStatementsResult>("portal.CreditControl_Statement_AddToDocumentEmailQueue",
                 new {
-					dto.MemberID,
-                    dto.TradeAccountID,
+                    tradeAccountCodes,
                     dto.Date
 				},
                 null, null, CommandType.StoredProcedure);
