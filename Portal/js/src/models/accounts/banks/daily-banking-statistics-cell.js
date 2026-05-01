@@ -2,12 +2,15 @@
     rec,
     row,
     column,
-    validateNow
+    statementValue,
+    originalStatementValue
 } = {
     rec: {},
     row: {},
     column: {},
-    validateNow: ko.observable(false)
+    validateNow: ko.observable(false),
+    statementValue: null,
+    originalStatementValue: null
 }) => {
     let self = Object.assign(rec, {
         row,
@@ -22,9 +25,11 @@
 
     self.busyMessage = ko.observable('Please Wait');
 
-    self.value = ko.observable(self.Value);
+    self.value = statementValue ?? ko.observable(self.Value);
 
-    self.originalValue = ko.observable(self.Value);
+    self.originalValue = originalStatementValue ?? ko.observable(self.Value);
+
+    self.breakdown = ko.observable(self.Breakdown ? JSON.parse(self.Breakdown) : undefined);
 
     self.dataType = self.column.DataType?.toLowerCase()?.replace(/\(\d+\)/gm, '');
 
@@ -85,13 +90,6 @@
                         Code: self.row.CurrencyCode ?? 'GBP',
                     }
                 }
-
-                //numberFormatted: {
-                //    digits: 2,
-                //    currency: {
-                //        FormattingCulture: self.FormattingCulture
-                //    }
-                //}
             });
             break;
         default:
@@ -114,10 +112,13 @@
                 insertValidationMessages: false,
                 decorateInputElement: false,
                 busy: ko.observable(false),
-                enable: ko.observable(true),
-                disable: ko.observable(false),
-                revertible: ko.observable(true),
-                clearable: ko.observable(true),
+                enterKey: (event) => {
+                    event.target.closest('tr').find('.breakdown-btn').focus();
+                },
+                enable: ko.observable(!self.column.ReadOnly),
+                disable: ko.observable(self.column.ReadOnly),
+                revertible: ko.observable(!self.column.ReadOnly),
+                clearable: ko.observable(!self.column.ReadOnly),
                 buttons: false,
                 rows: 2,
                 revertFunction: function () {
@@ -146,10 +147,10 @@
                 insertValidationMessages: false,
                 showClear: false,
                 buttons: false,
-                enable: ko.observable(true),
-                disable: ko.observable(false),
-                revertible: true,
-                clearable: true,
+                enable: ko.observable(!self.column.ReadOnly),
+                disable: ko.observable(self.column.ReadOnly),
+                revertible: ko.observable(!self.column.ReadOnly),
+                clearable: ko.observable(!self.column.ReadOnly),
                 revertFunction: () => {
                     self.value(self.originalValue())
                 },
@@ -228,7 +229,15 @@
 
     //#region Computeds
 
+    self.breakdownEnabled = ko.computed(() => {
+        let result = self.value();
 
+        return result != '' && result != null;
+    }, self);
+
+    self.valueDisplay = ko.computed(() => {
+        return `Statement Amount: ${self.value.formatted()}`;
+    }, self);
 
     //#endregion
 
@@ -251,19 +260,25 @@
     }
 
     self.template = () => {
-        //console.log('template: ', self.dataType);
-        switch (self.dataType) {
-            case 'nvarchar':
-                return `<div data-bind="component: { name: 'mdc-text-area-component', params: valueParams }"></div>`
-                break;
-            case 'decimal':
-            case 'money':
-            default: 
-                return `<div data-bind="component: { name: 'mdc-text-field-numeric-component', params: valueParams }"></div>`;
-            //case 'date':
-            //    return `<div id="row-${self.RowID}-column-${self.ColumnID}-date" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: valueParams }"></div>`;
-            //default:
-            //    return 'daily-banking-statistics-cell.js:167'
+        if (self.column.BreakdownRequired) {
+            return `<button type="button" class="btn btn-primary breakdown-btn ${self.value() ? '' : 'disabled-btn'} w-100" data-bind="class: breakdownEnabled() ? '' : 'disabled-btn', click: viewModel.showBreakdownModal">
+                ${(self.value() ? 'Review ' : 'Provide ')}Breakdown
+            </button>`
+        } else {
+            //console.log('template: ', self.dataType);
+            switch (self.dataType) {
+                case 'nvarchar':
+                    return `<div data-bind="component: { name: 'mdc-text-area-component', params: valueParams }"></div>`
+                    break;
+                case 'decimal':
+                case 'money':
+                default:
+                    return `<div data-bind="component: { name: 'mdc-text-field-numeric-component', params: valueParams }"></div>`;
+                //case 'date':
+                //    return `<div id="row-${self.RowID}-column-${self.ColumnID}-date" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: valueParams }"></div>`;
+                //default:
+                //    return 'daily-banking-statistics-cell.js:167'
+            }
         }
     }
 

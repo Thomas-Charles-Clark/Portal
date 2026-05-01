@@ -17,6 +17,8 @@ namespace SharedEFClasses.Models.Banking
 
 		public string Value { get; set; }
 
+		public string Breakdown { get; set; }
+
 		public DateTime ModifiedDT { get; set; }
 
 		public int MemberID { get; set; }

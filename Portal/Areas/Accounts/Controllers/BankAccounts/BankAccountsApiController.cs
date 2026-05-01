@@ -33,6 +33,5 @@ namespace Portal.Areas.Accounting.Banks.Controllers
             this.UserManager = userManager;
             this.PortalDb = portalDbContext;
         }
-
     }
 }

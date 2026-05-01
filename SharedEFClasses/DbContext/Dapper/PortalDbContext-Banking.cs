@@ -44,10 +44,11 @@ namespace SharedEFClasses.Models
 			records.Columns.Add("RowID", typeof(int));
 			records.Columns.Add("ColumnID", typeof(int));
 			records.Columns.Add("Value", typeof(string));
+			records.Columns.Add("BreakdownJSON", typeof(string));
 
 			foreach (var r in dto.Records)
 			{
-				records.Rows.Add(r.RowID, r.ColumnID, r.Value);
+				records.Rows.Add(r.RowID, r.ColumnID, r.Value, r.BreakdownJSON);
 			}
 
 			var reply = await this.Database.Connection.QueryAsync("[portal].[BankAccountStat_Save]", new

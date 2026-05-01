@@ -436,7 +436,7 @@ namespace Portal
                     $"{cssPrefix}/models/credit-control/credit-control-performance{cssSuffix}",
 					$"{cssPrefix}/models/credit-control/credit-control-order-release{cssSuffix}",
 					$"{cssPrefix}/models/credit-control/credit-control-close-brothers{cssSuffix}",
-					$"{cssPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits{cssSuffix}",
+					$"{cssPrefix}/models/credit-control/credit-control-allocate-holding-account-cash{cssSuffix}",
 					$"{cssPrefix}/models/credit-control/credit-control-virtual-scroller{cssSuffix}",
 					$"{cssPrefix}/models/credit-control/credit-control-sales-ledger{cssSuffix}",
 					$"{cssPrefix}/models/credit-control/credit-control-manage-ledger{cssSuffix}",
@@ -1073,9 +1073,9 @@ namespace Portal
 									$"{jsPrefix}/models/credit-control/credit-control-payments-history{jsSuffix}",
 									$"{jsPrefix}/models/credit-control/credit-control-payments-history-pod{jsSuffix}",
 									$"{jsPrefix}/models/credit-control/credit-control-payments-history-record{jsSuffix}",
-									$"{jsPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits{jsSuffix}",
-									$"{jsPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits-record{jsSuffix}",
-									$"{jsPrefix}/models/credit-control/credit-control-outstanding-invoices-with-unallocated-deposits-pod{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-allocate-holding-account-cash{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-allocate-holding-account-cash-record{jsSuffix}",
+									$"{jsPrefix}/models/credit-control/credit-control-allocate-holding-account-cash-pod{jsSuffix}",
 									$"{jsPrefix}/models/credit-control/credit-control-main-grid-column{jsSuffix}",
                                     $"{jsPrefix}/models/credit-control/credit-control-main-grid-row{jsSuffix}",
 									$"{jsPrefix}/models/credit-control/credit-control{jsSuffix}"
@@ -1115,6 +1115,8 @@ namespace Portal
 
 			bundles.Add(new ScriptBundle("~/bundles/js/accounts/daily-banking-statistics").Include(
 						$"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
+						$"{jsPrefix}/models/accounts/banks/daily-banking-statistics-breakdown-item{jsSuffix}",
+						$"{jsPrefix}/models/accounts/banks/daily-banking-statistics-breakdown{jsSuffix}",
 						$"{jsPrefix}/models/accounts/banks/daily-banking-statistics-row{jsSuffix}",
 						$"{jsPrefix}/models/accounts/banks/daily-banking-statistics-cell{jsSuffix}",
 						$"{jsPrefix}/models/accounts/banks/daily-banking-statistics{jsSuffix}"

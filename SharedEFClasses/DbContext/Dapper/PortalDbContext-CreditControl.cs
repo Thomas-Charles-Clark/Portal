@@ -277,20 +277,56 @@ namespace SharedEFClasses.Models
 			};
 		}
 
-		public async Task<CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectResult> CreditControl_OutstandingInvoicesWithUnallocatedDeposits_Select(CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectDTO dto)
+		public async Task<CreditControl_AllocateHoldingAccountCash_SelectResult> CreditControl_AllocateHoldingAccountCash_Select(CreditControl_AllocateHoldingAccountCash_SelectDTO dto)
 		{
-			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_OutstandingInvoicesWithUnallocatedDeposits_Select]", new
-			{
-				From = dto.From?.Date,
-				To = dto.To?.Date,
-				dto.TradeAccountCode,
-				dto.SearchTerm,
-				dto.CurrencyCode
-			}, null, 60, CommandType.StoredProcedure);
+			var SalesMarketIDs = new DataTable();
 
-			return new CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectResult()
+			SalesMarketIDs.Columns.Add("ID", typeof(byte));
+
+			if (dto.SalesMarketIDs != null)
 			{
-				Records = await reply.ReadAsync<CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectRecord>()
+				foreach (var sm in dto.SalesMarketIDs)
+				{
+					SalesMarketIDs.Rows.Add(sm);
+				}
+			}
+
+			var dat = new
+			{
+				SalesMarketIDs,
+				dto.SalesRepresentativeID,
+				dto.SalesAgentID,
+				dto.SalesAreaID,
+				dto.CountryID,
+				dto.TradeAccountCode,
+				dto.TradeAccountGroupID,
+				dto.TradeAccountTypeID,
+				dto.TradeAccountTypeGroupID,
+				dto.PaymentTermsID,
+				dto.PaymentTermsTypeID,
+				dto.CreditStopped,
+				dto.CreditControllerCode,
+				dto.Open,
+				dto.SearchTerm,
+				dto.SalesHistoryAnalysisPeriod,
+				dto.LanguageID,
+				dto.DebtFunderCode,
+				dto.CurrencyID,
+				dto.SelectedPOD,
+				dto.PageSize,
+				dto.Page,
+				dto.TradeAccountCompanyCode,
+				dto.InvoiceCompanyCode,
+				dto.SortOrder,
+				dto.TradeAccountID
+			};
+
+			var reply = await this.Database.Connection.QueryMultipleAsync("[portal].[CreditControl_AllocateHoldingAccountCash_Select]", dat, null, 60, CommandType.StoredProcedure);
+
+			return new CreditControl_AllocateHoldingAccountCash_SelectResult()
+			{
+				Pods = await reply.ReadAsync<CreditControl_AllocateHoldingAccountCash_Pod>(),
+				Records = await reply.ReadAsync<CreditControl_AllocateHoldingAccountCash_SelectRecord>()
 			};
 		}
 	}

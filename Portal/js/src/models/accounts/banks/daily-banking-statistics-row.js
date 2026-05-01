@@ -1,14 +1,12 @@
 ﻿const dailyBankingStatisticsRowViewModel = ({
     row,
     columns,
-    valueLookupFn,
-    validateNow
+    valueLookupFn
 } = {
-    row: {},
-    columns: [],
-    valueLookupFn: () => { },
-    validateNow: ko.observable(false)
-}) => {
+        row: {},
+        columns: [],
+        valueLookupFn: () => { }
+    }) => {
     let self = Object.assign(row, {
         columns,
         valueLookupFn
@@ -22,12 +20,29 @@
 
     self.busyMessage = ko.observable('Please Wait');
 
-    self.cells = ko.observableArray(self.columns.map((column, index) => dailyBankingStatisticsCellViewModel({
-        rec: self.valueLookupFn(self.RowID, column.ColumnID),
-        row,
-        column,
-        validateNow
-    })));
+    self.firstTwoIndices = [0, 1];
+
+    self.statementValue = ko.observable(self.valueLookupFn(self.RowID, 1).Value).extend({
+        currencyFormatted: {
+            digits: self.FormattingDigits ?? 2,
+            currency: {
+                FormattingCulture: self.FormattingCulture ?? 'en-GB',
+                Code: self.CurrencyCode ?? 'GBP',
+            }
+        }
+    })
+
+    self.originalStatementValue = ko.observable(self.statementValue());
+
+    self.cells = ko.observableArray(self.columns.map((column, index) => {
+        return dailyBankingStatisticsCellViewModel({
+            rec: self.valueLookupFn(self.RowID, column.ColumnID),
+            row,
+            column,
+            statementValue: self.firstTwoIndices.indexOf(index) > -1 ? self.statementValue : null,
+            originalStatementValue: self.firstTwoIndices.indexOf(index) > -1 ? self.originalStatementValue : null
+        })
+    }));
 
     //self.cells().forEach(c => {
     //    c.value.subscribe(nv => {

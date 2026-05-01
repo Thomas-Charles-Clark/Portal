@@ -166,13 +166,15 @@ html {
 
     #dashboard-tab-flex-container,
     #manage-ledger-tab-flex-container,
-    #statements-tab-flex-container {
+    #statements-tab-flex-container,
+    #allocate-holding-account-cash-tab-flex-container {
         display: flex;
         gap: $l-gutter;
 
         #dashboard-main,
         #manage-ledger-main,
-        #statements-main {
+        #statements-main,
+        #allocate-holding-account-cash-main {
             flex: 1 1 auto;
             max-width: calc(100% - 65px);
         }

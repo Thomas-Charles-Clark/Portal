@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SharedEFClasses.Models.CreditControl
 {
-	public class CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectRecord
+	public class CreditControl_AllocateHoldingAccountCash_SelectRecord
 	{
 		public string UniVerseAccount { get; set; }
 
@@ -21,15 +21,15 @@ namespace SharedEFClasses.Models.CreditControl
 
 		public string Age { get; set; }
 
-		public decimal OriginalValueInCurrency { get; set; }
+		public string OriginalValueInCurrency { get; set; }
 
-		public decimal OutstandingAmountInCurrency { get; set; }
+		public string OutstandingAmountInCurrency { get; set; }
 
-		public decimal UnallocatedCashAssignedToThisOrderTotalInCurrency { get; set; }
+		public string UnallocatedCashAssignedToThisOrderTotalInCurrency { get; set; }
 	
 		public string UnallocatedCashAssignedToThisOrderBreakdown { get; set; }
 
-		public decimal UnallocatedCashAssignedToThisAccountTotalInCurrency { get; set; }
+		public string UnallocatedCashAssignedToThisAccountTotalInCurrency { get; set; }
 
 		public string UnallocatedCashAssignedToThisAccountBreakdown { get; set; }
 

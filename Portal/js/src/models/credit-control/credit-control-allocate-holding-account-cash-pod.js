@@ -1,4 +1,4 @@
-﻿const creditControlOutstandingInvoicesWithUnallocatedDepositsPodViewModel = ({ } = {}) => {
+﻿const creditControlAllocateHoldingAccountCashPodViewModel = ({ } = {}) => {
     let self = {};
 
     //#region Properties

@@ -81,11 +81,19 @@ const creditControlViewModel = (() => {
         prefix: 'statements-'
     });
 
+    self.allocateHoldingAccountCashFilters = creditControlFiltersViewModel({
+        params: window.getPredefinedFilterParams(),
+        parent: self,
+        prefix: 'allocate-holding-account-cash-'
+    });
+
+    self.allocateHoldingAccountCashFilters.includeClosedTradeAccounts(true);
+
     self.closeBrothersFilters = creditControlFiltersViewModel({
         params: window.getPredefinedFilterParams(),
         parent: self,
         prefix: 'close-brothers-'
-    })
+    });
 
     self.allSortingOperations = ko.observableArray([]);
 
@@ -137,9 +145,9 @@ const creditControlViewModel = (() => {
 
     self.manageLedgerCollapse = bootstrap.Collapse.getOrCreateInstance(self.manageLedgerTab);
 
-    self.payOffInvoicesTab = document.querySelector('#paying-off-with-proforma-tab');
+    self.allocateHoldingAccountCashTab = document.querySelector('#allocate-holding-account-cash-tab');
 
-    self.payOffInvoicesCollapse = bootstrap.Collapse.getOrCreateInstance(self.payOffInvoicesTab);
+    self.allocateHoldingAccountCashCollapse = bootstrap.Collapse.getOrCreateInstance(self.allocateHoldingAccountCashTab);
 
     self.onlinePaymentHistoryTab = document.querySelector('#online-payment-history-tab');
 
@@ -444,9 +452,9 @@ const creditControlViewModel = (() => {
         filters: self.filters
     });
 
-    self.outstandingInvoices = creditControlOutstandingInvoicesWithUnallocatedDepositsViewModel({
+    self.allocateHoldingAccountCash = creditControlAllocateHoldingAccountCashViewModel({
         busy: self.busy,
-        filters: self.filters
+        filters: self.allocateHoldingAccountCashFilters
     });
 
     self.manageLedger = creditControlSalesLedgerViewModel({
@@ -1872,8 +1880,8 @@ const creditControlViewModel = (() => {
         self.memberBasketFetcher.heldOrdersRefresh();
     });
 
-    self.payOffInvoicesTab.addEventListener('click', (event) => {
-        self.outstandingInvoices.refresh();
+    self.allocateHoldingAccountCashTab.addEventListener('click', (event) => {
+        self.allocateHoldingAccountCash.refresh();
     });
 
     self.onlinePaymentHistoryTab.addEventListener('click', (event) => {

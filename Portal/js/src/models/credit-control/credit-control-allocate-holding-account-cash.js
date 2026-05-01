@@ -1,4 +1,4 @@
-﻿const creditControlOutstandingInvoicesWithUnallocatedDepositsViewModel = ({
+﻿const creditControlAllocateHoldingAccountCashViewModel = ({
     busy,
     filters
 } = {
@@ -23,7 +23,44 @@
 
     self.selectedPod = ko.observable();
 
-    self.dashboardPods = ko.observableArray([]);
+    self.pods = ko.observableArray([]);
+
+    self.podClick = (pod, event) => {
+        console.log(`allocateHoldingAccountCash dashboardPod click`, pod, event);
+        if (self.selectedPod() && self.selectedPod().PodHandle === pod.PodHandle) {
+            self.selectedPod(undefined);
+        } else {
+            self.selectedPod(pod);
+        }
+
+        self.refresh();
+    }
+
+    self.refresh = () => {
+        if (self.gridWidget()) {
+            console.log(`allocateHoldingAccountCash filters refresh called`);
+            self.gridWidget().dataSource.query({
+                page: self.gridWidget().dataSource.page(),
+                pageSize: self.gridWidget().dataSource.pageSize(),
+                group: self.gridWidget().dataSource.group(),
+                filter: self.gridWidget().dataSource.filter(),
+                aggregates: self.gridWidget().dataSource.aggregates()
+            })
+        }
+    }
+
+    self.clearSelectedPod = (withRefresh) => {
+        self.selectedPod(undefined);
+        if (typeof withRefresh === 'undefined' || withRefresh === true) {
+            self.refresh();
+        }
+    }
+
+    if (self.filters) { // this viewModel is used in two distinct contexts: from the Dashboard cell drill-down,
+        // where there is no call for a filter set,
+        // and in the Sales Ledger tab itself, which does have a set of filters. 
+        self.filters.clearSelectedPod = self.clearSelectedPod;
+    }
 
     //#endregion
 
@@ -62,8 +99,8 @@
         locked: true,
         headerTemplate: `Trade Account<br/>`
     }, {
-        field: "SalesLedgerKey",
-        title: "Sales Ledger Key",
+        field: "OrderID",
+        title: "Order ID",
         width: 160,
         attributes: {
             "class": "",
@@ -75,10 +112,26 @@
             extra: false
         },
         locked: true,
-        headerTemplate: `Sales Ledger Key<br/>`
+        headerTemplate: `Order ID<br/>`
+    }, {
+        field: "InvoiceID",
+        title: "Invoice No.",
+        width: 140,
+        attributes: {
+            "class": ""
+        },
+        headerAttributes: {
+            "class": ""
+        },
+        filterable: {
+            extra: false
+        },
+        template: (dataItem) => {
+            return dataItem.InvoiceID ?? '';
+        }
     }, {
         field: "Age",
-        title: "Age",
+        title: "Overdue By",
         width: 140,
         attributes: {
             "class": ""
@@ -90,7 +143,7 @@
             extra: false
         },
         locked: true,
-        headerTemplate: `Age<br/>`
+        headerTemplate: `Overdue By<br/>`
     }, {
         field: "OriginalValueInCurrency",
         title: "Original Value",
@@ -139,25 +192,7 @@
                 return '';
             }
         }
-    },
-        //{
-        //field: "UnallocatedCashAssignedToThisOrderBreakdown",
-        //title: "Unallocated Cash on Order - Breakdown",
-        //width: 260,
-        //attributes: {
-        //    "class": ""
-        //},
-        //headerAttributes: {
-        //    "class": ""
-        //},
-        //filterable: {
-        //    extra: false
-        //},
-        //template: (dataItem) => {
-        //    return dataItem.UnallocatedCashAssignedToThisOrderBreakdown ?? '';
-        //}
-        //},
-    {
+    }, {
         field: "UnallocatedCashAssignedToThisAccountTotalInCurrency",
         title: "Unallocated Cash Assigned to this Account",
         width: 160,
@@ -177,46 +212,12 @@
                 return '';
             }
         }
-    },
-        //{
-        //field: "UnallocatedCashAssignedToThisAccountBreakdown",
-        //title: "Unallocated Cash on Account - Breakdown",
-        //width: 260,
-        //attributes: {
-        //    "class": ""
-        //},
-        //headerAttributes: {
-        //    "class": ""
-        //},
-        //filterable: {
-        //    extra: false
-        //},
-        //template: (dataItem) => {
-        //    return dataItem.UnallocatedCashAssignedToThisAccountBreakdown ?? '';
-        //}
-        //},
-    {
-        field: "InvoiceID",
-        title: "Invoice No.",
-        width: 140,
-        attributes: {
-            "class": ""
-        },
-        headerAttributes: {
-            "class": ""
-        },
-        filterable: {
-            extra: false
-        },
-        template: (dataItem) => {
-            return dataItem.InvoiceID ?? '';
-        }
     }, {
         field: "InvoiceURI",
         title: " ",
         width: 64,
         attributes: {
-            "class": "relative",
+            "class": "relative text-center",
             "title": 'View Invoice'
         },
         headerAttributes: {
@@ -232,11 +233,41 @@
     }];
 
     self.gridDataSourceRead = (options) => {
+        //var webapi = new kendo.data.transports.webapi({ prefix: "" });
+
+        //var mapped = webapi.parameterMap(options.data);
+
+        //var additionalParameters = self.filters.allocateHoldingAccountCashWithUnallocatedDepositsFilters();
+
+        //var params = new URLSearchParams();
+
+        //if (self.selectedPod()) {
+        //    additionalParameters.selectedPod = self.selectedPod().PodHandle;
+        //    additionalParameters.parameterJson = self.selectedPod().ParameterJSON
+        //}
+
+        //var data = Object.assign(mapped, additionalParameters);
+
+        //for (var propertyName in data) {
+        //    if (Array.isArray(data[propertyName])) {
+        //        data[propertyName].forEach(v => {
+        //            params.append(propertyName, v);
+        //        });
+        //    } else {
+        //        params.append(propertyName, data[propertyName]);
+        //    }
+        //}
+
         var webapi = new kendo.data.transports.webapi({ prefix: "" });
 
         var mapped = webapi.parameterMap(options.data);
 
-        var additionalParameters = self.filters.outstandingInvoicesWithUnallocatedDepositsFilters();
+        var additionalParameters = self.filters.getData();
+
+        if (self.filters.allocateHoldingAccountCashSearchTerm() != null &&
+            self.filters.allocateHoldingAccountCashSearchTerm() != '') {
+            additionalParameters.SearchTerm = self.filters.allocateHoldingAccountCashSearchTerm();
+        }
 
         var params = new URLSearchParams();
 
@@ -257,11 +288,12 @@
             }
         }
 
-        console.log('outstandingInvoices gridDataSourceRead calling with', data);
+
+        console.log('allocateHoldingAccountCash gridDataSourceRead calling with', data);
 
         self.busy(true);
 
-        fetch('/api/creditcontrolapi/OutstandingInvoices?' + params, {
+        fetch('/api/creditcontrolapi/AllocateHoldingAccountCash?' + params, {
             method: 'GET',
             headers: window.fetchHeaders,
             cache: 'no-cache',
@@ -270,7 +302,7 @@
             .then(window.handleFetchResponse)
             .then(data => {
 
-                console.log('outstandingInvoices gridDataSourceRead returned', data);
+                console.log('allocateHoldingAccountCash gridDataSourceRead returned', data);
 
                 ko.ignoreDependencies(() => {
 
@@ -283,15 +315,15 @@
                     } else {
                         document.querySelector('#info-modal')?.removeEventListener('hide.bs.modal', self.refresh);
 
-                        //self.previouslySelectedDashboardPod = self.selectedPod()?.PodHandle;
+                        self.previouslySelectedPod = self.selectedPod()?.PodHandle;
 
-                        //self.dashboardPods(data.dashboardPods.map(dp => creditControlDashboardPodViewModel({
-                        //    rec: dp
-                        //})));
+                        self.pods(data.pods.map(dp => creditControlDashboardPodViewModel({
+                            rec: dp
+                        })));
 
-                        //if (self.previouslySelectedDashboardPod) {
-                        //    self.selectedPod(self.dashboardPods().find(dp => dp.PodHandle == self.previouslySelectedDashboardPod));
-                        //}
+                        if (self.previouslySelectedPod) {
+                            self.selectedPod(self.pods().find(dp => dp.PodHandle == self.previouslySelectedPod));
+                        }
 
                         options.success(data.gridData);
                     }
@@ -348,16 +380,16 @@
                         CurrencyCode: { type: 'string' },
                         SalesLedgerKey: { type: 'string' },
                         Age: { type: 'string' },
-                        OriginalValueInCurrency: { type: 'number' },
-                        OutstandingAmountInCurrency: { type: 'number' },
-                        UnallocatedCashAssignedToThisOrderTotalInCurrency: { type: 'number' },
+                        OriginalValueInCurrency: { type: 'string' },
+                        OutstandingAmountInCurrency: { type: 'string' },
+                        UnallocatedCashAssignedToThisOrderTotalInCurrency: { type: 'string' },
                         UnallocatedCashAssignedToThisOrderBreakdown: { type: 'string' },
-                        UnallocatedCashAssignedToThisAccountTotalInCurrency: { type: 'number' },
+                        UnallocatedCashAssignedToThisAccountTotalInCurrency: { type: 'string' },
                         UnallocatedCashAssignedToThisAccountBreakdown: { type: 'string' },
                         InvoiceID: { type: 'string' },
                         InvoiceDT: { type: 'date' },
                         InvoiceURI: { type: 'string' },
-                        OrderID: { type: 'number' }
+                        OrderID: { type: 'string' }
                     }
                 }
             }),
@@ -392,7 +424,7 @@
         },
         selectable: false,
         change: function (event) {
-            console.log('outstandingInvoices change', event, event.sender.select());
+            console.log('allocateHoldingAccountCash change', event, event.sender.select());
         },
         filterMenuInit: (e) => {
             if (e.field === "CreditStop") {
@@ -402,7 +434,7 @@
             }
         },
         dataBound: (e) => {
-            console.log('creditControlViewModel dataBound', e);
+            console.log('allocateHoldingAccountCash dataBound', e);
 
             // <Thanks, Google AI>
             let grid = e.sender;
@@ -442,7 +474,7 @@
                     rows.forEach(row => {
                         ko.cleanNode(row);
 
-                        pristine[index] = creditControlOutstandingInvoicesWithUnallocatedDepositsRecordViewModel({
+                        pristine[index] = creditControlAllocateHoldingAccountCashRecordViewModel({
                             rec: item
                         });
 
@@ -463,7 +495,22 @@
 
     //#region Computeds
 
+    self.groupedPods = ko.computed(() => {
 
+        let pods = self.pods();
+
+        let groups = Object.groupBy(pods, (pod) => pod.Group);
+
+        let groupedPods = Object.keys(groups).map(k => {
+            return {
+                groupName: k,
+                pods: groups[k]
+            };
+        });
+
+        return groupedPods;
+
+    }, self);
 
     //#endregion
 
@@ -471,9 +518,19 @@
 
     //#region Subscriptions
 
-    self.filters.outstandingInvoicesWithUnallocatedDepositsFilters.subscribe(nv => {
-        self.refresh();
-    });
+    if (self.filters) {
+        self.filters.displayModes.subscribe(nv => {
+            self.gridParams.widget().refresh();
+        }, self, 'arrayChange');
+
+        self.filters.getData.subscribe(nv => {
+            console.log(`allocateHoldingAccountCash filters getData subscribe hit`);
+            self.gridParams.widget().dataSource.query({
+                page: 1,
+                pageSize: (self.gridParams.widget() && self.gridParams.widget().dataSource.pageSize())
+            });
+        });
+    }
 
     //#endregion
 

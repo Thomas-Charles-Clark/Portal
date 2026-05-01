@@ -13,5 +13,7 @@ namespace SharedEFClasses.Models.Banking
 		public int ColumnID { get; set; }
 
 		public string Value { get; set; }
+	
+		public string BreakdownJSON { get; set; }
 	}
 }

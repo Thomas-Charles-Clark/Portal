@@ -733,19 +733,27 @@ html > body > nav.navbar-default .container #navbarSupportedContent ul.dropdown-
 }
 #credit-control-main #dashboard-tab-flex-container,
 #credit-control-main #manage-ledger-tab-flex-container,
-#credit-control-main #statements-tab-flex-container {
+#credit-control-main #statements-tab-flex-container,
+#credit-control-main #allocate-holding-account-cash-tab-flex-container {
   display: flex;
   gap: 1rem;
 }
 #credit-control-main #dashboard-tab-flex-container #dashboard-main,
 #credit-control-main #dashboard-tab-flex-container #manage-ledger-main,
 #credit-control-main #dashboard-tab-flex-container #statements-main,
+#credit-control-main #dashboard-tab-flex-container #allocate-holding-account-cash-main,
 #credit-control-main #manage-ledger-tab-flex-container #dashboard-main,
 #credit-control-main #manage-ledger-tab-flex-container #manage-ledger-main,
 #credit-control-main #manage-ledger-tab-flex-container #statements-main,
+#credit-control-main #manage-ledger-tab-flex-container #allocate-holding-account-cash-main,
 #credit-control-main #statements-tab-flex-container #dashboard-main,
 #credit-control-main #statements-tab-flex-container #manage-ledger-main,
-#credit-control-main #statements-tab-flex-container #statements-main {
+#credit-control-main #statements-tab-flex-container #statements-main,
+#credit-control-main #statements-tab-flex-container #allocate-holding-account-cash-main,
+#credit-control-main #allocate-holding-account-cash-tab-flex-container #dashboard-main,
+#credit-control-main #allocate-holding-account-cash-tab-flex-container #manage-ledger-main,
+#credit-control-main #allocate-holding-account-cash-tab-flex-container #statements-main,
+#credit-control-main #allocate-holding-account-cash-tab-flex-container #allocate-holding-account-cash-main {
   flex: 1 1 auto;
   max-width: calc(100% - 65px);
 }

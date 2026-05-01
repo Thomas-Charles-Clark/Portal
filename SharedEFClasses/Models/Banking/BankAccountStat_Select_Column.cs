@@ -10,6 +10,8 @@ namespace SharedEFClasses.Models.Banking
 	{
 		public int ColumnID { get; set; }
 
+		public string GroupLabel { get; set; }
+
 		public string Label { get; set; }
 
 		public string Tooltip { get; set; }
@@ -20,6 +22,10 @@ namespace SharedEFClasses.Models.Banking
 
 		public string WidthPixels { get; set; }
 
-		public string GroupLabel { get; set; }
+		public string ExtraDataJSON { get; set; }
+
+		public bool BreakdownRequired { get; set; }
+
+		public bool ReadOnly { get; set; }
 	}
 }

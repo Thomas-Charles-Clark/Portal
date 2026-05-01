@@ -689,6 +689,7 @@
     <Compile Include="Controllers\ODataControllers\BankingCurrenciesController.cs" />
     <Compile Include="Controllers\ODataControllers\BankingAccountsController.cs" />
     <Compile Include="Controllers\ODataControllers\DGPaymentDetailsController.cs" />
+    <Compile Include="Controllers\ODataControllers\InvoicesController.cs" />
     <Compile Include="Controllers\ODataControllers\PaymentPeriodsController.cs" />
     <Compile Include="Controllers\ODataControllers\PaymentBudgetsController.cs" />
     <Compile Include="Controllers\ODataControllers\PurchaseOrderHeadsController.cs" />
@@ -1854,6 +1855,8 @@
     <Content Include="js\src\lib\tiff\tiff.js" />
     <Content Include="js\src\lib\tiny-slider\tiny-slider.js" />
     <Content Include="js\src\models\accounts\banks\bank-accounts.js" />
+    <Content Include="js\src\models\accounts\banks\daily-banking-statistics-breakdown-item.js" />
+    <Content Include="js\src\models\accounts\banks\daily-banking-statistics-breakdown.js" />
     <Content Include="js\src\models\accounts\banks\daily-banking-statistics-cell.js" />
     <Content Include="js\src\models\accounts\banks\daily-banking-statistics-row.js" />
     <Content Include="js\src\models\accounts\banks\daily-banking-statistics.js" />
@@ -1861,9 +1864,9 @@
     <Content Include="js\src\models\credit-control\credit-control-main-grid-column.js" />
     <Content Include="js\src\models\credit-control\credit-control-close-brothers.js" />
     <Content Include="js\src\models\credit-control\credit-control-close-brothers-record.js" />
-    <Content Include="js\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits-pod.js" />
-    <Content Include="js\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits-record.js" />
-    <Content Include="js\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits.js" />
+    <Content Include="js\src\models\credit-control\credit-control-allocate-holding-account-cash-pod.js" />
+    <Content Include="js\src\models\credit-control\credit-control-allocate-holding-account-cash-record.js" />
+    <Content Include="js\src\models\credit-control\credit-control-allocate-holding-account-cash.js" />
     <Content Include="js\src\models\credit-control\credit-control-payments-history-pod.js" />
     <Content Include="js\src\models\credit-control\credit-control-payments-history-record.js" />
     <Content Include="js\src\models\credit-control\credit-control-payments-history.js" />
@@ -3338,7 +3341,7 @@
     <Content Include="css\dist\models\credit-control\credit-control-virtual-scroller.min.css.map" />
     <Content Include="css\src\models\common\common-2026.scss" />
     <Content Include="css\src\models\credit-control\credit-control-payments.scss" />
-    <Content Include="css\src\models\credit-control\credit-control-outstanding-invoices-with-unallocated-deposits.scss" />
+    <Content Include="css\src\models\credit-control\credit-control-allocate-holding-account-cash.scss" />
     <Content Include="css\dist\fonts\src\trixie-web-pro-heavy.ttf" />
     <Content Include="css\src\fonts\src\trixie-web-pro-heavy.ttf" />
     <Content Include="css\src\models\credit-control\credit-control-sales-ledger.scss" />

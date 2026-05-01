@@ -177,80 +177,30 @@ namespace Portal.Areas.CreditControl.Controllers
 
 
 		[HttpGet]
-		public async Task<IHttpActionResult> OutstandingInvoices(
+		public async Task<IHttpActionResult> AllocateHoldingAccountCash(
 			[ModelBinder(typeof(WebApiDataSourceRequestModelBinder))] DataSourceRequest request,
-			[FromUri] CreditControl_OutstandingInvoicesWithUnallocatedDeposits_SelectDTO dto)
+			[FromUri] CreditControl_AllocateHoldingAccountCash_SelectDTO dto)
 		{
 			try
 			{
-				DateTime? toDt = DateTime.Now;
-
-				DateTime? fromDt = null;
-
-				switch (dto.DateRangeID)
+				if (request.Sorts.Any())
 				{
-					case "12M": /* Last 12 Months */
-						fromDt = DateTime.Now.AddYears(-1);
-						break;
-					case "6M": /* Last 6 Months */
-						fromDt = DateTime.Now.AddMonths(-6);
-						break;
-					case "3M": /* This Month */
-						fromDt = DateTime.Now.AddMonths(-3);
-						break;
-					case "1M": /* This Month */
-						fromDt = DateTime.Now.AddDays(-DateTime.Now.Day).AddDays(1);
-						break;
-					case "30": /* Last 30 Days */
-						fromDt = DateTime.Now.AddDays(-30);
-						break;
-					case "6":
-						toDt = DateTime.Now.AddDays(-5);
-						fromDt = DateTime.Now.AddDays(-6);
-						break;
-					case "5":
-						toDt = DateTime.Now.AddDays(-4);
-						fromDt = DateTime.Now.AddDays(-5);
-						break;
-					case "4":
-						toDt = DateTime.Now.AddDays(-3);
-						fromDt = DateTime.Now.AddDays(-4);
-						break;
-					case "3":
-						toDt = DateTime.Now.AddDays(-2);
-						fromDt = DateTime.Now.AddDays(-3);
-						break;
-					case "2":
-						toDt = DateTime.Now.AddDays(-1);
-						fromDt = DateTime.Now.AddDays(-2);
-						break;
-					case "1":
-						toDt = DateTime.Now.AddDays(0);
-						fromDt = DateTime.Now.AddDays(-1);
-						break;
-					case "0":
-						toDt = DateTime.Now.AddDays(1);
-						fromDt = DateTime.Now.AddDays(0);
-						break;
-					case "-1": /* "Custom" */
-						toDt = dto.To;
-						fromDt = dto.From;
-						break;
-					case "-2": /* "All Time" noop */
-						break;
+					var sort = request.Sorts.First();
+
+					dto.SortOrder = $"{sort.Member}_{(sort.SortDirection == ListSortDirection.Ascending ? "Asc" : "Desc")}";
 				}
 
-				dto.From = fromDt?.Date;
-				dto.To = toDt?.Date;
+				var model = await PortalDb.CreditControl_AllocateHoldingAccountCash_Select(dto);
 
-				var model = await PortalDb.CreditControl_OutstandingInvoicesWithUnallocatedDeposits_Select(dto);
-
-				request.Page = 1;  // super weird but 100% necessary because we're doing the paging inside the procedure.
+				request.Page = 1; // super weird but 100% necessary because we're doing the paging inside the procedure.
 
 				var gridData = model.Records.ToDataSourceResult(request);
 
+				gridData.Total = model.Records.Count();
+
 				return Ok(new
 				{
+					pods = model.Pods,
 					gridData = gridData
 				});
 			}

@@ -568,8 +568,8 @@
 				</button>
 			</li>
 			<li class="nav-item" role="presentation">
-				<button class="nav-link" id="paying-off-with-proforma-tab" data-bs-toggle="tab" data-bs-target="#paying-off-with-proforma-tab-pane" type="button" role="tab" aria-controls="paying-off-with-proforma-tab-pane" aria-selected="false">
-					Pay off Invoices with Proforma Deposits
+				<button class="nav-link" id="allocate-holding-account-cash-tab" data-bs-toggle="tab" data-bs-target="#allocate-holding-account-cash-tab-pane" type="button" role="tab" aria-controls="allocate-holding-account-cash-tab-pane" aria-selected="false">
+					Allocate Holding Account Cash
 				</button>
 			</li>
 			<li class="nav-item" role="presentation">
@@ -792,29 +792,36 @@
 					</div>
 				</div>
 			</div>
-			<div id="paying-off-with-proforma-tab-pane" class="tab-pane fade">
-				<div class="prefilters mb-3" data-bind="with: filters">
-					<div class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: outstandingInvoicesTradeAccountParams }"></div>
-					<div id="outstanding-invoices-date-prefilter-container" class="prefilter">
-						<div class="date-prefilters">
-							<div id="outstanding-invoices-date-type-prefilter" class="date-prefilter prefilter relative">
-								<div class="date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: outstandingInvoicesDateRangeParams }"></div>
-							</div>
-							<div id="outstanding-invoices-from-date" class="prefilter" style="display: none" data-bind="visible: outstandingInvoicesDateRangeId() == -1">
-								<div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: outstandingInvoicesFromDateParams }"></div>
-							</div>
-							<div id="outstanding-invoices-to-date" class="prefilter" style="display: none" data-bind="visible: outstandingInvoicesDateRangeId() == -1">
-								<div class="to-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: outstandingInvoicesToDateParams }"></div>
+			<div id="allocate-holding-account-cash-tab-pane" class="tab-pane fade">
+				<div id="allocate-holding-account-cash-tab-flex-container" data-bind="with: allocateHoldingAccountCash">
+					<!-- ko template: { name: 'sidebar-template', data: filters } --><!-- /ko -->
+					<div id="allocate-holding-account-cash-main">
+						<div class="prefilters mb-3" data-bind="with: filters">
+							<div class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: allocateHoldingAccountCashSearchTermParams }"></div>
+						</div>
+						<div class="grouped-pods-container accordion" data-bind="foreach: groupedPods">
+							<div class="pod-group accordion-item">
+								<h4 class="pod-group-title accordion-header">
+									<button type="button" class="accordion-button" data-bs-toggle="collapse" data-bind="html: groupName, attr: { 'data-bs-target': `#allocate-holding-account-cash-pod-group-${$index()}` }"></button>
+								</h4>
+								<div class="accordion-collapse collapse show" data-bind="attr: { id: `allocate-holding-account-cash-pod-group-${$index()}` }">
+									<div class="pods">
+										<!-- ko foreach: pods -->
+										<div class="pod" data-bind="css: { 'selected-pod': $parentContext.$parent.selectedPod()?.PodHandle == PodHandle }">
+											<div data-bind="class: Classes">
+												<h4 data-bind="html: Heading"></h4>
+												<div data-bind="html: Stats"></div>
+												<a href="#" class="stretched-link" data-bind="click: $parentContext.$parent.podClick"></a>
+											</div>
+										</div>
+										<!-- /ko -->
+									</div>
+								</div>
 							</div>
 						</div>
-						<span class="validation-message text-danger" data-bind="validationMessage: outstandingInvoicesFromDate"></span>
-						<span class="validation-message text-danger" data-bind="validationMessage: outstandingInvoicesToDate"></span>
-						<span class="validation-message text-danger" data-bind="validationMessage: outstandingInvoicesFromPrecedesTo"></span>
+						<div data-bind="kendoGrid: gridParams"></div>
 					</div>
-					<div id="outstanding-invoices-banking-currency-prefilter" class="prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: outstandingInvoicesCurrencyParams }"></div>
-					<div class="prefilter" data-bind="component: { name: 'mdc-text-field-component', params: outstandingInvoicesSearchTermParams }"></div>
 				</div>
-				<div data-bind="kendoGrid: outstandingInvoices.gridParams"></div>
 			</div>
 			<div id="online-payment-history-pane" class="tab-pane fade">
 				<div class="prefilters mb-3" data-bind="with: filters">

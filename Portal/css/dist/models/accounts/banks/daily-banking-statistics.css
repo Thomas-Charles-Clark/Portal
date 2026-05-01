@@ -780,4 +780,98 @@
   text-shadow: 0 1px 0 #fff;
   opacity: 0.2;
 }
+
+#breakdown-modal #breakdown-modal-dialog .blocker {
+  border-radius: 0.375rem;
+}
+#breakdown-modal #breakdown-modal-dialog .modal-header {
+  display: flex;
+  justify-content: space-between;
+}
+#breakdown-modal #breakdown-modal-dialog .modal-header h4 {
+  margin-bottom: 0;
+  font-weight: bold;
+}
+#breakdown-modal #breakdown-modal-dialog .modal-header button {
+  margin-left: 0;
+}
+#breakdown-modal #breakdown-modal-dialog .modal-footer h4 {
+  font-weight: bold;
+}
+#breakdown-modal #breakdown-items {
+  margin-bottom: 1rem;
+}
+#breakdown-modal #breakdown-items .list-group-item {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr) 34px;
+  border: 0;
+  padding: 0;
+}
+#breakdown-modal #breakdown-items .list-group-item + .list-group-item {
+  margin-top: 0.75rem;
+}
+#breakdown-modal #breakdown-items .list-group-item > div {
+  min-width: 0;
+  max-width: 1fr;
+}
+#breakdown-modal #breakdown-items .list-group-item .mdc-validating-field {
+  width: 100%;
+}
+#breakdown-modal #breakdown-items .list-group-item .mdc-validating-field .k-picker-solid {
+  border: none;
+}
+#breakdown-modal #breakdown-items .list-group-item .mdc-validating-field .mdc-text-field {
+  width: 100%;
+}
+#breakdown-modal #breakdown-items .list-group-item .mdc-validating-field .mdc-notched-outline .mdc-notched-outline__leading {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+#breakdown-modal #breakdown-items .list-group-item .mdc-validating-field .mdc-notched-outline .mdc-notched-outline__trailing {
+  border-right: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+#breakdown-modal #breakdown-items .list-group-item > div:first-of-type .mdc-notched-outline .mdc-notched-outline__leading {
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+}
+#breakdown-modal #breakdown-items .list-group-item > div:first-of-type .mdc-text-field__input {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+#breakdown-modal #breakdown-items .list-group-item > div:last-of-type .mdc-notched-outline .mdc-notched-outline__trailing {
+  border-right: 1px solid #adb5bd;
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+}
+#breakdown-modal #breakdown-items .list-group-item .bi-x {
+  padding: 0.75rem;
+}
+#breakdown-modal #breakdown-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+#breakdown-modal #remaining-to-allocate {
+  display: block;
+  font-weight: bold;
+  text-align: right;
+}
+
+.breakdown-btn.disabled-btn {
+  /*background-color: $gray-200;
+  background-image: repeating-linear-gradient(-45deg, $secondary, tint-color($secondary, 20%), 1rem, transparent 1rem, transparent 2rem);
+
+  background-size: 200% 200%;*/
+  background-color: #ced4da;
+  border-color: #adb5bd;
+  opacity: 0.7;
+  color: #6c757d;
+  cursor: pointer;
+  transition: background-color 300ms ease-in-out, border-color 150ms ease-in-out, color 150ms ease-in-out;
+}
+.breakdown-btn:hover {
+  cursor: pointer;
+}
 /*# sourceMappingURL=daily-banking-statistics.css.map */

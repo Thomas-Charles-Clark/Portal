@@ -76,15 +76,72 @@
 	<h4 class="mt-3" data-bind="text: busyMessage"></h4>
 </div>
 
+<div class="modal fade breakdown-modal" id="breakdown-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+	<div class="modal-dialog modal-lg modal-xl modal-xxl modal-xxxl" id="breakdown-modal-dialog">
+		<div class="modal-content" data-bind="with: breaker">
+			<div class="blocker" data-bind="flexFadeVisible: busy">
+				<div class="loading-spinner"></div>
+				<h4>
+					Please Wait...
+				</h4>
+			</div>
+			<div class="modal-header grey-blue" data-bind="with: breakingDown">
+				<h4 class="modal-title">
+					<span data-bind="html: row.Label"></span>
+					<span class="fs-6" data-bind="text: $parentContext.$parent.dateParams.displayObservable"></span>
+				</h4>
+				<h4>
+					<span class="d-block text-end" data-bind="text: valueDisplay"></span>
+					<span class="d-block text-end" data-bind="text: $parent.remainingToAllocateDisplay"></span>
+				</h4>
+				<button type="button" class="btn-close btn-close-white" aria-label="Close" data-bs-dismiss="modal"></button>
+			</div>
+			<div class="modal-body">
+				<ul id="breakdown-items" class="list-group">
+					<!-- ko foreach: breakdownEntries -->
+					<li class="list-group-item">
+						<div data-bind="component: { name: 'mdc-text-field-numeric-component', params: valueParams }"></div>
+						<div id="universe-account-dropdown" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: uniVerseAccountParams }"></div>
+						<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: labelParams }"></div>
+						<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: tradeAccountParams }"></div>
+						<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: invoiceParams }"></div>
+						<div data-bind="component: { name: 'mdc-kendo-dropdown-component', params: orderParams }"></div>
+						<button type="button" class="btn btn-outline">
+							<i class="bi bi-x-lg" data-bind="click: $parent.removeBreakdownEntry"></i>
+						</button>
+					</li>
+					<!-- /ko -->
+					<!-- ko if: breakdownEntries().length == 0 -->
+					<li class="list-group-item">
+						No breakdown entries exist.
+					</li>
+					<!-- /ko -->
+				</ul>
+			</div>
+			<div class="modal-footer">
+				<div id="breakdown-controls">
+					<button id="add-breakdown-item-btn" type="button" class="btn btn-secondary" data-bind="click: addBreakdownEntry">
+						Add Entry
+					</button>
+					<button id="add-breakdown-item-btn" type="button" class="btn btn-secondary" data-bind="click: saveBreakdown">
+						Save Breakdown
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
 <div id="daily-banking-statistics-container" class="d-flex align-items-start w-100" data-bind="flexFadeVisible: true">
 	<main id="daily-banking-statistics-main">
 		@*<ul class="nav nav-tabs" id="daily-banking-statistics-tabs" role="tablist">
-			<li class="nav-item" role="presentation">
-				<button class="nav-link fs-5 active" id="daily-statistics-tab" data-bs-toggle="tab" data-bs-target="#daily-statistics-tab-pane" type="button" role="tab" aria-controls="dashboard-tab-pane" aria-selected="true">
-					Daily Statistics
-				</button>
-			</li>
-		</ul>*@
+				<li class="nav-item" role="presentation">
+					<button class="nav-link fs-5 active" id="daily-statistics-tab" data-bs-toggle="tab" data-bs-target="#daily-statistics-tab-pane" type="button" role="tab" aria-controls="dashboard-tab-pane" aria-selected="true">
+						Daily Statistics
+					</button>
+				</li>
+			</ul>*@
 		<div class="tab-content" id="daily-statistics-tab-content">
 			<div class="tab-pane fade show active" id="daily-statistics-tab-pane" role="tabpanel" aria-labelledby="daily-statistics-tab">
 				<div class="prefilters">

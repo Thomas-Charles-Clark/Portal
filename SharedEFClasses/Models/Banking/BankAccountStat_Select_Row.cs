@@ -10,13 +10,13 @@ namespace SharedEFClasses.Models.Banking
 	{
 		public int RowID { get; set; }
 
+		public string GroupLabel { get; set; }
+
 		public string Label { get; set; }
 
 		public string Tooltip { get; set; }
 
 		public int SortOrder { get; set; }
-
-		public string GroupLabel { get; set; }
 
 		public string CurrencyCode { get; set; }
 

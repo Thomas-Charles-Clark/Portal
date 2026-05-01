@@ -1,4 +1,15 @@
-﻿const dailyBankingStatisticsViewModel = ({ } = {}) => {
+﻿const UniVerseAccounts = [{
+    name: 'Mertex',
+    value: 'MERTEX'
+}, {
+    name: 'DG Europe',
+    value: 'DG_EUROPE'
+}, {
+    name: 'Mertex Inc.',
+    value: 'MERTEX_INC'
+}]
+
+const dailyBankingStatisticsViewModel = ({ } = {}) => {
     let self = {};
 
     //#region Properties
@@ -28,6 +39,10 @@
     self.gridColumns = ko.observableArray([]);
 
     self.rowLabelColumnWidthPixels = ko.observable('200px');
+
+    self.breaker = dailyBankingStatisticsBreakdownViewModel({
+        gridColumns: self.gridColumns
+    });
 
     //#endregion
 
@@ -330,7 +345,7 @@
         columns: self.gridColumns(),
         editable: true,
         batch: true,
-        toolbar: ["save", "cancel"],
+        //toolbar: ["save", "cancel"],
         data: self.gridDataSource,
         edit: function (e) {
             if (e.model.isNew()) {
@@ -559,6 +574,13 @@
                 })
         } else {
             window.showInfo('Information', 'You have no pending changes to save.');
+        }
+    }
+
+    self.showBreakdownModal = (cell) => {
+        console.log('showBreakdownModal', cell);
+        if (cell.breakdownEnabled()) {
+            self.breaker.loadAndShow(cell);
         }
     }
 

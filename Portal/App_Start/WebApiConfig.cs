@@ -95,7 +95,8 @@ namespace Portal
             odataBuilder.EntitySet<SalesMarket>("SalesMarkets");
             odataBuilder.EntitySet<Mertex_ProductType>("Mertex_ProductTypes");
             odataBuilder.EntitySet<Mertex_Operator>("Mertex_Operators");
-            odataBuilder.EntitySet<Product>("Products");
+            odataBuilder.EntitySet<InvoiceHead>("Invoices");
+			odataBuilder.EntitySet<Product>("Products");
             odataBuilder.EntitySet<ProductPage>("ProductPages");
             odataBuilder.EntitySet<Branch>("Branches");
             odataBuilder.EntitySet<BranchGroup>("BranchGroups");
@@ -185,6 +186,7 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesMarket)).AddProperty(typeof(SalesMarket).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesRepresentative)).AddProperty(typeof(SalesRepresentative).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SalesAgent)).AddProperty(typeof(SalesAgent).GetProperty("Label"));
+            odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(InvoiceHead)).AddProperty(typeof(InvoiceHead).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccount)).AddProperty(typeof(TradeAccount).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccountLive)).AddProperty(typeof(TradeAccountLive).GetProperty("ShortLabel"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(TradeAccount)).AddProperty(typeof(TradeAccount).GetProperty("AdvertiserSinceDT"));
@@ -204,6 +206,13 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(BankingAccount)).AddProperty(typeof(SharedEFClasses.Models.Banking.BankingAccount).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SharedEFClasses.Models.Banking.BankingCurrency)).AddProperty(typeof(SharedEFClasses.Models.Banking.BankingCurrency).GetProperty("Label"));
 
+
+			var invoiceValueMapperFunction = odataBuilder.EntityType<InvoiceHead>()
+				.Collection
+				.Function("InvoiceValueMapper")
+				.ReturnsCollectionFromEntitySet<InvoiceHead>("Invoices");
+
+			invoiceValueMapperFunction.Parameter<string>("invoiceId");
 
 			var creditControllerValueMapperFunction = odataBuilder.EntityType<CreditControllerLive>()
 				.Collection

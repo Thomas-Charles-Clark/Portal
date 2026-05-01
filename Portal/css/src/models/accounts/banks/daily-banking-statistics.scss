@@ -125,3 +125,132 @@
 		}
 	}
 }
+
+#breakdown-modal {
+
+	#breakdown-modal-dialog {
+		.blocker {
+			border-radius: $border-radius;
+		}
+
+		.modal-header {
+			display: flex;
+			justify-content: space-between;
+
+			h4 {
+				margin-bottom: 0;
+				font-weight: bold;
+			}
+
+			button {
+				margin-left: 0;
+			}
+		}
+
+		.modal-footer {
+			h4 {
+				font-weight: bold;
+			}
+		}
+	}
+
+	#breakdown-items {
+		margin-bottom: $l-gutter;
+
+		.list-group-item {
+			display: grid;
+			grid-template-columns: repeat(6, 1fr) 34px;
+			border: 0;
+			padding: 0;
+
+			& + .list-group-item {
+				margin-top: $m-gutter;
+			}
+
+			> div {
+				min-width: 0;
+				max-width: 1fr;
+			}
+
+			.mdc-validating-field {
+				width: 100%;
+
+				.k-picker-solid {
+					border: none;
+				}
+
+				.mdc-text-field {
+					width: 100%;
+				}
+
+				.mdc-notched-outline {
+					.mdc-notched-outline__leading {
+						border-top-left-radius: 0;
+						border-bottom-left-radius: 0;
+					}
+
+					.mdc-notched-outline__trailing {
+						border-right: 0;
+						border-top-right-radius: 0;
+						border-bottom-right-radius: 0;
+					}
+				}
+			}
+
+			> div:first-of-type {
+				.mdc-notched-outline {
+					.mdc-notched-outline__leading {
+						border-top-left-radius: $border-radius;
+						border-bottom-left-radius: $border-radius;
+					}
+				}
+
+				.mdc-text-field__input {
+					border-top-right-radius: 0;
+					border-bottom-right-radius: 0;
+				}
+			}
+
+			> div:last-of-type {
+				.mdc-notched-outline {
+					.mdc-notched-outline__trailing {
+						border-right: 1px solid $gray-500;
+						border-top-right-radius: $border-radius;
+						border-bottom-right-radius: $border-radius;
+					}
+				}
+			}
+
+			.bi-x {
+				padding: $m-gutter;
+			}
+		}
+	}
+
+	#breakdown-controls {
+		display: flex;
+		justify-content: flex-end;
+		gap: $l-gutter;
+
+		#add-breakdown-item-btn {
+		}
+	}
+}
+
+.breakdown-btn {
+	&.disabled-btn {
+		/*background-color: $gray-200;
+		background-image: repeating-linear-gradient(-45deg, $secondary, tint-color($secondary, 20%), 1rem, transparent 1rem, transparent 2rem);
+		
+		background-size: 200% 200%;*/
+		background-color: $gray-400;
+		border-color: $gray-500;
+		opacity: 0.7;
+		color: $gray-600;
+		cursor: pointer;
+		transition: background-color 300ms ease-in-out, border-color 150ms ease-in-out, color 150ms ease-in-out;
+	}
+	&:hover {
+		cursor: pointer;
+	}
+}

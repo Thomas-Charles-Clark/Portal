@@ -36,6 +36,7 @@ using SharedEFClasses.Models.TradeAccounts;
 using SharedEFClasses.Models.TradeOrders;
 using SharedEFClasses.ReturnModels;
 
+using System.Collections;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
@@ -457,6 +458,7 @@ namespace SharedEFClasses.Models
         public virtual DbSet<GeneralLedgerAccountType> GeneralLedgerAccountTypes { get; set; }
 
         public virtual DbSet<SupplierPaymentTerms> SupplierPaymentTerms { get; set; }
+        
 
         #endregion
 

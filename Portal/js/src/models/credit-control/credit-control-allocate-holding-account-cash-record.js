@@ -1,4 +1,4 @@
-﻿const creditControlOutstandingInvoicesWithUnallocatedDepositsRecordViewModel = ({
+﻿const creditControlAllocateHoldingAccountCashRecordViewModel = ({
     rec
 } = {
     rec: {}
