@@ -430,7 +430,18 @@ span.pattern-book-history {
 
 .flex-container {
     .bespoke-memo {
-        width: 494px;
+        display: flex;
+        gap: $l-gutter;
+        > div {
+            &:first-of-type {
+                flex: 0 0 494px
+            }
+            &:last-of-type {
+                label {
+                    font-size: $font-size-base;
+                }
+            }
+        }
     }
 
     .image-container {

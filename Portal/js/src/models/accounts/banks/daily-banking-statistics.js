@@ -170,7 +170,7 @@ const dailyBankingStatisticsViewModel = ({ } = {}) => {
                             width: self.rowLabelColumnWidthPixels() ?? '200px',
                             editable: () => false,
                             template: (dataItem) => {
-                                return `<span>${dataItem.Label}</span><a class="stretched-link" href="javascript:;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${dataItem.Tooltip}"></a>`;
+                                return `<span>${dataItem.RowLabel}</span><a class="stretched-link" href="javascript:;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${dataItem.Tooltip}"></a>`;
                             },
                             locked: true,
                             groupHeaderTemplate: (dataItem) => `${dataItem.value}`,
@@ -268,7 +268,7 @@ const dailyBankingStatisticsViewModel = ({ } = {}) => {
                 id: 'RowID',
                 fields: {
                     RowID: { type: 'number' },
-                    Label: { type: 'string' },
+                    RowLabel: { type: 'string' },
                     Tooltip: { type: 'string' },
                     SortOrder: { type: 'number' },
                     GroupLabel: { type: 'string' }

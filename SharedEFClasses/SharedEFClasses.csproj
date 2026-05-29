@@ -638,6 +638,9 @@
     <Compile Include="Models\Mertex\PurchaseOrderStatus.cs" />
     <Compile Include="Models\Mertex\PurchasePrice.cs" />
     <Compile Include="Models\Mertex\QualityLive.cs" />
+    <Compile Include="Models\Mertex\SalesLedgerTransaction-Mertex_Inc.cs" />
+    <Compile Include="Models\Mertex\SalesLedgerTransaction-DG_Europe.cs" />
+    <Compile Include="Models\Mertex\SalesLedgerTransaction-Mertex.cs" />
     <Compile Include="Models\Mertex\Sundry.cs" />
     <Compile Include="Models\Mertex\SupplierLive.cs" />
     <Compile Include="Models\Mertex\SupplierPaymentTerms.cs" />

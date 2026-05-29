@@ -101,7 +101,7 @@
     self.loadAndShow = (cell) => {
         self.breakingDown(cell);
         self.breakdownEntries(JSON.parse(cell.Breakdown ?? '[]').map(p => dailyBankingStatisticsBreakdownItemViewModel({
-            rec: p,
+            rec: Object.assign(cell.row, p),
             validateNow: self.validateNow,
             labels: self.availableLabels
         })));
@@ -147,19 +147,24 @@
                 let data = {
                     date: viewModel.date().toUTCString(),
                     records: [{
-                        rowId: cell.RowID,
-                        columnId: cell.ColumnID,
-                        value: cell.value(),
-                        breakdownJson: JSON.stringify(self.breakdownEntries().map(b => {
-                            return {
-                                UniVerseAccount: b.uniVerseAccountId(),
-                                Label: b.labelId(),
-                                Value: b.value(),
-                                TradeAccountCode: b.tradeAccountCode() ? b.tradeAccountCode() : null,
-                                OrderID: b.orderId() ? b.orderId() : null,
-                                InvoiceID: b.invoiceId() ? b.invoiceId() : null
-                            }
-                        }))
+                            rowId: cell.RowID,
+                            columnId: 1,
+                            value: cell.value(),
+                            breakdownJson: null
+                        }, {
+                            rowId: cell.RowID,
+                            columnId: cell.ColumnID,
+                            value: null,
+                            breakdownJson: JSON.stringify(self.breakdownEntries().map(b => {
+                                return {
+                                    UniVerseAccount: b.uniVerseAccountId(),
+                                    Label: b.labelId(),
+                                    Value: b.value(),
+                                    TradeAccountCode: b.tradeAccountCode() ? b.tradeAccountCode() : null,
+                                    OrderID: b.orderId() ? b.orderId() : null,
+                                    InvoiceID: b.invoiceId() ? b.invoiceId() : null
+                                }
+                            }))
                     }]
                 }
 

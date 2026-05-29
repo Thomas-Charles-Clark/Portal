@@ -3,14 +3,16 @@
     validateNow,
     labels
 } = {
-        rec: {},
-        validateNow: ko.observable(false),
-        labels: ko.observableArray([])
+    rec: {},
+    validateNow: ko.observable(false),
+    labels: ko.observableArray([])
 }) => {
     let self = Object.assign({
         validateNow,
         labels,
     }, rec);
+
+    console.log('dailyBankingStatisticsBreakdownItemViewModel instantiated', self);
 
     //#region Properties
 
@@ -24,7 +26,7 @@
 
     self.uniVerseAccount = ko.observable();
 
-    self.labelId = ko.observable(self.LabelID ?? '').extend({
+    self.labelId = ko.observable(self.Label ?? '').extend({
         required: {
             params: true,
             onlyIf: () => {
@@ -36,34 +38,36 @@
 
     self.label = ko.observable();
 
-    self.tradeAccountCode = ko.observable(self.TradeAccountCode).extend({
+    self.tradeAccountCode = ko.observable(self.TradeAccountCode ?? '').extend({
         required: {
             params: true,
             onlyIf: () => {
                 return self.labelId() == 'Customer Account' && self.validateNow();
             },
-            message: 'You must specify a Label'
+            message: 'You must specify a Trade Account'
         }
     });
 
     self.tradeAccount = ko.observable();
 
-    self.orderId = ko.observable(self.OrderID);
+    self.orderId = ko.observable(self.OrderID ?? '');
 
     self.order = ko.observable();
 
-    self.invoiceId = ko.observable(self.InvoiceID);
+    self.invoiceId = ko.observable(self.InvoiceID ?? '');
 
     self.invoice = ko.observable();
 
     self.availableLabels = ko.observableArray([]);
 
     self.uniVerseAccount.subscribe(nv => {
-        self.labelId('');
         if (nv) {
             self.availableLabels(self.labels().filter(x => x.group == nv.name));
         }
     });
+
+    self.availableLabels.subscribe(nv => {
+    })
 
     //    ko.computed(() => {
     //    let uniVerseAccount = self.uniVerseAccount();
@@ -124,6 +128,7 @@
     //#region Components
 
     self.uniVerseAccountParams = kendoMDCDropDownList({
+        autoBind: true,
         label: 'UniVerse Account',
         data: UniVerseAccounts,
         textField: 'name',
@@ -138,6 +143,30 @@
         disable: ko.observable(false),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
+        dataBound: (e) => {
+            //window.setTimeout(() => {
+
+            //    if (self.Label) {
+            //        console.log('uniVerseAccountParams dataBound; loading label value', self.Label);
+
+            //        if (self.labelParams.dropDownListSettings.widget()) {
+            //            self.labelParams.dropDownListSettings.widget().dataSource.read();
+            //        } else {
+            //            self.labelParams.dropDownListSettings.widget.subscribe(nv => {
+            //                nv.dataSource.read();
+            //            })
+            //        }
+            //    }
+            //}, 0)
+
+            window.setTimeout(() => {
+                if (self.Label) {
+                    self.labelId(self.Label);
+                    self.labelParams.dropDownListSettings.widget().value(self.labelId())
+                    self.labelParams.dropDownListSettings.widget().trigger('change');
+                }
+            }, 10)
+        }
     });
 
     self.labelParams = kendoMDCDropDownList({
@@ -147,15 +176,29 @@
         textField: 'name',
         valueField: 'value',
         virtual: false,
+        //optionLabel: {
+        //    name: '',
+        //    value: null
+        //},
+        skipCascade: false,
         idObservable: self.labelId,
         objObservable: self.label,
         filter: false,
-        autoBind: true,
+        autoBind: false,
         locked: ko.observable(false),
         enable: ko.observable(true),
         disable: ko.observable(false),
         clearable: ko.observable(true),
         revertible: ko.observable(false),
+        dataBound: (e) => {
+            console.log('labelParams dataBound', self.Label, self.labelId(), e.sender.value())
+            //if (self.Label) {
+            //    self.labelId(self.Label);
+            //    delete self.Label;
+            //    e.sender.value(self.labelId());
+            //    e.sender.trigger('change')
+            //}
+        }
     });
 
     self.tradeAccountParams = kendoMDCDropDownList({
@@ -171,9 +214,21 @@
             itemHeight: 34,
             mapValueTo: 'dataItem',
             valueMapper: function (options) {
-                if (options.value) {
+                if (options.value && options.value != '') {
+                    // 1. Escape for OData (double the single quotes)
+                    const odataEscaped = options.value.toString().replace(/'/g, "''");
+
+                    // 2. URL Encode the parameter value specifically
+                    const encodedParam = encodeURIComponent(`'${odataEscaped}'`);
+
+                    // 3. Construct the URL
+                    const url = `/odata/TradeAccounts_Live/Default.TradeAccountLiveValueMapper(tradeAccountCode=${encodedParam})`;
+
+
+                    console.log('tradeAccountParams valueMapper calling', url);
+
                     $.ajax({
-                        url: `/odata/TradeAccounts_Live/Default.TradeAccountLiveValueMapper(tradeAccountCode='${options.value}')`,
+                        url: url,
                         type: 'GET',
                         success: function (data) {
                             options.success(data.value);
@@ -185,11 +240,11 @@
             }
         },
         template: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+            return `<span title="${e.ShortLabel}">${e.Code} - ${e.Name}</span>`
         },
         valueTemplate: (e) => {
             if ((e.ShortLabel != '') && (e.Code != null))
-                return `<span title="${e.ShortLabel}">Trade Account: ${e.ShortLabel}</span>`
+                return `<span title="${e.ShortLabel}">${e.Code} - ${e.Name}</span>`
             else
                 return '';
         },
@@ -342,9 +397,21 @@
     self.invoiceParams = kendoMDCDropDownList({
         odata: true,
         label: 'Invoice',
-        endPoint: `/odata/Invoices`,
-        textField: 'ShortLabel',
-        valueField: 'InvoiceID',
+        endPoint: () => {
+            switch (self.uniVerseAccountId()) {
+                case 'MERTEX':
+                    return `/odata/SalesLedgerTransactions_Mertex/Default.GetSalesLedgerTransactions_Mertex_ForBankingDailyStatistics()`
+                    break;
+                case 'MERTEX_INC':
+                    return `/odata/SalesLedgerTransactions_Mertex_Inc/Default.GetSalesLedgerTransactions_Mertex_Inc_ForBankingDailyStatistics()`
+                    break;
+                case 'DG_EUROPE':
+                    return `/odata/SalesLedgerTransactions_DG_Europe/Default.GetSalesLedgerTransactions_DG_Europe_ForBankingDailyStatistics()`
+                    break;
+            }
+        },
+        textField: 'Key',
+        valueField: 'Key',
         virtual: true,
         autoBind: false,
         minLength: 3,
@@ -355,23 +422,40 @@
             mapValueTo: 'dataItem',
             valueMapper: function (options) {
                 if (options.value) {
-                    $.ajax({
-                        url: `/odata/Orders/Default.InvoiceValueMapper(invoiceId='${options.value}')`,
-                        type: 'GET',
-                        success: function (data) {
-                            options.success(data.value);
-                        }
-                    });
+
+                    var url = '';
+
+                    switch (self.uniVerseAccountId()) {
+                        case 'MERTEX':
+                            return `/odata/SalesLedgerTransactions_Mertex/Default.GetSalesLedgerTransactions_Mertex_ValueMapper`
+                            break;
+                        case 'MERTEX_INC':
+                            return `/odata/SalesLedgerTransactions_Mertex_Inc/Default.GetSalesLedgerTransactions_Mertex_Inc_ValueMapper`
+                            break;
+                        case 'DG_EUROPE':
+                            return `/odata/SalesLedgerTransactions_DG_Europe/Default.GetSalesLedgerTransactions_DG_Europe_ValueMapper`
+                            break;
+                    }
+
+                    if (url != '') {
+                        $.ajax({
+                            url: `${url}(key='${options.value}')`,
+                            type: 'GET',
+                            success: function (data) {
+                                options.success(data.value);
+                            }
+                        });
+                    } 
                 } else {
                     options.success();
                 }
             }
         },
         template: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+            return `<span title="${e.Key}">${e.Key}</span>`
         },
         valueTemplate: (e) => {
-            return `<span title="${e.ShortLabel}">${e.ShortLabel}</span>`
+            return `<span title="${e.Key}">${e.Key}</span>`
         },
         idObservable: self.invoiceId,
         objObservable: self.invoice,
@@ -385,7 +469,7 @@
         height: 340,
         sort: {
             dir: 'desc',
-            field: 'OrderID'
+            field: 'Key'
         },
         parameterMap: (data) => {
             //Generate parameters in odata v4 format
@@ -409,10 +493,10 @@
                 filters.push(`(TradeAccountCode eq '${self.tradeAccountCode()}')`)
             }
 
-            if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "ShortLabel")) {
-                let f = data.filter.filters.find(f => f.field === "ShortLabel");
-                filters.push(`(contains(Name,'${f.value}') or startswith(Code,'${f.value}'))`);
-            }
+            //if (data.filter && data.filter.filters.length && data.filter.filters.find(f => f.field === "ShortLabel")) {
+            //    let f = data.filter.filters.find(f => f.field === "ShortLabel");
+            //    filters.push(`(contains(Name,'${f.value}') or startswith(Code,'${f.value}'))`);
+            //}
 
             if (d.$filter) {
                 delete d.$filter;
@@ -489,7 +573,53 @@
 
     //#region Events
 
+    // Load, if you can...
+    // BUN FIYA
+    // Rrriiddyyym o de microchip! Gwan tryp an fail ya! Bring yo strai forward ta creaaatyuun
 
+    //window.setTimeout(() => {
+
+    self.value(self.Value);
+
+    if (self.UniVerseAccount) {
+        self.uniVerseAccountParams.dropDownListSettings.widget.subscribe((nv) => {
+            nv.value(self.UniVerseAccount);
+            nv.trigger('change');
+        });
+    }
+
+    // this MUST be done inside UniVerseParams's dataBound event
+    //if (self.Label) {
+    //    window.setTimeout(() => {
+    //        self.uniVerseAccountParams.dropDownListSettings.widget.subscribe(nv => {
+    //            self.labelParams.dropDownListSettings.widget().value(self.Label);
+    //            self.labelParams.dropDownListSettings.widget().trigger('change');
+    //        });
+    //    }, 0);
+    //}
+
+    if (self.TradeAccountCode) {
+        self.tradeAccountParams.dropDownListSettings.widget.subscribe((nv) => {
+            nv.value(self.TradeAccountCode);
+            nv.trigger('change');
+        });
+    }
+
+    if (self.InvoiceID) {
+        self.invoiceParams.dropDownListSettings.widget.subscribe(nv => {
+            nv.value(self.InvoiceID);
+            nv.trigger('change');
+        })
+    }
+
+    if (self.OrderID) {
+        self.orderParams.dropDownListSettings.widget.subscribe(nv => {
+            nv.value(self.OrderID);
+            nv.trigger('change');
+        })
+    }
+
+    //}, 0)
 
     //#endregion
 

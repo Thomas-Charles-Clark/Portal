@@ -12,7 +12,7 @@ namespace SharedEFClasses.Models.Banking
 
 		public string GroupLabel { get; set; }
 
-		public string Label { get; set; }
+		public string RowLabel { get; set; }
 
 		public string Tooltip { get; set; }
 

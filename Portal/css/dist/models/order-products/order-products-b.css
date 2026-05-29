@@ -919,7 +919,14 @@ span.pattern-book-history .material-icons {
 }
 
 .flex-container .bespoke-memo {
-  width: 494px;
+  display: flex;
+  gap: 1rem;
+}
+.flex-container .bespoke-memo > div:first-of-type {
+  flex: 0 0 494px;
+}
+.flex-container .bespoke-memo > div:last-of-type label {
+  font-size: 1rem;
 }
 .flex-container .image-container {
   border: 1px solid rgba(0, 0, 0, 0.24);

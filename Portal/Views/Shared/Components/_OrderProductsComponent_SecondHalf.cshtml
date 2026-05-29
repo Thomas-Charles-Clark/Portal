@@ -3280,7 +3280,10 @@
                                     <i class="note">*Not Guaranteed</i>
                                 </div>
                             </div>
-                            <div class="bespoke-memo" data-bind="component: { name: 'mdc-text-area-component', params: memo }"></div>
+							<div class="bespoke-memo">
+								<div data-bind="component: { name: 'mdc-text-area-component', params: memo }"></div>
+								<div data-bind="component: { name: 'mdc-checkbox-component', params: eyeletsParams }"></div>
+							</div>
                             @*<div>
                                     <ul>
                                         <li>

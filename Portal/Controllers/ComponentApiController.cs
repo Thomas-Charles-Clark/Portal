@@ -840,28 +840,38 @@ namespace Portal.Controllers
                 ProductIDs = new[] { dto.product.ProductID }
             });
 
-            //var stockInfo = await PortalDb.StockEnquiry(objSend.product.Code);
+			//var stockInfo = await PortalDb.StockEnquiry(objSend.product.Code);
 
-            //MertexerV2SQL.Stock.StockFunctions.PerformStockEnquiry(objSend.product.Code);
+			//MertexerV2SQL.Stock.StockFunctions.PerformStockEnquiry(objSend.product.Code);
 
-            //if ((String.IsNullOrEmpty(stockInfo.TotalStock) || stockInfo.TotalStock == "0") && (
-            //        String.IsNullOrEmpty(stockInfo.TotalPurchaseOrderLength) ||
-            //        stockInfo.TotalPurchaseOrderLength == "0"))
-            //{
-            //    stockInfo = MertexerV2SQL.Stock.StockFunctions.FinishedProductStockEnquiry(objSend.product.Code);
-            //}
+			//if ((String.IsNullOrEmpty(stockInfo.TotalStock) || stockInfo.TotalStock == "0") && (
+			//        String.IsNullOrEmpty(stockInfo.TotalPurchaseOrderLength) ||
+			//        stockInfo.TotalPurchaseOrderLength == "0"))
+			//{
+			//    stockInfo = MertexerV2SQL.Stock.StockFunctions.FinishedProductStockEnquiry(objSend.product.Code);
+			//}
 
-            var inkyMarkup = $@"
-                <style type=""text/css"">
-                    {PortalFramework.FoundationEmailCSS}
-                </style>
-                <meta name=""x-apple-disable-message-reformatting""/>
-                <container>
+			/*
+	                <row>
+		                <columns>
+			                <p class=""text-left"" style=""margin-top: 0"">
+				                Dear Customer,
+			                </p>
+		                </columns>
+	                </row>
 	                <row>
 		                <columns>
 			                <img width=""640"" height=""54"" style=""margin: 15px 0 0 0"" alt='Designers Guild' src='https://www.designersguild.com/_assets/email_images/logos/header-logo.jpg' title='Designers Guild' />
 		                </columns>
 	                </row>
+			 */
+
+			var inkyMarkup = $@"
+                <style type=""text/css"">
+                    {PortalFramework.FoundationEmailCSS}
+                </style>
+                <meta name=""x-apple-disable-message-reformatting""/>
+                <container>
 	                <row>
 		                <columns>
 			                <p class=""text-left"" style=""margin-top: 0"">
@@ -906,7 +916,7 @@ namespace Portal.Controllers
 	                </row>
 	                <row>
 		                <columns>
-			                <img src=""https://www.designersguild.com/image-nonwebp/600/{dto.product.ImageID}"" width=""600"" height=""600"" />
+			                <img src=""https://www.designersguild.com/image-nonwebp/600/{dto.product.ImageID}"" width=""688"" height=""688"" style=""width: 100%; height: 100%;"" />
 		                </columns>
 	                </row>
 	                <spacer size=""10""></spacer>

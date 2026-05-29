@@ -689,6 +689,9 @@
     <Compile Include="Controllers\ODataControllers\BankingCurrenciesController.cs" />
     <Compile Include="Controllers\ODataControllers\BankingAccountsController.cs" />
     <Compile Include="Controllers\ODataControllers\DGPaymentDetailsController.cs" />
+    <Compile Include="Controllers\ODataControllers\SalesLedgerTransactions_DG_EuropeController.cs" />
+    <Compile Include="Controllers\ODataControllers\SalesLedgerTransactions_Mertex_IncController.cs" />
+    <Compile Include="Controllers\ODataControllers\SalesLedgerTransactions_MertexController.cs" />
     <Compile Include="Controllers\ODataControllers\InvoicesController.cs" />
     <Compile Include="Controllers\ODataControllers\PaymentPeriodsController.cs" />
     <Compile Include="Controllers\ODataControllers\PaymentBudgetsController.cs" />
@@ -6872,6 +6875,8 @@
     <Folder Include="edge\x86\" />
     <Folder Include="FileUploads\" />
     <Folder Include="FurnitureDownloads\projects\temp\" />
+    <Folder Include="js\src\models\order-entry\" />
+    <Folder Include="js\src\models\order-import\" />
     <Folder Include="node_modules\material\src\" />
     <Folder Include="Programmatic\DocumentDownloads\" />
     <Folder Include="Programmatic\ImageDownloads\" />

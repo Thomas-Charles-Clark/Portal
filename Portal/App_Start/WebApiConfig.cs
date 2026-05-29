@@ -172,10 +172,12 @@ namespace Portal
 			odataBuilder.EntitySet<SharedEFClasses.Models.Banking.BankingAccount>("BankingAccounts");
 			odataBuilder.EntitySet<SharedEFClasses.Models.Banking.BankingCurrency> ("BankingCurrencies");
 			odataBuilder.EntitySet<DGPaymentDetails> ("DGPaymentDetails");
+			odataBuilder.EntitySet<PurchaseOrderHead>("PurchaseOrderHeads");
+			odataBuilder.EntitySet<SalesLedgerTransaction_Mertex>("SalesLedgerTransactions_Mertex");
+			odataBuilder.EntitySet<SalesLedgerTransaction_Mertex_Inc>("SalesLedgerTransactions_Mertex_Inc");
+			odataBuilder.EntitySet<SalesLedgerTransaction_DG_Europe>("SalesLedgerTransactions_DG_Europe");
 
 			var paymentRequests = odataBuilder.EntityType<PaymentRequest>();
-
-			odataBuilder.EntitySet<PurchaseOrderHead>("PurchaseOrderHeads");
 
 			// This because it's not mapped to SQL and has the [NotMapped] attribute
 			odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(Mertex_ProductType)).AddProperty(typeof(Mertex_ProductType).GetProperty("Label"));
@@ -205,6 +207,48 @@ namespace Portal
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(PaymentRequest)).AddProperty(typeof(PaymentRequest).GetProperty("AmountApprovedInCurrency"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(BankingAccount)).AddProperty(typeof(SharedEFClasses.Models.Banking.BankingAccount).GetProperty("Label"));
             odataBuilder.StructuralTypes.First(t => t.ClrType == typeof(SharedEFClasses.Models.Banking.BankingCurrency)).AddProperty(typeof(SharedEFClasses.Models.Banking.BankingCurrency).GetProperty("Label"));
+
+			var salesLedgerTransaction_Mertex_ValueMapperFunction = odataBuilder.EntityType<SalesLedgerTransaction_Mertex>()
+				.Collection
+				.Function("SalesLedgerTransactions_Mertex_ValueMapper")
+				.ReturnsCollectionFromEntitySet<SalesLedgerTransaction_Mertex>("SalesLedgerTransactions_Mertex");
+
+			salesLedgerTransaction_Mertex_ValueMapperFunction.Parameter<string>("key");
+
+			var salesLedgerTransactions_Mertex_ForBankingDailyStatisticsFilterFunction = odataBuilder.EntityType<SalesLedgerTransaction_Mertex>()
+				.Collection
+				.Function("GetSalesLedgerTransactions_Mertex_ForBankingDailyStatistics")
+				.ReturnsCollectionFromEntitySet<SalesLedgerTransaction_Mertex>("SalesLedgerTransactions_Mertex");
+
+
+			var salesLedgerTransaction_Mertex_Inc_ValueMapperFunction = odataBuilder.EntityType<SalesLedgerTransaction_Mertex_Inc>()
+				.Collection
+				.Function("SalesLedgerTransactions_Mertex_Inc_ValueMapper")
+				.ReturnsCollectionFromEntitySet<SalesLedgerTransaction_Mertex_Inc>("SalesLedgerTransactions_Mertex_Inc");
+
+			salesLedgerTransaction_Mertex_Inc_ValueMapperFunction.Parameter<string>("key");
+
+			var salesLedgerTransactions_Mertex_Inc_ForBankingDailyStatisticsFilterFunction = odataBuilder.EntityType<SalesLedgerTransaction_Mertex_Inc>()
+				.Collection
+				.Function("GetSalesLedgerTransactions_Mertex_Inc_ForBankingDailyStatistics")
+				.ReturnsCollectionFromEntitySet<SalesLedgerTransaction_Mertex_Inc>("SalesLedgerTransactions_Mertex_Inc");
+
+
+
+			var salesLedgerTransaction_DG_Europe_ValueMapperFunction = odataBuilder.EntityType<SalesLedgerTransaction_DG_Europe>()
+				.Collection
+				.Function("SalesLedgerTransactions_DG_Europe_ValueMapper")
+				.ReturnsCollectionFromEntitySet<SalesLedgerTransaction_DG_Europe>("SalesLedgerTransactions_DG_Europe");
+
+			salesLedgerTransaction_DG_Europe_ValueMapperFunction.Parameter<string>("key");
+
+			var salesLedgerTransactions_DG_Europe_ForBankingDailyStatisticsFilterFunction = odataBuilder.EntityType<SalesLedgerTransaction_DG_Europe>()
+				.Collection
+				.Function("GetSalesLedgerTransactions_DG_Europe_ForBankingDailyStatistics")
+				.ReturnsCollectionFromEntitySet<SalesLedgerTransaction_DG_Europe>("SalesLedgerTransactions_DG_Europe");
+
+
+
 
 
 			var invoiceValueMapperFunction = odataBuilder.EntityType<InvoiceHead>()

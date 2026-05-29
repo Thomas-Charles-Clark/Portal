@@ -6523,7 +6523,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
             switch (item.StepID) {
                 case ADVANCED_STAGE_BESPOKE_FABRIC_HANGER:
                     item.loadingMethod = function () {
-                        self.bespokeFabricShowlengthFactory.load(sr, null, 'Hanger');
+                        self.bespokeFabricShowlengthFactory.load(sr, sr.record.ProcessAnswersJSON ?? null, 'Hanger');
                     };
                     item.savingMethod = self.bespokeFabricShowlengthFactory.save;
                     item.performValidation = function () {
@@ -6538,7 +6538,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                     break;
                 case ADVANCED_STAGE_BESPOKE_FABRIC_SHOWLENGTH:
                     item.loadingMethod = function () {
-                        self.bespokeFabricShowlengthFactory.load(sr, null, 'Showlength');
+                        self.bespokeFabricShowlengthFactory.load(sr, sr.record.ProcessAnswersJSON ?? null, 'Showlength');
                     };
                     item.savingMethod = self.bespokeFabricShowlengthFactory.save;
                     item.performValidation = function () {
@@ -6553,7 +6553,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                     break;
                 case ADVANCED_STAGE_BESPOKE_FABRIC_SHELFSAMPLE:
                     item.loadingMethod = function () {
-                        self.bespokeFabricShowlengthFactory.load(sr, null, 'Shelf Sample');
+                        self.bespokeFabricShowlengthFactory.load(sr, sr.record.ProcessAnswersJSON ?? null, 'Shelf Sample');
                     };
                     item.savingMethod = self.bespokeFabricShowlengthFactory.save;
                     item.performValidation = function () {
@@ -6568,7 +6568,7 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
                     break;
                 case ADVANCED_STAGE_BESPOKE_WALLPAPER_SHOWLENGTH:
                     item.loadingMethod = function () {
-                        self.bespokeWallpaperShowlengthFactory.load(sr, null);
+                        self.bespokeWallpaperShowlengthFactory.load(sr, sr.record.ProcessAnswersJSON ?? null);
                     };
                     item.savingMethod = self.bespokeWallpaperShowlengthFactory.save;
                     item.performValidation = function () {
@@ -11052,6 +11052,8 @@ var bespokeFabricShowlengthFactory = function (parent) {
 
     self.stockedHanger = ko.observable({ products: [] });
 
+    self.eyelets = ko.observable(false);
+
     self.selectedFeelerLength = ko.observable().extend({
         required: {
             params: true,
@@ -11072,6 +11074,14 @@ var bespokeFabricShowlengthFactory = function (parent) {
         Value: -1,
         Name: 'Custom'
     }];
+
+    self.eyeletsParams = {
+        checkboxId: 'bespoke-fabric-sample-eyelets',
+        label: 'Include Eyelets?',
+        useNativeValidation: false,
+        observable: self.eyelets,
+        disabled: ko.observable(false)
+    }
 
     self.feelerLength = {
         observable: self.selectedFeelerLength,
@@ -11866,6 +11876,7 @@ var bespokeFabricShowlengthFactory = function (parent) {
             self.bespokeWaterfallProducts(jsonData.waterfallProducts);
             self.halfWidth(jsonData.halfWidth == 'Y' ? true : false);
             self.memo.observable(jsonData.memo);
+            self.eyelets(jsonData.eyelets);
         }
 
         self.loaded(true);
@@ -11986,6 +11997,7 @@ var bespokeFabricShowlengthFactory = function (parent) {
         self.errors.showAllMessages(false);
         self.price(undefined);
         self.memo.observable(undefined);
+        self.eyelets(false);
     }
 
     self.toJSON = function () {
@@ -12010,6 +12022,7 @@ var bespokeFabricShowlengthFactory = function (parent) {
             waterfallPosition: self.waterfallPosition(),
             memo: self.memo.observable(),
             waterfallProducts: self.bespokeWaterfallProducts(),
+            eyelets: self.eyelets()
         });
     }
 

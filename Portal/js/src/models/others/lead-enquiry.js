@@ -1697,6 +1697,15 @@ This customer wishes their deliveries to be consolidated. Please double check th
     }, self);
 
     self.passToCreditControlLabel = ko.computed(() => {
+
+        // Note - 22/05/2026 - Simone Limmer-Garcia didn't want any managerial oversight on German, Austrian or Swiss leads 
+        let marketCode = self.salesMarket()?.Code;
+
+        if (['G', 'A', 'Z'].indexOf(marketCode) > -1) {
+            return "Pass to Credit Control to Open Account";
+        }
+        // End of Note
+
         if (self.mustPassToSalesManager() && (self.salesMarket() && (self.ownerMemberId() != self.salesMarket().MarketManagerMemberID))) {
             return "Pass to Sales Manager for Authorisation";
         } else {
@@ -2854,6 +2863,19 @@ This customer wishes their deliveries to be consolidated. Please double check th
         } else {
             $("#trade-account-creation-email-attachment-modal").modal("hide");
             $("#credit-controller-modal").modal('hide');
+
+            // Note - 22/05/2026 - Simone Limmer-Garcia doesn't want any oversight on German, Austrian or Swiss leads.
+            // See related note circa line 1701.
+            let marketCode = self.salesMarket()?.Code;
+
+            if (['G', 'A', 'Z'].indexOf(marketCode) > -1) {
+                self.ownerMember(self.creditControllerFromList());
+                self.changeStatusAndSubmit('close');
+                return;
+            }
+            // End of Note
+
+            // (Other markets do not have this short-circuit).
             if (self.mustPassToSalesManager()) {
                 self.ownerMember({
                     ...self.salesMarket().MarketManager
@@ -5152,30 +5174,30 @@ This customer wishes their deliveries to be consolidated. Please double check th
                             $("#edit-lead-modal").modal('hide');
                         break;
                         case 'open':
-                            //$.info('Sorry', 'Opening of Trade Accounts is on hold until further notice. Please check back on Friday the 17th of April 2026.', null, () => {
-                            //    self.leadSaveBusy(false);
-                            //    $("#edit-lead-modal").modal('hide');
-                            //});
-
-                            $.ajax({
-                              url: '/api/leadsapi/OpenTradeAccount',
-                              type: 'post',
-                              dataType: 'json',
-                              cache: false,
-                              data: {
-                                leadId: self.leadId(),
-                              },
-                              success: (result) => {
-                                $.info('Success', `Trade Account <b>${result.tradeAccountCode}</b> has been opened in Mertex.`, null, () => {
-                                  self.leadSaveBusy(false);
-                                  $("#edit-lead-modal").modal('hide');
-                                });
-                              },
-                              error: function (xhr, e, s) {
-                                //self.resetLeadToCreditControl();
-                                $.showError(xhr, e, s);
-                              }
+                            $.info('Sorry', 'Opening of Trade Accounts is on hold until further notice. Please check back on Friday the 22nd of May 2026.', null, () => {
+                                self.leadSaveBusy(false);
+                                $("#edit-lead-modal").modal('hide');
                             });
+
+                            //$.ajax({
+                            //  url: '/api/leadsapi/OpenTradeAccount',
+                            //  type: 'post',
+                            //  dataType: 'json',
+                            //  cache: false,
+                            //  data: {
+                            //    leadId: self.leadId(),
+                            //  },
+                            //  success: (result) => {
+                            //    $.info('Success', `Trade Account <b>${result.tradeAccountCode}</b> has been opened in Mertex.`, null, () => {
+                            //      self.leadSaveBusy(false);
+                            //      $("#edit-lead-modal").modal('hide');
+                            //    });
+                            //  },
+                            //  error: function (xhr, e, s) {
+                            //    //self.resetLeadToCreditControl();
+                            //    $.showError(xhr, e, s);
+                            //  }
+                            //});
                         break;
                       default:
                             self.leadSaveBusy(false);

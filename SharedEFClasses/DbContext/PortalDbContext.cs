@@ -459,6 +459,9 @@ namespace SharedEFClasses.Models
 
         public virtual DbSet<SupplierPaymentTerms> SupplierPaymentTerms { get; set; }
         
+        public virtual DbSet<SalesLedgerTransaction_Mertex> SalesLedgerTransactions_Mertex { get; set; }
+        public virtual DbSet<SalesLedgerTransaction_Mertex_Inc> SalesLedgerTransactions_Mertex_Inc { get; set; }
+        public virtual DbSet<SalesLedgerTransaction_DG_Europe> SalesLedgerTransactions_DG_Europe { get; set; }
 
         #endregion
 

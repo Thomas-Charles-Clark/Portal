@@ -803,7 +803,7 @@
 }
 #breakdown-modal #breakdown-items .list-group-item {
   display: grid;
-  grid-template-columns: repeat(6, 1fr) 34px;
+  grid-template-columns: 160px 180px 1fr 1frS 180px minmax(200px, 300px) 34px;
   border: 0;
   padding: 0;
 }
@@ -816,6 +816,14 @@
 }
 #breakdown-modal #breakdown-items .list-group-item .mdc-validating-field {
   width: 100%;
+}
+#breakdown-modal #breakdown-items .list-group-item .mdc-validating-field .mdc-select.mdc-select--selected .k-picker {
+  background-color: #084298;
+  color: #fff;
+  border-radius: 0;
+}
+#breakdown-modal #breakdown-items .list-group-item .mdc-validating-field .mdc-select .k-input-inner {
+  padding-right: 60px;
 }
 #breakdown-modal #breakdown-items .list-group-item .mdc-validating-field .k-picker-solid {
   border: none;
@@ -853,12 +861,6 @@
   justify-content: flex-end;
   gap: 1rem;
 }
-#breakdown-modal #remaining-to-allocate {
-  display: block;
-  font-weight: bold;
-  text-align: right;
-}
-
 .breakdown-btn.disabled-btn {
   /*background-color: $gray-200;
   background-image: repeating-linear-gradient(-45deg, $secondary, tint-color($secondary, 20%), 1rem, transparent 1rem, transparent 2rem);
