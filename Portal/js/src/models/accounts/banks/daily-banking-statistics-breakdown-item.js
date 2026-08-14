@@ -205,7 +205,7 @@
         skipCascade: true,
         label: 'Trade Account',
         odata: true,
-        endPoint: () => `/odata/TradeAccounts_Live/Default.GetTradeAccountsForCreditControl(includeClosedAccounts=true, includeDeletedAccounts=false)`,
+        endPoint: () => `/odata/TradeAccounts_Live/Default.GetTradeAccountsForCreditControl(showOpenClosedOrBoth=true, includeDeletedAccounts=false)`,
         textField: 'ShortLabel',
         valueField: 'Code',
         virtual: true,

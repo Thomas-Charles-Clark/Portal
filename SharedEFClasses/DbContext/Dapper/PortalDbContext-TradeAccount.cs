@@ -37,9 +37,7 @@ namespace SharedEFClasses.Models
 
 			var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
 
-			var token = credentials.LogonUser(LogonType.Interactive);
-
-			var sendResult = await WindowsIdentity.RunImpersonated(token, async () =>
+			var sendResult = await Impersonation.RunAsUser(credentials, LogonType.Interactive, async () =>
 			{
 				var results = await this.Database.Connection.QueryMultipleAsync("[portal].[TradeAccountCreationEmail_Send]", new
 				{

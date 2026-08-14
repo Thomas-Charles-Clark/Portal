@@ -31,6 +31,8 @@ using SharedEFClasses.Utilities;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using System.Data.SqlTypes;
 using SharedEFClasses.Models.General;
+using System.Text.Encodings.Web;
+using System.Web;
 
 namespace Portal.Areas.Customers.Controllers
 {
@@ -240,7 +242,7 @@ namespace Portal.Areas.Customers.Controllers
 
                 ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 
-                var inkyResult = await client.PostAsync(PortalFramework.InkyEndpoint, content);
+                var inkyResult = await client.PostAsync($"{PortalFramework.InkyEndpoint}?header={HttpUtility.UrlEncode("https://www.designersguild.com/_assets/trade/invite/header-plain.jpg")}", content);
 
                 inkyMarkup = await inkyResult.Content.ReadAsStringAsync();
             }

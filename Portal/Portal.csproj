@@ -112,8 +112,9 @@
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FileWriter">
-      <HintPath>..\..\..\..\..\source\repos\FileWriter\FileWriter\bin\Release\FileWriter.dll</HintPath>
+    <Reference Include="FileWriter, Version=1.0.0.0, Culture=neutral, PublicKeyToken=291dfcadd3a21e13, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\FileWriter\FileWriter\bin\Release\FileWriter.dll</HintPath>
     </Reference>
     <Reference Include="GDPR, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -263,7 +264,8 @@
       <HintPath>..\packages\QRCoder.1.6.0\lib\net40\QRCoder.dll</HintPath>
     </Reference>
     <Reference Include="SimpleImpersonation, Version=4.2.0.0, Culture=neutral, PublicKeyToken=2558a0becb966f83, processorArchitecture=MSIL">
-      <HintPath>..\packages\SimpleImpersonation.4.2.0\lib\net461\SimpleImpersonation.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\FileWriter\FileWriter\bin\Release\SimpleImpersonation.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -1166,7 +1168,9 @@
     <Content Include="Content\images\logos\designers-guild-clearance.png" />
     <Content Include="Content\images\logos\designers-guild-essentials.png" />
     <Content Include="Content\images\logos\designers-guild-kids.png" />
-    <Content Include="Content\images\logos\designers-guild-transparent-inversion-lg.png" />
+    <Content Include="Content\images\logos\designers-guild-transparent-inversion-lg.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\images\logos\designers-guild-transparent-inversion.png" />
     <Content Include="Content\images\logos\designers-guild-transparent.png" />
     <Content Include="Content\images\logos\designers-guild-unlimited.png" />

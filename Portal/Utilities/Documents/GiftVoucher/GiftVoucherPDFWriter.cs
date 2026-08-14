@@ -44,7 +44,7 @@ namespace Portal.Utilities.Documents.GiftVoucher
 
             var kunstler = BaseFont.CreateFont(rootPath + "Content/fonts/kunstler.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
 
-            var trixieRoughHeavy = BaseFont.CreateFont(rootPath + "Content/fonts/trixie/5353122/TrixieRoughOTW05-Heavy.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
+            var trixieRoughHeavy = BaseFont.CreateFont(rootPath + "css\\src\\fonts\\src\\5353122\\TrixieRoughOTW05-Heavy.ttf", BaseFont.CP1252, BaseFont.EMBEDDED);
 
             var backgroundImage = Image.GetInstance(AppDomain.CurrentDomain.BaseDirectory + $"/content/images/backgrounds/gift-voucher-background{(darkMode ? "-greyscale" : "")}.jpg");
 
@@ -85,8 +85,8 @@ namespace Portal.Utilities.Documents.GiftVoucher
             var footerBoldFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
             var codeFont = FontFactory.GetFont("Consolas", 36, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
-            System.Drawing.Image dgLogoWhiteImage = System.Drawing.Image.FromFile(AppDomain.CurrentDomain.BaseDirectory + $"/Content/Images/Logo/designers-guild-transparent{(darkMode ? "-grey" : "-inversion")}-lg.png");
-            System.Drawing.Image dgLogoBeigeImage = System.Drawing.Image.FromFile(AppDomain.CurrentDomain.BaseDirectory + "/Content/Images/Logo/designers-guild-transparent-beige-lg.png");
+            System.Drawing.Image dgLogoWhiteImage = System.Drawing.Image.FromFile(AppDomain.CurrentDomain.BaseDirectory + $"Content\\Images\\Logos\\designers-guild-transparent{(darkMode ? "-grey" : "-inversion")}-lg.png");
+            System.Drawing.Image dgLogoBeigeImage = System.Drawing.Image.FromFile(AppDomain.CurrentDomain.BaseDirectory + "Content\\Images\\Logos\\designers-guild-transparent.png");
 
             var dgLogoImageWhite = Image.GetInstance(dgLogoWhiteImage, System.Drawing.Imaging.ImageFormat.Png);
             var dgLogoImageBeige = Image.GetInstance(dgLogoBeigeImage, System.Drawing.Imaging.ImageFormat.Png);
@@ -788,7 +788,7 @@ namespace Portal.Utilities.Documents.GiftVoucher
             var footerBoldFont = FontFactory.GetFont("Arial", 8, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
             var codeFont = FontFactory.GetFont("Consolas", 36, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
-            System.Drawing.Image dgImage = System.Drawing.Image.FromFile(AppDomain.CurrentDomain.BaseDirectory + "/Content/Images/Logos/designers-guild-transparent-inversion-lg.png");
+            System.Drawing.Image dgImage = System.Drawing.Image.FromFile(AppDomain.CurrentDomain.BaseDirectory + "Content\\Images\\Logos\\designers-guild-transparent-inversion-lg.png");
 
             var dgLogo = Image.GetInstance(dgImage, System.Drawing.Imaging.ImageFormat.Png);
 

@@ -83,11 +83,9 @@ namespace Portal.Areas.Orders.Controllers
 		{
 			var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
 
-			var token = credentials.LogonUser(LogonType.Interactive);
-
             byte[] fileBytes = null;
 
-			WindowsIdentity.RunImpersonated(token, () =>
+			Impersonation.RunAsUser(credentials, LogonType.Interactive, () =>
 			{
 				fileBytes = System.IO.File.ReadAllBytes(filePath);
 			});

@@ -690,8 +690,6 @@ namespace Portal.Areas.Invoices.Controllers
 
                 var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
 
-                var token = credentials.LogonUser(LogonType.Interactive);
-
                 var baseFolder = $"\\\\files\\AppDataStore\\IncomingEmail\\RegularAttachments\\";
 
                 var root = HttpContext.Current.Server.MapPath("~/Uploads");
@@ -756,7 +754,7 @@ namespace Portal.Areas.Invoices.Controllers
                     f.AttachmentID = a.AttachmentID;
                 }
 
-                WindowsIdentity.RunImpersonated(token, () =>
+                Impersonation.RunAsUser(credentials, LogonType.Interactive, () =>
                 {
                     foreach (var f in files)
                     {

@@ -572,6 +572,13 @@ body {
     .date-prefilter {
         display: block;
     }
+
+    .date-affector-prefilter {
+        * {
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+    }
 }
 
 #dashboard,
@@ -649,6 +656,15 @@ body {
             h5 {
                 text-decoration: none;
                 line-height: 1.75rem;
+            }
+        }
+
+        .date-type-prefilter {
+            .k-dropdown-wrap {
+                &.k-state-default {
+                    border-top-left-radius: 0 !important;
+                    border-bottom-left-radius: 0 !important;
+                }
             }
         }
     }

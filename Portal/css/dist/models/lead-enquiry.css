@@ -2286,8 +2286,21 @@ td.check-column label {
   text-align: center;
 }
 
+th.k-header .k-checkbox-label:before {
+  cursor: pointer;
+  top: 6px;
+}
+
 td.check-column label.k-checkbox-label:before {
   left: calc(50% - 8px);
+  top: 2px;
+}
+
+#customer-grid td:first-of-type {
+  vertical-align: middle;
+}
+#customer-grid td:first-of-type checkbox {
+  margin-bottom: 0;
 }
 
 #customer-grid .k-grid-header thead tr th:nth-child(1) label input[type=checkbox] {

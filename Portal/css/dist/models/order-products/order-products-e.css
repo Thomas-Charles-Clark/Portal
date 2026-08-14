@@ -1087,4 +1087,9 @@ tr.readonly {
 .k-grid.k-widget .k-grid-content td .alert {
   margin-bottom: 0;
 }
+
+#basket-review-stage-two {
+  position: relative !important;
+  z-index: 2;
+}
 /*# sourceMappingURL=order-products-e.css.map */

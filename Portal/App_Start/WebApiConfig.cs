@@ -336,6 +336,11 @@ namespace Portal
 
 			debtFunderValueMapperFunction.Parameter<string>("code");
 
+			var debtFundersForDocumentsFunction = odataBuilder.EntityType<DebtFunder>()
+				.Collection
+				.Function("DebtFundersForDocuments")
+				.ReturnsCollectionFromEntitySet<DebtFunder>("DebtFunders");
+
 			var salesHistoryAnalysisPeriodValueMapperFunction = odataBuilder.EntityType<SalesHistoryAnalysisPeriod>()
 				.Collection
 				.Function("SalesHistoryAnalysisPeriodValueMapper")
@@ -646,7 +651,7 @@ namespace Portal
                 .ReturnsCollection<TradeAccountLive>();
 
 			tradeAccountsForCreditControlFilterFunction.Parameter<bool>("includeDeletedAccounts");
-			tradeAccountsForCreditControlFilterFunction.Parameter<bool>("includeClosedAccounts");
+			tradeAccountsForCreditControlFilterFunction.Parameter<bool?>("showOpenClosedOrBoth");
 
             var tradeAccountGroupFilterFunction = odataBuilder.EntityType<TradeAccount>()
                 .Collection

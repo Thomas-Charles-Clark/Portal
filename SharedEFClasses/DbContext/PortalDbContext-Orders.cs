@@ -3400,7 +3400,7 @@ namespace SharedEFClasses.Models
                 new SqlParameter("@TradeAccountID", objDoc.tradeAccountId),
                 new SqlParameter("@Date", objDoc.date ?? (object)DBNull.Value),
                 new SqlParameter("@OutputMode", objDoc.outputMode ?? (object)DBNull.Value)
-            };
+			};
 
             // Create a SQL command to execute the sproc
             var cmd = this.Database.Connection.CreateCommand();

@@ -973,6 +973,10 @@ body {
 .grid-prefilters .date-prefilter {
   display: block;
 }
+.grid-prefilters .date-affector-prefilter * {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
 
 #dashboard,
 #documents-dashboard .accordion-body {
@@ -1049,6 +1053,11 @@ body {
 #documents-dashboard .accordion-body .dashboard-pod .card-body h5 {
   text-decoration: none;
   line-height: 1.75rem;
+}
+#dashboard .dashboard-pod .date-type-prefilter .k-dropdown-wrap.k-state-default,
+#documents-dashboard .accordion-body .dashboard-pod .date-type-prefilter .k-dropdown-wrap.k-state-default {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
 }
 
 #documents-dashboard .accordion-item {

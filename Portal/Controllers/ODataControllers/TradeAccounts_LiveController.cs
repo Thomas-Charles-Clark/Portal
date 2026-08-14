@@ -54,12 +54,16 @@ namespace Portal.Controllers
 
 		[EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All, MaxNodeCount = 200)]
 		[HttpGet]
-		public IQueryable<TradeAccountLive> GetTradeAccountsForCreditControl(bool includeClosedAccounts = false, bool includeDeletedAccounts = false)
+		public IQueryable<TradeAccountLive> GetTradeAccountsForCreditControl(bool? showOpenClosedOrBoth = false, bool includeDeletedAccounts = false)
 		{
 			// Include deleted and closed accounts: we might want to check what we sent a previously closed account?
 			return PortalDb.TradeAccounts_Live.Where(ta =>
 				((includeDeletedAccounts == true) || (includeDeletedAccounts == false && ta.Deleted == false)) &&
-				((includeClosedAccounts == true) || (includeClosedAccounts == false) && (ta.Status == "O"))
+				(
+                    (showOpenClosedOrBoth == null) 
+                    || ((showOpenClosedOrBoth == true) && (ta.Status == "O"))
+                    || ((showOpenClosedOrBoth == false) && (ta.Status == "C"))    
+                )
 			).AsQueryable();
 		}
 	}

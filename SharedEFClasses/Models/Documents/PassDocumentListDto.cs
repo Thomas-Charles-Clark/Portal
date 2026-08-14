@@ -13,5 +13,8 @@ namespace SharedEFClasses.Models.Documents
 		public byte? LanguageID { get; set; }
 		public DateTime? Date { get; set; }
 		public string OutputMode { get; set; }
+		public string UniVerseAccount { get; set; }
+		public string DebtFunder { get; set; }
+		public string CurrencyCode { get; set; }
 	}
 }

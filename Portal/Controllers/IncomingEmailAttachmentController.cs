@@ -47,11 +47,9 @@ namespace Portal.Controllers
             // you *have* to use an Integrated Security connection to send emails with attachments
             var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
 
-            var token = credentials.LogonUser(LogonType.Interactive);
-
             FileStreamResult fsResult = null;
 
-            WindowsIdentity.RunImpersonated(token, () =>
+            Impersonation.RunAsUser(credentials, LogonType.Interactive, () =>
             {
                 var fileInfo = new System.IO.FileInfo(fullPath);
 

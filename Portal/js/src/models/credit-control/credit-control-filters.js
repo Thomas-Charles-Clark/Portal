@@ -42,7 +42,6 @@ const creditControlFiltersViewModel = ({
         }
     }); // this is for Statement Sending only, and must be removed from the main filtering thingies
 
-    self.includeClosedTradeAccounts = ko.observable(true);
     self.includeDeletedTradeAccounts = ko.observable(false);
 
     self.tradeAccountCode = ko.observable(params.tradeAccountCode ?? '');
@@ -261,16 +260,6 @@ const creditControlFiltersViewModel = ({
 
     //#region Components
 
-    self.includeClosedTradeAccountsParams = {
-        checkboxId: `${self.prefix}include-closed-trade-accounts`,
-        label: 'Include Closed?',
-        observable: self.includeClosedTradeAccounts,
-        useNativeValidation: false,
-        enable: ko.observable(true),
-        disable: ko.observable(false),
-        busy: ko.observable(false)
-    }
-
     self.includeDeletedTradeAccountsParams = {
         checkboxId: `${self.prefix}include-deleted-trade-accounts`,
         label: 'Include Deleted?',
@@ -285,7 +274,7 @@ const creditControlFiltersViewModel = ({
         skipCascade: true,
         label: 'Trade Account',
         odata: true,
-        endPoint: () => `/odata/TradeAccounts_Live/Default.GetTradeAccountsForCreditControl(includeClosedAccounts=${ko.unwrap(self.includeClosedTradeAccounts)}, includeDeletedAccounts=${ko.unwrap(self.includeDeletedTradeAccounts)})`,
+        endPoint: () => `/odata/TradeAccounts_Live/Default.GetTradeAccountsForCreditControl(showOpenClosedOrBoth=${ko.unwrap(self.tradeAccountStatusId) == '' ? 'null' : ko.unwrap(self.tradeAccountStatusId)}, includeDeletedAccounts=${ko.unwrap(self.includeDeletedTradeAccounts)})`,
         textField: 'ShortLabel',
         valueField: 'Code',
         virtual: true,
@@ -473,7 +462,7 @@ const creditControlFiltersViewModel = ({
         skipCascade: true,
         label: 'Trade Account',
         odata: true,
-        endPoint: () => `/odata/TradeAccounts_Live/Default.GetTradeAccountsForCreditControl(includeClosedAccounts=${ko.unwrap(self.includeClosedTradeAccounts)}, includeDeletedAccounts=${ko.unwrap(self.includeDeletedTradeAccounts)})`,
+        endPoint: () => `/odata/TradeAccounts_Live/Default.GetTradeAccountsForCreditControl(showOpenClosedOrBoth=${ko.unwrap(self.tradeAccountStatusId) == '' ? 'null' : ko.unwrap(self.tradeAccountStatusId)}, includeDeletedAccounts=${ko.unwrap(self.includeDeletedTradeAccounts)})`,
         textField: 'ShortLabel',
         valueField: 'Code',
         virtual: true,
@@ -872,7 +861,7 @@ const creditControlFiltersViewModel = ({
         skipCascade: true,
         label: 'Trade Account',
         odata: true,
-        endPoint: () => `/odata/TradeAccounts_Live/Default.GetTradeAccountsForCreditControl(includeClosedAccounts=${ko.unwrap(self.includeClosedTradeAccounts)}, includeDeletedAccounts=${ko.unwrap(self.includeDeletedTradeAccounts)})`,
+        endPoint: () => `/odata/TradeAccounts_Live/Default.GetTradeAccountsForCreditControl(showOpenClosedOrBoth=${ko.unwrap(self.tradeAccountStatusId) == '' ? 'null' : ko.unwrap(self.tradeAccountStatusId)}, includeDeletedAccounts=${ko.unwrap(self.includeDeletedTradeAccounts)})`,
         textField: 'ShortLabel',
         valueField: 'Code',
         virtual: true,
@@ -903,8 +892,8 @@ const creditControlFiltersViewModel = ({
             else
                 return '';
         },
-        idObservable: self.tradeAccountCode,
-        objObservable: self.tradeAccount,
+        idObservable: self.paymentHistoryTradeAccountCode,
+        objObservable: self.paymentHistoryTradeAccount,
         locked: ko.observable(false),
         enable: ko.observable(true),
         disable: ko.observable(false),
@@ -1565,8 +1554,8 @@ const creditControlFiltersViewModel = ({
                     && (k != 'initialParams')
                     && (k != 'dateParams')
                     && (k != 'statementsTradeAccountParams')
-                    && (k != 'includeClosedTradeAccountsParams')
                     && (k != 'salesHistoryAnalysisPeriodsParams')
+                    && (k != 'includeDeletedTradeAccountsParams')
                     && (k.indexOf('paymentHistory') == -1)
                     && (k.indexOf('outstanding') == -1)
                     && (k.indexOf('closeBrothers') == -1)
@@ -1584,6 +1573,8 @@ const creditControlFiltersViewModel = ({
                         } else if (p.hasOwnProperty('observable')) {
                             if (p.observable() != null && p.observable() != '')
                                 selected = true;
+                            if (p.observable() === false)
+                                selected = true;
                         }
                     }
                 } else {
@@ -1592,6 +1583,8 @@ const creditControlFiltersViewModel = ({
                             selected = true;
                     } else if (p.hasOwnProperty('observable')) {
                         if (p.observable() != null && p.observable() != '')
+                            selected = true;
+                        if (p.observable() === false)
                             selected = true;
                     }
                 }
@@ -1675,8 +1668,8 @@ const creditControlFiltersViewModel = ({
             data.searchTerm = self.paymentHistorySearchTerm();
         }
 
-        if (self.tradeAccountCode()) {
-            data.tradeAccountCode = self.tradeAccountCode()
+        if (self.paymentHistoryTradeAccountCode()) {
+            data.tradeAccountCode = self.paymentHistoryTradeAccountCode()
         }
 
         if (self.paymentHistoryCreditControllerId()) {

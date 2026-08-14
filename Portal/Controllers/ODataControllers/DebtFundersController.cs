@@ -42,6 +42,13 @@ namespace Portal.Controllers
             return PortalDb.DebtFunders.AsQueryable();
         }
 
+		[HttpGet]
+		[EnableQuery]
+        public IQueryable<DebtFunder> DebtFundersForDocuments()
+        {
+            return PortalDb.DebtFunders.Where(v => v.Visible == true).AsQueryable();
+        }
+
         [EnableQuery(MaxNodeCount = 200)]
         [HttpGet]
         public IQueryable<DebtFunder> DebtFunderValueMapper(string code)

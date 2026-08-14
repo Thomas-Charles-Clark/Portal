@@ -87,7 +87,7 @@ const creditControlViewModel = (() => {
         prefix: 'allocate-holding-account-cash-'
     });
 
-    self.allocateHoldingAccountCashFilters.includeClosedTradeAccounts(true);
+    self.allocateHoldingAccountCashFilters.tradeAccountStatusId(true);
 
     self.closeBrothersFilters = creditControlFiltersViewModel({
         params: window.getPredefinedFilterParams(),

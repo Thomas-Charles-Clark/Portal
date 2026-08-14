@@ -1493,11 +1493,11 @@
                         <div class="document-date-prefilter prefilter">
                             <div class="date-type-prefilter" data-bind="component: { name: 'mdc-kendo-dropdown-component', params: documentFilters.documentDateRangeParams }"></div>
                         </div>
-                        <div class="prefilter" style="display: none" data-bind="visible: documentFilters.documentDateRangeId() == -1">
+                        <div class="document-date-prefilter prefilter" style="display: none" data-bind="visible: documentFilters.documentDateRangeId() == -1">
                             <div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentFilters.documentFromDateParams }"></div>
                         </div>
-                        <div class="prefilter" style="display: none" data-bind="visible: documentFilters.documentDateRangeId() == -1">
-                            <div class="from-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentFilters.documentToDateParams }"></div>
+                        <div class="document-date-prefilter prefilter" style="display: none" data-bind="visible: documentFilters.documentDateRangeId() == -1">
+                            <div class="to-date date-picker" data-bind="component: { name: 'tempus-dominus-date-picker-component', params: documentFilters.documentToDateParams }"></div>
                             <span class="validation-message text-danger" data-bind="validationMessage: documentFilters.fromDate"></span>
                             <span class="validation-message text-danger" data-bind="validationMessage: documentFilters.toDate"></span>
                             <span class="validation-message text-danger" data-bind="validationMessage: documentFilters.fromPreceedsTo"></span>

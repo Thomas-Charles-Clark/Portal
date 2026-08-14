@@ -347,6 +347,7 @@ namespace SharedEFClasses.Models.Documents
         public int? memberId { get; set; }
         public DateTime? date { get; set; }
         public string outputMode { get; set; }
+        public string debtFunder { get; set; }
     }
 
     public class DocumentColumnHeading

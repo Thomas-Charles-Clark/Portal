@@ -558,7 +558,7 @@
 Please find attached your Designers Guild Gift Voucher.
 
 Code: ${nv.Code}
-Value: ${nv.CurrencySymbol}${nv.ValueInc}
+Value: ${nv.PriceList.Currency.Symbol}${nv.ValueInc}
 
 
 Thank you for shopping with Designers Guild`);

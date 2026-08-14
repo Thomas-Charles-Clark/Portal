@@ -119,15 +119,15 @@ const invoiceBookingFiltersViewModel = (params = {
 
     self.documentToDate = ko.observable();
 
-    self.dateRangeId = ko.observable('30');
-    self.dateRange = ko.observable(dateRanges.find(d => d.dateRangeId == '30'));
+    self.dateRangeId = ko.observable('-2');
+    self.dateRange = ko.observable(dateRanges.find(d => d.dateRangeId == '-2'));
 
-    self.documentDateRangeId = ko.observable('30');
+    self.documentDateRangeId = ko.observable('-2');
 
     self.dateRanges = dateRanges;
 
     self.documentDateRanges = documentDateRanges;
-    self.documentDateRange = ko.observable(dateRanges.find(d => d.dateRangeId == '30'))
+    self.documentDateRange = ko.observable(dateRanges.find(d => d.dateRangeId == '-2'))
 
     self.validateSearchNow = ko.observable(true);
 

@@ -80,10 +80,10 @@
             <span data-bind="text: Code"></span>
         </td>
         <td class="text-end">
-            <span data-bind="text: formatCurrency(ValueInc, 2, PriceList.Currency.FormattingCulture, CurrencyCode)"></span>
+            <span data-bind="text: formatCurrency(ValueInc, 2, PriceList.Currency.FormattingCulture, PriceList.Currency.Code)"></span>
         </td>
         <td class="text-end">
-            <span data-bind="text: formatCurrency(ValueEx, 2, PriceList.Currency.FormattingCulture, CurrencyCode)"></span>
+            <span data-bind="text: formatCurrency(ValueEx, 2, PriceList.Currency.FormattingCulture, PriceList.Currency.Code)"></span>
         </td>
         <td>
             <span data-bind="text: CreatedDT ? moment(CreatedDT).format('DD/MM/YYYY HH:MM') : ''"></span>

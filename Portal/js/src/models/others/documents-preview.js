@@ -78,8 +78,16 @@ var documentsPreviewViewModel = function () {
 
     self.uniVerseAccountId = ko.observable('');
 
-    self.uniVerseAccount = ko.observable()
-    
+    self.uniVerseAccount = ko.observable();
+
+    self.debtFunderId = ko.observable('');
+
+    self.debtFunder = ko.observable();
+
+    self.currencyCode = ko.observable('');
+
+    self.currency = ko.observable();
+
     //#endregion
 
 
@@ -323,6 +331,24 @@ var documentsPreviewViewModel = function () {
         }
     });
 
+    self.debtFunderParams = kendoMDCDropDownList({
+        label: 'Debt Funder',
+        odata: true,
+        endPoint: '/odata/DebtFunders/Default.DebtFundersForDocuments()',
+        textField: 'Name',
+        valueField: 'Code',
+        virtual: false,
+        idObservable: self.debtFunderId,
+        objObservable: self.debtFunder,
+        optionLabel: {
+            Name: '',
+            Code: ''
+        },
+        optionLabelTemplate: '',
+        filter: false,
+        autoBind: true
+    });
+
     self.basketId.extend({
         required: {
             params: true,
@@ -513,7 +539,8 @@ var documentsPreviewViewModel = function () {
                 transactionId: dataItem.TransactionID,
                 orderHeadId: dataItem.OrderHeadID,
                 date: dataItem.Date ? dataItem.Date : null,
-                outputMode: dataItem.OutputMode
+                outputMode: dataItem.OutputMode,
+                debtFunder: dataItem.DebtFunder
             };
 
             if (self.uniVerseAccountId()) {
@@ -543,6 +570,24 @@ var documentsPreviewViewModel = function () {
         },
         clearable: ko.observable(false),
         revertible: ko.observable(false),
+        optionLabelTemplate: '',
+        filter: false,
+        autoBind: true
+    });
+
+    self.currencyParams = kendoMDCDropDownList({
+        label: 'Currency',
+        odata: true,
+        endPoint: '/odata/Currencies',
+        textField: 'Name',
+        valueField: 'ISO_4217',
+        virtual: false,
+        idObservable: self.currencyCode,
+        objObservable: self.currency,
+        optionLabel: {
+            Code: '',
+            Name: ''
+        },
         optionLabelTemplate: '',
         filter: false,
         autoBind: true
@@ -838,7 +883,8 @@ var documentsPreviewViewModel = function () {
             orderHeadId: self.orderHeadId(),
             date: self.date() ? self.date().toISOString() : null,
             outputMode: self.documentOutputModeCode(),
-            uniVerseAccount: self.uniVerseAccountId()
+            uniVerseAccount: self.uniVerseAccountId() == '' ? null : self.uniVerseAccountId(),
+            debtFunder: self.debtFunderId() == '' ? null : self.debtFunderId()
         };
     }
 
@@ -929,7 +975,10 @@ var documentsPreviewViewModel = function () {
             tradeAccountId: self.tradeAccountId(),
             languageId: self.languageId(),
             date: self.date(),
-            outputMode: self.documentOutputModeCode()
+            outputMode: self.documentOutputModeCode() == '' ? null : self.documentOutputModeCode(),
+            uniVerseAccount: self.uniVerseAccountId() == '' ? null : self.uniVerseAccountId(),
+            debtFunder: self.debtFunderId() == '' ? null : self.debtFunderId(),
+            currencyCode: self.currencyCode() == '' ? null : self.currencyCode()
         };
 
         console.log('FetchLiveDocuments calling with', data);

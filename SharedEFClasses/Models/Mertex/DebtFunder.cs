@@ -18,6 +18,8 @@ namespace SharedEFClasses.Models.Mertex
 
 		public string Name { get; set; }
 
+		public bool Visible { get; set; }
+
 		[JsonIgnore]
 		public virtual ICollection<MertexTradeAccountClassificationSuperSet> MertexTradeAccountClassificationSuperSetRecords { get; set; }
 	}

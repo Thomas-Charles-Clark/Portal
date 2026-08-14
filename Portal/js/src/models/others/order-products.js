@@ -5250,7 +5250,8 @@ var orderProductsViewModel = function (parent, tradeAccountObservable) {
             documentType: document.documentType,
             basketId: parent.BasketID,
             transactionId: parent.TransactionID,
-            languageId: parent.LanguageID
+            languageId: parent.LanguageID,
+            uniVerseAccount: document.UniVerseAccountID
         });
         let objJsonB64 = btoa(objJsonStr);
 

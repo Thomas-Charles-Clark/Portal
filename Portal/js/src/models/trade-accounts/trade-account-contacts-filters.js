@@ -1,4 +1,7 @@
 ﻿const tradeAccountStatuses = [{
+    name: '',
+    value: ''
+}, {
     name: 'Open',
     value: true
 }, {
@@ -77,7 +80,7 @@ const tradeAccountContactsFiltersViewModel = ({
     self.creditStoppedAwaitingBinding = ko.observable(params.creditStoppedId != null && params.creditStoppedId != '');
 
     self.tradeAccountStatusId = ko.observable(params.tradeAccountStatusId ?? true);
-    self.tradeAccountStatus = ko.observable(params.tradeAccountStatus ?? undefined);
+    self.tradeAccountStatus = ko.observable(tradeAccountStatuses.find(tas => tas.value == self.tradeAccountStatusId()));
     self.tradeAccountStatusAwaitingBinding = ko.observable(false);
 
     self.tradeAccountCompanyId = ko.observable(params.tradeAccountCompanyId ?? '');
@@ -169,6 +172,7 @@ const tradeAccountContactsFiltersViewModel = ({
             let paymentTermsId = null;
             let paymentTermsTypeId = null;
             let creditStoppedId = null;
+            let tradeAccountStatusId = null;
             let tradeAccountTypeId = null;
             let tradeAccountTypeGroupId = null;
             let creditControllerId = null;
@@ -250,6 +254,12 @@ const tradeAccountContactsFiltersViewModel = ({
                 creditStoppedId = self.creditStoppedId();
             } else {
                 creditStoppedId = self.creditStoppedId.peek();
+            }
+
+            if (defaultOp.indexOf("TradeAccountStatusID") == -1) {
+                tradeAccountStatusId = self.tradeAccountStatusId();
+            } else {
+                tradeAccountStatusId = self.tradeAccountStatusId.peek();
             }
 
             if (defaultOp.indexOf("CreditController") == -1) {
@@ -349,6 +359,10 @@ const tradeAccountContactsFiltersViewModel = ({
 
             if (defaultOp.indexOf('CreditStopped') == -1 && creditStoppedId != '') {
                 filters.push(`CreditStopped eq ${creditStoppedId}`);
+            }
+
+            if (defaultOp.indexOf('TradeAccountStatusID') == -1 && tradeAccountStatusId != '') {
+                filters.push(`Open eq ${tradeAccountStatusId}`);
             }
 
             if (defaultOp.indexOf('CreditController') == -1 && creditControllerId != '') {
@@ -1207,6 +1221,8 @@ const tradeAccountContactsFiltersViewModel = ({
         }
     });
 
+    self.tradeAccountStatusGroupBy = `groupby((Open))/filter((Open ne null))`;
+
     self.tradeAccountStatusParams = kendoMDCDropDownList({
         skipCascade: true,
         label: 'Trade Account Status',
@@ -1227,6 +1243,7 @@ const tradeAccountContactsFiltersViewModel = ({
             console.log('tradeAccountStatus select', e);
         },
         clearFunction: self.genericUnsavedChangesClear,
+        parameterMap: self.generateTradeAccountSuperSetParameterMap(self.tradeAccountStatusGroupBy),
         popupSettings: {
             appendTo: `#${self.prefix}trade-account-status-prefilter`
         }
@@ -1267,7 +1284,7 @@ const tradeAccountContactsFiltersViewModel = ({
             creditStopped: self.creditStoppedId(),
             creditControllerCode: self.creditControllerId() == "" ? null : self.creditControllerId(), // contol holds empty string if nothing selected; can't pass CreditControllerCode = N'' to the procedure; demands an empty test here
             tradeAccountTypeGroupId: self.tradeAccountTypeGroupId(),
-            open: self.tradeAccountStatusId(),
+            open: self.tradeAccountStatusId() == '' ? null : self.tradeAccountStatusId(),
             searchTerm: null,
             companyCode: self.tradeAccountCompanyId() == "" ? null : self.tradeAccountCompanyId(),
             invoiceCompanyCode: self.invoiceCompanyId() == "" ? null : self.invoiceCompanyId()

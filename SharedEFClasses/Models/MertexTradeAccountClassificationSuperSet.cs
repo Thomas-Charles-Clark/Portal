@@ -53,6 +53,8 @@ namespace SharedEFClasses.Models
 
         public string CompanyCode { get; set; }
 
+        public bool Open { get; set; }
+
         [ForeignKey("SalesMarketID")]
         public virtual SalesMarket SalesMarket { get; set; }
 

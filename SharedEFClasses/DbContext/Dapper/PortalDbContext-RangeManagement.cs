@@ -231,9 +231,7 @@ namespace SharedEFClasses.Models
         {
             var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
 
-            var token = credentials.LogonUser(LogonType.Interactive);
-
-            await WindowsIdentity.RunImpersonated(token, async () =>
+			await Impersonation.RunAsUser(credentials, LogonType.Interactive, async () =>
             {
                 using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL-IntegratedConnectionString"].ConnectionString))
                 {
@@ -252,9 +250,7 @@ namespace SharedEFClasses.Models
 		{
 			var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
 
-			var token = credentials.LogonUser(LogonType.Interactive);
-
-			await WindowsIdentity.RunImpersonated(token, async () =>
+			await Impersonation.RunAsUser(credentials, LogonType.Interactive, async () =>
 			{
 				using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL-IntegratedConnectionString"].ConnectionString))
 				{
@@ -273,9 +269,7 @@ namespace SharedEFClasses.Models
         {
             var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
 
-            var token = credentials.LogonUser(LogonType.Interactive);
-
-            await WindowsIdentity.RunImpersonated(token, async () =>
+            await Impersonation.RunAsUser(credentials, LogonType.Interactive, async () =>
             {
                 using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL-IntegratedConnectionString"].ConnectionString))
                 {
@@ -294,9 +288,7 @@ namespace SharedEFClasses.Models
         {
             var credentials = new UserCredentials("DESIGNERSGUILD\\SQLAgentFileAccess", "34949C02-4677-4711-999C-8E038E26B10F");
 
-            var token = credentials.LogonUser(LogonType.Interactive);
-
-            await WindowsIdentity.RunImpersonated(token, async () =>
+			await Impersonation.RunAsUser(credentials, LogonType.Interactive, async () =>
             {
                 using (var conn = new SqlConnection(ConfigurationManager.ConnectionStrings["VM-SQL-IntegratedConnectionString"].ConnectionString))
                 {
