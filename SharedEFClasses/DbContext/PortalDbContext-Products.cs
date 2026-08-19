@@ -1183,110 +1183,151 @@ namespace SharedEFClasses.Models
             return results;
         }
 
-        //public List<BasketRefreshPricesStockResult> BasketRefreshPricesStock(PassProductBasket objBasket)
-        //{
-        //    var results = new List<BasketRefreshPricesStockResult>();
+		public List<Product_SelectByBrandProductTypeResult> ProductSelectByBrandProductType(PassFetchProductsByBrandProductType dto)
+		{
+			var results = new List<Product_SelectByBrandProductTypeResult>();
 
-        //    var basket = new DataTable();
+			var parameters = new SqlParameter[]
+			{
+				new SqlParameter("@BrandID", dto.brandId),
+				new SqlParameter("@ProductTypeID", dto.productTypeId),
+				new SqlParameter("@TradeAccountID", dto.tradeAccountId)
+			};
 
-        //    basket.Columns.Add("RowNumber", typeof(short));
-        //    basket.Columns.Add("BasketSpitID", typeof(byte));
-        //    basket.Columns.Add("ProductID", typeof(int));
-        //    basket.Columns.Add("Quantity", typeof(decimal));
-        //    basket.Columns.Add("ProductFilterID", typeof(byte));
-        //    basket.Columns.Add("TreatmentID", typeof(short));
-        //    basket.Columns.Add("OrderTypeID", typeof(byte));
-        //    basket.Columns.Add("DeliveryGroupID", typeof(byte));
-        //    basket.Columns.Add("FulfilmentTypeID", typeof(byte));
-        //    basket.Columns.Add("StockLocationID", typeof(short));
-        //    basket.Columns.Add("DiscountPercentage", typeof(byte));
-        //    basket.Columns.Add("DesignProductID", typeof(int));
-        //    basket.Columns.Add("FabricProductID", typeof(int));
-        //    basket.Columns.Add("WallpaperProductID", typeof(int));
-        //    basket.Columns.Add("ModelProductID", typeof(int));
-        //    basket.Columns.Add("HeaderWidth", typeof(byte));
-        //    basket.Columns.Add("FeelerLength", typeof(byte));
-        //    basket.Columns.Add("Waterfall", typeof(bool));
-        //    basket.Columns.Add("Memo", typeof(string));
-        //    basket.Columns.Add("Width", typeof(short));
-        //    basket.Columns.Add("Length", typeof(short));
-        //    basket.Columns.Add("Diameter", typeof(short));
-        //    basket.Columns.Add("BespokeSize", typeof(decimal));
-        //    basket.Columns.Add("FinalPrice", typeof(decimal));
-        //    basket.Columns.Add("NetWeight", typeof(decimal));
+			// Create a SQL command to execute the sproc
+			var cmd = this.Database.Connection.CreateCommand();
+			cmd.CommandText = "[portal].[Product_SelectByBrandProductType]";
+			cmd.CommandType = CommandType.StoredProcedure;
 
-        //    foreach (var i in objBasket.basketItems)
-        //    {
-        //        basket.Rows.Add(
-        //            i.rowNumber,
-        //            i.basketSplitId,
-        //            i.record.ProductID,
-        //            i.quantity,
-        //            i.productFilterId,
-        //            i.treatmentId,
-        //            i.orderTypeId,
-        //            i.deliveryGroupId,
-        //            i.fulfilmentTypeId,
-        //            i.stockLocationId,
-        //            i.discount,
-        //            i.designProductId,
-        //            i.fabricProductId,
-        //            i.wallpaperProductId,
-        //            i.modelProductId,
-        //            i.headerWidth,
-        //            i.feelerLength,
-        //            i.waterfall,
-        //            i.memo,
-        //            i.width,
-        //            i.length,
-        //            i.diameter,
-        //            i.bespokeSize,
-        //            i.finalPrice,
-        //            i.netWeight
-        //        );
-        //    }
+			cmd.Parameters.AddRange(parameters);
 
-        //    var parameters = new SqlParameter[]
-        //    {
-        //        new SqlParameter("@Basket", basket)
-        //        {
-        //            SqlDbType = SqlDbType.Structured,
-        //            TypeName = "portal.BasketTableType"
-        //        },
-        //        new SqlParameter("@TradeAccountID", objBasket.tradeAccountId)
-        //    };
+			try
+			{
+				this.Database.Connection.Open();
+				// Run the sproc 
+				var reader = cmd.ExecuteReader();
 
-        //    // Create a SQL command to execute the sproc
-        //    var cmd = this.Database.Connection.CreateCommand();
-        //    cmd.CommandText = "[portal].[Basket_Price_Select]";
-        //    cmd.CommandType = CommandType.StoredProcedure;
+				results = ((IObjectContextAdapter)this)
+					.ObjectContext
+					.Translate<Product_SelectByBrandProductTypeResult>(reader).ToList();
+			}
+			catch (SqlException e)
+			{
+				PortalFramework.LogErrorToDatabase(e);
+				throw e;
+			}
+			finally
+			{
+				this.Database.Connection.Close();
+			}
 
-        //    cmd.Parameters.AddRange(parameters);
+			return results;
+		}
 
-        //    try
-        //    {
-        //        this.Database.Connection.Open();
-        //        // Run the sproc 
-        //        var reader = cmd.ExecuteReader();
+		//public List<BasketRefreshPricesStockResult> BasketRefreshPricesStock(PassProductBasket objBasket)
+		//{
+		//    var results = new List<BasketRefreshPricesStockResult>();
 
-        //        results = ((IObjectContextAdapter)this)
-        //            .ObjectContext
-        //            .Translate<BasketRefreshPricesStockResult>(reader).ToList();
-        //    }
-            //catch (SqlException e)
-            //{
-            //    PortalFramework.LogErrorToDatabase(e);
-                //throw e;
-            //}
-    //    finally
-    //    {
-    //        this.Database.Connection.Close();
-    //    }
+		//    var basket = new DataTable();
 
-    //    return results;
-    //}
+		//    basket.Columns.Add("RowNumber", typeof(short));
+		//    basket.Columns.Add("BasketSpitID", typeof(byte));
+		//    basket.Columns.Add("ProductID", typeof(int));
+		//    basket.Columns.Add("Quantity", typeof(decimal));
+		//    basket.Columns.Add("ProductFilterID", typeof(byte));
+		//    basket.Columns.Add("TreatmentID", typeof(short));
+		//    basket.Columns.Add("OrderTypeID", typeof(byte));
+		//    basket.Columns.Add("DeliveryGroupID", typeof(byte));
+		//    basket.Columns.Add("FulfilmentTypeID", typeof(byte));
+		//    basket.Columns.Add("StockLocationID", typeof(short));
+		//    basket.Columns.Add("DiscountPercentage", typeof(byte));
+		//    basket.Columns.Add("DesignProductID", typeof(int));
+		//    basket.Columns.Add("FabricProductID", typeof(int));
+		//    basket.Columns.Add("WallpaperProductID", typeof(int));
+		//    basket.Columns.Add("ModelProductID", typeof(int));
+		//    basket.Columns.Add("HeaderWidth", typeof(byte));
+		//    basket.Columns.Add("FeelerLength", typeof(byte));
+		//    basket.Columns.Add("Waterfall", typeof(bool));
+		//    basket.Columns.Add("Memo", typeof(string));
+		//    basket.Columns.Add("Width", typeof(short));
+		//    basket.Columns.Add("Length", typeof(short));
+		//    basket.Columns.Add("Diameter", typeof(short));
+		//    basket.Columns.Add("BespokeSize", typeof(decimal));
+		//    basket.Columns.Add("FinalPrice", typeof(decimal));
+		//    basket.Columns.Add("NetWeight", typeof(decimal));
 
-    public List<FulfilmentOptionSelectResult> FetchFulfilmentOptions(PassFulfilmentOptionsSelect objSelect)
+		//    foreach (var i in objBasket.basketItems)
+		//    {
+		//        basket.Rows.Add(
+		//            i.rowNumber,
+		//            i.basketSplitId,
+		//            i.record.ProductID,
+		//            i.quantity,
+		//            i.productFilterId,
+		//            i.treatmentId,
+		//            i.orderTypeId,
+		//            i.deliveryGroupId,
+		//            i.fulfilmentTypeId,
+		//            i.stockLocationId,
+		//            i.discount,
+		//            i.designProductId,
+		//            i.fabricProductId,
+		//            i.wallpaperProductId,
+		//            i.modelProductId,
+		//            i.headerWidth,
+		//            i.feelerLength,
+		//            i.waterfall,
+		//            i.memo,
+		//            i.width,
+		//            i.length,
+		//            i.diameter,
+		//            i.bespokeSize,
+		//            i.finalPrice,
+		//            i.netWeight
+		//        );
+		//    }
+
+		//    var parameters = new SqlParameter[]
+		//    {
+		//        new SqlParameter("@Basket", basket)
+		//        {
+		//            SqlDbType = SqlDbType.Structured,
+		//            TypeName = "portal.BasketTableType"
+		//        },
+		//        new SqlParameter("@TradeAccountID", objBasket.tradeAccountId)
+		//    };
+
+		//    // Create a SQL command to execute the sproc
+		//    var cmd = this.Database.Connection.CreateCommand();
+		//    cmd.CommandText = "[portal].[Basket_Price_Select]";
+		//    cmd.CommandType = CommandType.StoredProcedure;
+
+		//    cmd.Parameters.AddRange(parameters);
+
+		//    try
+		//    {
+		//        this.Database.Connection.Open();
+		//        // Run the sproc 
+		//        var reader = cmd.ExecuteReader();
+
+		//        results = ((IObjectContextAdapter)this)
+		//            .ObjectContext
+		//            .Translate<BasketRefreshPricesStockResult>(reader).ToList();
+		//    }
+		//catch (SqlException e)
+		//{
+		//    PortalFramework.LogErrorToDatabase(e);
+		//throw e;
+		//}
+		//    finally
+		//    {
+		//        this.Database.Connection.Close();
+		//    }
+
+		//    return results;
+		//}
+
+		public List<FulfilmentOptionSelectResult> FetchFulfilmentOptions(PassFulfilmentOptionsSelect objSelect)
         {
             var results = new List<FulfilmentOptionSelectResult>();
 

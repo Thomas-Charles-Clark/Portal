@@ -459,7 +459,46 @@ namespace Portal.Controllers
             return Ok(new { results, waterfallPermitted });
         }
 
-        [HttpPost]
+
+		[HttpPost]
+		public async Task<IHttpActionResult> FetchProductsByBrandProductType([FromBody] PassFetchProductsByBrandProductType dto)
+		{
+			var results = PortalDb.ProductSelectByBrandProductType(dto);
+
+			// RIGHT... for the sake of bespoke builders, I also need to test if this design... BY CODE...
+			// has a /W part number.
+			// now... designs do not hold their Code; SELECT * FROM dbo.Design
+			// so... I'll have to 
+
+			// A) Hope that there is at least one result from ProductSelectByDesign
+			// B) Take that product's code and parse it for the chunk before the first forward slash
+			// C) Append /W to that
+			// D) Perform a stock check with the result against the HD stock location
+			// E) If there ever was stock, or if there is incoming stock, permit a standardised waterfall
+			// F) If not, still permit a BESPOKE waterfall for shelf samples only.
+
+			var waterfallPermitted = false;
+
+			if (results.Count >= 1)
+			{
+				try
+				{
+					var waterfallCode = results[0].Code.Split(new char[] { '/' }, StringSplitOptions.None)[0];
+
+					waterfallCode += "/W";
+
+					waterfallPermitted = await PortalDb.WaterfallCheck(waterfallCode);
+				}
+				catch
+				{
+
+				}
+			}
+
+			return Ok(new { results, waterfallPermitted });
+		}
+
+		[HttpPost]
         public IHttpActionResult FetchBasketParameters([FromBody] PassBasketID objBasket)
         {
             var result = PortalDb.FetchBasketParameters(objBasket);

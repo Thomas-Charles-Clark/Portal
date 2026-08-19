@@ -863,7 +863,7 @@ namespace SharedEFClasses.Models.Products
         public decimal? RollLength { get; set; }
     }
 
-    public class QuickDisplay_Product_Result
+	public class QuickDisplay_Product_Result
     {
         public int ProductID { get; set; }
         public decimal Quantity { get; set; }

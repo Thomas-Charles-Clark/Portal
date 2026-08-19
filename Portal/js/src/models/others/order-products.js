@@ -12327,7 +12327,7 @@ var bespokeWallpaperShowlengthFactory = function (parent) {
         charsRemainingOptions: {
             maxLength: 50
         },
-        readOnly: true,
+        readOnly: false,
         autocompleteSettings: {
             value: self.feeler,
             localData: self.designProducts,
@@ -12501,27 +12501,28 @@ var bespokeWallpaperShowlengthFactory = function (parent) {
         self.productId(data.record.ProductID);
         self.design.observable(data.record.Code + ' - ' + data.record.Design);
         self.show();
-        self.fetchProductsByQuality(data.record.Code);
+        self.fetchProductsByBrandProductType(data.record);
     }
 
-    self.fetchProductsByQuality = function (code, onComplete) {
+    self.fetchProductsByBrandProductType = function (product, onComplete) {
 
         var data = {
             productTypeId: 18,
-            code: code,
-            tradeAccountId: self.parent.tradeAccount().TradeAccountID,
-            status: 'C'
+            brandId: product.BrandID,
+            tradeAccountId: self.parent.tradeAccount().TradeAccountID
         }
+        
+        //status: 'C'
 
-        console.log('bespokeWallpaperShowlengthFactory calling fetchProductsByQuality with', data);
+        console.log('bespokeWallpaperShowlengthFactory calling fetchProductsByBrandProductType with', data);
 
         $.ajax({
-            url: '/api/componentapi/fetchProductsByQuality',
+            url: '/api/componentapi/fetchProductsByBrandProductType',
             type: 'POST',
             dataType: 'json',
             data: data,
             success: function (data) {
-                console.log('fetchProductsByQuality returned', data);
+                console.log('fetchProductsByBrandProductType returned', data);
                 self.designProducts($.map(data.results, function (p) {
                     return {
                         productId: p.ProductID,
@@ -12563,7 +12564,7 @@ var bespokeWallpaperShowlengthFactory = function (parent) {
                 self.dateRequired.observable(forwardOrderDate);
             }
 
-            self.fetchProductsByQuality(data.record.Code, function () {
+            self.fetchProductsByBrandProductType(data.record, function () {
                 self.feeler(Enumerable.From(self.designProducts()).Where(function (x) {
                     return x.productId == +jsonData.feeler.productId
                 }).Single());
@@ -12576,7 +12577,7 @@ var bespokeWallpaperShowlengthFactory = function (parent) {
             self.fullDispatch(jsonData.fullDespatch == 'Y' ? true : false);
             self.memo.observable(jsonData.memo);
         } else {
-            self.fetchProductsByQuality(data.record.Code);
+            self.fetchProductsByBrandProductType(data.record);
         }
         self.loaded(true);
 

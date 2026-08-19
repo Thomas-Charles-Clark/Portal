@@ -703,9 +703,11 @@
     <Compile Include="Models\OrderBook\PassOrderBookOrderLinePopoverFetch.cs" />
     <Compile Include="Models\OrderBook\PassOrderBookTotalPopoverFetch.cs" />
     <Compile Include="Models\OrderBook\PassOrderExportParams.cs" />
+    <Compile Include="Models\OrderEntry\PassFetchProductsByBrandProductType.cs" />
     <Compile Include="Models\OrderEntry\PassHeldOrdersManagementDTO.cs" />
     <Compile Include="Models\OrderEntry\PassInsertStockCheckRequest.cs" />
     <Compile Include="Models\OrderEntry\PassStockCheckRequest.cs" />
+    <Compile Include="Models\OrderEntry\Product_SelectByBrandProductTypeResult.cs" />
     <Compile Include="Models\OrderEntry\StockCheckRequestResult.cs" />
     <Compile Include="Models\OrderEntry\StockCheckRequestSelectResult.cs" />
     <Compile Include="Models\OrderGroup.cs" />

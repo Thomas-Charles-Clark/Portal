@@ -3423,38 +3423,41 @@
                      },
                      with: parent.orderFactory.bespokeWallpaperShowlengthFactory">
                     <div class="flex-container">
-                        <div class="controls-container">
-                            <div data-bind="component: { name: 'mdc-text-field-component', params: design }"></div>
-                            <div data-bind="component: { name: 'mdc-text-field-autocomplete-component', params: feelerAutocomplete }"></div>
-                            <div class="btn-toolbar">
-                                <div class="btn-group">
-                                    <div class="feeler-length" data-bind="visible: selectedFeelerLength() != -1, component: { name: 'mdc-select-component', params: feelerLength }"></div>
-                                    <div class="feeler-length custom-feeler-length" data-bind="visible: selectedFeelerLength() == -1, component: { name: 'mdc-text-field-numeric-component', params: customFeelerLength }"></div>
-                                </div>
-                                <div class="btn-group">
-                                    <div class="bespoke-quantity" data-bind="component: { name: 'mdc-text-field-numeric-component', params: quantity }"></div>
-                                </div>
-                                <div class="btn-group">
-                                    <div class="bespoke-date-required" data-bind="component: { name: 'mdc-date-time-picker-component', params: dateRequired }"></div>
-                                </div>
-                                <div class="btn-group">
-                                    <i class="note">*Not Guaranteed</i>
-                                </div>
-                            </div>
-                            <div class="bespoke-memo" data-bind="component: { name: 'mdc-text-field-component', params: memo }"></div>
-                            <div>
-                                <ul>
-                                    <li>
-                                        <label class="checkbox-wrapper">
-                                            <input type="checkbox" data-bind="checked: fullDispatch, checkedValue: true" />
-                                            <span>
-                                                Does your customer request full despatch?
-                                            </span>
-                                        </label>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+						<div class="controls-container">
+							<div data-bind="component: { name: 'mdc-text-field-component', params: design }"></div>
+							<p class="margin-bottom-15">
+								If the product you're looking for is not available in the list below, we have less than 5 rolls in stock and it is highly unlikely that we will request more be manufactured.
+							</p>
+							<div data-bind="component: { name: 'mdc-text-field-autocomplete-component', params: feelerAutocomplete }"></div>
+							<div class="btn-toolbar">
+								<div class="btn-group">
+									<div class="feeler-length" data-bind="visible: selectedFeelerLength() != -1, component: { name: 'mdc-select-component', params: feelerLength }"></div>
+									<div class="feeler-length custom-feeler-length" data-bind="visible: selectedFeelerLength() == -1, component: { name: 'mdc-text-field-numeric-component', params: customFeelerLength }"></div>
+								</div>
+								<div class="btn-group">
+									<div class="bespoke-quantity" data-bind="component: { name: 'mdc-text-field-numeric-component', params: quantity }"></div>
+								</div>
+								<div class="btn-group">
+									<div class="bespoke-date-required" data-bind="component: { name: 'mdc-date-time-picker-component', params: dateRequired }"></div>
+								</div>
+								<div class="btn-group">
+									<i class="note">*Not Guaranteed</i>
+								</div>
+							</div>
+							<div class="bespoke-memo" data-bind="component: { name: 'mdc-text-field-component', params: memo }"></div>
+							<div>
+								<ul>
+									<li>
+										<label class="checkbox-wrapper">
+											<input type="checkbox" data-bind="checked: fullDispatch, checkedValue: true" />
+											<span>
+												Does your customer request full despatch?
+											</span>
+										</label>
+									</li>
+								</ul>
+							</div>
+						</div>
                         <div class="image-container">
                             <div data-bind="with: feeler">
                                 <img class="pointer" data-bind="attr: { src: 'https://www.designersguild.com/image/239/' + value.ImageID, title: value.Code }, click: function () { $parentContext.$parentContext.$parent.orderProductsDrilldown.bespokeLoadLargeImage($data.value); }" />
