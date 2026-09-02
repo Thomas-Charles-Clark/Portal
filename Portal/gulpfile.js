@@ -73,6 +73,7 @@
 
     sass: required by gulp-sass, this is the actual compiler
 
+    udoc: required to convert EMF / WMF embedded images from Office programs into web-renderable images
 */
 
 const
@@ -98,7 +99,7 @@ const
 const micromatches = {
     scss: ['css/src/**/*.scss'],
     scssCopyErrata: ['css/src/**/*.*', '!css/src/**/*.scss'],
-    js: ['js/src/**/!(*.min).js', '!js/src/**/*.rollup.js'],
+    js: ['js/src/**/!(*.min).{js,mjs}', '!js/src/**/*.rollup.js'],
     rollup: ['js/src/**/*.rollup.js']
 }
 
@@ -150,8 +151,12 @@ function wildcardjs() {
         //.pipe(babel({
         //    presets: ['@babel/preset-env']
         //}))
-        .pipe(terser())
-        .pipe(rename({ suffix: '.min' }))
+        .pipe(terser(
+            // {
+            // mangle: false
+            // }
+        ))
+        .pipe(rename({ suffix: '.min', extname: '.js' }))
         .pipe(sourcemaps.write('', {
             sourceMappingURL: (file) => {
                 let replaced = file.relative.replace(/\\/g, '/');

@@ -1823,6 +1823,7 @@
     <Content Include="js\src\lib\bootstrap-datetime-picker\bootstrap-datetime-picker.js" />
     <Content Include="js\src\lib\bootstrap-switch\bootstrap-switch.js" />
     <Content Include="js\src\lib\debounce\debounce.js" />
+    <Content Include="js\src\lib\docx-preview\docx-preview.js" />
     <Content Include="js\src\lib\google-maps\google-maps-marker-clusterer.js" />
     <Content Include="js\src\lib\intl-tel-input\intl-tel-input.js" />
     <Content Include="js\src\lib\intl-tel-input\utils.js" />
@@ -1835,6 +1836,7 @@
     <Content Include="js\src\lib\jquery-ui-1.12.1\jquery-ui-1.12.1.js" />
     <Content Include="js\src\lib\jquery-ui-1.12.1\jquery-ui-extensions.js" />
     <Content Include="js\src\lib\jquery-ui-1.12.1\jquery-ui-touch-punch.js" />
+    <Content Include="js\src\lib\jszip\jszip.js" />
     <Content Include="js\src\lib\kendo\kendo-modernizr-custom.js" />
     <Content Include="js\src\lib\kendo\kendo.2018.3.1017.all.js" />
     <Content Include="js\src\lib\kendo\kendo.2023.1.314.all.js" />
@@ -1861,6 +1863,10 @@
     <Content Include="js\src\lib\tempus-dominus\tempus-dominus.js" />
     <Content Include="js\src\lib\tiff\tiff.js" />
     <Content Include="js\src\lib\tiny-slider\tiny-slider.js" />
+    <Content Include="js\src\lib\udoc\FromEMF.js" />
+    <Content Include="js\src\lib\udoc\ToContext2D.js" />
+    <Content Include="js\src\lib\udoc\UDOC.js" />
+    <Content Include="js\src\lib\xlsx-js-style\xlsx.bundle.js" />
     <Content Include="js\src\models\accounts\banks\bank-accounts.js" />
     <Content Include="js\src\models\accounts\banks\daily-banking-statistics-breakdown-item.js" />
     <Content Include="js\src\models\accounts\banks\daily-banking-statistics-breakdown.js" />
@@ -3357,6 +3363,7 @@
     <Content Include="css\src\models\accounts\banks\bank-accounts.scss" />
     <Content Include="css\src\models\accounts\banks\daily-banking-statistics.scss" />
     <Content Include="css\src\models\credit-control\credit-control-close-brothers.scss" />
+    <Content Include="js\src\lib\xlsx-js-style\xlsx.bundle.js.map" />
     <None Include="Libraries\MertexerV2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -6879,6 +6886,7 @@
     <Folder Include="edge\x86\" />
     <Folder Include="FileUploads\" />
     <Folder Include="FurnitureDownloads\projects\temp\" />
+    <Folder Include="js\dist\lib\" />
     <Folder Include="js\src\models\order-entry\" />
     <Folder Include="js\src\models\order-import\" />
     <Folder Include="node_modules\material\src\" />

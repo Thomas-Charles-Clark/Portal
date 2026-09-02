@@ -991,7 +991,13 @@ namespace Portal
             bundles.Add(new ScriptBundle("~/bundles/js/invoice-booking").Include(
                         $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/lib/tiff/tiff{jsSuffix}",
-                        $"{jsPrefix}/models/invoice-booking/controllers/invoice-document-download-task-header-controller{jsSuffix}",
+						$"{jsPrefix}/lib/jszip/jszip{jsSuffix}",
+						$"{jsPrefix}/lib/udoc/UDOC{jsSuffix}",
+						$"{jsPrefix}/lib/udoc/FromEMF{jsSuffix}",
+						$"{jsPrefix}/lib/udoc/ToContext2D{jsSuffix}",
+						$"{jsPrefix}/lib/docx-preview/docx-preview{jsSuffix}",
+						$"{jsPrefix}/lib/xlsx-js-style/xlsx.bundle{jsSuffix}",
+						$"{jsPrefix}/models/invoice-booking/controllers/invoice-document-download-task-header-controller{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/controllers/invoice-document-download-tasks-controller{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/models/document-download-task-model{jsSuffix}",
                         $"{jsPrefix}/models/invoice-booking/models/document-download-task-progress-model{jsSuffix}",
@@ -1009,7 +1015,13 @@ namespace Portal
                         $"{jsPrefix}/models/invoice-booking/invoice-booking{jsSuffix}"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/email-contacts").Include(
+			bundles.Add(new ScriptBundle("~/bundles/js/udoc").Include(
+						$"{jsPrefix}/lib/udoc/UDOC{jsSuffix}",
+						$"{jsPrefix}/lib/udoc/FromEMF{jsSuffix}",
+						$"{jsPrefix}/lib/udoc/ToContext2D{jsSuffix}"
+				));
+
+			bundles.Add(new ScriptBundle("~/bundles/js/email-contacts").Include(
                         $"{jsPrefix}/models/others/kendo-mdc-drop-down-list-factory{jsSuffix}",
                         $"{jsPrefix}/models/others/email-contacts{jsSuffix}"
                 ));
