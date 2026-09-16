@@ -365,6 +365,21 @@
                                                 const canvas = renderer.canvas;
 
                                                 if (canvas && canvas.width > 0 && canvas.height > 0) {
+
+                                                    // 3. Create a secondary canvas to correct the flip
+                                                    const finalCanvas = document.createElement('canvas');
+                                                    finalCanvas.width = renderer.canvas.width;
+                                                    finalCanvas.height = renderer.canvas.height;
+
+                                                    const ctx = finalCanvas.getContext('2d');
+
+                                                    // Apply the vertical inversion matrix
+                                                    ctx.translate(0, renderer.canvas.height);
+                                                    ctx.scale(1, -1);
+
+                                                    // Draw the inverted image onto the final canvas
+                                                    ctx.drawImage(renderer.canvas, 0, 0);
+
                                                     // 7. Convert the painted canvas into a standard PNG string
                                                     const pngDataUrl = canvas.toDataURL("image/png");
 

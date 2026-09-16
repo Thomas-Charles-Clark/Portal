@@ -324,7 +324,6 @@
 						</div>
 						<div class="duplicate-property">
 							<label class="bold">
-								g
 								Invoice Date:
 							</label>
 							<span data-bind="text: moment(InvoiceDate).format('Do ddd MMMM YYYY (DD/MM/YYYY)')"></span>
@@ -1657,10 +1656,10 @@
 						<!-- ko if: ['csv','txt','png','jpg','jpeg','gif','bmp','webp','tif','tiff', 'xlsx', 'xls', 'doc', 'docx'].indexOf(FileExtension.toLowerCase()) == -1 -->
 						<iframe data-bind="attr: { src: actualSrc }"></iframe>
 						<!-- /ko -->
-						<!-- ko if: ['xls', 'xlsx'].indexOf(FileExtension.toLowerCase() > -1) -->
+						<!-- ko if: ['xls', 'xlsx'].indexOf(FileExtension.toLowerCase()) > -1 -->
 						<div id="xlsx-container"></div>
 						<!-- /ko -->
-						<!-- ko if: ['doc', 'docx'].indexOf(FileExtension.toLowerCase() > -1) -->
+						<!-- ko if: ['doc', 'docx'].indexOf(FileExtension.toLowerCase()) > -1 -->
 						<div id="docx-container"></div>
 						<!-- /ko -->
 						<!-- ko if: ['csv','txt'].indexOf(FileExtension.toLowerCase()) > -1 -->
